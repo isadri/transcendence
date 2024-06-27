@@ -1,10 +1,12 @@
-FROM python:3.13.0b2-bookworm
+FROM python:3.12.3-bullseye
 
 # Set working directory
 WORKDIR /code
 
-# Install dependencies
-COPY requirements.txt .
-#RUN pip install -r requirements.txt
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
+# Install dependencies
 COPY . .
+RUN pip install -r requirements.txt
