@@ -18,3 +18,6 @@ makemigrations:
 
 migrate:
 	@docker-compose exec -it back-end python manage.py migrate
+
+shell:
+	@docker-compose exec -it back-end python manage.py shell
