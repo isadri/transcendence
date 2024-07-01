@@ -4,12 +4,9 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
 
 
-app_name = 'accounts'
-
-
 urlpatterns = [
-	path('signup/', views.RegisterView.as_view(), name='signup'),
-	path('login/', views.LoginView.as_view(), name='login'),
+	path('signup/', views.RegisterView.as_view()),
+	path('api-token-auth/', views.LoginView.as_view()),
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)
