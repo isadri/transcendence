@@ -3,4 +3,4 @@ from django.db import models
 
 
 class User(AbstractUser):
-	username = models.CharField(unique=True)
+	pass
