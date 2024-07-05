@@ -9,6 +9,13 @@ from .models import User
 from .serializers import UserSerializer
 
 
+from django.shortcuts import render
+
+
+def home(request):
+	return render(request, 'home.html')
+
+
 class RegisterView(generics.CreateAPIView):
 	serializer_class = UserSerializer
 
