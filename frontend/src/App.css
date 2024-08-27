@@ -1,3 +1,17 @@
+/* JetBrains Mono */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+/* Josefin Sans */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 :root {
-    --color: #FF0000;
+    /* Main colors */
+    --white: #FFFFFF; /* white pure */
+    --primary: #C1596C; /* primary color */
+    --secondary : #625FD0; /* secondary color */
+    --background: #1E1E1E;/* Background color */
+    --fade: rgba(217,217,217,0.11); /* fade color for component */
+
+    /* Main font */
+    --sans : 'Josefin Sans';
+    --mono : 'JetBrains Mono';
 }
