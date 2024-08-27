@@ -27,7 +27,7 @@ services:
     image: frontend:42
     build: ./frontend
     ports:
-      - 3000:3000
+      - 5000:5000
     volumes:
       - ./frontend/:/code
     networks:
