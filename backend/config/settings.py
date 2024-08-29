@@ -31,6 +31,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
 
 	'allauth',
     'allauth.account',
@@ -54,6 +55,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,6 +100,12 @@ DATABASES = {
 		'PORT': '5432',
     }
 }
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 
 # Password validation
@@ -154,10 +163,12 @@ REST_FRAMEWORK = {
 
 # Setting Simple JWT settings
 SIMPLE_JWT = {
-	'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
-	'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+	'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+	'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
+
+    "TOKEN_OBTAIN_SERIALIZER": "accounts.api.serializers.MyTokenObtainPairSerializer",
 }
 
 AUTHENTICATION_BACKENDS = (
