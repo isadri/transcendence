@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import './BackGround.css'
-import circl from '../assets/circle.png'
+import circl from './images/circle.png'
 interface Props {
     children: ReactNode,
 }
