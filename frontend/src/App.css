@@ -10,8 +10,12 @@
     --secondary : #625FD0; /* secondary color */
     --background: #1E1E1E;/* Background color */
     --fade: rgba(217,217,217,0.11); /* fade color for component */
-
+    --accent: #9D9D9D;
     /* Main font */
     --sans : 'Josefin Sans';
     --mono : 'JetBrains Mono';
+}
+
+body{
+    background-color: #290e13;
 }
