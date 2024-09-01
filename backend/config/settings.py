@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'two_factor',
-    'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
+    'two_factor.plugins.phonenumber',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -69,6 +69,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
     # 2FA
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -173,8 +174,8 @@ REST_FRAMEWORK = {
 
 # Setting Simple JWT settings
 SIMPLE_JWT = {
-	'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
-	'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+	'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+	'REFRESH_TOKEN_LIFETIME': timedelta(hours=1),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
 
@@ -185,6 +186,9 @@ AUTHENTICATION_BACKENDS = (
 	"django.contrib.auth.backends.ModelBackend",  
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

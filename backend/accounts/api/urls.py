@@ -9,13 +9,14 @@ from . import views
 
 
 urlpatterns = [
-    #path('', include(tf_urls)),
+    path('', include(tf_urls)),
     # Sign up
 	path('accounts/register/', views.RegisterView.as_view(), name='register'),
-    path('accounts/logout/', views.logout_user),
+    path('accounts/login/', views.LoginView.as_view(), name='login'),
+    path('accounts/logout/', views.logout_user, name='logout'),
 
     # Get access token
-	path('accounts/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+	path('accounts/token/', views.MyTokenObtainTokenPairview.as_view(), name='token_obtain_pair'),
     # Refrech tokne
     path('accounts/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

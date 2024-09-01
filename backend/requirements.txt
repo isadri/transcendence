@@ -7,10 +7,10 @@ djangorestframework-simplejwt==5.3.1
 django-cors-headers==4.4.0
 
 # 2FA
-#django-two-factor-auth==1.15.5
-#phonenumbers==8.13.44
-#django-otp==1.5.2
+django-two-factor-auth==1.15.5
+phonenumbers==8.13.44
+django-otp==1.5.2
 
-# Dependencies for django-allauth
+# Dependencies for django-alliauth
 requests
 cryptography

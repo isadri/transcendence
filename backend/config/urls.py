@@ -9,5 +9,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # For 2FA
-    #path('', include('accounts.urls')),
+    path('', include('accounts.urls')),
 ]
