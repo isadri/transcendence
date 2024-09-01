@@ -51,7 +51,8 @@ nav{
     height: 40px;
     margin: 10px;
     border-radius: 11px;
-    color: white;    
+    color: white;
+    font-family: var(--sans);    
 }
 
 #loginBtn{
@@ -81,7 +82,7 @@ nav{
     }
     .barIcon{
         display: flex;
-        color: var(--accent);
+        color: wh;
         padding: 0 8px;
         font-size: 30px;
         cursor: pointer;

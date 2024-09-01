@@ -1,11 +1,6 @@
 import "./navBar.css";
 
-interface Prop{
-    value: boolean;
-    setValue: (val :boolean) => void
-}
-
-function responsiveBar({value, setValue}: Prop) {
+function responsiveBar() {
   return (
     <div className='resBar'>
         <ul >

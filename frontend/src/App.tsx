@@ -1,10 +1,13 @@
+import BackGround from './components/background/BackGround'
 import './App.css'
-import Landing from "./components/FirstNavBar/navBar"
+import Landing from './Pages/landing/landing'
 
 function App() {
   return (
     <>
-      <Landing/>
+      <div className='containers'>
+        <BackGround><Landing/></BackGround>
+      </div>
     </>
   )
 }

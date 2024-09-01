@@ -3,11 +3,13 @@ import logo from "../../assets/lg.svg";
 import { useState } from "react";
 import ResponsiveBar from "./responsiveBar";
 
-function authen() {
+function navBar() {
   const [value, setValue] = useState(false);
-  const [avtive, setActive] = useState(false);
   const handelClick = () =>{
-    setValue(true);
+    if (value === false)
+      setValue(true);
+    else
+      setValue(false);
   }
   return (
     <>
@@ -41,10 +43,10 @@ function authen() {
             <i className="fa-solid fa-bars" onClick={handelClick}></i>
           </div>
         </nav>
-      {value === true ? <ResponsiveBar value={avtive} setValue={setActive}/> : null}
+      {value === true ? <ResponsiveBar/> : null}
       </div>
     </>
   );
 }
 
-export default authen;
+export default navBar;
