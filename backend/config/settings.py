@@ -182,13 +182,17 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "accounts.api.serializers.MyTokenObtainPairSerializer",
 }
 
+ACCESS_TOKEN = 'access'
+
 AUTHENTICATION_BACKENDS = (
 	"django.contrib.auth.backends.ModelBackend",  
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+# Settings for sessions
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

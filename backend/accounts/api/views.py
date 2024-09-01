@@ -1,12 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
+from django.middleware import csrf
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 
 from .serializers import UserSerializer
@@ -17,7 +15,7 @@ def get_tokens_for_user(user):
 
     return {
         'refresh': str(refresh),
-        'access': str(refresh.access_token)
+        settings.ACCESS_TOKEN: str(refresh.access_token)
     }
 
 
@@ -30,11 +28,13 @@ class LoginView(APIView):
         if user:
             response = Response({'message': 'Logged Successfully'})
             response.set_cookie(
-                'access',
-                value=get_tokens_for_user(user)['access'],
+                settings.ACCESS_TOKEN,
+                value=get_tokens_for_user(user)[settings.ACCESS_TOKEN],
                 expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-                httponly=settings.SESSION_COOKIE_HTTPONLY
+                httponly=settings.SESSION_COOKIE_HTTPONLY,
+                samesite=settings.SESSION_COOKIE_SAMESITE
             )
+            csrf.get_token(request)
             login(request, user)
             return response
         return Response({'error': 'Invalid credentials'})
@@ -53,6 +53,10 @@ class MyTokenObtainTokenPairview(TokenObtainPairView):
         return response
 
 
-def logout_user(request):
-    logout(request)
-    return Response({'message': "klghsklgh"})
+class LogoutView(APIView):
+
+    def get(self, request):
+        logout(request)
+        response = Response({'message': 'Logged out'})
+        response.delete_cookie(settings.ACCESS_TOKEN)
+        return response

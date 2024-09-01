@@ -13,7 +13,7 @@ urlpatterns = [
     # Sign up
 	path('accounts/register/', views.RegisterView.as_view(), name='register'),
     path('accounts/login/', views.LoginView.as_view(), name='login'),
-    path('accounts/logout/', views.logout_user, name='logout'),
+    path('accounts/logout/', views.LogoutView.as_view(), name='logout'),
 
     # Get access token
 	path('accounts/token/', views.MyTokenObtainTokenPairview.as_view(), name='token_obtain_pair'),
