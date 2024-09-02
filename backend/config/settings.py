@@ -41,7 +41,7 @@ INSTALLED_APPS = [
 
 	'rest_framework_simplejwt.token_blacklist',
 
-	'accounts.apps.AccountsConfig',
+	'api.accounts',
 
     # 2FA
     'django_otp',
@@ -128,6 +128,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 6,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -179,7 +182,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
 
-    "TOKEN_OBTAIN_SERIALIZER": "accounts.api.serializers.MyTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "api.accounts.serializers.MyTokenObtainPairSerializer",
 }
 
 ACCESS_TOKEN = 'access'

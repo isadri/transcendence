@@ -1,7 +1,9 @@
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 
-from ..models import User
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,6 +30,10 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
         )
         user.set_password(validated_data['password'])
+        try:
+            validate_password(password=validated_data['password'], user=user)
+        except ValidationError as e:
+            raise serializers.ValidationError(e.messages)
         user.save()
         return user
 

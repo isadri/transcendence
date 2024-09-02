@@ -1,13 +1,22 @@
-from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
 from django.middleware import csrf
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.views import APIView
 
 from .serializers import UserSerializer
+from .models import User
+
+
+class HomeView(APIView):
+
+    def get(self, request):
+        return Response({'message': 'Sf ghayerha'})
 
 
 def get_tokens_for_user(user):
@@ -34,10 +43,12 @@ class LoginView(APIView):
                 httponly=settings.SESSION_COOKIE_HTTPONLY,
                 samesite=settings.SESSION_COOKIE_SAMESITE
             )
-            csrf.get_token(request)
+            #csrf.get_token(request)
             login(request, user)
             return response
-        return Response({'error': 'Invalid credentials'})
+        elif not User.objects.filter(username=username).exists():
+            return Response({'error': 'Username does not exist'})
+        return Response({'error': 'Invalid password'})
 
 
 class RegisterView(generics.CreateAPIView):
