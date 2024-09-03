@@ -10,9 +10,10 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view(), name='logout'),
 
     # Get access token
-	path('token/', views.MyTokenObtainTokenPairview.as_view(),
+	path('token/', views.MyTokenObtainTokenPairView.as_view(),
         name='token-obtain-pair'),
     # Refrech tokne
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+
     path('', views.HomeView.as_view(), name='home'),
 ]

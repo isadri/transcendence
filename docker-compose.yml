@@ -9,6 +9,7 @@ volumes:
 services:
   back-end:
     container_name: backend
+    entrypoint: bash entrypoint.sh
     command: python manage.py runserver 0:8000
     image: backend:42
     build:

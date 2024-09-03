@@ -1,18 +1,20 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.middleware import csrf
+#from django.middleware import csrf
 from rest_framework import generics, status
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import UserSerializer
+from .authenticate import TokenAuthentication
 from .models import User
+from .serializers import UserSerializer
+
 
 class HomeView(APIView):
+    authentication_classes = [TokenAuthentication]
 
     def get(self, request):
         if request.user.is_authenticated:
@@ -31,7 +33,6 @@ def get_tokens_for_user(user):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = [SessionAuthentication]
 
     def store_access_token_in_cookie(self, response, user):
         response.set_cookie(
@@ -64,12 +65,12 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class MyTokenObtainTokenPairview(TokenObtainPairView):
+class MyTokenObtainTokenPairView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        access_token = response.data['access']
-        response.set_cookie('access', access_token)
+        #access_token = response.data['access']
+        #response.set_cookie('access_token', access_token)
         return response
 
 
