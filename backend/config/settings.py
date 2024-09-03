@@ -64,17 +64,16 @@ SOCIALACCOUNT_PROVIDERS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-
-    # 2FA
-    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-	"allauth.account.middleware.AccountMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	"allauth.account.middleware.AccountMiddleware",
+
+    ## 2FA
+    #'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -171,26 +170,28 @@ AUTH_USER_MODEL = 'accounts.User'
 # Setting authentication scheme
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework_simplejwt.authentication.JWTAuthentication',
-	]
+		'api.accounts.authenticate.TokenAuthentication',
+	],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 # Setting Simple JWT settings
 SIMPLE_JWT = {
-	'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+	'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
 	'REFRESH_TOKEN_LIFETIME': timedelta(hours=1),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_COOKIE': 'access',
 
     "TOKEN_OBTAIN_SERIALIZER": "api.accounts.serializers.MyTokenObtainPairSerializer",
 }
 
-ACCESS_TOKEN = 'access'
-
-AUTHENTICATION_BACKENDS = (
-	"django.contrib.auth.backends.ModelBackend",  
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
+#AUTHENTICATION_BACKENDS = (
+	#"django.contrib.auth.backends.ModelBackend",  
+    #"allauth.account.auth_backends.AuthenticationBackend",
+#)
 
 # Settings for sessions
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'

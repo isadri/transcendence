@@ -16,7 +16,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./backend/:/code
+      - ./backend/:/app
     networks:
       - app-network
     depends_on:
