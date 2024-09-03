@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 #from django.middleware import csrf
@@ -11,6 +12,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .authenticate import TokenAuthentication
 from .models import User
 from .serializers import UserSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 class HomeView(APIView):
@@ -52,10 +56,13 @@ class LoginView(APIView):
             response = Response({'message': 'Logged Successfully'})
             self.store_access_token_in_cookie(response, user)
             #csrf.get_token(request)
+            logger.info(f'{user.username} has logged in')
             return response
         elif not User.objects.filter(username=username).exists():
+            logger.info('User does not exist')
             return Response({'error': 'Username does not exist'},
                             status=status.HTTP_404_NOT_FOUND)
+        logger.info('Invalid password')
         return Response({'error': 'Invalid password'},
                         status=status.HTTP_404_NOT_FOUND)
 

@@ -202,3 +202,29 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = 'two_factor:login'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{acstime} {levelname} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': './app.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'api.accounts.views': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        }
+    }
+}
