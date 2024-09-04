@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -208,22 +209,23 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{acstime} {levelname} {module} {message}',
+            'format': ('{asctime}: {levelname}, {module}.py {funcName}():'
+                       ' {message}'),
             'style': '{',
         },
     },
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'class': 'logging.FileHandler',
             'filename': './app.log',
             'formatter': 'verbose',
         },
     },
     'loggers': {
-        'api.accounts.views': {
+        'api.accounts': {
             'handlers': ['file'],
-            'level': 'INFO',
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': True,
         }
     }

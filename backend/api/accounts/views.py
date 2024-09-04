@@ -1,6 +1,7 @@
 import logging
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
 #from django.middleware import csrf
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
@@ -59,12 +60,23 @@ class LoginView(APIView):
             logger.info(f'{user.username} has logged in')
             return response
         elif not User.objects.filter(username=username).exists():
-            logger.info('User does not exist')
+            logger.debug('User does not exist')
             return Response({'error': 'Username does not exist'},
                             status=status.HTTP_404_NOT_FOUND)
-        logger.info('Invalid password')
+        logger.debug('Invalid password')
         return Response({'error': 'Invalid password'},
                         status=status.HTTP_404_NOT_FOUND)
+
+
+class LoginWith42(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return HttpResponseRedirect(('https://api.intra.42.fr/oauth/authorize?'
+                                     'client_id=u-s4t2ud-532f9925e62f74fbb27c8'
+                                     'd9d4c72ee7c8a7fad62547ce1fd71b31832d1047'
+                                     '897&redirect_uri=http%3A%2F%2F127.0.0.1%'
+                                     '3A8000%2F&response_type=code'))
 
 
 class RegisterView(generics.CreateAPIView):
