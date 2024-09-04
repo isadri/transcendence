@@ -9,7 +9,7 @@
     --primary: #C1596C; /* primary color */
     --secondary : #625FD0; /* secondary color */
     --background: #1E1E1E;/* Background color */
-    --fade: rgba(217,217,217,0.11); /* fade color for component */
+    --fade: #d9d9d91c; /* fade color for component */
 
     /* Main font */
     --sans : 'Josefin Sans';
@@ -20,9 +20,4 @@
 * {
     margin: 0;
     padding: 0;
-}
-
-.containers {
-    width: 100%;
-    height: 100%;
 }

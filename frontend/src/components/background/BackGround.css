@@ -5,8 +5,12 @@
 
 body {
     background: black;
+    color: white;
+    padding: 20px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
-
 
 .rectangle0 {
     position: fixed;
