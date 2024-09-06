@@ -85,6 +85,9 @@ body {
 }
 
 @media (max-width: 430px) {
+    body {
+        padding: 0;
+    }
     .rectangle1{
         width: 121%;
         height: 32%;

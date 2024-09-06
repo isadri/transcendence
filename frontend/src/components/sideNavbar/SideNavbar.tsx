@@ -1,46 +1,122 @@
 import { useState } from "react";
 import "./SideNavbar.css";
 import SideNavbarData from "./SideNavbarData";
-import logo from "./images/logo1.svg";
 import { Link } from "react-router-dom";
+import logo from "./images/logo1.svg";
+import "./SidenavbarMobile.css";
+import { useMediaQuery } from "@uidotdev/usehooks";
 
 const SideNavbar = () => {
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 428px)");
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [logoutColor, setLogoutColor] = useState("#ffffffcc");
   const handleIconClick = (id: string) => {
     setActiveItem(id);
   };
 
+  const [desplayMenu, setDesplayMenu] = useState(false);
+  const handleMenuClick = () => {
+    setDesplayMenu(!desplayMenu);
+  };
+
   const handleLogoutClick = () => {
-    setLogoutColor(prevColor => (prevColor === "#ffffffcc" ? "#C1596C" : "#ffffffcc"));
+    setLogoutColor((prevColor) =>
+      prevColor === "#ffffffcc" ? "#C1596C" : "#ffffffcc"
+    );
   };
 
   return (
     <>
-      <nav className="Sidebar">
-        <img src={logo} alt="logo" className="logo" />
-        <ul className="list-items">
-          {SideNavbarData.map((val) => {
-            const color = activeItem === val.id ? "#C1596C" : "#ffffffcc";
-            return (
-              <li
-                key={val.id}
-                onClick={() => handleIconClick(val.id)}
+      {isSmallDevice ? (
+        <nav className="SidebarMobile">
+          <div className="closeNavbarMobile">
+            <img src={logo} alt="logo" className="logoMobile" />
+            <div className="menu-notiMobile">
+              <i className="fa-solid fa-bell notificationMobile"></i>
+              <i
+                className={`${
+                  desplayMenu === true
+                    ? "inactive"
+                    : "fa-solid fa-bars menuMobile"
+                }`}
+                onClick={handleMenuClick}
+              ></i>
+              <i
+                className={`${
+                  desplayMenu === false
+                    ? "inactive"
+                    : "fa-solid fa-xmark xmarkMobile"
+                }`}
+                onClick={handleMenuClick}
+              ></i>
+            </div>
+          </div>
+          <ul
+            className={`${
+              desplayMenu === false ? "inactive" : "list-itemsMobile"
+            }`}
+          >
+            <hr />
+            {SideNavbarData.map((val) => {
+              const color = activeItem === val.id ? "#C1596C" : "#ffffffcc";
+              return (
+                <li key={val.id} onClick={() => handleIconClick(val.id)}>
+                  <Link
+                    to={val.link}
+                    style={{ color: color }}
+                    className="rowMobile"
+                    onClick={handleMenuClick}
+                  >
+                    <div id="iconMobile"> {val.icon} </div>
+                    <div className="nameMobile"> {val.name} </div>
+                  </Link>
+                </li>
+              );
+            })}
+            <hr />
+            <li key='"logout' onClick={() => handleIconClick("logout")}>
+              <Link
+                to="/home"
+                className="rowMobile"
+                id="logoutMobile"
+                style={{ color: "#ffffffcc" }}
+                onClick={handleMenuClick}
               >
-                <Link to={val.link} style={{ color: color }}>
-                  {val.icon}
-                </Link>
-                <hr className={`${activeItem === val.id ? "active" : "inactive"}`}/>
-              </li>
-            );
-          })}
-        </ul>
-        <i
-          className="fa-solid fa-right-from-bracket logout"
-          onClick={handleLogoutClick}
-          style={{color: logoutColor}}
-        ></i>
-      </nav>
+                <div id="iconMobile">
+                  <i className="fa-solid fa-right-from-bracket "></i>
+                </div>
+                <div className="nameMobile"> Logout </div>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : (
+        <nav className="Sidebar">
+          <img src={logo} alt="logo" className="logo" />
+          <ul className="list-items">
+            {SideNavbarData.map((val) => {
+              const color = activeItem === val.id ? "#C1596C" : "#ffffffcc";
+              return (
+                <li key={val.id} onClick={() => handleIconClick(val.id)}>
+                  <Link to={val.link} style={{ color: color }}>
+                    {val.icon}
+                  </Link>
+                  <hr
+                    className={`${
+                      activeItem === val.id ? "active" : "inactive"
+                    }`}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+          <i
+            className="fa-solid fa-right-from-bracket logout"
+            onClick={handleLogoutClick}
+            style={{ color: logoutColor }}
+          ></i>
+        </nav>
+      )}
     </>
   );
 };

@@ -58,3 +58,13 @@
         font-size: 26px;
     }
 }
+
+/* @media (max-width: 768px) {
+    .list-items  li {
+        display: none;
+    }
+    
+    i {
+        display: none;
+    }
+} */
