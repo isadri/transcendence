@@ -1,6 +1,10 @@
-const Home = () => {
+import './Home.css'
+
+function Home() {
   return (
-    <div></div>
+    <div>
+      
+    </div>
   )
 }
 

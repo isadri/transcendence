@@ -2,7 +2,7 @@ import BackGround from './components/background/BackGround'
 import SideNavbar from './components/sideNavbar/SideNavbar';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css'
-import Landing from './Pages/landing/landing'
+// import Landing from './Pages/landing/landing'
 
 import Home from "./Pages/Home/Home";
 import Chat from './Pages/Chat/Chat';
@@ -16,9 +16,9 @@ import NoPage from "./Pages/NoPage/NoPage";
 function App() {
   return (
     <>
-      <div className='containers'>
+      {/* <div className='containers'>
         <BackGround><Landing/></BackGround>
-      </div>
+      </div> */}
       <BrowserRouter>
       <BackGround> <SideNavbar/> 
         <Routes>
