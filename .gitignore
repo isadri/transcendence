@@ -157,3 +157,5 @@ cython_debug/
 backend/api/accounts/migrations
 backend/app.log
 .env
+
+.vscode/
