@@ -1,23 +1,23 @@
 up:
-	@docker-compose up -d
+	@sudo docker compose up -d
 
 up-with-build:
-	@docker-compose up -d --build
+	@sudo docker compose up -d --build
 
 down:
-	@docker-compose down
+	@sudo docker compose down
 
 exec:
-	@docker-compose exec -it back-end $(CMD)
+	@sudo docker compose exec -it back-end $(CMD)
 
 start-app:
-	@docker-compose exec -it back-end django-admin startapp $(APPNAME)
+	@sudo docker compose exec -it back-end django-admin startapp $(APPNAME)
 
 makemigrations:
-	@docker-compose exec -it back-end python manage.py makemigrations $(APPNAME)
+	@sudo docker compose exec -it back-end python manage.py makemigrations $(APPNAME)
 
 migrate:
-	@docker-compose exec -it back-end python manage.py migrate $(APPNAME)
+	@sudo docker compose exec -it back-end python manage.py migrate $(APPNAME)
 
 shell:
-	@docker-compose exec -it back-end python manage.py shell
+	@sudo docker compose exec -it back-end python manage.py shell
