@@ -2,7 +2,7 @@
     height: 96vh;
     width: 6%;
     background-color: var(--fade);
-    border: none;
+    /* border: none; */
     border-radius: 30px;
     position: relative;
     display: flex;
