@@ -1,3 +1,7 @@
+.SidebarMobile {
+	height: fit-content;
+}
+
 .closeNavbarMobile {
     position: relative;
     background-color: var(--fade);
