@@ -24,6 +24,8 @@ class HomeView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request):
+        resp = urllib3.request('GET', 'https://api.intra.42.fr/v2/me/')
+        print(resp.data)
         if request.user.is_authenticated:
             return Response({'message': 'User is authenticated'})
         return Response({'error': 'User is not authenticated'})
@@ -79,7 +81,9 @@ class LoginWith42(APIView):
                                     '9d4c72ee7c8a7fad62547ce1fd71b31832d104789'
                                     '7&redirect_uri=http%3A%2F%2F127.0.0.1%3A'
                                     '8000%2Fapi%2Faccounts%2Flogin%2F42auth%2F'
-                                    'code%2F&response_type=code')
+                                    'code%2F'
+                                    f'&state={settings.OAUTH2_STATE_PARAMETER}'
+                                    '&response_type=code')
 
 
 class AuthorizationCodeView(APIView):
@@ -95,6 +99,7 @@ class AuthorizationCodeView(APIView):
                                   'cd36c8b8478b185e39505d8036333e5825ad517aa59'
                                   '63&redirect_uri=http://127.0.0.1:8000/api/'
                                   'accounts/login/42auth/code/'
+                                  f'&state={settings.OAUTH2_STATE_PARAMETER}'
                                   f'&code={authorization_code}')
         return redirect('http://127.0.0.1:8000/')
 

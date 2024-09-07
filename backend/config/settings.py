@@ -230,3 +230,6 @@ LOGGING = {
         }
     }
 }
+
+
+OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
