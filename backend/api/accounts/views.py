@@ -1,7 +1,9 @@
 import logging
+import urllib3
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
 #from django.middleware import csrf
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
@@ -72,11 +74,29 @@ class LoginWith42(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return HttpResponseRedirect(('https://api.intra.42.fr/oauth/authorize?'
-                                     'client_id=u-s4t2ud-532f9925e62f74fbb27c8'
-                                     'd9d4c72ee7c8a7fad62547ce1fd71b31832d1047'
-                                     '897&redirect_uri=http%3A%2F%2F127.0.0.1%'
-                                     '3A8000%2F&response_type=code'))
+        return redirect('https://api.intra.42.fr/oauth/authorize?'
+                                    'client_id=u-s4t2ud-532f9925e62f74fbb27c8d'
+                                    '9d4c72ee7c8a7fad62547ce1fd71b31832d104789'
+                                    '7&redirect_uri=http%3A%2F%2F127.0.0.1%3A'
+                                    '8000%2Fapi%2Faccounts%2Flogin%2F42auth%2F'
+                                    'code%2F&response_type=code')
+
+
+class AuthorizationCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        authorization_code = request.GET.get('code', '')
+        response = urllib3.request('POST', 'https://api.intra.42.fr/oauth/token'
+                                  '?grant_type=authorization_code'
+                                  '&client_id=u-s4t2ud-532f9925e62f74fbb27c8d9'
+                                  'd4c72ee7c8a7fad62547ce1fd71b31832d1047897'
+                                  '&client_secret=s-s4t2ud-fe798eef093f56c51f6'
+                                  'cd36c8b8478b185e39505d8036333e5825ad517aa59'
+                                  '63&redirect_uri=http://127.0.0.1:8000/api/'
+                                  'accounts/login/42auth/code/'
+                                  f'&code={authorization_code}')
+        return redirect('http://127.0.0.1:8000/')
 
 
 class RegisterView(generics.CreateAPIView):

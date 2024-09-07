@@ -12,12 +12,12 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('login/42auth/', views.LoginWith42.as_view(), name='42-auth'),
+    path('login/42auth/code/', views.AuthorizationCodeView.as_view(),
+         name='auth-code'),
 
     # Get access token
 	path('token/', views.MyTokenObtainTokenPairView.as_view(),
         name='token-obtain-pair'),
-    # Refrech tokne
+    # Refrech token
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
-
-    #path('', views.HomeView.as_view(), name='home'),
 ]
