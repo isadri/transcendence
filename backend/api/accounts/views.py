@@ -1,5 +1,4 @@
-import logging
-import urllib3
+import logging, os, urllib3
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -77,13 +76,11 @@ class LoginWith42(APIView):
 
     def get(self, request):
         return redirect('https://api.intra.42.fr/oauth/authorize?'
-                                    'client_id=u-s4t2ud-532f9925e62f74fbb27c8d'
-                                    '9d4c72ee7c8a7fad62547ce1fd71b31832d104789'
-                                    '7&redirect_uri=http%3A%2F%2F127.0.0.1%3A'
-                                    '8000%2Fapi%2Faccounts%2Flogin%2F42auth%2F'
-                                    'code%2F'
-                                    f'&state={settings.OAUTH2_STATE_PARAMETER}'
-                                    '&response_type=code')
+                        f'client_id={os.getenv("ID", "")}'
+                        f'&redirect_uri=http://127.0.0.1:8000/api/accounts/'
+                        'login/42auth/code/'
+                        f'&state={settings.OAUTH2_STATE_PARAMETER}'
+                        '&response_type=code')
 
 
 class AuthorizationCodeView(APIView):
@@ -93,11 +90,9 @@ class AuthorizationCodeView(APIView):
         authorization_code = request.GET.get('code', '')
         response = urllib3.request('POST', 'https://api.intra.42.fr/oauth/token'
                                   '?grant_type=authorization_code'
-                                  '&client_id=u-s4t2ud-532f9925e62f74fbb27c8d9'
-                                  'd4c72ee7c8a7fad62547ce1fd71b31832d1047897'
-                                  '&client_secret=s-s4t2ud-fe798eef093f56c51f6'
-                                  'cd36c8b8478b185e39505d8036333e5825ad517aa59'
-                                  '63&redirect_uri=http://127.0.0.1:8000/api/'
+                                  f'&client_id={os.getenv("ID", "")}'
+                                  f'&client_secret={os.getenv("SECRET", "")}'
+                                  '&redirect_uri=http://127.0.0.1:8000/api/'
                                   'accounts/login/42auth/code/'
                                   f'&state={settings.OAUTH2_STATE_PARAMETER}'
                                   f'&code={authorization_code}')
