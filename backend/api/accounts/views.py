@@ -11,7 +11,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from oauth2_provider.contrib.rest_framework import (
+    OAuth2Authentication,
+    TokenHasScope
+)
 
 from .models import User
 from .serializers import UserSerializer
@@ -21,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class HomeView(APIView):
+    permission_classes = [TokenHasScope]
 
     def get(self, request):
         resp = requests.get('https://api.intra.42.fr/v2/me/')

@@ -150,9 +150,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # The custom user model
 AUTH_USER_MODEL = 'accounts.User'
 
-#AUTHENTICATION_BACKENDS = [
-#	'oauth2_provider.backends.OAuth2Backend',
-#]
+AUTHENTICATION_BACKENDS = [
+	'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Setting authentication scheme
 REST_FRAMEWORK = {
@@ -162,7 +163,7 @@ REST_FRAMEWORK = {
 	],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        #'oauth2_provider.contrib.rest_framework.IsAuthenticatedOrTokenHasScope',
+        'oauth2_provider.contrib.rest_framework.TokenHasScope',
     ]
 }
 
