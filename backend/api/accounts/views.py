@@ -1,4 +1,4 @@
-import logging, os, urllib3
+import logging, json, os, requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -88,14 +88,18 @@ class AuthorizationCodeView(APIView):
 
     def get(self, request):
         authorization_code = request.GET.get('code', '')
-        response = urllib3.request('POST', 'https://api.intra.42.fr/oauth/token'
-                                  '?grant_type=authorization_code'
-                                  f'&client_id={os.getenv("ID", "")}'
-                                  f'&client_secret={os.getenv("SECRET", "")}'
-                                  '&redirect_uri=http://127.0.0.1:8000/api/'
-                                  'accounts/login/42auth/code/'
-                                  f'&state={settings.OAUTH2_STATE_PARAMETER}'
-                                  f'&code={authorization_code}')
+        parameters = {
+            'grant_type': 'authorization_code',
+            'client_id': os.getenv('ID', ''),
+            'client_secret': os.getenv('SECRET', ''),
+            'redirect_uri': ('http://127.0.0.1:8000/api/accounts/login/42auth/'
+                             'code/'),
+            'state': settings.OAUTH2_STATE_PARAMETER,
+            'code': authorization_code,
+        }
+        response = requests.post('https://api.intra.42.fr/oauth/token/',
+                                 params=parameters)
+        #return Response(response.json())
         return redirect('http://127.0.0.1:8000/')
 
 
