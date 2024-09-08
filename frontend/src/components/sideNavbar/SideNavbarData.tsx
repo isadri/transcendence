@@ -2,27 +2,32 @@ const SideNavbarData = [
     {
         id: "Home",
         icon: <i className=" fa-solid fa-house icon"></i>,
-        link: "/home"
+        name: "Home",
+        link: ["/home", "/"]
     },
     {
         id: "Chat",
         icon: <i className="fa-solid fa-message icon"></i>,
-        link: "/chat"
+        name: "Chat",
+        link: ["/chat"]
     },
     {
         id: "Profile",
         icon: <i className="fa-solid fa-user icon"></i>,
-        link: "/profile"
+        name: "Profile",
+        link: ["/profile"]
     },
     {
         id: "Game",
         icon: <i className="fa-solid fa-gamepad icon"></i>,
-        link: "/game"
+        name: "Game",
+        link: ["/game"]
     },
     {
         id: "Setting",
         icon: <i className="fa-solid fa-gear icon"></i>,
-        link: "/setting"
+        name: "Setting",
+        link: ["/setting"]
     },
 ]
 

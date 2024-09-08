@@ -22,7 +22,8 @@ function App() {
       <BrowserRouter>
       <BackGround> <SideNavbar/> 
         <Routes>
-            <Route  path="home" element={<Home />} />
+            <Route index path="/" element={<Home />} />
+            <Route index path="home" element={<Home />} />
             <Route path="chat" element={<Chat />} />
             <Route path="profile" element={<Profile />} />
             <Route path="game" element={<Game />} />

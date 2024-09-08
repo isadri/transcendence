@@ -1,6 +1,9 @@
+import "./Chat.css"
+
 const Chat = () => {
   return (
-    <div></div>
+    <div className="chat">
+	</div>
   )
 }
 
