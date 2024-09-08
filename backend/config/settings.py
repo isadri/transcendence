@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',
     'two_factor',
     'two_factor.plugins.phonenumber',
+
+    'oauth2_provider',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -69,6 +71,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	"allauth.account.middleware.AccountMiddleware",
@@ -76,6 +79,8 @@ MIDDLEWARE = [
     ## 2FA
     #'django_otp.middleware.OTPMiddleware',
 ]
+
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -168,6 +173,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 
+AUTHENTICATION_BACKENDS = [
+	'oauth2_provider.backends.OAuth2Backend',
+]
+
+
 # Setting authentication scheme
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -175,6 +185,7 @@ REST_FRAMEWORK = {
 	],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+        'oauth2_provider.contrib.rest_framework.IsAuthenticatedOrTokenHasScope',
     ]
 }
 
@@ -188,11 +199,6 @@ SIMPLE_JWT = {
 
     "TOKEN_OBTAIN_SERIALIZER": "api.accounts.serializers.MyTokenObtainPairSerializer",
 }
-
-#AUTHENTICATION_BACKENDS = (
-	#"django.contrib.auth.backends.ModelBackend",  
-    #"allauth.account.auth_backends.AuthenticationBackend",
-#)
 
 # Settings for sessions
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
