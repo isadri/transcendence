@@ -6,7 +6,6 @@ from . import views
 
 app_name = 'api.accounts'
 
-
 urlpatterns = [
 	path('register/', views.RegisterView.as_view(), name='register'),
     path('login/', views.LoginView.as_view(), name='login'),
@@ -16,8 +15,8 @@ urlpatterns = [
          name='auth-code'),
 
     # Get access token
-	path('token/', views.MyTokenObtainTokenPairView.as_view(),
-        name='token-obtain-pair'),
+	#path('token/', views.MyTokenObtainTokenPairView.as_view(),
+    #    name='token-obtain-pair'),
     # Refrech token
-    path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    #path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 ]
