@@ -24,10 +24,14 @@ logger = logging.getLogger(__name__)
 
 
 class HomeView(APIView):
-    permission_classes = [TokenHasScope]
+    permission_classes = []
+    authentication_classes = []
 
     def get(self, request):
-        resp = requests.get('https://api.intra.42.fr/v2/me/')
+        token = request.COOKIES.get('access_token')
+        headers = {'Authorization': f'Bearer {token}'}
+        response = requests.get('https://api.intra.42.fr/v2/me', headers=headers)
+        logger.info(response.json().get('login', ''))
         if request.user.is_authenticated:
             return Response({'message': 'User is authenticated'})
         return Response({'error': 'User is not authenticated'})
