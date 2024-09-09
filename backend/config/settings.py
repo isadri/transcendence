@@ -173,11 +173,12 @@ SIMPLE_JWT = {
 	'REFRESH_TOKEN_LIFETIME': timedelta(hours=1),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_COOKIE': 'access_token',
 
     'TOKEN_OBTAIN_SERIALIZER': ('api.accounts.serializers.'
                                 'MyTokenObtainPairSerializer'),
 }
+
+ACCESS_TOKEN = 'access_token'
 
 # Sessions settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'

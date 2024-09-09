@@ -3,10 +3,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class TokenAuthentication(JWTAuthentication):
+
     def authenticate(self, request):
         header = self.get_header(request)
         if header is None:
-            raw_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE'])
+            raw_token = request.COOKIES.get(settings.ACCESS_TOKEN)
         else:
             raw_token = self.get_raw_token(header)
         if raw_token is None:

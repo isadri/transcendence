@@ -25,16 +25,18 @@ logger = logging.getLogger(__name__)
 
 class HomeView(APIView):
     permission_classes = []
-    authentication_classes = []
 
     def get(self, request):
-        token = request.COOKIES.get('access_token')
-        headers = {'Authorization': f'Bearer {token}'}
-        response = requests.get('https://api.intra.42.fr/v2/me', headers=headers)
-        logger.info(response.json().get('login', ''))
         if request.user.is_authenticated:
             return Response({'message': 'User is authenticated'})
-        return Response({'error': 'User is not authenticated'})
+        token = request.COOKIES.get(settings.ACCESS_TOKEN)
+        headers = {'Authorization': f'Bearer {token}'}
+        response = requests.get('https://api.intra.42.fr/v2/me',
+                                headers=headers)
+        if response.status_code == 400:
+            return Response({'error': 'User is not authenticated'})
+        logger.info(response.json().get('login', ''))
+        return Response({'login': response.json().get('login', '')})
 
 
 def get_tokens_for_user(user):
@@ -42,7 +44,7 @@ def get_tokens_for_user(user):
 
     return {
         'refresh': str(refresh),
-        settings.SIMPLE_JWT['AUTH_COOKIE']: str(refresh.access_token)
+        settings.ACCESS_TOKEN: str(refresh.access_token)
     }
 
 
@@ -52,8 +54,8 @@ class LoginView(APIView):
 
     def store_access_token_in_cookie(self, response, user):
         response.set_cookie(
-            settings.SIMPLE_JWT['AUTH_COOKIE'],
-            value=get_tokens_for_user(user)[settings.SIMPLE_JWT['AUTH_COOKIE']],
+            settings.ACCESS_TOKEN,
+            value=get_tokens_for_user(user)[settings.ACCESS_TOKEN],
             expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
             httponly=settings.SESSION_COOKIE_HTTPONLY,
             samesite=settings.SESSION_COOKIE_SAMESITE
@@ -150,5 +152,5 @@ class LogoutView(APIView):
     def get(self, request):
         logout(request)
         response = Response({'message': 'Logged out'})
-        response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
+        response.delete_cookie(settings.ACCESS_TOKEN)
         return response
