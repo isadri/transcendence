@@ -1,0 +1,39 @@
+
+.search {
+    border: 1px solid white;
+    border-radius: 15px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.search input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    margin-left: 8px;
+}
+
+.search i {
+    margin-left: 8px;
+}
+
+.Icons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.Icons div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    padding: 8px;
+    border-radius: 50%;
+    background-color: var(--fade);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
