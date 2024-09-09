@@ -158,12 +158,12 @@ AUTHENTICATION_BACKENDS = [
 # Setting authentication scheme
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-		#'rest_framework.authentication.SessionAuthentication',
+		'rest_framework.authentication.SessionAuthentication',
         'api.accounts.authenticate.TokenAuthentication',
 	],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        'oauth2_provider.contrib.rest_framework.TokenHasScope',
+        #'oauth2_provider.contrib.rest_framework.TokenHasScope',
     ]
 }
 
@@ -178,7 +178,7 @@ SIMPLE_JWT = {
                                 'MyTokenObtainPairSerializer'),
 }
 
-ACCESS_TOKEN = 'access_token'
+AUTH_COOKIE = 'access_token'
 
 # Sessions settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
