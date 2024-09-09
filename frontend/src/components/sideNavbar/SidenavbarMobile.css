@@ -4,18 +4,19 @@
 }
 
 .closeNavbarMobile {
-    position: relative;
-    background-color: var(--fade);
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+	position: relative;
+	background-color: var(--fade);
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 	height: 10vh;
 	align-items: center;
+	box-shadow: 0px 2px 10px black;
 }
 
 .logoMobile {
 	padding: 10px;
-    height: 40px;
+	height: 40px;
 }
 
 .menu-notiMobile {
@@ -37,22 +38,26 @@
 .list-itemsMobile {
 	position: relative;
 	background-color: var(--fade);
-    font-size: 20px;
-    list-style: none;
+	font-size: 20px;
+	list-style: none;
 	padding: 0 30px 10px;
 	line-height: 40px;
 	height: 90vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-} 
+}
+
+.list-itemsMobile li:first-child {
+	padding-top: 10%;
+}
 
 .list-itemsMobile .rowMobile {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	padding: 3%;
-	background-color: #d9d9d926;
+	background-color: var(--itemColor);
 	border-radius: 10px;
 	gap: 30px;
 }
