@@ -20,3 +20,6 @@ requests==2.32.3
 
 # OAuth2
 django-oauth-toolkit==3.0.1
+
+# For photos
+pillow==10.4.0
