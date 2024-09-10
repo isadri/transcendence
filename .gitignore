@@ -158,6 +158,5 @@ backend/api/accounts/migrations
 backend/app.log
 backend/media/
 backend/google-api.json
-.env
 
 .vscode/
