@@ -26,6 +26,7 @@ services:
       - postgres
 
   postgres:
+    container_name: postgres
     image: postgres:17beta1
     volumes:
       - postgres_data:/var/lib/postgresql/data
