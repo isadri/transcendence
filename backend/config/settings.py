@@ -99,23 +99,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-		'NAME': 'postgres',
-		'USER': os.getenv('POSTGRES_USER', ''),
-		'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+		'NAME': os.getenv('POSTGRES_DB'),
+		'USER': os.getenv('POSTGRES_USER'),
+		'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
 		'HOST': 'postgres',
 		'PORT': '5432',
     }
 }
 
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
