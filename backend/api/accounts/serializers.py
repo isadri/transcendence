@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'first_name', 'last_name', 'username', 'email', 'password',
-            'profile_picture'
+            'avatar'
             ]
 
     def validate_first_name(self, value):
