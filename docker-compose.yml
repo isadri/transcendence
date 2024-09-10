@@ -24,11 +24,11 @@ services:
       - app-network
     depends_on:
       - postgres
-    
+
   postgres:
     image: postgres:17beta1
     volumes:
-      - postgres_data:/var/lib/posgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
