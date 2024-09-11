@@ -2,9 +2,10 @@
 .search {
     border: 1px solid white;
     border-radius: 15px;
-    padding: 5px;
+    padding: 2px;
     display: flex;
     align-items: center;
+    height: 23px;
 }
 
 .search input {

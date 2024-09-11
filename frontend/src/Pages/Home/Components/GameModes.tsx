@@ -1,40 +1,45 @@
-import React from 'react'
+import '../styles/GameModes.css'
+import FMode from '../images/friendsMode.svg'
+import AMode from '../images/aiMode.svg'
+import RMode from '../images/randomMode.svg'
 
 function GameModes() {
   return (
     <div className='GameModes'>
-        Game Modes
-        <div className='RandomMode'>
+      <h2>Game Modes</h2>
+      <div className='GameContents'>
+        <div className='Mode'>
           <div>
-              <h3></h3>
-              <p></p>
+              <h4>Random Mode</h4>
+              <p>Start play with random person</p>
               <button type='submit'>Start</button>
           </div>
           <div>
-              <img src="" alt="" />
+              <img src={RMode} alt="" />
           </div>
         </div>
-        <div className='AiMode'>
+        <div className='Mode'>
           <div>
-              <h3></h3>
-              <p></p>
+              <h4>Ai Mode</h4>
+              <p>Computer Challenge</p>
               <button type='submit'>Start</button>
           </div>
           <div>
-            <img src="" alt="" />
+            <img src={AMode} alt="" />
           </div>
         </div>
-        <div className='FriendsMode'>
+        <div className='Mode'>
           <div>
-              <h3></h3>
-              <p></p>
+              <h4>Friends Mode</h4>
+              <p>start play with your friends</p>
               <button type='submit'>Start</button>
           </div>
           <div>
-            <img src="" alt="" />
+            <img src={FMode} alt="" />
           </div>
         </div>
       </div>
+    </div>
   )
 }
 

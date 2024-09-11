@@ -3,6 +3,9 @@ import Icons from './Components/Icons'
 import Welcome from './Components/Welcome'
 import Profile from './Components/Profile'
 import GameModes from './Components/GameModes'
+import GameRank from './Components/GameRank'
+import LastGame from './Components/LastGame'
+import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
 import './styles/SearchAndIcons.css'
@@ -18,7 +21,16 @@ function Home() {
         <Welcome/>
         <Profile/>
       </div>
-      <GameModes/>
+      <div className='userInfo'>
+        <div className='game'>
+          <GameModes/>
+          <div>
+            <GameRank/>
+            <LastGame/>
+          </div>
+        </div>
+        <Chat/>
+      </div>
     </div>
   )
 }
