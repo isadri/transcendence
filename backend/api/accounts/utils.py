@@ -103,6 +103,22 @@ def create_user(user_info: dict[str, str]) -> Response:
     return create_store_tokens_for_user(user, status_code)
 
 
+def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
+    """
+    Get user information.
+
+    This function requests the user information from the api using endpoint by
+    presenting the access token. This user information include username, first
+    name, last name, and email, etc.
+
+    Returns:
+        User information as json.
+    """
+    header = {'Authorization': f'Bearer {access_token}'}
+    response = requests.get(userinfo_endpoint, headers=header)
+    return response.json()
+
+
 def state_match(state: str) -> bool:
     """
     Check if the given state is valid.

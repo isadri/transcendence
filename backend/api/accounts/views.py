@@ -26,6 +26,7 @@ from .utils import (
     get_access_token_from_api,
     create_store_tokens_for_user,
     create_user,
+    get_user_info,
     state_match,
 )
 
@@ -113,7 +114,7 @@ class LoginView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class LoginWithGoogle(APIView):
+class GoogleLoginView(APIView):
     """
     Login with Google.
     """
@@ -121,6 +122,9 @@ class LoginWithGoogle(APIView):
     authentication_classes = []
 
     def get(self, request: Request) -> Response:
+        """
+        Directs the user to the authorization server
+        """
         return redirect('https://accounts.google.com/o/oauth2/v2/auth?'
                         f'client_id={os.getenv("GOOGLE_ID")}'
                         f'&redirect_uri={os.getenv("GOOGLE_REDIRECT_URI")}'
@@ -128,7 +132,14 @@ class LoginWithGoogle(APIView):
                         '&scope=openid profile email&response_type=code')
 
 
-class AuthGoogle(APIView):
+class GoogleAuthCodeView(APIView):
+    """
+    Login a user using google and associate with the user a refresh token
+    and access token.
+
+    This class requests an access token by authenticating with Google API, and
+    it fetches user information (such as username, first name, and last name).
+    """
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -142,13 +153,6 @@ class AuthGoogle(APIView):
             'grant_type': 'authorization_code'
         }
         return get_access_token_from_api(uri, payload)
-
-    def get_user_info(self, access_token: str) -> dict[str, str]:
-        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
-                            '?scope=openid profile email')
-        header = {'Authorization': f'Bearer {access_token}'}
-        response = requests.get(userinfo_endpoint, headers=header)
-        return response.json()
 
     def create_user(self, user_info: dict[str, str]) -> Response:
         """
@@ -167,23 +171,31 @@ class AuthGoogle(APIView):
         return create_user(info)
 
     def get(self, request: Request) -> Response:
+        """
+        Authenticate with the authorization server and obtain user information.
+        """
         if not state_match(request.GET.get('state')):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = self.get_access_token(authorization_code)
-        user_info = self.get_user_info(access_token)
+        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
+                            '?scope=openid profile email')
+        user_info = get_user_info(userinfo_endpoint, access_token)
         response = self.create_user(user_info)
         return response
 
 
-class LoginWith42(APIView):
+class Intra42LoginView(APIView):
     """
-    Login a 42 student.
+    Login with 42.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
 
     def get(self, request: Request) -> Response:
+        """
+        Directs the user to the authorization server
+        """
         logger.debug('User tries to login with 42')
         return redirect('https://api.intra.42.fr/oauth/authorize?'
                         f'client_id={os.getenv("ID")}'
@@ -192,26 +204,25 @@ class LoginWith42(APIView):
                         '&response_type=code')
 
 
-class AuthorizationCodeView(APIView):
+class Intra42AuthCodeView(APIView):
+    """
+    Login a user using 42 and associate with the user a refresh token
+    and access token.
+
+    This class requests an access token by authenticating with 42 API, and
+    it fetches user information (such as username, first name, last name,
+    and email).
+    """
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def store_token_in_cookies(self, response: Response,
-                               access_token: str) -> None:
-        response.set_cookie(
-            'access_token',
-            value=access_token,
-            httponly=True,
-            samesite='Lax'
-        )
+    def get_access_token(self, authorization_code: str) -> str:
+        """
+        get access token using authorization code.
 
-    def get_42_user_info(self, access_token: str) -> dict[str, str]:
-        userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
-        header = {'Authorization': f'Bearer {access_token}'}
-        response = requests.get(userinfo_endpoint, headers=header)
-        return response.json()
-
-    def get_42_access_token(self, authorization_code: str) -> str:
+        Returns:
+            str: The authorization code obtained from the authorization server.
+        """
         uri = 'https://api.intra.42.fr/oauth/token'
         payload = {
             'grant_type': 'authorization_code',
@@ -238,12 +249,16 @@ class AuthorizationCodeView(APIView):
         return create_user(info)
 
     def get(self, request: Request) -> Response:
+        """
+        Authenticate with the authorization server and obtain user information.
+        """
         if not state_match(request.GET.get('state')):
             return Response({'error': 'states do not match'},
                             status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code', '')
-        access_token = self.get_42_access_token(authorization_code)
-        user_info = self.get_42_user_info(access_token)
+        access_token = self.get_access_token(authorization_code)
+        userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
+        user_info = get_user_info(userinfo_endpoint, access_token)
         response = self.create_user(user_info)
         return response
 
@@ -265,6 +280,9 @@ class LogoutView(APIView):
     authentication_classes = []
 
     def get(self, request: Request) -> Response:
+        """
+        Logout the user.
+        """
         logout(request)
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
