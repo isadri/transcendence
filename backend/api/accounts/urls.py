@@ -12,4 +12,6 @@ urlpatterns = [
     path('login/42auth/', views.LoginWith42.as_view(), name='42-auth'),
     path('login/42auth/code/', views.AuthorizationCodeView.as_view(),
          name='auth-code'),
+    path('login/google/', views.LoginWithGoogle.as_view(), name='google-auth'),
+    path('login/google/code/', views.AuthGoogle.as_view(), name='auth-google'),
 ]

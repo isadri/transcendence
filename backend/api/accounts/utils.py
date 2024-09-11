@@ -5,6 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
+from .serializers import UserSerializer
 
 
 def get_tokens_for_user(user: User) -> tuple[str, str]:
@@ -65,8 +66,12 @@ def create_store_tokens_for_user(user: User, status_code: int) -> Response:
     refresh_token, access_token = get_tokens_for_user(user)
     response = Response({
         'user': UserSerializer(user).data,
-        'refresh_token', refresh_token,
-        'access_token', access_token
+        'refresh_token': refresh_token,
+        'access_token': access_token
     }, status=status_code)
     store_token_in_cookies(response, access_token)
     return response
+
+
+def same_state(state: str) -> bool:
+    return state == settings.OAUTH2_STATE_PARAMETER

@@ -23,7 +23,8 @@ from .utils import (
     get_tokens_for_user,
     store_token_in_cookies,
     get_access_token_from_api,
-    create_store_tokens_for_user
+    create_store_tokens_for_user,
+    same_state,
 )
 
 
@@ -45,35 +46,6 @@ class HomeView(APIView):
             return Response(status=status.HTTP_200_OK)
         return Response(status.HTTP_401_UNAUTHORIZED)
 
-
-def create_user(user_info: dict[str, str]) -> Response:
-    """
-    Create a user if does not exist.
-
-    This funtion checks if a user exists, otherwise it creates a new one,
-    creates a refresh and access tokens for the user and stores the access 
-    token through Set-Cookie header in the response.
-
-    Args:
-        user_info: Dict containing user information for creating or getting a 
-                user.
-
-    Returns:
-        A Response object with the user, and refresh and access tokens.
-    """
-    try:
-        user = User.objects.get(username=user_info['login'])
-        status_code = status.HTTP_200_OK
-    except User.DoesNotExist:
-        user = User.objects.create(
-            username=user_info['login'],
-            first_name=user_info['first_name'],
-            last_name=user_info['last_name'],
-            email=user_info['email'],
-        )
-        status_code = status.HTTP_201_CREATED
-    response = create_store_tokens_for_user(user, status_code)
-    return response
 
 
 class LoginView(APIView):
@@ -134,6 +106,69 @@ class LoginView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+class LoginWithGoogle(APIView):
+    """
+    Login with Google.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request: Request) -> Response:
+        return redirect('https://accounts.google.com/o/oauth2/v2/auth?'
+                        f'client_id={os.getenv("GOOGLE_ID")}'
+                        f'&redirect_uri={os.getenv("GOOGLE_REDIRECT_URI")}'
+                        f'&state={settings.OAUTH2_STATE_PARAMETER}'
+                        '&scope=openid email&response_type=code')
+
+
+class AuthGoogle(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get_access_token(sefl, authorization_code: str) -> str:
+        uri = 'https://oauth2.googleapis.com/token'
+        payload = {
+            'code': authorization_code,
+            'client_id': os.getenv('GOOGLE_ID'),
+            'client_secret': os.getenv('GOOGLE_SECRET'),
+            'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
+            'grant_type': 'authorization_code'
+        }
+        return get_access_token_from_api(uri, payload)
+
+    def get_user_info(self, access_token: str) -> dict[str, str]:
+        userinfo_endpoint = 'https://openidconnect.googleapis.com/v1/userinfo'
+        header = {'Authorization': f'Bearer {access_token}'}
+        response = requests.get(userinfo_endpoint, headers=header)
+        return response.json()
+
+    def create_user(self, user_info: dict[str, str]) -> Response:
+        username = user_info['email'].split('@')[0].replace('.', '_')
+        try:
+            user = User.objects.get(username=username)
+            status_code = status.HTTP_200_OK
+        except User.DoesNotExist:
+            user = User.objects.create(
+                username=username,
+                first_name=user_info['email'].split('@')[0].split('.')[0],
+                last_name=user_info['email'].split('@')[0].split('.')[1],
+                email=user_info['email'],
+                avatar=user_info['picture']
+            )
+            status_code = status.HTTP_201_CREATED
+        response = create_store_tokens_for_user(user, status_code)
+        return response
+
+    def get(self, request: Request) -> Response:
+        if not same_state(request.GET.get('state')):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        authorization_code = request.GET.get('code')
+        access_token = self.get_access_token(authorization_code)
+        user_info = self.get_user_info(access_token)
+        response = self.create_user(user_info)
+        return response
+
+
 class LoginWith42(APIView):
     """
     Login a 42 student.
@@ -144,8 +179,8 @@ class LoginWith42(APIView):
     def get(self, request: Request) -> Response:
         logger.debug('User tries to login with 42')
         return redirect('https://api.intra.42.fr/oauth/authorize?'
-                        f'client_id={os.getenv("ID", "")}'
-                        f'&redirect_uri={os.getenv("REDIRECT_URI", "")}'
+                        f'client_id={os.getenv("ID")}'
+                        f'&redirect_uri={os.getenv("REDIRECT_URI")}'
                         f'&state={settings.OAUTH2_STATE_PARAMETER}'
                         '&response_type=code')
 
@@ -163,31 +198,60 @@ class AuthorizationCodeView(APIView):
             samesite='Lax'
         )
 
-    def get_42_user_info(self, token: str) -> dict[str, str]:
-        uri = 'https://api.intra.42.fr/v2/me'
-        headers = {'Authorization': f'Bearer {token}'}
-        response = requests.get(uri, headers=headers)
-        if response.status_code == 400:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    def get_42_user_info(self, access_token: str) -> dict[str, str]:
+        userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
+        header = {'Authorization': f'Bearer {access_token}'}
+        response = requests.get(userinfo_endpoint, headers=header)
         return response.json()
 
     def get_42_access_token(self, authorization_code: str) -> str:
         uri = 'https://api.intra.42.fr/oauth/token'
         payload = {
             'grant_type': 'authorization_code',
-            'client_id': os.getenv('ID', ''),
-            'client_secret': os.getenv('SECRET', ''),
-            'redirect_uri': os.getenv('REDIRECT_URI', ''),
-            'state': settings.OAUTH2_STATE_PARAMETER,
+            'client_id': os.getenv('ID'),
+            'client_secret': os.getenv('SECRET'),
+            'redirect_uri': os.getenv('REDIRECT_URI'),
             'code': authorization_code
         }
         return get_access_token_from_api(uri, payload)
 
+    def create_user(user_info: dict[str, str]) -> Response:
+        """
+        Create a user if does not exist.
+
+        This funtion checks if a user exists, otherwise it creates a new one,
+        creates a refresh and access tokens for the user and stores the access 
+        token through Set-Cookie header in the response.
+
+        Args:
+            user_info: Dict containing user information for creating or getting a 
+                    user.
+
+        Returns:
+            A Response object with the user, and refresh and access tokens.
+        """
+        try:
+            user = User.objects.get(username=user_info['login'])
+            status_code = status.HTTP_200_OK
+        except User.DoesNotExist:
+            user = User.objects.create(
+                username=user_info['login'],
+                first_name=user_info['first_name'],
+                last_name=user_info['last_name'],
+                email=user_info['email'],
+            )
+            status_code = status.HTTP_201_CREATED
+        response = create_store_tokens_for_user(user, status_code)
+        return response
+
     def get(self, request: Request) -> Response:
+        if not state_match(request.GET.get('state')):
+            return Response({'error': 'states do not match'},
+                            status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code', '')
         access_token = self.get_42_access_token(authorization_code)
         user_info = self.get_42_user_info(access_token)
-        response = create_user(user_info)
+        response = self.create_user(user_info)
         return response
 
 
