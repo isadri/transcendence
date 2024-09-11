@@ -50,15 +50,15 @@ INSTALLED_APPS = [
     'oauth2_provider',
 ]
 
-SOCIALACCOUNT_PROVIDERS = {
-	'google': {
-		'SCOPE': [
-			'profile',
-			'email'
-		],
-		'AUTH_PARAMS' : {'access_type': 'online'}
-	}
-}
+#SOCIALACCOUNT_PROVIDERS = {
+#	'google': {
+#		'SCOPE': [
+#			'profile',
+#			'email'
+#		],
+#		'AUTH_PARAMS' : {'access_type': 'online'}
+#	}
+#}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

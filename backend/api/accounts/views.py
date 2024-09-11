@@ -2,20 +2,11 @@ import logging, os, requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
-from django.urls import reverse
 from rest_framework import generics, status
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import APIException
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from oauth2_provider.contrib.rest_framework import (
-    OAuth2Authentication,
-    TokenHasScope
-)
 
 from .authenticate import TokenAuthentication
 from .models import User
@@ -138,7 +129,7 @@ class GoogleAuthCodeView(APIView):
     and access token.
 
     This class requests an access token by authenticating with Google API, and
-    it fetches user information (such as username, first name, and last name).
+    fetches user information (such as username, first name, and last name).
     """
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -210,7 +201,7 @@ class Intra42AuthCodeView(APIView):
     and access token.
 
     This class requests an access token by authenticating with 42 API, and
-    it fetches user information (such as username, first name, last name,
+    fetches user information (such as username, first name, last name,
     and email).
     """
     permission_classes = [AllowAny]
