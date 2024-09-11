@@ -24,7 +24,7 @@ function Home() {
       <div className='userInfo'>
         <div className='game'>
           <GameModes/>
-          <div>
+          <div className='gameStatis'>
             <GameRank/>
             <LastGame/>
           </div>

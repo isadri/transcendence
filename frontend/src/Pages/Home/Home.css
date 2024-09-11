@@ -28,7 +28,18 @@
 
 .userInfo{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin-top: 2%;
     width: 100%;
 }
+
+.game{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+/* .gameStatis{
+    display: flex;
+    flex-direction: column;
+} */
