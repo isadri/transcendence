@@ -17,6 +17,7 @@ from oauth2_provider.contrib.rest_framework import (
     TokenHasScope
 )
 
+from .authenticate import TokenAuthentication
 from .models import User
 from .serializers import UserSerializer
 from .utils import (
@@ -40,13 +41,12 @@ class HomeView(APIView):
 
     def get(self, request: Request) -> Response:
         """
-        Return HTTP_200_OK response if a user is authenticated,
+        Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
-        return Response(status.HTTP_401_UNAUTHORIZED)
-
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LoginView(APIView):
@@ -55,6 +55,12 @@ class LoginView(APIView):
     """
     permission_classes = [AllowAny]
     authentication_classes = []
+
+    def get(self, request: Request) -> Response:
+        return Response({
+            'login with 42': 'http://127.0.0.1:8000/api/accounts/login/42auth',
+            'login with google': 'http://127.0.0.1:8000/api/accounts/login/google'
+        })
 
     def login_user(self, request: Request, user: User) -> Response:
         """
