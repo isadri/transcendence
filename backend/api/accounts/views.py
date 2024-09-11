@@ -24,7 +24,8 @@ from .utils import (
     store_token_in_cookies,
     get_access_token_from_api,
     create_store_tokens_for_user,
-    same_state,
+    create_user,
+    state_match,
 )
 
 
@@ -118,7 +119,7 @@ class LoginWithGoogle(APIView):
                         f'client_id={os.getenv("GOOGLE_ID")}'
                         f'&redirect_uri={os.getenv("GOOGLE_REDIRECT_URI")}'
                         f'&state={settings.OAUTH2_STATE_PARAMETER}'
-                        '&scope=openid email&response_type=code')
+                        '&scope=openid profile email&response_type=code')
 
 
 class AuthGoogle(APIView):
@@ -137,30 +138,28 @@ class AuthGoogle(APIView):
         return get_access_token_from_api(uri, payload)
 
     def get_user_info(self, access_token: str) -> dict[str, str]:
-        userinfo_endpoint = 'https://openidconnect.googleapis.com/v1/userinfo'
+        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
+                            '?scope=openid profile email')
         header = {'Authorization': f'Bearer {access_token}'}
         response = requests.get(userinfo_endpoint, headers=header)
         return response.json()
 
     def create_user(self, user_info: dict[str, str]) -> Response:
+        """
+        Create a user and returns a response containing the user information 
+        along with the refresh and access tokens.
+        """
         username = user_info['email'].split('@')[0].replace('.', '_')
-        try:
-            user = User.objects.get(username=username)
-            status_code = status.HTTP_200_OK
-        except User.DoesNotExist:
-            user = User.objects.create(
-                username=username,
-                first_name=user_info['email'].split('@')[0].split('.')[0],
-                last_name=user_info['email'].split('@')[0].split('.')[1],
-                email=user_info['email'],
-                avatar=user_info['picture']
-            )
-            status_code = status.HTTP_201_CREATED
-        response = create_store_tokens_for_user(user, status_code)
-        return response
+        info = {
+            'username': username,
+            'first_name': user_info['given_name'],
+            'last_name': user_info['family_name'],
+            'email': user_info['email'],
+        }
+        return create_user(info)
 
     def get(self, request: Request) -> Response:
-        if not same_state(request.GET.get('state')):
+        if not state_match(request.GET.get('state')):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = self.get_access_token(authorization_code)
@@ -215,34 +214,18 @@ class AuthorizationCodeView(APIView):
         }
         return get_access_token_from_api(uri, payload)
 
-    def create_user(user_info: dict[str, str]) -> Response:
+    def create_user(self, user_info: dict[str, str]) -> Response:
         """
-        Create a user if does not exist.
-
-        This funtion checks if a user exists, otherwise it creates a new one,
-        creates a refresh and access tokens for the user and stores the access 
-        token through Set-Cookie header in the response.
-
-        Args:
-            user_info: Dict containing user information for creating or getting a 
-                    user.
-
-        Returns:
-            A Response object with the user, and refresh and access tokens.
+        Create a user and returns a response containing the user information 
+        along with the refresh and access tokens.
         """
-        try:
-            user = User.objects.get(username=user_info['login'])
-            status_code = status.HTTP_200_OK
-        except User.DoesNotExist:
-            user = User.objects.create(
-                username=user_info['login'],
-                first_name=user_info['first_name'],
-                last_name=user_info['last_name'],
-                email=user_info['email'],
-            )
-            status_code = status.HTTP_201_CREATED
-        response = create_store_tokens_for_user(user, status_code)
-        return response
+        info = {
+            'username': user_info['login'],
+            'first_name': user_info['first_name'],
+            'last_name': user_info['last_name'],
+            'email': user_info['email'],
+        }
+        return create_user(info)
 
     def get(self, request: Request) -> Response:
         if not state_match(request.GET.get('state')):

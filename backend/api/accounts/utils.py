@@ -1,5 +1,6 @@
 from django.conf import settings
 import requests
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -73,5 +74,38 @@ def create_store_tokens_for_user(user: User, status_code: int) -> Response:
     return response
 
 
-def same_state(state: str) -> bool:
+def create_user(user_info: dict[str, str]) -> Response:
+    """
+    Create a user if does not exist.
+
+    This funtion checks if a user exists, otherwise it creates a new one,
+    creates a refresh and access tokens for the user and stores the access 
+    token through Set-Cookie header in the response.
+
+    Args:
+        user_info: Dict containing user information for creating or getting a 
+                user.
+
+    Returns:
+        A Response object containing the user, and refresh and access tokens.
+    """
+    try:
+        user = User.objects.get(username=user_info['username'])
+        status_code = status.HTTP_200_OK
+    except User.DoesNotExist:
+        user = User.objects.create(
+            username=user_info['username'],
+            first_name=user_info['first_name'],
+            last_name=user_info['last_name'],
+            email=user_info['email'],
+            #avatar=user_info['avatar']
+        )
+        status_code = status.HTTP_201_CREATED
+    return create_store_tokens_for_user(user, status_code)
+
+
+def state_match(state: str) -> bool:
+    """
+    Check if the given state is valid.
+    """
     return state == settings.OAUTH2_STATE_PARAMETER
