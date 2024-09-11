@@ -98,7 +98,6 @@ def create_user(user_info: dict[str, str]) -> Response:
             first_name=user_info['first_name'],
             last_name=user_info['last_name'],
             email=user_info['email'],
-            #avatar=user_info['avatar']
         )
         status_code = status.HTTP_201_CREATED
     return create_store_tokens_for_user(user, status_code)
