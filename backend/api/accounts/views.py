@@ -148,6 +148,8 @@ class AuthGoogle(APIView):
         """
         Create a user and returns a response containing the user information 
         along with the refresh and access tokens.
+
+        This function use the create_user function from utils.py.
         """
         username = user_info['email'].split('@')[0].replace('.', '_')
         info = {
@@ -218,6 +220,8 @@ class AuthorizationCodeView(APIView):
         """
         Create a user and returns a response containing the user information 
         along with the refresh and access tokens.
+
+        This function use the create_user function from utils.py.
         """
         info = {
             'username': user_info['login'],
