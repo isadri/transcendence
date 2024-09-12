@@ -6,6 +6,8 @@ from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from rest_framework import generics, status
+from rest_framework.parsers import FormParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -13,6 +15,7 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
+from .serializers import AvatarUploadSerializer
 from .utils import (
     get_access_token_from_api,
     create_store_tokens_for_user,
@@ -261,6 +264,25 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
     authentication_classes = []
+
+
+class AvatarUploadView(APIView):
+    """
+    Upload an avatar for a user.
+    """
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request: Request) -> Response:
+        serializer = AvatarUploadSerializer(data=request.data, context={
+            'user': request.user
+        })
+        if serializer.is_valid():
+            serializer.save()
+            #user = User.objects.get(username=request.user.username)
+            #user.avatar = serializer.validated_data['avatar']
+            #user.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):

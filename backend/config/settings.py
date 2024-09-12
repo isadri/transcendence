@@ -70,7 +70,8 @@ MIDDLEWARE = [
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	"allauth.account.middleware.AccountMiddleware",
+	'allauth.account.middleware.AccountMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 
     # 2FA
     #'django_otp.middleware.OTPMiddleware',
@@ -78,8 +79,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+#STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 TEMPLATES = [
@@ -157,7 +160,7 @@ AUTHENTICATION_BACKENDS = [
 # Setting authentication scheme
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework.authentication.SessionAuthentication',
+		#'rest_framework.authentication.SessionAuthentication',
         'api.accounts.authenticate.TokenAuthentication',
 	],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -168,13 +171,10 @@ REST_FRAMEWORK = {
 
 # JWT settings
 SIMPLE_JWT = {
-	'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+	'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
 	'REFRESH_TOKEN_LIFETIME': timedelta(hours=1),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
-
-    'TOKEN_OBTAIN_SERIALIZER': ('api.accounts.serializers.'
-                                'MyTokenObtainPairSerializer'),
 }
 
 AUTH_COOKIE = 'access_token'
@@ -208,11 +208,16 @@ LOGGING = {
         },
     },
     'loggers': {
-        'api.accounts': {
+        'api.accounts.views': {
             'handlers': ['file'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': True,
-        }
+        },
+        'api.accounts.serializers': {
+            'handlers': ['file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': True,
+        },
     }
 }
 
