@@ -1,6 +1,9 @@
-import logging, os, requests
+import logging
+import os
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.shortcuts import redirect
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
@@ -8,12 +11,9 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from .authenticate import TokenAuthentication
 from .models import User
 from .serializers import UserSerializer
 from .utils import (
-    get_tokens_for_user,
-    store_token_in_cookies,
     get_access_token_from_api,
     create_store_tokens_for_user,
     create_user,
@@ -59,9 +59,9 @@ class LoginView(APIView):
         Login the user.
 
         This method logins the user and creates a refresh and tokens for her.
-        Store the access token in the Set-Cookie header of the returned 
+        Store the access token in the Set-Cookie header of the returned
         response.
-        
+
         Args:
             request: The received request.
             user: The user to be logged in.
@@ -78,18 +78,18 @@ class LoginView(APIView):
         """
         Read the username and the password from the request and try to
         authenticate the user.
-        
-        This function takes the request and tries to authenticate the user 
-        with the username and password existed in the request, and if the 
-        information are not valid it returns a response indicating that the 
+
+        This function takes the request and tries to authenticate the user
+        with the username and password existed in the request, and if the
+        information are not valid it returns a response indicating that the
         user does not exist. Otherwise, authenticates the user.
-        
+
         Args:
             request: A Request object containing the username and password
                 supplied by the user.
 
         Returns:
-            A Response object indicating if a user is successfully 
+            A Response object indicating if a user is successfully
             authenticated or the user does not exist.
         """
         username = request.data['username']
@@ -114,7 +114,7 @@ class GoogleLoginView(APIView):
 
     def get(self, request: Request) -> Response:
         """
-        Directs the user to the authorization server
+        Directs the user to the authorization server.
         """
         return redirect('https://accounts.google.com/o/oauth2/v2/auth?'
                         f'client_id={os.getenv("GOOGLE_ID")}'
@@ -147,7 +147,7 @@ class GoogleAuthCodeView(APIView):
 
     def create_user(self, user_info: dict[str, str]) -> Response:
         """
-        Create a user and returns a response containing the user information 
+        Create a user and returns a response containing the user information
         along with the refresh and access tokens.
 
         This function use the create_user function from utils.py.
@@ -170,7 +170,7 @@ class GoogleAuthCodeView(APIView):
         authorization_code = request.GET.get('code')
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
-                            '?scope=openid profile email')
+                             '?scope=openid profile email')
         user_info = get_user_info(userinfo_endpoint, access_token)
         response = self.create_user(user_info)
         return response
@@ -226,7 +226,7 @@ class Intra42AuthCodeView(APIView):
 
     def create_user(self, user_info: dict[str, str]) -> Response:
         """
-        Create a user and returns a response containing the user information 
+        Create a user and returns a response containing the user information
         along with the refresh and access tokens.
 
         This function use the create_user function from utils.py.
