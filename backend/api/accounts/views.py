@@ -279,3 +279,12 @@ class LogoutView(APIView):
         response.delete_cookie(settings.AUTH_COOKIE)
         logger.debug(f'{request.user.username} has logged out')
         return response
+
+
+class UpdateView(generics.UpdateAPIView):
+    """
+    Update user information.
+    """
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    lookup_field = 'username'
