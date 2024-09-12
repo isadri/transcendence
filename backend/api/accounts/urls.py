@@ -10,7 +10,7 @@ app_name = 'api.accounts'
 urlpatterns = [
 	path('register/', views.RegisterView.as_view(), name='register'),
     path('login/', views.LoginView.as_view(), name='login'),
-    path('login/upload_avatar/', views.AvatarUploadView.as_view(),
+    path('<str:username>/upload_avatar/', views.AvatarUploadView.as_view(),
         name='upload-avatar'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('login/42auth/', views.Intra42LoginView.as_view(), name='login-42'),

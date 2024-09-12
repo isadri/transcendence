@@ -1,6 +1,7 @@
 import logging
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from .models import User
 
@@ -9,6 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Create new user.
+
+    Raises:
+        serializers.ValidationError: If any of user fields are not valid.
+    """
 
     class Meta:
         model = User
@@ -77,17 +84,31 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AvatarUploadSerializer(serializers.Serializer):
-
+    """
+    Serializer for creating avatars and associate them with users.
+    """
     avatar = serializers.ImageField()
 
     def create(self, validated_data: dict[str, str]) -> User:
-        user = User.objects.get(username=self.context['user'].username)
+        """
+        Set avatar with the current user.
+
+        Returns:
+            The current user with her new avatar.
+        """
+        user = User.objects.get(username=self.context.get('username', ''))
         user.avatar = validated_data['avatar']
         user.save()
         return user
 
     def update(self, validated_data: dict[str, str]) -> User:
-        user = User.objects.get(username=self.context.user.username)
+        """
+        Update the avatar of the current user.
+
+        Returns:
+            The current user with her new avatar.
+        """
+        user = User.objects.get(username=self.context.get('username', ''))
         user.avatar = validated_data.get('avatar', user.avatar)
         user.save()
         return user

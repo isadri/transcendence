@@ -2,7 +2,6 @@ from django.conf import settings
 import requests
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
@@ -12,12 +11,12 @@ from .serializers import UserSerializer
 def get_tokens_for_user(user: User) -> tuple[str, str]:
     """
     Create refresh and access tokens for the given user.
-    
+
     Args:
         user: The user for which the tokens will be created.
     """
     refresh = RefreshToken.for_user(user)
-    
+
     return (str(refresh), str(refresh.access_token))
 
 
@@ -50,18 +49,19 @@ def get_access_token_from_api(uri: str, payload: dict[str, str]) -> str:
     response = requests.post(uri, params=payload)
     return response.json().get('access_token')
 
+
 def create_store_tokens_for_user(user: User, status_code: int) -> Response:
     """
-    Create new refresh and access tokens and stores them in the Set-Cookie 
+    Create new refresh and access tokens and stores them in the Set-Cookie
     header of the returned response.
 
     Args:
-        user: The user for which the refresh and access tokens will be 
+        user: The user for which the refresh and access tokens will be
         created.
         status_code: The status code of the response.
 
     Returns:
-        A Response object containing the user along with her refresh and 
+        A Response object containing the user along with her refresh and
         access tokens.
     """
     refresh_token, access_token = get_tokens_for_user(user)
@@ -79,11 +79,11 @@ def create_user(user_info: dict[str, str]) -> Response:
     Create a user if does not exist.
 
     This funtion checks if a user exists, otherwise it creates a new one,
-    creates a refresh and access tokens for the user and stores the access 
+    creates a refresh and access tokens for the user and stores the access
     token through Set-Cookie header in the response.
 
     Args:
-        user_info: Dict containing user information for creating or getting a 
+        user_info: Dict containing user information for creating or getting a
                 user.
 
     Returns:
@@ -98,7 +98,7 @@ def create_user(user_info: dict[str, str]) -> Response:
             first_name=user_info['first_name'],
             last_name=user_info['last_name'],
             email=user_info['email'],
-        )
+            )
         status_code = status.HTTP_201_CREATED
     return create_store_tokens_for_user(user, status_code)
 
