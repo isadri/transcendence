@@ -123,7 +123,8 @@ class GoogleLoginView(APIView):
                         f'client_id={os.getenv("GOOGLE_ID")}'
                         f'&redirect_uri={os.getenv("GOOGLE_REDIRECT_URI")}'
                         f'&state={settings.OAUTH2_STATE_PARAMETER}'
-                        '&scope=openid profile email&response_type=code')
+                        '&scope=openid profile email&response_type=code'
+                        '&display=popup')
 
 
 class GoogleAuthCodeView(APIView):
@@ -192,8 +193,8 @@ class Intra42LoginView(APIView):
         """
         logger.debug('User tries to login with 42')
         return redirect('https://api.intra.42.fr/oauth/authorize?'
-                        f'client_id={os.getenv("ID")}'
-                        f'&redirect_uri={os.getenv("REDIRECT_URI")}'
+                        f'client_id={os.getenv("INTRA_ID")}'
+                        f'&redirect_uri={os.getenv("INTRA_REDIRECT_URI")}'
                         f'&state={settings.OAUTH2_STATE_PARAMETER}'
                         '&response_type=code')
 
@@ -220,9 +221,9 @@ class Intra42AuthCodeView(APIView):
         uri = 'https://api.intra.42.fr/oauth/token'
         payload = {
             'grant_type': 'authorization_code',
-            'client_id': os.getenv('ID'),
-            'client_secret': os.getenv('SECRET'),
-            'redirect_uri': os.getenv('REDIRECT_URI'),
+            'client_id': os.getenv('INTRA_ID'),
+            'client_secret': os.getenv('INTRA_SECRET'),
+            'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
             'code': authorization_code
         }
         return get_access_token_from_api(uri, payload)
