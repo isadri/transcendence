@@ -1,16 +1,25 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./ChatBody.css";
 import profile from "./images/profile.jpeg";
-import cat from "./images/cat.png"
+import cat from "./images/wallpaper.jpeg";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"; //npm i emoji-picker-react
 
 const ChatBody = () => {
 	const [open, setOpen] = useState(false);
 	const [text, setText] = useState("");
 
+	const endRef = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		endRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, []);
+
 	const handleEmojiClick = (emojiObject: EmojiClickData) => {
 		setText((prev) => prev + emojiObject.emoji);
 		setOpen(false);
+		if (inputRef.current)
+			inputRef.current.focus();
 	};
 
 	return (
@@ -30,7 +39,7 @@ const ChatBody = () => {
 			</div>
 			<div className="center">
 				<div className="message">
-					<img src={profile} alt="profile" />
+					<img src={cat} alt="profile" />
 					<div className="textMessage">
 						<p>
 							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
@@ -181,7 +190,7 @@ const ChatBody = () => {
 				</div>
 				<div className="message-own">
 					<div className="textMessage">
-						<img src={cat} alt="" className="imgPartage"/>
+						<img src={cat} alt="" className="imgPartage" />
 						<p>
 							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
 							aut architecto, unde ab eaque, praesentium minima amet at itaque
@@ -191,6 +200,7 @@ const ChatBody = () => {
 						<span>1 min ago</span>
 					</div>
 				</div>
+				<div ref={endRef}></div>
 			</div>
 			<div className="bottom">
 				<div className="emoji">
@@ -209,6 +219,7 @@ const ChatBody = () => {
 						placeholder="Type a message..."
 						value={text}
 						onChange={(event) => setText(event.target.value)}
+						ref={inputRef}
 					/>
 				</div>
 				<button className="subButton">
