@@ -1,11 +1,22 @@
 from django.conf import settings
 import requests
+import secrets
+import string
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .serializers import UserSerializer
+
+
+def generate_password() -> str:
+    """
+    Generate and return a password.
+    """
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(secrets.choice(characters) for _ in range(30))
+    return password
 
 
 def get_tokens_for_user(user: User) -> tuple[str, str]:
@@ -95,6 +106,7 @@ def create_user(user_info: dict[str, str]) -> Response:
     except User.DoesNotExist:
         user = User.objects.create(
             username=user_info['username'],
+            password=generate_password(),
             first_name=user_info['first_name'],
             last_name=user_info['last_name'],
             email=user_info['email'],
