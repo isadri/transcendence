@@ -1,25 +1,15 @@
 import "./Chat.css";
-import ChatList from "./ChatList";
+import ChatBody from "./ChatBody";
+import ListChat from "./List";
 
 const Chat = () => {
 	return (
-		<div className="List">
-			<div className="messages">
-				<div className="container">
-					<div>Messages</div>
-					<i className="fa-solid fa-ellipsis-vertical"></i>
-				</div>
-				<div className="search">
-					<div className="search-container">
-						<i className="fa-solid fa-magnifying-glass search-icon"></i>
-						<input
-							type="text"
-							placeholder="search..."
-							className="{} search-input"
-						/>
-					</div>
-				</div>
-				<ChatList />
+		<div className="Chat">
+			<div className="List">
+				<ListChat/>
+			</div>
+			<div className="Messages">
+				<ChatBody />
 			</div>
 		</div>
 	);

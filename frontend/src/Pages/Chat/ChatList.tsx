@@ -8,7 +8,7 @@ const ChatList = () => {
 				<img src={profile} alt="profile" className="profile" />
 				<div className="text">
 					<span>yasmine lachhab</span>
-					<p>slm hello</p>
+					<p>Message content is typing a very long message...</p>
 				</div>
 				<div className="ChatStatus">
 					<div>now</div>

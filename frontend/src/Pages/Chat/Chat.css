@@ -1,61 +1,26 @@
-.List {
+.Chat {
 	width: 100%;
 	height: 96vh;
 	position: relative;
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
 }
 
-.messages {
+.List {
 	width: 30%;
 	height: 96vh;
 	border-radius: 30px;
 	background-color: var(--fade);
 	display: flex;
 	flex-direction: column;
-	/* justify-content: space-between; */
 }
 
-.container {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	border-radius: 30px 30px 0 0;
-	background-color: var(--itemColor);
-	font-size: 24px;
-	padding: 5%;
-	font-family: var(--sans);
-}
-
-.search {
-	display: flex;
-	justify-content: center;
-	padding: 8% 0;
-}
-
-.search-container {
-	display: flex;
-	align-items: center;
-	border-radius: 50px;
-	padding: 2%;
-	border: 1px solid white;
+.Messages {
 	width: 70%;
-	background-color: transparent;
-}
-
-.search-container .search-icon {
-	color: white;
-	margin-right: 10px;
-}
-
-.search-container input {
-	border: none;
-	outline: none;
-	background-color: transparent;
-	color: white;
-	font-size: 16px;
-	flex: 1;
-}
-
-.search-container input::placeholder {
-	color: white;
-	font-size: 16px;
+	height: 96vh;
+	border-radius: 30px;
+	background-color: var(--fade);
+	display: flex;
+	flex-direction: column;
 }

@@ -4,12 +4,11 @@ import SideNavbarData from "./SideNavbarData";
 import { Link } from "react-router-dom";
 import logo from "./images/logo1.svg";
 import "./SidenavbarMobile.css";
-import { useMediaQuery } from "@uidotdev/usehooks";
+import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import { useLocation } from "react-router-dom";
 
 const SideNavbar = () => {
 	const pathname = useLocation().pathname;
-	console.log(pathname);
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [activeItem, setActiveItem] = useState<string>(pathname);
 	const [logoutColor, setLogoutColor] = useState("#ffffffcc");
