@@ -7,6 +7,7 @@ class User(AbstractUser):
     """
     Custom User model.
     """
+    email = models.EmailField(_('Email'), unique=True)
     avatar = models.ImageField(_('Avatar'), upload_to='avatars', blank=True,
                                 null=True,
                                 default='default/default_profile.jpg')
