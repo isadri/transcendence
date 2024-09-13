@@ -23,6 +23,16 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'username', 'email', 'password',
             ]
 
+    def not_lower_case_ascii_alphabet(self, c: str) -> bool:
+        """
+        Check if c is a valid character. A valid character must contain only
+        lower case ascii alphabet.
+
+        Returns:
+            True if c is valid, otherwise, False.
+        """
+        return not c.islower() or not c.isascii()
+
     def validate_username(self, value: str) -> str:
         """
         Validate the username field.
@@ -36,11 +46,13 @@ class UserSerializer(serializers.ModelSerializer):
         Returns:
             The validated username.
         """
-        if not value[0].isalpha() or value[0].isupper():
+        if (not value[0].isalpha() or
+            self.not_lower_case_ascii_alphabet(value[0])):
             raise serializers.ValidationError(
                 'username must begin with a lower case alphabet character.')
         for c in value[1:]:
-            if (not c.isalnum() and c != '_') or not c.islower() or not c.isascii():
+            if ((not c.isalnum() and c != '_') or
+                self.not_lower_case_ascii_alphabet(c)):
                 raise serializers.ValidationError('username must contain only '
                                                   'lower case alphanumeric '
                                                   'characters or _.')
