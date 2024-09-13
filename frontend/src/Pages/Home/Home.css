@@ -28,6 +28,7 @@
 
 .userInfo{
     display: flex;
+    justify-content: space-between;
     flex-direction: row;
     margin-top: 2%;
     width: 100%;
@@ -39,7 +40,8 @@
     width: 90%;
 }
 
-/* .gameStatis{
+.gameStatis{
     display: flex;
-    flex-direction: column;
-} */
+    flex-direction: row;
+    justify-content: space-between;
+}

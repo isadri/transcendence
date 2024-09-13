@@ -1,0 +1,45 @@
+.Chat{
+    width: 6%;
+    display: flex;
+    text-align: center;
+    border-radius: 20px;
+    flex-direction: column;
+    background-color: var(--fade);
+    max-height: 48vh;
+}
+
+
+.Chat .Icon{
+    display: flex;
+    justify-content: center;
+}
+
+.Chat i {
+    position: absolute;
+    margin-top: 30px;
+}
+
+.friends{
+    margin-top: 50px;
+    align-items: center;
+    overflow-y: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
+    border-radius: 20px;
+}
+
+.friends::-webkit-scrollbar {
+    display: none;  
+}
+
+.friends-item{
+    cursor: pointer;
+}
+
+.friends-item:not(:nth-child(1)) {
+    margin-top: 12.5px;
+
+}
+.Chat .friends img {
+    width: 60%;
+}

@@ -30,6 +30,12 @@
     font-family: var(--mono);
 }
 
+.Mode:hover{
+    border: 1px solid var(--primary);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px var(--primary);
+}
+
 .Mode div p{
     font-size: 12px;
     font-weight: 320;
@@ -39,7 +45,7 @@
 
 .Mode div button{
     background-color: #ff000000;
-    border: 2px solid white;
+    border: 1px solid white;
     border-radius: 20px;
     color: white;
     width: 60px;
@@ -50,3 +56,7 @@
 
 
 
+.Mode div button:hover{
+    background-color: var(--secondary);
+    border: 1px solid var(--secondary);
+}

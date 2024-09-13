@@ -1,145 +1,65 @@
-/* 
+
 .GameRank{
-    width: 45%;
+    width: 50%;
     padding-top: 20px;
     font-family: var(--mono);
 }
 
 .GameRank h2{
     color: var(--primary);
-}
-
-.table{
-    padding-top: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-.RowHeader{
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.RowHeader th{
-    font-weight: normal;
-    font-family: var(--sans);
-    font-size: 12px;
-}
-
-.RowEle{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--fade);
-    border-radius: 30px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-bottom: 15px;
-    font-size: 12px;
-    height: 5vh;
-}
-
-.RowEle .row:nth-child(2){
-    padding-left: 30px;
-}
-
-.RowEle .row:nth-child(3)
-{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-.RowEle .row:nth-child(4)
-{
-    padding-right: 30px;
-}
-
-
-.Pimg{
-    width: 30%;
-} */
-
-.GameRank{
-    width: 50%; /* Adjusted for better view */
-    /* margin: 0 auto; */
-    padding-top: 20px;
-    font-family: var(--mono);
-}
-
-.GameRank h2{
-    color: var(--primary);
-    font-size: 24px; /* Adjust size to be more prominent */
     font-weight: 800;
 }
 
-.table{
-    padding-top: 15px;
-    width: 90%; /* Ensure table takes up the available space */
-    border-collapse: separate;
-}
-
-.RowHeader{
+.GameRank .RowEle{
     display: flex;
-    justify-content: space-between;
-    padding-bottom: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.RowHeader th{
-    font-weight: normal;
-    font-family: var(--sans);
-    font-size: 14px; /* Increased for better readability */
-    text-align: center;
-    padding: 10px 0;
-}
-
-.RowEle{
-    display: flex;
-    justify-content: space-between;
     align-items: center;
     background-color: var(--fade);
     border-radius: 30px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-bottom: 15px;
-    font-size: 14px;
-    height: 6vh; /* Increased height for better visual comfort */
+    margin-top: 15px;
+    font-size: 12px;
+    height: 5vh;
+    width: 100%;
 }
 
-.RowEle td{
-    text-align: center;
-    padding: 10px 5px;
-}
-
-.RowEle .row:nth-child(2){ /* Adjust badge column */
-    padding-left: 30px;
-}
-
-.RowEle .row:nth-child(3) { /* Player profile */
+.GameRank .row1, .GameRank .row2{
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
 }
 
-.RowEle .row:nth-child(3) p { /* Player name spacing */
-    margin-left: 10px; /* Adds space between image and name */
+.GameRank .row1{
+    width: 60%;
+    display: flex;
+    justify-content: start;
+    margin-left: 4%;
 }
 
-.RowEle .row:nth-child(4) { /* Points */
-    padding-right: 30px;
+.GameRank .row2{
+    width: 40%;
+    display: flex;
+    justify-content: end;
 }
 
-.Pimg{
-    width: 40px; /* Slightly increased profile image size */
-    height: 40px;
-    border-radius: 50%; /* Ensure the image is circular */
+.GameRank .Profile{
+    display: flex;
+    align-items: center;
+}
+
+.GameRank .row1 *:not(:nth-child(1)){
+    margin-left: 10px;
+}
+
+.GameRank .row1 .Profile img{
+    width: 45px;
+}
+
+.GameRank .row2 *{
+    margin-right: 9%;
+}
+
+.GameRank .row1 *:nth-child(1)
+{
+    margin-right: 3%;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 16px;
 }
