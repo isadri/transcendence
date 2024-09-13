@@ -108,8 +108,8 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     Get user information.
 
     This function requests the user information from the api using endpoint by
-    presenting the access token. This user information include username, first
-    name, last name, and email, etc.
+    the access token to the api in an HTTP Authorization request header. This
+    user information include username, first name, last name, and email, etc.
 
     Returns:
         User information as json.
