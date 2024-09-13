@@ -14,6 +14,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         """
-        Return username as a string represention of the object.
+        Return username as a string representation of the object.
         """
         return self.username
