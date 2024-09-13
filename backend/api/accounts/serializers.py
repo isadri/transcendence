@@ -23,6 +23,29 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'username', 'email', 'password',
             ]
 
+    def validate_username(self, value: str) -> str:
+        """
+        Validate the username field.
+
+        Args:
+            value: The value of the username field.
+
+        Raises:
+            serializers.ValidationError: If the username field is not valid.
+
+        Returns:
+            The validated username.
+        """
+        if not value[0].isalpha() or value[0].isupper():
+            raise serializers.ValidationError(
+                'username must begin with a lower case alphabet character.')
+        for c in value[1:]:
+            if (not c.isalnum() and c != '_') or not c.islower() or not c.isascii():
+                raise serializers.ValidationError('username must contain only '
+                                                  'lower case alphanumeric '
+                                                  'characters or _.')
+        return value
+
     def validate_first_name(self, value: str) -> str:
         """
         Validate the first name field.
