@@ -6,8 +6,6 @@ from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from rest_framework import generics, status
-from rest_framework.parsers import FormParser
-from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -53,7 +51,8 @@ class LoginView(APIView):
     def get(self, request: Request) -> Response:
         return Response({
             'login with 42': 'http://127.0.0.1:8000/api/accounts/login/42auth',
-            'login with google': 'http://127.0.0.1:8000/api/accounts/login/google'
+            'login with google': 'http://127.0.0.1:8000/api/accounts/'
+                                 'login/google'
         })
 
     def login_user(self, request: Request, user: User) -> Response:

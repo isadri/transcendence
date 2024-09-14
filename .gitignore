@@ -160,6 +160,8 @@ google-api.json
 migrations/
 development.py
 
+checker.sh
+
 .vscode/
 
 .idea/
