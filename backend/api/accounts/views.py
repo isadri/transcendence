@@ -15,7 +15,6 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
-from .serializers import AvatarUploadSerializer
 from .utils import (
     get_access_token_from_api,
     create_store_tokens_for_user,
