@@ -1,0 +1,69 @@
+.bottom {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--itemColor); /* remove background if doesn't match design */
+	border-radius: 0 0 30px 30px;
+	padding: 1.4vh;
+	gap: 20px;
+	position: relative;
+}
+
+.messageContent {
+	display: flex;
+	align-items: center;
+	border-radius: 15px;
+	background-color: #d9d9d94d;
+	padding: 1vh;
+	width: 85%;
+}
+
+.messageContent .partage-icon {
+	color: white;
+	font-size: 17px;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.messageContent input {
+	border: none;
+	outline: none;
+	background-color: transparent;
+	color: white;
+	font-size: 16px;
+	flex: 1;
+}
+
+.messageContent input::placeholder {
+	color: white;
+	font-size: 14px;
+}
+
+.subButton {
+	background-color: var(--primary);
+	border: none;
+	padding: 1vh;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+.send-icon {
+	color: white;
+	font-size: 18px;
+}
+
+.emoji {
+	position: relative;
+	cursor: pointer;
+}
+
+.emoji .emoji-icon {
+	color: white;
+	font-size: 22px;
+}
+
+.emoji .picker {
+	position: absolute;
+	bottom: 50px;
+	left: 0;
+}
