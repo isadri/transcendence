@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 from django.apps import apps
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -9,8 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-
-logger = logging.getLogger(__name__)
+from .validators import lowercase_username_validator
 
 
 class UserManager(BaseUserManager):
@@ -33,9 +31,7 @@ class UserManager(BaseUserManager):
             raise ValueError('The username must be given')
         if not email:
             raise ValueError('The email must be given')
-        logger.debug(email)
         email = self.normalize_email(email)
-        logger.debug(email)
 
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
@@ -68,15 +64,17 @@ class User(PermissionsMixin, AbstractBaseUser):
     """
     Custom user model.
     """
-    username_validators = ASCIIUsernameValidator()
+    username_validators = [
+        ASCIIUsernameValidator(), lowercase_username_validator
+    ]
 
     username = models.CharField(
         _('username'),
         max_length=150,
         unique=True,
-        validators=[username_validators],
-        help_text=_('Required. 150 characters or fewer. Letters, digits, and '
-                    '@/./+/-/_ only.'),
+        validators=username_validators,
+        help_text=_('Required. 150 characters or fewer. Lower case letters, '
+                    'digits, and @/./+/-/_ only.'),
         error_messages={
             'unique': _('A user with that username already exists.'),
         }

@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
     Raises:
         serializers.ValidationError: If any of user fields are not valid.
     """
+    avatar = serializers.ImageField(default='default.jpg')
 
     class Meta:
         model = User
@@ -23,41 +24,6 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'username', 'email', 'password',
             'avatar'
             ]
-
-    def not_lower_case_ascii_alphabet(self, c: str) -> bool:
-        """
-        Check if c is a valid character. A valid character must contain only
-        lower case ascii alphabet.
-
-        Returns:
-            True if c is valid, otherwise, False.
-        """
-        return not c.islower() or not c.isascii()
-
-    def validate_username(self, value: str) -> str:
-        """
-        Validate the username field.
-
-        Args:
-            value: The value of the username field.
-
-        Raises:
-            serializers.ValidationError: If the username field is not valid.
-
-        Returns:
-            The validated username.
-        """
-        if (not value[0].isalpha() or
-            self.not_lower_case_ascii_alphabet(value[0])):
-            raise serializers.ValidationError(
-                'username must begin with a lower case alphabet character.')
-        for c in value[1:]:
-            if ((not c.isalnum() and c != '_') or
-                self.not_lower_case_ascii_alphabet(c)):
-                raise serializers.ValidationError('username must contain only '
-                                                  'lower case alphanumeric '
-                                                  'characters or _.')
-        return value
 
     def validate_first_name(self, value: str) -> str:
         """
@@ -104,16 +70,12 @@ class UserSerializer(serializers.ModelSerializer):
             New User instance.
         """
         logger.debug(validated_data)
-        user = User(
+        user = User.objects.create_user(
             username=validated_data['username'],
+            password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             email=validated_data['email'],
+            avatar=validated_data['avatar']
         )
-        user.set_password(validated_data['password'])
-        try:
-            validate_password(password=validated_data['password'], user=user)
-        except ValidationError as e:
-            raise serializers.ValidationError(e.messages)
-        user.save()
         return user
