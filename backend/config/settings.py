@@ -160,12 +160,10 @@ AUTHENTICATION_BACKENDS = [
 # Setting authentication scheme
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-		#'rest_framework.authentication.SessionAuthentication',
         'api.accounts.authenticate.TokenAuthentication',
 	],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        #'oauth2_provider.contrib.rest_framework.TokenHasScope',
     ]
 }
 
@@ -183,6 +181,9 @@ AUTH_COOKIE = 'access_token'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
+
+# Now client-side JavaScript will not be able to access the CSRF cookie.
+CSRF_COOKIE_HTTPONLY = True
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
