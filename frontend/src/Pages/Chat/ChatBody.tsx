@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./ChatBody.css";
 import profile from "./images/profile.jpeg";
 import DataMessage from "./DataMessage";
+import ChatTop from "./ChatTop";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"; //npm i emoji-picker-react
 
 interface Message {
@@ -23,7 +24,7 @@ const ChatBody = () => {
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: "smooth" });
-	}, [text]);
+	}, [messages]);
 
 	const handleEmojiClick = (emojiObject: EmojiClickData) => {
 		setText((prev) => prev + emojiObject.emoji);
@@ -46,18 +47,16 @@ const ChatBody = () => {
 		}
 	};
 
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			handleSend();
+		}
+	};
+
 	return (
 		<div className="chatContent">
-			<div className="top">
-				<div className="profileInfo">
-					<img src={profile} alt="profile" className="image" />
-					<div className="textInfo">
-						<span>yasmine lachhab</span>
-						<p>Last seen today 00:56</p>
-					</div>
-				</div>
-				<i className="fa-solid fa-ellipsis-vertical icon"></i>
-			</div>
+			<ChatTop/>
 			<div className="center">
 				{messages.map((value, index) => {
 					return (
@@ -103,6 +102,7 @@ const ChatBody = () => {
 						placeholder="Type a message..."
 						value={text}
 						onChange={(event) => setText(event.target.value)}
+						onKeyDown={handleKeyDown}
 						ref={inputRef}
 					/>
 				</div>
