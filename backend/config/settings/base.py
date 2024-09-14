@@ -190,41 +190,4 @@ LOGOUT_REDIRECT_URL = '/'
 
 #LOGIN_URL = 'two_factor:login'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': ('{asctime}: {levelname}, {module}.py {funcName}():'
-                       ' {message}'),
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'class': 'logging.FileHandler',
-            'filename': './app.log',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'api.accounts.views': {
-            'handlers': ['file'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': True,
-        },
-        'api.accounts.serializers': {
-            'handlers': ['file'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': True,
-        },
-        'api.accounts.models': {
-            'handlers': ['file'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': True,
-        },
-    }
-}
-
 OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'

@@ -158,6 +158,7 @@ app.log
 media/
 google-api.json
 migrations/
+development.py
 
 .vscode/
 
