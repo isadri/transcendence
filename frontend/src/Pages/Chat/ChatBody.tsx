@@ -4,21 +4,46 @@ import profile from "./images/profile.jpeg";
 import DataMessage from "./DataMessage";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"; //npm i emoji-picker-react
 
+interface Message {
+	message: string;
+	senderId: number;
+	receverId: number;
+	time: string;
+	image?: string;
+	profile?: string;
+}
+
 const ChatBody = () => {
 	const [open, setOpen] = useState(false);
 	const [text, setText] = useState("");
+	const [messages, setMessages] = useState<Message[]>(DataMessage);
 
 	const endRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: "smooth" });
-	}, []);
+	}, [text]);
 
 	const handleEmojiClick = (emojiObject: EmojiClickData) => {
 		setText((prev) => prev + emojiObject.emoji);
 		setOpen(false);
 		if (inputRef.current) inputRef.current.focus();
+	};
+
+	const handleSend = () => {
+		if (text.trim()) {
+			const newMessage = {
+				message: text,
+				senderId: 2,
+				receverId: 1,
+				time: "Just now",
+				image: "",
+				profile,
+			};
+			setMessages((prev) => [...prev, newMessage]);
+			setText("");
+		}
 	};
 
 	return (
@@ -34,9 +59,10 @@ const ChatBody = () => {
 				<i className="fa-solid fa-ellipsis-vertical icon"></i>
 			</div>
 			<div className="center">
-				{DataMessage.map((value) => {
+				{messages.map((value, index) => {
 					return (
 						<div
+							key={index}
 							className={` ${
 								value.senderId === 1 ? "message" : "message-own"
 							} `}
@@ -80,7 +106,7 @@ const ChatBody = () => {
 						ref={inputRef}
 					/>
 				</div>
-				<button className="subButton">
+				<button className="subButton" onClick={handleSend}>
 					<i className="fa-solid fa-paper-plane send-icon"></i>
 				</button>
 			</div>

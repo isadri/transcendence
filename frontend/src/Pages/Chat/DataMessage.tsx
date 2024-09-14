@@ -1,4 +1,13 @@
-const DataMessage = [
+interface Message {
+	message: string;
+	senderId: number;
+	receverId: number;
+	time: string;
+	image?: string;
+	profile?: string;
+}
+
+const DataMessage: Message[] = [
 	{
 		senderId: 1,
 		receverId: 2,
