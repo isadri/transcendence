@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./ChatBody.css";
 import profile from "./images/profile.jpeg";
-import cat from "./images/wallpaper.jpeg";
+import DataMessage from "./DataMessage";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"; //npm i emoji-picker-react
 
 const ChatBody = () => {
@@ -18,8 +18,7 @@ const ChatBody = () => {
 	const handleEmojiClick = (emojiObject: EmojiClickData) => {
 		setText((prev) => prev + emojiObject.emoji);
 		setOpen(false);
-		if (inputRef.current)
-			inputRef.current.focus();
+		if (inputRef.current) inputRef.current.focus();
 	};
 
 	return (
@@ -32,174 +31,33 @@ const ChatBody = () => {
 						<p>Last seen today 00:56</p>
 					</div>
 				</div>
-				<div className="icon">
-					{/* <i className="fa-solid fa-magnifying-glass search-icon"></i> */}
-					<i className="fa-solid fa-ellipsis-vertical"></i>
-				</div>
+				<i className="fa-solid fa-ellipsis-vertical icon"></i>
 			</div>
 			<div className="center">
-				<div className="message">
-					<img src={cat} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message">
-					<img src={profile} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message">
-					<img src={profile} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message">
-					<img src={profile} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message">
-					<img src={profile} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message">
-					<img src={profile} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message">
-					<img src={profile} alt="profile" />
-					<div className="textMessage">
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
-				<div className="message-own">
-					<div className="textMessage">
-						<img src={cat} alt="" className="imgPartage" />
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-							aut architecto, unde ab eaque, praesentium minima amet at itaque
-							cumque eum voluptates ex natus eos voluptatibus eveniet facilis
-							quas et?
-						</p>
-						<span>1 min ago</span>
-					</div>
-				</div>
+				{DataMessage.map((value) => {
+					return (
+						<div
+							className={` ${
+								value.senderId === 1 ? "message" : "message-own"
+							} `}
+						>
+							{value.senderId === 1 && (
+								<img src={value.profile} alt="profile" className="profile" />
+							)}
+							<div className="textMessage">
+								{value.image !== "" && value.image !== undefined && (
+									<img
+										src={value.image}
+										alt="imgPartage"
+										className="imgPartage"
+									/>
+								)}
+								<p>{value.message}</p>
+								<span>{value.time}</span>
+							</div>
+						</div>
+					);
+				})}
 				<div ref={endRef}></div>
 			</div>
 			<div className="bottom">
@@ -223,7 +81,7 @@ const ChatBody = () => {
 					/>
 				</div>
 				<button className="subButton">
-					<i className="fa-solid fa-paper-plane send-icon"></i>{" "}
+					<i className="fa-solid fa-paper-plane send-icon"></i>
 				</button>
 			</div>
 		</div>
