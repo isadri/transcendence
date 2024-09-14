@@ -20,7 +20,6 @@ urlpatterns = [
         name='login-google'),
     path('login/google/code/', views.GoogleAuthCodeView.as_view(),
         name='auth-code-google'),
-    path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
 ]
 
 

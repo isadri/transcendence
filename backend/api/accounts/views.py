@@ -267,34 +267,6 @@ class RegisterView(generics.CreateAPIView):
     authentication_classes = []
 
 
-class AvatarUploadView(APIView):
-    """
-    Upload an avatar for a user.
-    """
-    # MultiPartParser and FormParser are used for full support of HTML form
-    # data
-    parser_classes = [MultiPartParser, FormParser]
-
-    def post(self, request: Request, username: str) -> Response:
-        """
-        Set the avatar placed in request for the current user.
-
-        This method takes the avatar placed in request.FILES and sets it to
-        the current user.
-
-        Args:
-            request: Request containing the avatar.
-            username: The username of the current user.
-        """
-        serializer = AvatarUploadSerializer(data=request.FILES, context={
-            'username': username
-        })
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class LogoutView(APIView):
     """
     Logout a the currently active user.

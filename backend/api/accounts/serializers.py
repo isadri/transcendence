@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'first_name', 'last_name', 'username', 'email', 'password',
+            'avatar'
             ]
 
     def not_lower_case_ascii_alphabet(self, c: str) -> bool:
@@ -114,36 +115,5 @@ class UserSerializer(serializers.ModelSerializer):
             validate_password(password=validated_data['password'], user=user)
         except ValidationError as e:
             raise serializers.ValidationError(e.messages)
-        user.save()
-        return user
-
-
-class AvatarUploadSerializer(serializers.Serializer):
-    """
-    Serializer for creating avatars and associate them with users.
-    """
-    avatar = serializers.ImageField()
-
-    def create(self, validated_data: dict[str, str]) -> User:
-        """
-        Set avatar with the current user.
-
-        Returns:
-            The current user with her new avatar.
-        """
-        user = User.objects.get(username=self.context.get('username', ''))
-        user.avatar = validated_data['avatar']
-        user.save()
-        return user
-
-    def update(self, validated_data: dict[str, str]) -> User:
-        """
-        Update the avatar of the current user.
-
-        Returns:
-            The current user with her new avatar.
-        """
-        user = User.objects.get(username=self.context.get('username', ''))
-        user.avatar = validated_data.get('avatar', user.avatar)
         user.save()
         return user
