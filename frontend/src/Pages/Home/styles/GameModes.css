@@ -54,9 +54,21 @@
     cursor: pointer;
 }
 
-
-
 .Mode div button:hover{
-    background-color: var(--secondary);
-    border: 1px solid var(--secondary);
+    background-color: #57265a;
+    border: 1px solid #57265a;
+}
+
+@media only screen and (max-width: 1073px){
+    .GameContents{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .GameModes{
+        width: 100%;
+    }
+    .Mode{
+        width: 90%;
+    }
 }

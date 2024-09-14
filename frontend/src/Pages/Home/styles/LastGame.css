@@ -26,7 +26,7 @@
 
 
 .LastGame .Row1{
-    /* width: 40%; */
+    width: 40%;
     display: flex;
     align-items: center;
     justify-content: start;
@@ -34,14 +34,14 @@
 }
 
 .LastGame .Row2{
-    /* width: 20%; */
+    width: 20%;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .LastGame .Row3{
-    /* width: 40%; */
+    width: 40%;
     display: flex;
     align-items: center;
     justify-content: end;
@@ -69,3 +69,28 @@
 }
 
 
+@media only screen and (max-width: 1073px){
+    .LastGame
+    {
+        width: 100%;
+        padding-left: 0px;
+    }
+    
+}
+
+@media only screen and (max-width: 750px){
+    .LastGame
+    {
+        width: 100%;
+        padding-left: 0px;
+    }
+    .Row1 span, .Row3 span{
+        display: none;
+    }
+    .LastGame .Row3 img, .LastGame .Row1 img{
+        width: 30px;
+    }
+    .LastGame .RowEle{
+        height: 7vh;
+    }
+}

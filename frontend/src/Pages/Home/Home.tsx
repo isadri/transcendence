@@ -23,7 +23,10 @@ function Home() {
       </div>
       <div className='userInfo'>
         <div className='game'>
-          <GameModes/>
+          <div className='modeChat'>
+            <GameModes/>
+            <Chat/>
+          </div>
           <div className='gameStatis'>
             <GameRank/>
             <LastGame/>

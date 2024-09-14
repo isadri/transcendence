@@ -22,7 +22,6 @@
 
 .Icons {
     display: flex;
-    flex-direction: row;
     align-items: center;
 }
 
@@ -37,4 +36,13 @@
     width: 20px;
     height: 20px;
     cursor: pointer;
+}
+
+@media only screen and (max-width: 478px){
+    .Icons{
+        display: none;
+    }
+    .search{
+        width: 100%;
+    }
 }

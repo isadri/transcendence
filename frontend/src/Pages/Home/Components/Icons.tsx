@@ -6,9 +6,6 @@ function Icons() {
         <div>
           <i className="fa-solid fa-bell"></i>
         </div>
-        <div>
-          <i className="fa-solid fa-user-plus"></i>
-        </div>
     </span>
   )
 }

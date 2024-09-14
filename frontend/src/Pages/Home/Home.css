@@ -40,8 +40,64 @@
     width: 90%;
 }
 
+
 .gameStatis{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+.modeChat .Chat{
+    display: none;
+}
+
+@media only screen and (max-width: 1073px){
+
+    .modeChat .Chat{
+        display: flex;
+    }
+    .Chat{
+        display: none;
+    }
+    .modeChat{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    .gameStatis{
+        display: flex;
+        flex-direction: column;
+    }
+    .game{
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 750px){
+    .welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+}
+
+@media only screen and (max-width: 600px){
+    .modeChat .Chat{
+        display: none;
+    }
+    
+}
+
+@media only screen and (min-width: 1900px){
+ 
+    .homePage {
+        margin-left: 400px;
+        margin-right: 400px;
+    }
+}
+
+@media only screen and (min-height: 1030px){
+    .homePage {
+        margin-top: 100px;
+    }
 }

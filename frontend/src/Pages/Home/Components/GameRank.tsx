@@ -62,6 +62,20 @@ function GameRank() {
             <span>5.22 lvl</span>
          </div>
       </div>
+      <div className='RowEle'>
+         <div className='row1'>
+            <span>1</span>
+            <img src={bg1} alt="" />
+            <div className='Profile'>
+              <img src={photo} alt="" />
+              <span>User1dfgdfgdfg</span>
+            </div>
+         </div>
+         <div className='row2'>
+            <span>1452 xp</span>
+            <span>5.22 lvl</span>
+         </div>
+      </div>
     </div>
   )
 }

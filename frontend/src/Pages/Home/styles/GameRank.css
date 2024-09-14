@@ -63,3 +63,32 @@
     font-weight: 600;
     font-size: 16px;
 }
+
+@media only screen and (max-width: 1073px){
+    
+    .GameRank
+    {
+        width: 100%;
+    }
+    
+}
+
+@media only screen and (max-width: 750px){
+    
+    .GameRank
+    {
+        width: 100%;
+    }
+    .GameRank .row2{
+        display: none;
+    }
+    .GameRank .row1 .Profile img{
+        width: 30px;
+    }
+    .GameRank .row1 img{
+        width: 20px;
+    }
+    .GameRank .RowEle{
+        height: 7vh;
+    }
+}

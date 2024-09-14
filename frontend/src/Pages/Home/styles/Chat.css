@@ -1,11 +1,11 @@
 .Chat{
-    width: 6%;
+    width: 4%;
     display: flex;
     text-align: center;
     border-radius: 20px;
     flex-direction: column;
     background-color: var(--fade);
-    max-height: 48vh;
+    max-height: 54vh;
 }
 
 
@@ -38,8 +38,15 @@
 
 .friends-item:not(:nth-child(1)) {
     margin-top: 12.5px;
-
+    
 }
 .Chat .friends img {
     width: 60%;
+}
+
+@media only screen and (max-width: 1073px){
+    .Chat{
+        max-height: 55vh;
+        width: 10%;
+    }
 }
