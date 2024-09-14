@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +17,7 @@ class UserManager(BaseUserManager):
     Custom user manager.
     """
     def create_user(self, username: str, email: str,
-                    password: Optional[str]=None, **extra_fields) -> 'User':
+                    password: Optional[str] = None, **extra_fields) -> 'User':
         """
         Create and save a user with the given username, email, password and
         extra_fields.
@@ -43,7 +44,8 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username: str, email: str,
-                    password: Optional[str]=None, **extra_fields) -> 'User':
+                         password: Optional[str] = None,
+                         **extra_fields) -> 'User':
         """
         Create a superuser.
 
@@ -129,7 +131,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         """
         Return the first_name plus the last_name, with a space in between.
         """
-        full_name = f'{first_name} {last_name}'
+        full_name = f'{self.first_name} {self.last_name}'
         return full_name
 
     def get_short_name(self) -> str:
@@ -142,4 +144,4 @@ class User(PermissionsMixin, AbstractBaseUser):
         """
         Send an email to this user.
         """
-        send_email(subject, message, from_email, [self.email], **kwargs)
+        send_mail(subject, message, from_email, [self.email], **kwargs)

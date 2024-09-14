@@ -1,12 +1,6 @@
-import logging
-from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from .models import User
-
-
-logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,7 +63,6 @@ class UserSerializer(serializers.ModelSerializer):
         Returns:
             New User instance.
         """
-        logger.debug(validated_data)
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
