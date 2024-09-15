@@ -9,6 +9,7 @@ from api.accounts import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('api.accounts.urls')),
+    path('api/friends/', include('api.friends.urls')),
     path('', views.HomeView.as_view()),
 ]
 
