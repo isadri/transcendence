@@ -1,0 +1,11 @@
+.LastAchievement{
+    width: 33%;
+    background-color: var(--fade);
+    border-radius: 20px;
+}
+
+.LastAchievement h2{
+    color: var(--primary);
+    font-family: var(--sans);
+    margin: 5% 0 0 5%;
+}

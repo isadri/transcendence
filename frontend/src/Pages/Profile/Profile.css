@@ -1,0 +1,47 @@
+.Profile{
+    width: 100%;
+    height: 96vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    -ms-overflow-style: none;  /* Hide scrollbars in IE and Edge */
+    scrollbar-width: none;     /* Hide scrollbars in Firefox */
+}
+
+.Profile::-webkit-scrollbar {
+    display: none;
+}
+
+.firstRaw, .SecondRaw{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.SecondRaw{
+    padding-top: 25px;
+    height: 67vh;
+}
+
+.firstRaw{
+    height: 25vh;
+}
+
+
+/* @media only screen and (max-width: 1073px){
+    .SecondRaw, .firstRaw{
+        display: flex;
+        flex-direction: column;
+    }
+    .SecondRaw *{ 
+        height: 22vh;
+        width: 100% !important;
+    }
+    .firstRaw *
+    {
+        height: 12vh;
+        width: 100% !important;
+    }
+} */

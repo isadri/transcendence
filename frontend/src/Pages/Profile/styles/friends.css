@@ -1,0 +1,10 @@
+.friendsProfile{
+    width: 22%;
+    background-color: var(--fade);
+    border-radius: 20px;
+}
+
+.friendsProfile h2{
+    color: var(--primary);
+    font-family: var(--sans);
+}

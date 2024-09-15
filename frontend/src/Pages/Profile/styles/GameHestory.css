@@ -1,0 +1,61 @@
+.GameHestory{
+    width: 40%;
+    height: 67vh;
+    background-color: var(--fade);
+    border-radius: 20px;
+}
+
+.GameHestory h2{
+    color: var(--primary);
+    font-family: var(--sans);
+    margin: 5% 0 0 5%;
+}
+
+.GameHestory .table{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.GameHestory .table .HeaderRow{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 80%;
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-top: 2%;
+}
+
+.GameHestory .table .HeaderRow *:not(:nth-child(1)){
+    padding-right: 3%;
+}
+
+.GameHestory .table .rows{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    text-align: center;
+    background-color: #33273384;
+    border-radius: 20px;
+    height: 7%;
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-top: 3%;
+}
+
+.GameHestory .table .rows *:nth-child(3){
+    color: #DE8F9E;
+}
+
+.GameHestory .table .win *:not(:nth-child(3)){
+    color: #00ff00;
+}
+
+.GameHestory .table .Lose *:not(:nth-child(3)){
+    color: #ff0000;
+}
+

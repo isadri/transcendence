@@ -1,0 +1,12 @@
+.BadgesList{
+    width: 40%;
+    background-color: var(--fade);
+    border-radius: 20px;
+}
+
+.BadgesList h2{
+    color: var(--primary);
+    font-family: var(--sans);
+    margin: 5% 0 0 5%;
+}
+
