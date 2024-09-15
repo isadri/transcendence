@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./ChatBody.css";
-import profile from "./images/profile.jpeg";
+import profile from "../images/profile.jpeg";
 import DataMessage from "./DataMessage";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
@@ -19,7 +19,7 @@ interface Message {
 const ChatBody = () => {
 	const [text, setText] = useState("");
 	const [messages, setMessages] = useState<Message[]>(DataMessage);
-
+	const ref = useRef<HTMLInputElement>(null);
 	const handleSend = () => {
 		if (text.trim()) {
 			const newMessage = {
@@ -30,6 +30,7 @@ const ChatBody = () => {
 				image: "",
 				profile,
 			};
+			if (ref.current) ref.current.focus();
 			setMessages((prev) => [...prev, newMessage]);
 			setText("");
 		}
@@ -39,7 +40,7 @@ const ChatBody = () => {
 		<div className="chatContent">
 			<ChatTop />
 			<ChatCenter messages={messages} />
-			<ChatBottom text={text} setText={setText} handleSend={handleSend} />
+			<ChatBottom text={text} setText={setText} handleSend={handleSend} ref={ref}/>
 		</div>
 	);
 };

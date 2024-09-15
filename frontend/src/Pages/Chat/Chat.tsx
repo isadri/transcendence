@@ -1,6 +1,6 @@
 import "./Chat.css";
-import ChatBody from "./ChatBody";
-import ListChat from "./List";
+import ChatBody from "./components/ChatBody";
+import ListChat from "./components/List";
 
 const Chat = () => {
 	return (

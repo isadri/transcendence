@@ -1,4 +1,4 @@
-import profile from "./images/profile.jpeg";
+import profile from "../images/profile.jpeg";
 import "./ChatTop.css"
 
 const ChatTop = () => {

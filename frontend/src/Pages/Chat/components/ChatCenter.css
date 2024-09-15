@@ -50,7 +50,7 @@
 .center span {
 	font-size: 13px;
 	align-self: flex-end;
-	padding-right: 10px;
+	opacity: 0.7;
 }
 
 .center .message .profile {
