@@ -23,7 +23,11 @@ class FriendAddView(APIView):
     """
     This view is used to add a new friend.
     """
+
     def post(self, request: Request) -> Response:
+        """
+        Add a new friend.
+        """
         try:
             username = request.data.get('username', '')
             new_friend = User.objects.get(username=username)
@@ -37,4 +41,3 @@ class FriendAddView(APIView):
             return Response({'error': 'This friend already exists.'})
         friends_list = [item.username for item in friend_list.friends.all()]
         return Response({'friends': friends_list}, status=status.HTTP_200_OK)
-
