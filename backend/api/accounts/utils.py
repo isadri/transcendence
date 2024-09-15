@@ -104,7 +104,7 @@ def create_user(user_info: dict[str, str]) -> Response:
         user = User.objects.get(username=user_info['username'])
         status_code = status.HTTP_200_OK
     except User.DoesNotExist:
-        user = User.objects.create(
+        user = User.objects.create_user(
             username=user_info['username'],
             password=generate_password(),
             first_name=user_info['first_name'],
