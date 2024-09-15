@@ -57,9 +57,6 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Create a new instance.
 
-        Raises:
-            serializers.ValidationError: If the password is not valid.
-
         Returns:
             New User instance.
         """
