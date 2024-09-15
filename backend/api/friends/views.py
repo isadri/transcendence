@@ -12,6 +12,7 @@ from . import friends
 from .models import Friends
 from .serializers import FriendsSerializer
 from .utils import get_object
+from ..accounts.serializers import UserSerializer
 
 
 logger = logging.getLogger(__name__)
@@ -34,10 +35,26 @@ class FriendAddView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'No such user.'},
                             status=status.HTTP_404_NOT_FOUND)
-        friend_list = get_object(request.user)
+        friend_list = Friends.objects.get(user=request.user)
         try:
             friend_list.add(new_friend)
         except friends.AlreadyExistsError:
-            return Response({'error': 'This friend already exists.'})
+            return Response({'error': 'This friend already exists.'},
+                            status=status.HTTP_400_BAD_REQUEST)
         friends_list = [item.username for item in friend_list.friends.all()]
         return Response({'friends': friends_list}, status=status.HTTP_200_OK)
+
+
+class FriendListView(APIView):
+    """
+    This view list all friends of the current user.
+    """
+
+    def get(self, request: Request) -> Response:
+        """
+        List all the friends of the current user.
+        """
+        user = Friends.objects.get(user=request.user)
+        queryset = user.friends.all()
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
