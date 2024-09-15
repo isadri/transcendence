@@ -39,7 +39,7 @@
     justify-content: end;
 }
 
-.GameRank .Profile{
+.GameRank .ProfileRev{
     display: flex;
     align-items: center;
 }
@@ -48,7 +48,7 @@
     margin-left: 10px;
 }
 
-.GameRank .row1 .Profile img{
+.GameRank .row1 .ProfileRev img{
     width: 45px;
 }
 
@@ -82,7 +82,7 @@
     .GameRank .row2{
         display: none;
     }
-    .GameRank .row1 .Profile img{
+    .GameRank .row1 .ProfileRev img{
         width: 30px;
     }
     .GameRank .row1 img{

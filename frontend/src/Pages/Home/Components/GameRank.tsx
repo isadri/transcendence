@@ -10,7 +10,7 @@ function GameRank() {
         <div className='row1'>
             <span>1</span>
             <img src={bg1} alt="" />
-            <div className='Profile'>
+            <div className='ProfileRev'>
               <img src={photo} alt="" />
               <span>User1dfgdfgdfg</span>
             </div>
@@ -24,7 +24,7 @@ function GameRank() {
          <div className='row1'>
             <span>1</span>
             <img src={bg1} alt="" />
-            <div className='Profile'>
+            <div className='ProfileRev'>
               <img src={photo} alt="" />
               <span>User1dfgdfgdfg</span>
             </div>
@@ -38,7 +38,7 @@ function GameRank() {
          <div className='row1'>
             <span>1</span>
             <img src={bg1} alt="" />
-            <div className='Profile'>
+            <div className='ProfileRev'>
               <img src={photo} alt="" />
               <span>User1dfgdfgdfg</span>
             </div>
@@ -52,7 +52,7 @@ function GameRank() {
          <div className='row1'>
             <span>1</span>
             <img src={bg1} alt="" />
-            <div className='Profile'>
+            <div className='ProfileRev'>
               <img src={photo} alt="" />
               <span>User1dfgdfgdfg</span>
             </div>
@@ -66,7 +66,7 @@ function GameRank() {
          <div className='row1'>
             <span>1</span>
             <img src={bg1} alt="" />
-            <div className='Profile'>
+            <div className='ProfileRev'>
               <img src={photo} alt="" />
               <span>User1dfgdfgdfg</span>
             </div>
