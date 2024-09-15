@@ -4,7 +4,7 @@ class Error(Exception):
     """
 
 
-class AlreadyExistsError:
+class AlreadyExistsError(Error):
     """
     This object is already exist.
     """
