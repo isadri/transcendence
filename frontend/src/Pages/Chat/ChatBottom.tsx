@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react"; //npm i emoji-picker-react
 
@@ -15,10 +15,30 @@ const ChatBottom: React.FC<ChatBottomProps> = ({
 }) => {
 	const [open, setOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const closeEmoji = useRef<HTMLInputElement>(null);
+	const buttonRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				closeEmoji.current &&
+				!closeEmoji.current.contains(event.target as Node) &&
+				buttonRef.current &&
+				!buttonRef.current.contains(event.target as Node)
+			) {
+				setOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	const handleEmojiClick = (emojiObject: EmojiClickData) => {
 		setText((prev) => prev + emojiObject.emoji);
-		setOpen(false);
 		if (inputRef.current) inputRef.current.focus();
 	};
 
@@ -31,12 +51,12 @@ const ChatBottom: React.FC<ChatBottomProps> = ({
 
 	return (
 		<div className="bottom">
-			<div className="emoji">
+			<div className="emoji" ref={buttonRef}>
 				<i
 					className="fa-solid fa-face-smile emoji-icon"
 					onClick={() => setOpen((prev) => !prev)}
 				></i>
-				<div className="picker">
+				<div className="picker" ref={closeEmoji}>
 					{open && <EmojiPicker onEmojiClick={handleEmojiClick} />}
 				</div>
 			</div>

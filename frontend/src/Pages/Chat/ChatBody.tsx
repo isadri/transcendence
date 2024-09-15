@@ -5,6 +5,7 @@ import DataMessage from "./DataMessage";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
+import moment from "moment";
 
 interface Message {
 	message: string;
@@ -25,7 +26,7 @@ const ChatBody = () => {
 				message: text,
 				senderId: 2,
 				receverId: 1,
-				time: "Just now",
+				time: moment().format('LT'), // npm install moment --save
 				image: "",
 				profile,
 			};

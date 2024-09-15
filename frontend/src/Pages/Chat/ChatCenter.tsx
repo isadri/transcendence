@@ -13,7 +13,7 @@ interface Message {
 const ChatCenter = ({ messages }: { messages: Message[] }) => {
 	const endRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
-		endRef.current?.scrollIntoView({ behavior: "smooth" });
+		endRef.current?.scrollIntoView({ behavior: "instant" });
 	}, [messages]);
 	return (
 		<div className="center">
