@@ -1,0 +1,101 @@
+.homePage {
+    width: 100%;
+    height: 96vh;
+    position: relative;
+    overflow: auto;
+    -ms-overflow-style: none;  /* Hide scrollbars in IE and Edge */
+    scrollbar-width: none;     /* Hide scrollbars in Firefox */
+}
+
+.homePage::-webkit-scrollbar {
+    display: none;  
+}
+
+.searchAndIcons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    width: 100%;
+    margin-top: 25px;
+}
+
+.userInfo{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    margin-top: 2%;
+    width: 100%;
+}
+
+.game{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+
+.gameStatis{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.modeChat .ChatRev{
+    display: none;
+}
+
+@media only screen and (max-width: 1073px){
+
+    .modeChat .ChatRev{
+        display: flex;
+    }
+    .ChatRev{
+        display: none;
+    }
+    .modeChat{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    .gameStatis{
+        display: flex;
+        flex-direction: column;
+    }
+    .game{
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 750px){
+    .welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media only screen and (max-width: 600px){
+    .modeChat .ChatRev{
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 1900px){
+ 
+    .homePage {
+        margin-left: 400px;
+        margin-right: 400px;
+    }
+}
+
+/* @media only screen and (min-height: 1030px){
+    .homePage {
+        margin-top: 100px;
+    }
+} */

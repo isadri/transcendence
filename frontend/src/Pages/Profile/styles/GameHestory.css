@@ -1,6 +1,6 @@
 .GameHestory{
     width: 40%;
-    height: 67vh;
+    height: 900px;
     background-color: var(--fade);
     border-radius: 20px;
 }
@@ -8,10 +8,11 @@
 .GameHestory h2{
     color: var(--primary);
     font-family: var(--sans);
-    margin: 5% 0 0 5%;
+    margin: 5% 0 2% 5%;
 }
 
 .GameHestory .table{
+    font-family: var(--sans);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,43 +20,60 @@
     height: 100%;
 }
 
-.GameHestory .table .HeaderRow{
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-    width: 80%;
-    padding-left: 5%;
-    padding-right: 5%;
-    margin-top: 2%;
-}
+
 
 .GameHestory .table .HeaderRow *:not(:nth-child(1)){
-    padding-right: 3%;
+    padding-right: 6%;
 }
 
-.GameHestory .table .rows{
+.GameHestory .table .tableRows{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-height: 86%;
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none;
+}
+
+.GameHestory .table .tableRows::-webkit-scrollbar {
+    display: none;  
+}
+
+.GameHestory .table .tableRows .rows{
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 80%;
     text-align: center;
-    background-color: #33273384;
+    background-color: var(--fade);
     border-radius: 20px;
-    height: 7%;
-    padding-left: 5%;
-    padding-right: 5%;
-    margin-top: 3%;
+    height: 55vh;
+    padding: 3% 5% 3% 5%;
+    font-size: 14px;
+    margin-bottom: 4%;
 }
 
-.GameHestory .table .rows *:nth-child(3){
+.GameHestory .table .tableRows .rows .xp{
+   display: flex;
+   flex-direction: row;
+}
+
+.GameHestory .table .tableRows .rows .xp *:nth-child(2){
+    margin-left: 6%;
+}
+
+.GameHestory .table .tableRows .rows *:nth-child(3){
     color: #DE8F9E;
 }
 
-.GameHestory .table .win *:not(:nth-child(3)){
+.GameHestory .table .tableRows .win *:not(:nth-child(3)){
     color: #00ff00;
 }
 
-.GameHestory .table .Lose *:not(:nth-child(3)){
+.GameHestory .table .tableRows .Lose *:not(:nth-child(3)){
     color: #ff0000;
 }
 

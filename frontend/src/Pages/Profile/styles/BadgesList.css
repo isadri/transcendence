@@ -10,3 +10,28 @@
     margin: 5% 0 0 5%;
 }
 
+.badgesScroll{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 2%;
+    /* justify-content: center; */
+    position: absolute;
+    width: 100%;
+}
+
+.badgesList{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 35%;
+    overflow-x: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none;
+}
+
+.badgesList img{
+    
+}
+
+/* .badgesList:  */

@@ -1,10 +1,82 @@
 .friendsProfile{
     width: 22%;
     background-color: var(--fade);
+    height: 900px;
     border-radius: 20px;
 }
 
 .friendsProfile h2{
     color: var(--primary);
     font-family: var(--sans);
+    margin: 8.5% 0 5.5% 5%;
+}
+
+
+.FriensList{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-height: 86%;
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
+}
+
+.FriensList .table .tableRows::-webkit-scrollbar {
+    display: none;  
+}
+
+.FriensList .friend{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 80%;
+    font-size: 14px;
+    padding: 0 4% 3% 0;
+}
+
+.FriensList .friend:not(:nth-child(1)){
+    padding: 3% 4% 3% 0;
+}
+
+.FriensList .friend .friendInfo{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.FriensList .friend .friendInfo img{
+    width: 43%;
+}
+
+.FriensList .friend .friendName{
+    display: flex;
+    flex-direction: column;
+    margin-left: 5%;
+    font-family: var(--sans);
+}
+
+.FriensList .friend .friendName *:nth-child(1){
+    font-size: 16px;
+} 
+
+.FriensList .friend .friendName *:nth-child(2){
+    font-size: 10px;
+    font-weight: 200;
+    margin: 10% 0 0 5%;
+} 
+
+.FriensList .friend .friendProfile{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 15%;
+}
+
+
+.FriensList .friend .friendProfile *:nth-child(1){
+    color: var(--primary);
 }

@@ -4,13 +4,6 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    overflow: auto;
-    -ms-overflow-style: none;  /* Hide scrollbars in IE and Edge */
-    scrollbar-width: none;     /* Hide scrollbars in Firefox */
-}
-
-.Profile::-webkit-scrollbar {
-    display: none;
 }
 
 .firstRaw, .SecondRaw{
@@ -22,7 +15,7 @@
 
 .SecondRaw{
     padding-top: 25px;
-    height: 67vh;
+    /* height: 64vh; */
 }
 
 .firstRaw{
