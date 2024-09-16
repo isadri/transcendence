@@ -3,7 +3,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import Friend
+from .models import FriendRequest
 from .utils import get_object
+from ..accounts.serializers import UserSerializer
 
 
 User = get_user_model()
@@ -36,3 +38,23 @@ class FriendSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Friend already exists.')
             current_user.friends.add(friend)
         return current_user
+
+
+class FriendRequestSenderSerializer(serializers.ModelSerializer):
+    """
+    A serializer for senders of the friend requests.
+    """
+
+    class Meta:
+        model = FriendRequest
+        fields = ['sender']
+
+
+class FriendRequestReceiverSerializer(serializers.ModelSerializer):
+    """
+    A serializer for receivers of the friend requests.
+    """
+
+    class Meta:
+        model = FriendRequest
+        fields = ['receiver']
