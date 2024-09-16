@@ -30,5 +30,5 @@ class Friend(models.Model):
         if new_friend in self.friends.all():
             raise friends.AlreadyExistsError
         self.friends.add(new_friend)
-        friend = Friends.objects.get(user=new_friend)
+        friend = Friend.objects.get(user=new_friend)
         friend.friends.add(self.user)
