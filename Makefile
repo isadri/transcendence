@@ -27,7 +27,7 @@ shell:
 dbshell:
 	@docker compose exec -it back-end python manage.py dbshell
 
-create-super-user:
+create-superuser:
 	@docker compose exec -it back-end python manage.py createsuperuser
 
 check-style:
