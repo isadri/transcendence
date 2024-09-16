@@ -1,12 +1,15 @@
 import logging
 from django.contrib.auth import get_user_model
 from rest_framework import status
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from . import friends
 from .models import Friend, FriendRequest
+from .serializers import FriendRequestSenderSerializer
+from .serializers import FriendRequestReceiverSerializer
 from ..accounts.serializers import UserSerializer
 
 
@@ -15,18 +18,20 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-class FriendRequestSendView(APIView):
+class FriendRequestSendView(generics.CreateAPIView):
     """
     This view is used to send friend requests.
     """
+    serializer_class = FriendRequestReceiverSerializer
+    queryset = FriendRequest.objects.all()
 
     def post(self, request: Request) -> Response:
         """
         Send a friend request.
         """
         try:
-            receiver_username = request.data.get('username', '')
-            receiver = User.objects.get(username=receiver_username)
+            receiver_id = request.data['receiver']
+            receiver = User.objects.get(id=receiver_id)
         except User.DoesNotExist:
             return Response({'error': 'User does not exist.'},
                             status=status.HTTP_404_NOT_FOUND)
@@ -40,11 +45,13 @@ class FriendRequestSendView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class FriendRequestAcceptView(APIView):
+class FriendRequestAcceptView(generics.CreateAPIView):
     """
     This view is used to accept friend requests.
 
     """
+    serializer_class = FriendRequestSenderSerializer
+    queryset = FriendRequest.objects.all()
 
     def post(self, request: Request) -> Response:
         """
@@ -58,8 +65,8 @@ class FriendRequestAcceptView(APIView):
             HTTP_200_OK response: If the current user accept the friend request
                 of the sender user.
         """
-        sender_username = request.data.get('sender_username', '')
-        sender = User.objects.get(username=sender_username)
+        sender_id = request.data['sender']
+        sender = User.objects.get(id=sender_id)
         try:
             friend_request = FriendRequest.objects.get(sender=sender,
                                                        receiver=request.user)
