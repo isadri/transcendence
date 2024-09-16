@@ -1,17 +1,12 @@
 import logging
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
-from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from . import friends
 from .models import Friend, FriendRequest
-from .serializers import FriendSerializer
-from .utils import get_object
 from ..accounts.serializers import UserSerializer
 
 
@@ -35,9 +30,8 @@ class FriendRequestSendView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User does not exist.'},
                             status=status.HTTP_404_NOT_FOUND)
-        friend_request, created = (
-            FriendRequest.objects.get_or_create(sender=request.user,
-                                                receiver=receiver))
+        _, created = FriendRequest.objects.get_or_create(sender=request.user,
+                                                         receiver=receiver)
         if created:
             return Response({'message': 'the request is sent.'},
                             status=status.HTTP_201_CREATED)
@@ -46,21 +40,11 @@ class FriendRequestSendView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class FriendRequestAcceptView(APIView):
     """
     This view is used to accept friend requests.
 
     """
-
-    def add_friends(self, sender: User, receiver: User) -> None:
-        """
-        Add sender to the list of friends of receiver, and vice versa.
-        """
-        sender_friend_list = Friend.objects.get(user=sender)
-        receiver_friend_list = Friend.objects.get(user=receiver)
-        sender_friend_list.add(receiver)
-        receiver_friend_list.add(sender)
 
     def post(self, request: Request) -> Response:
         """
@@ -76,11 +60,10 @@ class FriendRequestAcceptView(APIView):
         """
         sender_username = request.data.get('sender_username', '')
         sender = User.objects.get(username=sender_username)
-        receiver = request.user
         try:
             friend_request = FriendRequest.objects.get(sender=sender,
                                                        receiver=request.user)
-            self.add_friends(sender, receiver)
+            friend_request.accept()
         except FriendRequest.DoesNotExist:
             return Response({'error': 'No such request'},
                             status=status.HTTP_404_NOT_FOUND)
