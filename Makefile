@@ -24,6 +24,9 @@ migrate:
 shell:
 	@docker compose exec -it back-end python manage.py shell
 
+dbshell:
+	@docker compose exec -it back-end python manage.py dbshell
+
 create-super-user:
 	@docker compose exec -it back-end python manage.py createsuperuser
 
