@@ -9,8 +9,8 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from . import friends
-from .models import Friends
-from .serializers import FriendsSerializer
+from .models import Friend
+from .serializers import FriendSerializer
 from .utils import get_object
 from ..accounts.serializers import UserSerializer
 
@@ -35,7 +35,7 @@ class FriendAddView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'No such user.'},
                             status=status.HTTP_404_NOT_FOUND)
-        friend_list = Friends.objects.get(user=request.user)
+        friend_list = Friend.objects.get(user=request.user)
         try:
             friend_list.add(new_friend)
         except friends.AlreadyExistsError:
@@ -54,7 +54,7 @@ class FriendListView(APIView):
         """
         List all the friends of the current user.
         """
-        user = Friends.objects.get(user=request.user)
+        user = Friend.objects.get(user=request.user)
         queryset = user.friends.all()
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

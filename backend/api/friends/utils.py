@@ -1,15 +1,15 @@
 from django.contrib.auth import get_user_model
 
-from .models import Friends
+from .models import Friend
 
 
 User = get_user_model()
 
 
-def get_object(user: User) -> Friends:
+def get_object(user: User) -> Friend:
     try:
-        user = Friends.objects.get(user=user)
+        user = Friend.objects.get(user=user)
     except Friends.DoesNotExist:
-        user = Friends(user=user)
+        user = Friend(user=user)
         user.save()
     return user

@@ -7,6 +7,8 @@ up-with-build:
 down:
 	@docker compose down
 
+re: down up-with-build
+
 exec:
 	@docker compose exec -it back-end $(CMD)
 
@@ -21,6 +23,9 @@ migrate:
 
 shell:
 	@docker compose exec -it back-end python manage.py shell
+
+create-super-user:
+	@docker compose exec -it back-end python manage.py createsuperuser
 
 check-style:
 	@bash checker.sh

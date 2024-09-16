@@ -4,7 +4,7 @@ from django.db import models
 from . import friends
 
 
-class Friends(models.Model):
+class Friend(models.Model):
     """
     Friends model to create list of friends.
     """
@@ -12,10 +12,6 @@ class Friends(models.Model):
                                 on_delete=models.CASCADE, related_name='user')
     friends = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True,
                                      related_name='friends')
-
-    class Meta:
-        verbose_name = 'Friends'
-        verbose_name_plural = 'Friends'
 
     def __str__(self) -> str:
         """

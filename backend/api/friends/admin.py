@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Friends
+from .models import Friend
 
 
-class FriendsAdmin(admin.ModelAdmin):
+class FriendAdmin(admin.ModelAdmin):
     readonly_fields = ['user', 'friends']
 
 
-admin.site.register(Friends, FriendsAdmin)
+admin.site.register(Friend, FriendAdmin)

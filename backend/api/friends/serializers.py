@@ -2,7 +2,7 @@ import logging
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Friends
+from .models import Friend
 from .utils import get_object
 
 
@@ -11,16 +11,16 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
-class FriendsSerializer(serializers.ModelSerializer):
+class FriendSerializer(serializers.ModelSerializer):
     """
     A serializer for the friends list.
     """
 
     class Meta:
-        model = Friends
+        model = Friend
         fields = ['friends']
 
-    def create(self, validated_data: dict[str, str]) -> Friends:
+    def create(self, validated_data: dict[str, str]) -> Friend:
         """
         Add a new friend.
 

@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .validators import lowercase_username_validator
-from ..friends.models import Friends
+from ..friends.models import Friend
 
 
 class UserManager(BaseUserManager):
@@ -42,7 +42,7 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         user.save()
-        new_list = Friends(user=user)
+        new_list = Friend(user=user)
         new_list.save()
         return user
 
