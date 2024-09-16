@@ -56,3 +56,7 @@ class FriendRequest(models.Model):
         receiver = Friend.objects.get(user=self.receiver)
         sender.add(self.receiver)
         receiver.add(self.sender)
+        self.delete()
+
+    def __str__(self) -> str:
+        return self.sender.username
