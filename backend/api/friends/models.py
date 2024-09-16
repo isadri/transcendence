@@ -30,5 +30,29 @@ class Friend(models.Model):
         if new_friend in self.friends.all():
             raise friends.AlreadyExistsError
         self.friends.add(new_friend)
-        friend = Friend.objects.get(user=new_friend)
-        friend.friends.add(self.user)
+
+
+class FriendRequest(models.Model):
+    """
+    Generate friend requests.
+
+    Attributes:
+        sender: The user who sends the request.
+        receiver: The user who receives the request.
+    """
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               on_delete=models.CASCADE,
+                               related_name='sender')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               on_delete=models.CASCADE,
+                               related_name='receiver')
+    when = models.DateTimeField(auto_now_add=True)
+
+    def accept(self) -> None:
+        """
+        Accept the friend request.
+        """
+        sender = Friend.objects.get(user=self.sender)
+        receiver = Friend.objects.get(user=self.receiver)
+        sender.add(self.receiver)
+        receiver.add(self.sender)

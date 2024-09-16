@@ -1,10 +1,13 @@
 from django.contrib import admin
 
-from .models import Friend
+from .models import Friend, FriendRequest
 
 
+@admin.register(Friend)
 class FriendAdmin(admin.ModelAdmin):
     readonly_fields = ['user', 'friends']
 
 
-admin.site.register(Friend, FriendAdmin)
+@admin.register(FriendRequest)
+class FriendRequestAdmin(admin.ModelAdmin):
+    list_display = ['sender', 'receiver', 'when']
