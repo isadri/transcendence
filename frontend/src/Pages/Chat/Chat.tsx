@@ -23,12 +23,12 @@ const Chat = () => {
 
 	const handleSendMessage = (newMessage: Message) => {
 		if (selectedFriend) {
-			const updatedMessage : Message = {
+			const updatedMessage: Message = {
 				senderId: 2,
 				receiverId: 1,
 				profile: "/images/wallpaper.jpeg",
 				message: newMessage.message,
-				time: moment().format('LT'),
+				time: moment().format("LT"),
 			};
 			setMessages((prevMessages) => [...prevMessages, updatedMessage]);
 		}
@@ -51,7 +51,18 @@ const Chat = () => {
 						onSendMessage={handleSendMessage}
 					/>
 				) : (
-					<div></div>
+					<div className="backgroundOfChat">
+						<img
+							src="./images/Group.svg"
+							alt="backgroundOfChat"
+							// className="backgroundOfChat"
+						/>
+						<span>Welcome to Chat!</span>
+						<p>
+							Please select a friend from your contacts list to start a
+							conversation. We're here when you're ready to chat!
+						</p>
+					</div>
 				)}
 			</div>
 		</div>

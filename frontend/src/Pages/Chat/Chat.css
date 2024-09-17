@@ -24,3 +24,26 @@
 	display: flex;
 	flex-direction: column;
 }
+
+.backgroundOfChat {
+	height: 100vh;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.backgroundOfChat span {
+	font-family: var(--sans);
+	padding: 20px 0 10px 0;
+	font-size: 20px;
+}
+
+.backgroundOfChat p {
+	font-family: var(--sans);
+	width: 45%;
+	text-align: center;
+	line-height: 1.3;
+	opacity: 0.6;
+}
