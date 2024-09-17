@@ -84,8 +84,8 @@ class User(PermissionsMixin, AbstractBaseUser):
             'unique': _('A user with that username already exists.'),
         }
     )
-    first_name = models.CharField(_('first name'), max_length=150, blank=True)
-    last_name = models.CharField(_('last name'), max_length=150, blank=True)
+    #first_name = models.CharField(_('first name'), max_length=150, blank=True)
+    #last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(
         _('email address'),
         unique=True,
@@ -130,18 +130,18 @@ class User(PermissionsMixin, AbstractBaseUser):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
 
-    def get_full_name(self) -> str:
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
-        full_name = f'{self.first_name} {self.last_name}'
-        return full_name
+    #def get_full_name(self) -> str:
+    #    """
+    #    Return the first_name plus the last_name, with a space in between.
+    #    """
+    #    full_name = f'{self.first_name} {self.last_name}'
+    #    return full_name
 
-    def get_short_name(self) -> str:
-        """
-        Return the short name for the user.
-        """
-        return self.first_name
+    #def get_short_name(self) -> str:
+    #    """
+    #    Return the short name for the user.
+    #    """
+    #    return self.first_name
 
     def email_user(self, subject, message, from_email=None, **kwargs) -> None:
         """
