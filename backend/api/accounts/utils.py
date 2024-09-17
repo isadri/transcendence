@@ -85,7 +85,7 @@ def create_store_tokens_for_user(user: User, status_code: int) -> Response:
     return response
 
 
-def create_user(user_info: dict[str, str]) -> Response:
+def create_user(username: str, email: str) -> Response:
     """
     Create a user if does not exist.
 
@@ -101,15 +101,13 @@ def create_user(user_info: dict[str, str]) -> Response:
         A Response object containing the user, and refresh and access tokens.
     """
     try:
-        user = User.objects.get(username=user_info['username'])
+        user = User.objects.get(username=username)
         status_code = status.HTTP_200_OK
     except User.DoesNotExist:
         user = User.objects.create_user(
-            username=user_info['username'],
+            username=username,
+            email=email,
             password=generate_password(),
-            first_name=user_info['first_name'],
-            last_name=user_info['last_name'],
-            email=user_info['email'],
             )
         status_code = status.HTTP_201_CREATED
     return create_store_tokens_for_user(user, status_code)
@@ -128,7 +126,7 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     """
     header = {'Authorization': f'Bearer {access_token}'}
     response = requests.get(userinfo_endpoint, headers=header)
-    return response.json()
+    return response.json(), response.status_code
 
 
 def state_match(state: str) -> bool:

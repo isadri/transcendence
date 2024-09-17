@@ -155,13 +155,7 @@ class GoogleAuthCodeView(APIView):
         This function use the create_user function from utils.py.
         """
         username = user_info['email'].split('@')[0].replace('.', '_')
-        info = {
-            'username': username,
-            'first_name': user_info['given_name'],
-            'last_name': user_info['family_name'],
-            'email': user_info['email'],
-        }
-        return create_user(info)
+        return create_user(username, user_info['email'])
 
     def get(self, request: Request) -> Response:
         """
@@ -235,8 +229,6 @@ class Intra42AuthCodeView(APIView):
         """
         info = {
             'username': user_info['login'],
-            'first_name': user_info['first_name'],
-            'last_name': user_info['last_name'],
             'email': user_info['email'],
         }
         return create_user(info)
@@ -251,8 +243,10 @@ class Intra42AuthCodeView(APIView):
         authorization_code = request.GET.get('code', '')
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
-        user_info = get_user_info(userinfo_endpoint, access_token)
-        response = self.create_user(user_info)
+        user_info, status_code = get_user_info(userinfo_endpoint, access_token)
+        if status_code != 200:
+            return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
+        response = create_user(user_info['login'], user_info['email'])
         return response
 
 
