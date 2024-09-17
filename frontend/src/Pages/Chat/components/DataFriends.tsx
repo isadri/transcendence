@@ -1,5 +1,3 @@
-// import DataMessage from "./DataMessage";
-
 const DataFriends = [
 	{
 		id: 1,
@@ -8,7 +6,6 @@ const DataFriends = [
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,
-		// messageData: DataMessage,
 	},
 	{
 		id: 2,
@@ -17,7 +14,6 @@ const DataFriends = [
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,
-		// messageData: DataMessage,
 	},
 	{
 		id: 3,
@@ -26,16 +22,14 @@ const DataFriends = [
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,
-		// messageData: DataMessage,
 	},
 	{
 		id: 4,
-		name: "lachhaby",
+		name: "naima",
 		profile: "/images/wallpaper.jpeg",
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,
-		// messageData: DataMessage,
 	},
 ];
 

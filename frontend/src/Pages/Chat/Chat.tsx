@@ -51,7 +51,7 @@ const Chat = () => {
 						onSendMessage={handleSendMessage}
 					/>
 				) : (
-					<div>Select a chat to start messaging</div>
+					<div></div>
 				)}
 			</div>
 		</div>

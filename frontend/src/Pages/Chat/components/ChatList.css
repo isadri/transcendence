@@ -42,6 +42,15 @@
 	cursor: pointer;
 }
 
+.selected {
+	background-color: var(--primary);
+	/* background-color: #8f4854; */
+}
+
+.item.selected:hover {
+	background-color: var(--primary);
+}
+
 .item:hover {
 	background-color: var(--fade);
 }
@@ -49,10 +58,11 @@
 .item:last-child {
 	border: none;
 }
-.item:last-child:hover {
+
+/* .item:last-child:hover {
 	position: relative;
-	border-radius: 0 0 20px 30px;/* i have issue in bottom */
-}
+	border-radius: 0 0 20px 30px;/* i have issue in bottom 
+} */
 
 .item .profile {
 	height: 40px;
