@@ -53,9 +53,8 @@ const Chat = () => {
 				) : (
 					<div className="backgroundOfChat">
 						<img
-							src="./images/Group.svg"
+							src="./ChatImages/backgroundOfChat.svg"
 							alt="backgroundOfChat"
-							// className="backgroundOfChat"
 						/>
 						<span>Welcome to Chat!</span>
 						<p>

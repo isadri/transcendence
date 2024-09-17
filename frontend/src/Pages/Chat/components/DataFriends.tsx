@@ -1,7 +1,7 @@
 const DataFriends = [
 	{
 		id: 1,
-		profile: "/images/wallpaper.jpeg",
+		profile: "/ChatImages/wallpaper.jpeg",
 		name: "rachid",
 		message: "Message content is typing a very long message...",
 		time: "now",
@@ -10,7 +10,7 @@ const DataFriends = [
 	{
 		id: 2,
 		name: "oussama",
-		profile: "/images/cat.png",
+		profile: "/ChatImages/cat.png",
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,
@@ -18,7 +18,7 @@ const DataFriends = [
 	{
 		id: 3,
 		name: "yasmine",
-		profile: "/images/wallpaper.jpeg",
+		profile: "/ChatImages/wallpaper.jpeg",
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,
@@ -26,7 +26,7 @@ const DataFriends = [
 	{
 		id: 4,
 		name: "naima",
-		profile: "/images/wallpaper.jpeg",
+		profile: "/ChatImages/wallpaper.jpeg",
 		message: "Message content is typing a very long message...",
 		time: "now",
 		status: <i className="fa-solid fa-check"></i>,

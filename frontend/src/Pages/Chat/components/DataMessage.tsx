@@ -12,7 +12,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
 			image: "",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
@@ -22,7 +22,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -33,7 +33,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
 			image: "",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
@@ -43,7 +43,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -52,8 +52,8 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
-			image: "./images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -62,7 +62,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -71,7 +71,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -82,7 +82,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
 			image: "",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
@@ -92,7 +92,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -101,8 +101,8 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
-			image: "./images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -111,7 +111,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -120,7 +120,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -131,7 +131,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
 			image: "",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
@@ -141,7 +141,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -150,8 +150,8 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 1,
 			receiverId: 2,
-			profile: "/images/wallpaper.jpeg",
-			image: "./images/wallpaper.jpeg",
+			profile: "/ChatImages/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -160,7 +160,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
@@ -169,7 +169,7 @@ const DataMessage: { [key: string]: Message[] } = {
 		{
 			senderId: 2,
 			receiverId: 1,
-			image: "./images/wallpaper.jpeg",
+			image: "./ChatImages/wallpaper.jpeg",
 			message:
 				"Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio fugiat nisi id expedita, quidem dolorum nesciunt unde facilis eaque,\
 			numquam fuga est provident asperiores incidunt cum perspiciatis voluptas dicta nihil.",
