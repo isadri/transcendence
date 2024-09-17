@@ -183,7 +183,6 @@ class Intra42LoginView(APIView):
         """
         Directs the user to the authorization server
         """
-        logger.debug('User tries to login with 42')
         return redirect('https://api.intra.42.fr/oauth/authorize?'
                         f'client_id={os.getenv("INTRA_ID")}'
                         f'&redirect_uri={os.getenv("INTRA_REDIRECT_URI")}'
