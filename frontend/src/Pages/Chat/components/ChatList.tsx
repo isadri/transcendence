@@ -1,26 +1,34 @@
 import "./ChatList.css";
-import DataFriends from "./DataFriends";
+import { Friend } from "./types";
 
-const ChatList = () => {
-	return (
-		<div className="ChatList">
-			{DataFriends.map((value) => {
-				return (
-					<div className="item" key={value.id}>
-						<img src={value.profile} alt="profile" className="profile" />
-						<div className="text">
-							<span> {value.name} </span>
-							<p> {value.message} </p>
-						</div>
-						<div className="ChatStatus">
-							<div> {value.time} </div>
-							{value.status}
-						</div>
-					</div>
-				);
-			})}
-		</div>
-	);
+interface ChatListProps {
+  friends: Friend[];
+  onSelectFriend: (friend: Friend) => void;
+  selectedFriend: Friend | null;
+}
+
+const ChatList = ({ friends, onSelectFriend, selectedFriend }: ChatListProps) => {
+  return (
+    <div className="ChatList">
+      {friends.map((friend) => (
+        <div
+          className={`item ${selectedFriend?.id === friend.id ? 'selected' : ''}`}
+          key={friend.id}
+          onClick={() => onSelectFriend(friend)}
+        >
+          <img src={friend.profile} alt="profile" className="profile" />
+          <div className="text">
+            <span>{friend.name}</span>
+            <p>{friend.message}</p>
+          </div>
+          <div className="ChatStatus">
+            <div>{friend.time}</div>
+            {friend.status}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default ChatList;
