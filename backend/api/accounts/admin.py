@@ -5,9 +5,10 @@ from .models import User
 
 
 class UserAdmin(BaseUserAdmin):
+    list_display = ['username', 'email', 'avatar']
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
-        ('Personal info', {'fields': ('avatar', 'first_name', 'last_name')}),
+        ('Personal info', {'fields': ('avatar',)}),
         ('Permissions', {'fields': ('is_staff',)}),
     )
 
