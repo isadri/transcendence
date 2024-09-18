@@ -1,13 +1,35 @@
 import { Friend } from "./types";
 import "./ChatTop.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ChatTopProps {
 	selectedFriend: Friend;
+	setSelectedFriend: React.Dispatch<React.SetStateAction<Friend | null>>;
 }
 
-const ChatTop = ({ selectedFriend }: ChatTopProps) => {
+const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
+	const closeMenuRef = useRef<HTMLDivElement>(null);
+	const buttonMenuRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				closeMenuRef.current &&
+				!closeMenuRef.current.contains(event.target as Node) &&
+				buttonMenuRef.current &&
+				!buttonMenuRef.current.contains(event.target as Node)
+			) {
+				setOpenMenu(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	return (
 		<div className="top">
@@ -18,18 +40,23 @@ const ChatTop = ({ selectedFriend }: ChatTopProps) => {
 					<p>Last seen today 00:56</p>
 				</div>
 			</div>
-			<i
-				className={`fa-solid fa-ellipsis-vertical icon-menu ${openMenu ? "activeMenu" : ""}`}
-				onClick={() => setOpenMenu(!openMenu)}
-			></i>
-			{openMenu && (
-				<ul className="menu-list">
-					<li>Invite to play</li>
-					<li>Delete chat</li>
-					<li>Close chat</li>
-					<li>Block</li>
-				</ul>
-			)}
+			<div ref={buttonMenuRef}>
+				<i
+					className={`fa-solid fa-ellipsis-vertical icon-menu ${
+						openMenu ? "activeMenu" : ""
+					}`}
+					ref={closeMenuRef}
+					onClick={() => setOpenMenu(!openMenu)}
+				></i>
+				{openMenu && (
+					<ul className="menu-list">
+						<li>Invite to play</li>
+						<li>Delete chat</li>
+						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
+						<li>Block</li>
+					</ul>
+				)}
+			</div>
 		</div>
 	);
 };

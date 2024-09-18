@@ -44,7 +44,7 @@
 	cursor: pointer;
 	text-align: center;
 	width: 25px;
-	padding: 1%;
+	padding: 17%;
 	border-radius: 100%;
 	object-fit: cover;
 	transition: 0.5s;
@@ -58,7 +58,7 @@
 	font-family: var(--sans);
 	position: absolute;
 	right: 2%;
-	top: 6vh;
+	top: 5.5vh;
 	list-style: none;
 	transition: 0.5s;
 	color: black;
@@ -73,6 +73,7 @@
 
 .menu-list li {
 	padding: 20px 40px;
+	cursor: pointer;
 }
 
 .menu-list li:hover {
