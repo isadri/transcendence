@@ -29,7 +29,15 @@
 .search-container .search-icon {
 	color: white;
 	margin-right: 10px;
+	cursor: pointer;
 }
+
+.search-container .arrow-icon {
+	color: white;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
 
 .search-container input {
 	border: none;

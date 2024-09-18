@@ -5,12 +5,16 @@ interface ChatListProps {
 	friends: Friend[];
 	onSelectFriend: (friend: Friend) => void;
 	selectedFriend: Friend | null;
+	setSearchFriend: React.Dispatch<React.SetStateAction<string>>;
+	setFocusOnSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatList = ({
 	friends,
 	onSelectFriend,
 	selectedFriend,
+	setSearchFriend,
+	setFocusOnSearch,
 }: ChatListProps) => {
 	return (
 		<div className="ChatList">
@@ -22,7 +26,8 @@ const ChatList = ({
 					key={friend.id}
 					onClick={() => {
 						onSelectFriend(friend)
-						
+						setSearchFriend("")
+						setFocusOnSearch(false)
 					}}
 				>
 					<img src={friend.profile} alt="profile" className="profile" />
