@@ -1,0 +1,96 @@
+.LastGame{
+    width: 50%;
+    padding-top: 20px;
+    font-family: var(--mono);
+    padding-left: 20px;
+}
+
+.LastGame h2{
+    color: var(--primary);
+    font-weight: 800;
+}
+
+
+
+.LastGame .RowEle{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--fade);
+    border-radius: 30px;
+    margin-top: 15px;
+    font-size: 12px;
+    height: 5vh;
+    width: 100%;
+}
+
+
+.LastGame .Row1{
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-left: 4%;
+}
+
+.LastGame .Row2{
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.LastGame .Row3{
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-right: 4%;
+}
+
+.LastGame .Row3 img, .LastGame .Row1 img{
+    width: 45px;
+}
+
+.Row1 span{
+    margin-left: 10px;
+}
+
+.Row3 span{
+    margin-right: 10px;
+}
+
+.score1{
+    margin-right: 10px;
+}
+
+.score2{
+    margin-left: 12px;
+}
+
+
+@media only screen and (max-width: 1073px){
+    .LastGame
+    {
+        width: 100%;
+        padding-left: 0px;
+    }
+    
+}
+
+@media only screen and (max-width: 750px){
+    .LastGame
+    {
+        width: 100%;
+        padding-left: 0px;
+    }
+    .Row1 span, .Row3 span{
+        display: none;
+    }
+    .LastGame .Row3 img, .LastGame .Row1 img{
+        width: 30px;
+    }
+    .LastGame .RowEle{
+        height: 7vh;
+    }
+}

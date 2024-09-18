@@ -1,0 +1,74 @@
+.GameModes{
+    display: flex;
+    flex-direction: column;
+    /* width: 90%; */
+    padding: 5px;
+}
+
+.GameModes h2{
+    font-family: var(--mono) ;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.GameContents{
+    display: flex;
+    justify-content: space-between;
+}
+
+.Mode{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--fade);
+    border: 1px solid var(--fade);
+    padding-left: 14px;
+    border-radius: 30px;
+    margin-top: 20px;
+    width: 30%;
+    height: 180px;
+    font-family: var(--mono);
+}
+
+.Mode:hover{
+    border: 1px solid var(--primary);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px var(--primary);
+}
+
+.Mode div p{
+    font-size: 12px;
+    font-weight: 320;
+    padding-top: 15px;
+    font-family: var(--sans);
+}
+
+.Mode div button{
+    background-color: #ff000000;
+    border: 1px solid white;
+    border-radius: 20px;
+    color: white;
+    width: 60px;
+    height: 25px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.Mode div button:hover{
+    background-color: #57265a;
+    border: 1px solid #57265a;
+}
+
+@media only screen and (max-width: 1073px){
+    .GameContents{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .GameModes{
+        width: 100%;
+    }
+    .Mode{
+        width: 90%;
+    }
+}

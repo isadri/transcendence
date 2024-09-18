@@ -1,0 +1,94 @@
+
+.GameRank{
+    width: 50%;
+    padding-top: 20px;
+    font-family: var(--mono);
+}
+
+.GameRank h2{
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.GameRank .RowEle{
+    display: flex;
+    align-items: center;
+    background-color: var(--fade);
+    border-radius: 30px;
+    margin-top: 15px;
+    font-size: 12px;
+    height: 5vh;
+    width: 100%;
+}
+
+.GameRank .row1, .GameRank .row2{
+    display: flex;
+    align-items: center;
+}
+
+.GameRank .row1{
+    width: 60%;
+    display: flex;
+    justify-content: start;
+    margin-left: 4%;
+}
+
+.GameRank .row2{
+    width: 40%;
+    display: flex;
+    justify-content: end;
+}
+
+.GameRank .ProfileRev{
+    display: flex;
+    align-items: center;
+}
+
+.GameRank .row1 *:not(:nth-child(1)){
+    margin-left: 10px;
+}
+
+.GameRank .row1 .ProfileRev img{
+    width: 45px;
+}
+
+.GameRank .row2 *{
+    margin-right: 9%;
+}
+
+.GameRank .row1 *:nth-child(1)
+{
+    margin-right: 3%;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+@media only screen and (max-width: 1073px){
+    
+    .GameRank
+    {
+        width: 100%;
+    }
+    
+}
+
+@media only screen and (max-width: 750px){
+    
+    .GameRank
+    {
+        width: 100%;
+    }
+    .GameRank .row2{
+        display: none;
+    }
+    .GameRank .row1 .ProfileRev img{
+        width: 30px;
+    }
+    .GameRank .row1 img{
+        width: 20px;
+    }
+    .GameRank .RowEle{
+        height: 7vh;
+    }
+}
