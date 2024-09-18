@@ -1,7 +1,7 @@
 .friendsProfile{
     width: 22%;
     background-color: var(--fade);
-    height: 900px;
+    height: 72vh;
     border-radius: 20px;
 }
 

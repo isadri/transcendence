@@ -2,6 +2,7 @@
     width: 40%;
     background-color: var(--fade);
     border-radius: 20px;
+    height: 22vh;
 }
 
 .BadgesList h2{
@@ -14,24 +15,62 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 2%;
-    /* justify-content: center; */
-    position: absolute;
+    height: 15vh;
+    justify-content: center;
+    position: relative;
     width: 100%;
 }
 
-.badgesList{
+.badgesList {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    height: auto;
     width: 100%;
-    max-width: 35%;
+    max-width: 400px;
+    position: relative; 
     overflow-x: auto;
-    -ms-overflow-style: none;  
-    scrollbar-width: none;
+    scroll-behavior: smooth;
+    margin-left: 2%;
+    margin-right: 2%;
 }
 
-.badgesList img{
-    
+.badgesList::-webkit-scrollbar {
+    width: 0;
+}
+
+.badgesList .child{
+    cursor: pointer;
+    /* width: 70%; */
+    /* overflow: hidden; */
+}
+
+.badgesList .child img{
+    width: 130px;
+    height: 150px;
+}
+
+
+.badgesList .child:not(:nth-child(2)){
+    opacity: 0.3;
+}
+
+.badgesList .child:nth-child(1){
+    filter:brightness(0);
+    opacity: 0.1;
+}
+.badgesScroll button{
+    background-color: #ff000000;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.badgesScroll button:hover{
+    color: var(--primary);
 }
 
 /* .badgesList:  */

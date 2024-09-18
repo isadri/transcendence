@@ -3,6 +3,7 @@
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
+    height: 22vh;
     flex-direction: column;
 }
 
@@ -31,11 +32,11 @@
 }
 
 .ProfileContent{
-    height: 50%;
+    height: 15vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-top: 3%;
+    /* margin-top: 3%; */
 }
 
 .imgUser{
