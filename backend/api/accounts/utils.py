@@ -10,6 +10,17 @@ from .models import User
 from .serializers import UserSerializer
 
 
+def send_email_otp(user) -> None:
+    """
+    Send an email to the user containg the opt token.
+    """
+    user.email_user(
+        subject='Email verification',
+        message='OTP 123',
+        from_email='issam.abk01@gmail.com'
+    )
+
+
 def generate_password() -> str:
     """
     Generate and return a password.

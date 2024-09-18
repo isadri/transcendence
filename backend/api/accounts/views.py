@@ -19,6 +19,7 @@ from .utils import (
     create_user,
     get_user_info,
     state_match,
+    send_email_otp,
 )
 
 
@@ -267,7 +268,7 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            #send_email_otp(user)
+            send_email_otp(user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
