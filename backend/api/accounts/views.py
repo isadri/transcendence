@@ -249,13 +249,27 @@ class Intra42AuthCodeView(APIView):
         return response
 
 
-class RegisterView(generics.CreateAPIView):
+class RegisterView(APIView):
     """
     Create a new user.
     """
-    serializer_class = UserSerializer
     permission_classes = [AllowAny]
     authentication_classes = []
+
+    def post(self, request: Request) -> Response:
+        """
+        Create a new user.
+
+        Returns:
+            The information of the new user. Returns error message if the data
+            provided is not valid.
+        """
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            #send_email_otp(user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
