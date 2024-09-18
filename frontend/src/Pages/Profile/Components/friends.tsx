@@ -4,7 +4,10 @@ import img from '../images/profile.svg'
 function friends() {
   return (
     <div className='friendsProfile'>
-      <h2>Friends</h2>
+        <h2>Friends</h2>
+      <div className='title'>
+        <i className="fa-solid fa-user-group"></i>
+      </div>
       <div className='FriensList'>
         <div className='friend'>
           <div className='friendInfo'>

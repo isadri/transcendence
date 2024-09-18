@@ -118,3 +118,8 @@
     font-size: 12px;
 }
 
+@media only screen and (max-width: 1150px){
+    .ProfileUser{
+        width: 100%;
+    }
+}

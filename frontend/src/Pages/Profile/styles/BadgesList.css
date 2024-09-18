@@ -73,4 +73,19 @@
     color: var(--primary);
 }
 
-/* .badgesList:  */
+@media only screen and (max-width: 1255px){
+    .badgesList {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media only screen and (max-width: 1150px){
+    .BadgesList{
+        width: 100%;
+        margin-top: 2%;
+    }
+    .BadgesList h2{
+        margin-top: 3%;
+    }
+}

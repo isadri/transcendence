@@ -20,8 +20,6 @@
     height: 100%;
 }
 
-
-
 .GameHestory .table .HeaderRow *:not(:nth-child(1)){
     padding-right: 6%;
 }
@@ -77,3 +75,6 @@
     color: #ff0000;
 }
 
+/* @media only screen and (max-width: 1150px){
+
+} */

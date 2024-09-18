@@ -7,7 +7,7 @@
 }
 
 .firstRaw, .SecondRaw{
-    width: 100%;
+    /* width: 100%; */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -15,26 +15,21 @@
 
 .SecondRaw{
     padding-top: 25px;
-    /* height: 64vh; */
-}
-
-.firstRaw{
-    /* height: 25vh; */
 }
 
 
-/* @media only screen and (max-width: 1073px){
-    .SecondRaw, .firstRaw{
+
+@media only screen and (max-width: 1150px){
+    .Profile{
+        overflow-y: auto;
+        -ms-overflow-style: none;  
+        scrollbar-width: none;
+    }
+    .Profile::-webkit-scrollbar {
+        display: none;
+    }
+    .firstRaw{
         display: flex;
         flex-direction: column;
     }
-    .SecondRaw *{ 
-        height: 22vh;
-        width: 100% !important;
-    }
-    .firstRaw *
-    {
-        height: 12vh;
-        width: 100% !important;
-    }
-} */
+}
