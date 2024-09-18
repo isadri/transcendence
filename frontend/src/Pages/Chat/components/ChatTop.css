@@ -39,3 +39,42 @@
 	font-size: 14px;
 	font-weight: 300;
 }
+
+.icon-menu {
+	cursor: pointer;
+	text-align: center;
+	width: 25px;
+	padding: 1%;
+	border-radius: 100%;
+	object-fit: cover;
+	transition: 0.5s;
+}
+
+.activeMenu {
+	background-color: #d9d9d94d;
+}
+
+.menu-list {
+	font-family: var(--sans);
+	position: absolute;
+	right: 2%;
+	top: 6vh;
+	list-style: none;
+	transition: 0.5s;
+	color: black;
+	background-color: white;
+	font-size: 19px;
+	display: flex;
+	flex-direction: column;
+	gap: 1%;
+	border-radius: 2px;
+	z-index: 20;
+}
+
+.menu-list li {
+	padding: 20px 40px;
+}
+
+.menu-list li:hover {
+	background-color: #c1596ccc;
+}

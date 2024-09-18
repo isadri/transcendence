@@ -6,7 +6,7 @@
 	overflow: hidden;
 	overflow-y: auto;
 	scrollbar-width: thin;
-	padding: 2vh;
+	padding: 2vh 2vh 0;
 	scrollbar-color: #888 transparent;
 	font-family: var(--sans);
 }
