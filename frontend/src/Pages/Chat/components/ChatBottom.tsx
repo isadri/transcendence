@@ -44,6 +44,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			if (event.key === "Enter") {
 				event.preventDefault();
 				handleSend();
+				setOpen(false);
 			}
 		};
 
