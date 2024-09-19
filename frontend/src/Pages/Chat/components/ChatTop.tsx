@@ -7,6 +7,7 @@ interface ChatTopProps {
 	setSelectedFriend: React.Dispatch<React.SetStateAction<Friend | null>>;
 	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 	setBlock: React.Dispatch<React.SetStateAction<boolean>>;
+	block: boolean;
 }
 
 const ChatTop = ({
@@ -14,6 +15,7 @@ const ChatTop = ({
 	setSelectedFriend,
 	setMessages,
 	setBlock,
+	block,
 }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
@@ -43,6 +45,11 @@ const ChatTop = ({
 		setOpenMenu(false);
 	};
 
+	const handleBlock = () => {
+		setBlock(!block);
+		setOpenMenu(false);
+	};
+
 	return (
 		<div className="top">
 			<div className="profileInfo">
@@ -65,7 +72,7 @@ const ChatTop = ({
 						<li>Invite to play</li>
 						<li onClick={handleDeleteChat}>Delete chat</li>
 						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
-						<li onClick={() => setBlock(true)} >Block</li>
+						<li onClick={handleBlock}>{!block ? "Block" : "Unblock"}</li>
 					</ul>
 				)}
 			</div>

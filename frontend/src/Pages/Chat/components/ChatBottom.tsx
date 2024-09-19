@@ -6,10 +6,11 @@ interface ChatBottomProps {
 	text: string;
 	setText: React.Dispatch<React.SetStateAction<string>>;
 	handleSend: () => void;
+	block: boolean;
 }
 
 const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
-	({ text, setText, handleSend }, ref) => {
+	({ text, setText, handleSend, block }, ref) => {
 		const [open, setOpen] = useState(false);
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
@@ -50,29 +51,36 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 
 		return (
 			<div className="bottom">
-				<div className="emoji" ref={buttonRef}>
-					<i
-						className="fa-solid fa-face-smile emoji-icon"
-						onClick={() => setOpen((prev) => !prev)}
-					></i>
-					<div className="picker" ref={closeEmoji}>
-						{open && <EmojiPicker onEmojiClick={handleEmojiClick} />}
-					</div>
-				</div>
-				<div className="messageContent">
-					<i className="fa-solid fa-paperclip partage-icon"></i>
-					<input
-						type="text"
-						placeholder="Type a message..."
-						value={text}
-						onChange={(event) => setText(event.target.value)}
-						onKeyDown={handleKeyDown}
-						ref={ref}
-					/>
-				</div>
-				<button className="subButton" onClick={handleSend}>
-					<i className="fa-solid fa-paper-plane send-icon"></i>
-				</button>
+				{!block ? (
+					<>
+						<div className="emoji" ref={buttonRef}>
+							<i
+								className="fa-solid fa-face-smile emoji-icon"
+								onClick={() => setOpen((prev) => !prev)}
+							></i>
+							<div className="picker" ref={closeEmoji}>
+								{open && <EmojiPicker onEmojiClick={handleEmojiClick} />}
+							</div>
+						</div>
+						<div className="messageContent">
+							<i className="fa-solid fa-paperclip partage-icon"></i>
+							<input
+								type="text"
+								placeholder="Type a message..."
+								disabled={block}
+								value={text}
+								onChange={(event) => setText(event.target.value)}
+								onKeyDown={handleKeyDown}
+								ref={ref}
+							/>
+						</div>
+						<button className="subButton" onClick={handleSend}>
+							<i className="fa-solid fa-paper-plane send-icon"></i>
+						</button>
+					</>
+				) : (
+					<div className="block">Can't send a message to blocked contact.</div>
+				)}
 			</div>
 		);
 	}

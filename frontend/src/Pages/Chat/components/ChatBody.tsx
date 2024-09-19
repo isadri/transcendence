@@ -45,14 +45,16 @@ const ChatBody = ({
 				setSelectedFriend={setSelectedFriend}
 				setMessages={setMessages}
 				setBlock={setBlock}
-			/>
+				block={block}
+				/>
 			<ChatCenter messages={messages} />
-			{!block ? <ChatBottom
+			<ChatBottom
 				text={text}
 				setText={setText}
 				handleSend={handleSend}
 				ref={ref}
-			/> : <div>block</div>}
+				block={block}
+			/>
 		</div>
 	);
 };
