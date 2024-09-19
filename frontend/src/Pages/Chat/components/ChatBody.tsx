@@ -11,6 +11,7 @@ interface ChatBodyProps {
 	messages: Message[];
 	onSendMessage: (message: Message) => void;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<Friend | null>>;
+	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const ChatBody = ({
@@ -18,9 +19,11 @@ const ChatBody = ({
 	messages,
 	onSendMessage,
 	setSelectedFriend,
+	setMessages,
 }: ChatBodyProps) => {
 	const [text, setText] = useState("");
 	const ref = useRef<HTMLInputElement>(null);
+	const [block, setBlock] = useState(false);
 
 	const handleSend = () => {
 		if (text.trim()) {
@@ -37,14 +40,19 @@ const ChatBody = ({
 
 	return (
 		<div className="chatContent">
-			<ChatTop selectedFriend={selectedFriend} setSelectedFriend={setSelectedFriend} />
+			<ChatTop
+				selectedFriend={selectedFriend}
+				setSelectedFriend={setSelectedFriend}
+				setMessages={setMessages}
+				setBlock={setBlock}
+			/>
 			<ChatCenter messages={messages} />
-			<ChatBottom
+			{!block ? <ChatBottom
 				text={text}
 				setText={setText}
 				handleSend={handleSend}
 				ref={ref}
-			/>
+			/> : <div>block</div>}
 		</div>
 	);
 };

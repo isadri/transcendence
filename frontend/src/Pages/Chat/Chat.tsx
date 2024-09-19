@@ -50,6 +50,7 @@ const Chat = () => {
 						messages={messages}
 						onSendMessage={handleSendMessage}
 						setSelectedFriend={setSelectedFriend}
+						setMessages={setMessages}
 					/>
 				) : (
 					<div className="backgroundOfChat">
