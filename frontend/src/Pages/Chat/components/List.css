@@ -1,13 +1,64 @@
-.container {
-	height: 2vh;
+.list {
 	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100vh;
+}
+
+.container {
+	position: relative;
+	display: flex;
+	height: 2vh;
 	flex-direction: row;
 	justify-content: space-between;
 	border-radius: 30px 30px 0 0;
 	background-color: var(--itemColor);
-	font-size: 24px;
 	padding: 2.5vh;
+	font-size: 24px;
 	font-family: var(--sans);
+}
+
+.container .iconMenu {
+	width: 27px;
+	height: 26px;
+	cursor: pointer;
+	padding: 2px;
+	text-align: center;
+	border-radius: 100%;
+	object-fit: cover;
+	transition: 0.5s;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.activeMenu {
+	background-color: #d9d9d94d;
+}
+
+.container-list {
+	font-family: var(--sans);
+	position: absolute;
+	right: 30.5px;
+	top: 90%;
+	list-style: none;
+	color: black;
+	background-color: white;
+	font-size: 19px;
+	display: flex;
+	flex-direction: column;
+	gap: 1%;
+	border-radius: 2px;
+	z-index: 10;
+}
+
+.container-list li {
+	padding: 20px 40px;
+	cursor: pointer;
+}
+
+.container-list li:hover {
+	background-color: #c1596ccc;
 }
 
 .search {
@@ -37,7 +88,6 @@
 	margin-right: 10px;
 	cursor: pointer;
 }
-
 
 .search-container input {
 	border: none;

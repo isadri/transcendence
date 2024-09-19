@@ -13,6 +13,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	const [searchFriend, setSearchFriend] = useState("");
 	const [results, setResults] = useState<Friend[]>([]);
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
+	const [openMsgMenu, setOpenMsgMenu] = useState(false);
 
 	const handleSearchFriend = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
@@ -29,10 +30,19 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	};
 
 	return (
-		<>
+		<div className="list">
 			<div className="container">
 				<div>Messages</div>
-				<i className="fa-solid fa-ellipsis-vertical"></i>
+				<i
+					className={`fa-solid fa-ellipsis-vertical iconMenu ${
+						openMsgMenu ? "activeMenu" : ""
+					}`}
+					onClick={() => setOpenMsgMenu(!openMsgMenu)}
+				></i>
+				{openMsgMenu && <ul className="container-list">
+					<li>Profile</li>
+					<li>Setting</li>
+				</ul>}
 			</div>
 			<div className="search">
 				<div className="search-container">
@@ -65,7 +75,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 				setSearchFriend={setSearchFriend}
 				setFocusOnSearch={setFocusOnSearch}
 			/>
-		</>
+		</div>
 	);
 };
 
