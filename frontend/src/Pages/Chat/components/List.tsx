@@ -13,15 +13,13 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	const [searchFriend, setSearchFriend] = useState("");
 	const [results, setResults] = useState<Friend[]>([]);
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
-	const closeMenuRef = useRef<HTMLDivElement>(null);
-	// const [openMsgMenu, setOpenMsgMenu] = useState(false);
-	// const iconMenuRef = useRef<HTMLDivElement>(null);
+	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
-				closeMenuRef.current &&
-				!closeMenuRef.current.contains(event.target as Node) &&
+				ChangeSearchRef.current &&
+				!ChangeSearchRef.current.contains(event.target as Node) &&
 				searchFriend.trim() === ""
 			) {
 				setFocusOnSearch(false);
@@ -55,26 +53,16 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 		<div className="list">
 			<div className="container">
 				<div>Messages</div>
-				<i className="fa-solid fa-ellipsis-vertical iconMenu"></i>
-				{/* <i
-					className={`fa-solid fa-ellipsis-vertical iconMenu ${
-						openMsgMenu ? "activeMenu" : ""
-					}`}
-					onClick={() => setOpenMsgMenu(!openMsgMenu)}
-				></i>
-				{openMsgMenu && <ul className="container-list">
-					<li>Profile</li>
-					<li>Setting</li>
-				</ul>} */}
+				<i className="fa-regular fa-square-plus"></i>
 			</div>
 			<div className="search">
 				<div className="search-container">
-					<div className="iconSearch" ref={closeMenuRef}>
+					<div className="iconSearch" ref={ChangeSearchRef}>
 						{focusOnSearch ? (
 							<i
 								className="fa-solid fa-arrow-left arrow-icon"
 								onClick={handleReturnToList}
-								ref={closeMenuRef}
+								ref={ChangeSearchRef}
 							></i>
 						) : (
 							<i className="fa-solid fa-magnifying-glass search-icon"></i>

@@ -19,15 +19,15 @@ const ChatTop = ({
 }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
-	// const buttonMenuRef = useRef<HTMLDivElement>(null);
+	const buttonMenuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				closeMenuRef.current &&
-				!closeMenuRef.current.contains(event.target as Node) 
-				// buttonMenuRef.current &&
-				// !buttonMenuRef.current.contains(event.target as Node)
+				!closeMenuRef.current.contains(event.target as Node) &&
+				buttonMenuRef.current &&
+				!buttonMenuRef.current.contains(event.target as Node)
 			) {
 				setOpenMenu(false);
 			}
@@ -59,7 +59,7 @@ const ChatTop = ({
 					<p>Last seen today 00:56</p>
 				</div>
 			</div>
-			<div>
+			<div  ref={buttonMenuRef}>
 				<i
 					className={`fa-solid fa-ellipsis-vertical icon-menu ${
 						openMenu ? "activeMenu" : ""
