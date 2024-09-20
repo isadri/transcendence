@@ -7,7 +7,7 @@
 }
 
 .firstRaw, .SecondRaw{
-    /* width: 100%; */
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -17,12 +17,21 @@
     padding-top: 25px;
 }
 
+.SecondRaw .AddRaw{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+}
 
+
+.SecondRaw .AddRaw .LastAchievement{
+    display: none;
+}
 
 @media only screen and (max-width: 1150px){
     .Profile{
         overflow-y: auto;
-        -ms-overflow-style: none;  
+        -ms-overflow-style: none;
         scrollbar-width: none;
     }
     .Profile::-webkit-scrollbar {
@@ -31,5 +40,17 @@
     .firstRaw{
         display: flex;
         flex-direction: column;
+    }
+}
+
+@media only screen and (max-width: 800px){
+    .SecondRaw .LastAchievement{
+        display: none;
+    }
+    .SecondRaw .AddRaw .LastAchievement{
+        display: flex;
+    }
+    .SecondRaw .AddRaw{
+        width: 90%;
     }
 }

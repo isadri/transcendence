@@ -13,7 +13,9 @@ const BackGround = ({ children }: Props) => {
       <img src={circl} alt="#" className="circle" />
       <div className="rectangle2"></div>
       <div className="rectangle3"></div>
-      <div className="mainPage">{children}</div>
+      <div className="container">
+        <div className="mainPage">{children}</div>
+      </div>
     </>
   );
 };

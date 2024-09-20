@@ -3,6 +3,8 @@
     height: 72vh;
     background-color: var(--fade);
     border-radius: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .LastAchievement h2{
@@ -61,5 +63,14 @@
     
     .AchivementInfo{
         margin-left: 7%;
+    }
+}
+
+
+@media only screen and (max-width: 800px){
+    .LastAchievement{
+        height: 35vh;
+        width: 100%;
+        margin-top: 2vh;
     }
 }

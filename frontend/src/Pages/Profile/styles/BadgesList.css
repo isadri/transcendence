@@ -3,22 +3,15 @@
     background-color: var(--fade);
     border-radius: 20px;
     height: 22vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .BadgesList h2{
     color: var(--primary);
     font-family: var(--sans);
     margin: 5% 0 0 5%;
-}
-
-.badgesScroll{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 15vh;
-    justify-content: center;
-    position: relative;
-    width: 100%;
+    font-size: 2vh;
 }
 
 .badgesList {
@@ -36,14 +29,26 @@
     margin-right: 2%;
 }
 
+.badgesScroll{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 15vh;
+    width: 100%;
+}
+
 .badgesList::-webkit-scrollbar {
     width: 0;
 }
 
 .badgesList .child{
     cursor: pointer;
-    /* width: 70%; */
-    /* overflow: hidden; */
+}
+
+.badgesList{
+    display: flex;
 }
 
 .badgesList .child img{
@@ -87,5 +92,26 @@
     }
     .BadgesList h2{
         margin-top: 3%;
+    }
+}
+
+@media only screen and (max-width: 800px){
+    .badgesList {
+        max-width: 300px;
+    }
+    .badgesList .child img{
+        width: 100px;
+        height: 130px;
+    }
+}
+
+@media only screen and (max-width: 400px){
+    .badgesList {
+        max-width: 200px;
+        margin-top: 3%;
+    }
+    .badgesList .child img{
+        width: 70px;
+        height: 110px;
     }
 }

@@ -8,11 +8,11 @@ function BadgesList() {
 
   const ScrollLeft = ()=>{
       var left = document.querySelector(".badgesList")
-      left?.scrollBy(-125,0);
+      left?.scrollBy(-(left?.scrollWidth/6),0)
   }
   const ScrollRight = ()=>{
       var right = document.querySelector(".badgesList")
-      right?.scrollBy(125,0);
+      right?.scrollBy(right?.scrollWidth/6,0)
   }
 
 return (

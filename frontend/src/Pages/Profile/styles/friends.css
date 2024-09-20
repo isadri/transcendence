@@ -98,7 +98,12 @@
     }
 }
 
+
+
 @media only screen and (max-width: 800px){
+    .friendsProfile{
+        width: 8%;
+    }
     .friendsProfile  .title *:nth-child(1) {
         color: var(--primary);
         display: flex;
@@ -116,9 +121,6 @@
     
      .FriensList .friend *:nth-child(2){
         display: none;
-    }
-    .friendsProfile{
-        width: 8%;
     }
     .FriensList .friend .friendInfo img{
         margin-left: 3%;

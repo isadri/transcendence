@@ -86,14 +86,6 @@
     }
 }
 
-@media only screen and (min-width: 1900px){
- 
-    .homePage {
-        margin-left: 400px;
-        margin-right: 400px;
-    }
-}
-
 /* @media only screen and (min-height: 1030px){
     .homePage {
         margin-top: 100px;

@@ -1,10 +1,12 @@
+import { useEffect } from 'react'
 import '../styles/GameHestory.css'
 
 function GameHestory() {
+
   return (
     <div className='GameHestory'>
       <h2>Game Hestory</h2>
-      <div className='table'>
+      {/* <div className='table'> */}
         {/* <div className='HeaderRow'>
           <span>Result</span>
           <span>Level xp</span>
@@ -124,7 +126,7 @@ function GameHestory() {
             <span>10 minute ago</span>
           </div>
         </div>
-      </div>
+      {/* </div> */}
     </div>
   )
 }

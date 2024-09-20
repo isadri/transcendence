@@ -11,6 +11,8 @@ const SideNavbar = () => {
 	const pathname = useLocation().pathname;
 	console.log(pathname);
   const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
+  console.log(isSmallDevice);
+  
   const [activeItem, setActiveItem] = useState<string>(pathname);
   const [logoutColor, setLogoutColor] = useState("#ffffffcc");
   const handleIconClick = (id: string) => {

@@ -1,7 +1,8 @@
 
 .GameRank{
     width: 50%;
-    padding-top: 20px;
+    margin-top: 20px;
+    border-radius: 15px;
     font-family: var(--mono);
 }
 
@@ -10,15 +11,25 @@
     font-weight: 800;
 }
 
+.GameRank .table{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--fade);
+    border-radius: 15px;
+    height: 45.5vh;
+    margin-top: 2%;
+    width: 100%;
+}
 .GameRank .RowEle{
     display: flex;
     align-items: center;
-    background-color: var(--fade);
     border-radius: 30px;
     margin-top: 15px;
     font-size: 12px;
+    background-color: var(--fade);
     height: 5vh;
-    width: 100%;
+    width: 95%;
 }
 
 .GameRank .row1, .GameRank .row2{

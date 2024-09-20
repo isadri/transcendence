@@ -14,7 +14,10 @@ const Profile = () => {
         <BadgesList/>
       </div>
       <div className="SecondRaw">
-        <GameHestory/>
+        <div className="AddRaw">
+          <GameHestory/>
+          <LastAchievement/>
+        </div>
         <LastAchievement/>
         <Friends/>
       </div>
