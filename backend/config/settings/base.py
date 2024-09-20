@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import timedelta
 from pathlib import Path
 
@@ -11,6 +12,9 @@ SECRET_KEY = 'django-insecure-&llk^3rmodi5^_#c+#w(&vb_ro^-=)u*@&3p9#d4+cwkcwy$)w
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# The initial time used for generating TOTP values
+INITIAL_TIME = time.time()
 
 ALLOWED_HOSTS = ['*']
 

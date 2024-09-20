@@ -1,24 +1,26 @@
 import hmac
 import random
 import string
+import time
 from hashlib import sha1
+from math import floor
+from typing import Optional
+from django.conf import settings
 
 
 class HOTP:
     """
-    This class implement the HMAC-Based One-Time Password algorithm based on
-    HMAC-SHA-1 algorithm.
+    This class implement the HMAC-Based One-Time Password (HOTP) algorithm
+    based on HMAC-SHA-1 algorithm.
     """
-    def __init__(self):
-        self.counter: int = 0
 
     DIGIT = 6
 
-    def hmac_sha1(self, shared_secret: bytes) -> bytes:
+    def hmac_sha1(self, shared_secret: bytes, counter: float) -> bytes:
         """
         Return the HMAC-SHA-1 value using shared_secret.
         """
-        hashed = hmac.new(shared_secret, str(self.counter).encode('utf-8'),
+        hashed = hmac.new(shared_secret, str(counter).encode('utf-8'),
                           digestmod=sha1)
         return hashed.digest()
 
@@ -46,9 +48,35 @@ class HOTP:
                     (hmac_sha1_value[offset + 3]))
         return bin_code
 
-    def value(self, shared_secret: bytes):
+    def generate(self, shared_secret: bytes,
+                 counter: Optional[float] = 0) -> str:
         """
         Return the HOTP value.
         """
-        hmac_sha1_value = self.hmac_sha1(shared_secret.encode('utf-8'))
-        return self.extract(hmac_sha1_value) % (10 ** HOTP.DIGIT)
+        hmac_sha1_value = self.hmac_sha1(shared_secret.encode('utf-8'),
+                                         counter)
+        return str(self.extract(hmac_sha1_value) % (10 ** HOTP.DIGIT))
+
+
+class TOTP:
+    """
+    This class implement the Time-Based One-Time Password (TOTP) algorithm.
+    """
+
+    TIME_STEP = 30
+
+    def generate(self, shared_secret: str) -> str:
+        """
+        This method generates the TOTP value using HOTP algorithm and time as
+        a counter in HOTP.
+
+        Args:
+            shared_secret: The key that used to generate and verify the OTP
+            value.
+
+        Returns:
+            OTP value.
+        """
+        hotp = HOTP()
+        time_steps = floor((settings.INITIAL_TIME - time.time()) / TOTP.TIME_STEP)
+        return hotp.generate(shared_secret, time_steps)
