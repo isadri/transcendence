@@ -1,6 +1,10 @@
+import './Setting.css'
+
 const Setting = () => {
   return (
-    <div></div>
+    <div className="settingPage">
+
+    </div>
   )
 }
 
