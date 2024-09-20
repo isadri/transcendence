@@ -9,13 +9,17 @@ class HOTP:
     This class implement the HMAC-Based One-Time Password algorithm based on
     HMAC-SHA-1 algorithm.
     """
+    def __init__(self):
+        self.counter: int = 0
+
     DIGIT = 6
 
     def hmac_sha1(self, shared_secret: bytes) -> bytes:
         """
         Return the HMAC-SHA-1 value using shared_secret.
         """
-        hashed = hmac.new(shared_secret, digestmod=sha1)
+        hashed = hmac.new(shared_secret, str(self.counter).encode('utf-8'),
+                          digestmod=sha1)
         return hashed.digest()
 
     def extract(self, hmac_sha1_value: bytes) -> int:
