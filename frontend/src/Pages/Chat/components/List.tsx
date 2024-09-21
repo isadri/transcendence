@@ -3,6 +3,7 @@ import ChatList from "./ChatList";
 import "./List.css";
 import { Friend } from "./types";
 
+
 interface ListProps {
 	friends: Friend[];
 	onSelectFriend: (friend: Friend) => void;
@@ -53,7 +54,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 		<div className="list">
 			<div className="container">
 				<div>Messages</div>
-				<i className="fa-regular fa-square-plus"></i>
+				<img src="/ChatImages/newChat.svg" alt="New Chat" className="newChat" />
 			</div>
 			<div className="search">
 				<div className="search-container">

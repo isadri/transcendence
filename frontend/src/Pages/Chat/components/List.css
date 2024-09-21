@@ -18,6 +18,12 @@
 	font-family: var(--sans);
 }
 
+.container .newChat {
+	width: 24px;
+	height: 2.5vh;
+	cursor: pointer;
+}
+
 .container .iconMenu {
 	width: 27px;
 	height: 26px;
@@ -34,31 +40,6 @@
 
 .activeMenu {
 	background-color: #d9d9d94d;
-}
-
-.container-list {
-	font-family: var(--sans);
-	position: absolute;
-	right: 30.5px;
-	top: 90%;
-	list-style: none;
-	color: black;
-	background-color: white;
-	font-size: 19px;
-	display: flex;
-	flex-direction: column;
-	gap: 1%;
-	border-radius: 2px;
-	z-index: 10;
-}
-
-.container-list li {
-	padding: 20px 40px;
-	cursor: pointer;
-}
-
-.container-list li:hover {
-	background-color: #c1596ccc;
 }
 
 .search {
