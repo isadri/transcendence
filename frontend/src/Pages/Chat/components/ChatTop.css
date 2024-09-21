@@ -79,3 +79,61 @@
 .menu-list li:hover {
 	background-color: #c1596ccc;
 }
+
+@media (max-width: 478px) {
+	.top {
+		height: 3.5vh;
+		border-radius: 0;
+		/* display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: var(--itemColor);
+		font-size: 20px;
+		padding: 2.5vh;
+		font-family: var(--sans); */
+	}
+
+	.profileInfo .image {
+		height: 40px;
+		width: 40px;
+		/* border-radius: 50%;
+		object-fit: cover; */
+	}
+
+	.textInfo span {
+		font-weight: 400;
+		font-size: 19px;
+	}
+
+	.textInfo p {
+		font-size: 13px;
+		font-weight: 200;
+	}
+
+	.icon-menu {
+		cursor: pointer;
+		text-align: center;
+		width: 25px;
+		padding: 17%;
+		border-radius: 100%;
+		object-fit: cover;
+		transition: 0.5s;
+	}
+
+	.menu-list {
+		right: 3%;
+		top: 7.5vh;
+		font-size: 14px;
+		gap: 0.5%;
+		/* position: absolute; */
+		/* font-family: var(--sans);
+		list-style: none;
+		transition: 0.5s;
+		color: black;
+		background-color: white;
+		display: flex;
+		flex-direction: column;
+		border-radius: 2px;
+		z-index: 20; */
+	}
+}

@@ -1,12 +1,14 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
 import { Message } from "./types";
+// import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 
 interface ChatCenterProps {
 	messages: Message[];
 }
 
 const ChatCenter = ({ messages }: ChatCenterProps) => {
+	// const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const endRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {

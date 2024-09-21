@@ -107,6 +107,8 @@ body {
 		padding: 0;
 	}
 	.mainPage {
+		padding: 0;
+		gap: 0;
 		display: flex;
 		flex-direction: column;
 	}

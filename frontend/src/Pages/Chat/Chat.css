@@ -49,3 +49,27 @@
 	line-height: 1.3;
 	opacity: 0.6;
 }
+
+@media (max-width: 478px) {
+	.List {
+		width: 100%;
+		border-radius: 0;
+		/* height: 96vh;
+		background-color: var(--fade);
+		display: flex;
+		flex-direction: column; */
+	}
+
+	.Messages {
+		width: 100%;
+		border-radius: 0;
+		/* height: 96vh;
+		background-color: var(--fade);
+		display: flex;
+		flex-direction: column; */
+	}
+
+	.inactive {
+		display: none;
+	}
+}

@@ -71,3 +71,29 @@
 .block {
 	font-family: var(--sans);
 }
+
+@media (max-width: 478px) {
+	.bottom {
+		padding: 1.5vh;
+		gap: 10px;
+		border-radius: 0;
+	}
+
+	.messageContent {
+		border-radius: 16px;
+		padding: 1.5vh;
+	}
+
+	.messageContent .partage-icon {
+		font-size: 16px;;
+	}
+
+	.messageContent input {
+		font-size: 15px;
+	}
+
+	.send-icon {
+		color: white;
+		font-size: 17px;
+	}
+}
