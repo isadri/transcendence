@@ -78,5 +78,6 @@ class TOTP:
             OTP value.
         """
         hotp = HOTP()
-        time_steps = floor((settings.INITIAL_TIME - time.time()) / TOTP.TIME_STEP)
+        time_steps = floor((settings.INITIAL_TIME - time.time()) /
+                           TOTP.TIME_STEP)
         return hotp.generate(shared_secret, time_steps)
