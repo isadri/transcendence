@@ -76,7 +76,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     ]
 
     username = models.CharField(
-        _('username'),
         max_length=150,
         unique=True,
         validators=username_validators,
@@ -87,27 +86,23 @@ class User(PermissionsMixin, AbstractBaseUser):
         }
     )
     email = models.EmailField(
-        _('email address'),
         unique=True,
         error_messages={
             'unique': _('A user with that email address already exists.')
         }
     )
     avatar = models.ImageField(
-        _('avatar'),
         help_text=_('The profile picture'),
         upload_to='avatars',
         default='default.jpg'
     )
     is_staff = models.BooleanField(
-        _('staff status'),
         default=False,
         help_text=_(
             'Designates whether the user can log into this admin site.'
         )
     )
     is_active = models.BooleanField(
-        _('active'),
         default=True,
         help_text=_(
             'Designates whether this user model should be treated as active.'
@@ -116,6 +111,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     )
     date_joined = models.DateTimeField(_('date joined'),
                                        default=timezone.now)
+    seed = models.CharField(max_length=20, blank=True, null=True)
 
     objects = UserManager()
 

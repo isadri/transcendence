@@ -8,17 +8,28 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .serializers import UserSerializer
+from .totp import TOTP
 
 
-def send_email_otp(user) -> None:
+def send_otp_email(user: User) -> None:
     """
-    Send an email to the user containg the opt token.
+    Send an email to the user containg the otp key.
     """
     user.email_user(
         subject='Email verification',
-        message='OTP 123',
+        message=f'Your verification code is: {TOTP().generate(str(user.seed))}',
         from_email='issam.abk01@gmail.com'
     )
+
+
+def generate_seed() -> str:
+    """
+    Return a random secret.
+    """
+    choices = (string.ascii_lowercase + string.ascii_uppercase + string.digits
+               + string.punctuation)
+    seed = ''.join(secrets.choice(choices) for _ in range(20))
+    return seed
 
 
 def generate_password() -> str:
@@ -118,7 +129,7 @@ def create_user(username: str, email: str) -> Response:
         user = User.objects.create_user(
             username=username,
             email=email,
-            password=generate_password(),
+            #password=generate_password(),
             )
         status_code = status.HTTP_201_CREATED
     return create_store_tokens_for_user(user, status_code)

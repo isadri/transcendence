@@ -13,13 +13,15 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
+from .totp import TOTP
 from .utils import (
     get_access_token_from_api,
     create_store_tokens_for_user,
     create_user,
     get_user_info,
     state_match,
-    send_email_otp,
+    send_otp_email,
+    generate_seed,
 )
 
 
@@ -30,7 +32,6 @@ class HomeView(APIView):
     """
     The home page view.
     """
-    permission_classes = []
 
     def get(self, request: Request) -> Response:
         """
@@ -47,7 +48,6 @@ class LoginView(APIView):
     Login a user.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request: Request) -> Response:
         return Response({
@@ -55,26 +55,6 @@ class LoginView(APIView):
             'login with google': 'http://127.0.0.1:8000/api/accounts/'
                                  'login/google'
         })
-
-    def login_user(self, request: Request, user: User) -> Response:
-        """
-        Login the user.
-
-        This method logins the user and creates a refresh and tokens for her.
-        Store the access token in the Set-Cookie header of the returned
-        response.
-
-        Args:
-            request: The received request.
-            user: The user to be logged in.
-
-        Returns:
-            A Response object with the user, and refresh and access tokens.
-        """
-        login(request, user)
-        response = create_store_tokens_for_user(user, status.HTTP_200_OK)
-        logger.info(f'{user.username} has logged in successfully')
-        return response
 
     def post(self, request: Request) -> Response:
         """
@@ -98,13 +78,61 @@ class LoginView(APIView):
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
-            response = self.login_user(request, user)
+            #response = self.login_user(request, user)
+            user.seed = generate_seed()
+            user.save()
+            logger.debug(str(user.seed))
+            send_otp_email(user)
+            return Response({
+                'detail': 'The verification code sent successfully',
+            }, status=status.HTTP_200_OK)
             return response
         elif not User.objects.filter(username=username).exists():
             logger.debug('User does not exist')
             return Response(status=status.HTTP_404_NOT_FOUND)
         logger.debug(f'Invalid password ({username}, {password})')
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class VerifyOTPView(APIView):
+    """
+    This class verify if the otp provided by the user is valid.
+    """
+    permission_classes = [AllowAny]
+
+    def login_user(self, request: Request, user: User) -> Response:
+        """
+        Login the user.
+
+        This method logins the user and creates a refresh and tokens for her.
+        Store the access token in the Set-Cookie header of the returned
+        response.
+
+        Args:
+            request: The received request.
+            user: The user to be logged in.
+
+        Returns:
+            A Response object with the user, and refresh and access tokens.
+        """
+        login(request, user, backend='oauth2_provider.backends.OAuth2Backend')
+        response = create_store_tokens_for_user(user, status.HTTP_200_OK)
+        logger.info(f'{user.username} has logged in successfully')
+        return response
+
+    def post(self, request: Request) -> Response:
+        otp = request.data['key']
+        username = request.data['username']
+        user = User.objects.get(username=username)
+        logger.debug(str(user.seed))
+        key = TOTP().generate(str(user.seed))
+        logger.debug(f'({key}, {otp})')
+        if TOTP().generate(str(user.seed)) != str(otp):
+        #if not TOTP().verify(otp, str(user.seed)):
+            return Response({'error': 'Key is incorrect'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        response = self.login_user(request, user)
+        return response
 
 
 class GoogleLoginView(APIView):
@@ -135,7 +163,6 @@ class GoogleAuthCodeView(APIView):
     fetches user information (such as username, first name, and last name).
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get_access_token(sefl, authorization_code: str) -> str:
         uri = 'https://oauth2.googleapis.com/token'
@@ -178,7 +205,6 @@ class Intra42LoginView(APIView):
     Login with 42.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request: Request) -> Response:
         """
@@ -201,7 +227,6 @@ class Intra42AuthCodeView(APIView):
     and email).
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get_access_token(self, authorization_code: str) -> str:
         """
@@ -255,7 +280,6 @@ class RegisterView(APIView):
     Create a new user.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def post(self, request: Request) -> Response:
         """
@@ -268,7 +292,6 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            send_email_otp(user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -278,7 +301,6 @@ class LogoutView(APIView):
     Logout a the currently active user.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request: Request) -> Response:
         """

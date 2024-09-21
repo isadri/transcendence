@@ -8,6 +8,12 @@ from typing import Optional
 from django.conf import settings
 
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
 class HOTP:
     """
     This class implement the HMAC-Based One-Time Password (HOTP) algorithm
@@ -16,11 +22,11 @@ class HOTP:
 
     DIGIT = 6
 
-    def hmac_sha1(self, shared_secret: bytes, counter: float) -> bytes:
+    def hmac_sha1(self, seed: bytes, counter: float) -> bytes:
         """
         Return the HMAC-SHA-1 value using shared_secret.
         """
-        hashed = hmac.new(shared_secret, str(counter).encode('utf-8'),
+        hashed = hmac.new(seed, str(counter).encode('utf-8'),
                           digestmod=sha1)
         return hashed.digest()
 
@@ -48,12 +54,12 @@ class HOTP:
                     (hmac_sha1_value[offset + 3]))
         return bin_code
 
-    def generate(self, shared_secret: bytes,
+    def generate(self, seed: bytes,
                  counter: Optional[float] = 0) -> str:
         """
         Return the HOTP value.
         """
-        hmac_sha1_value = self.hmac_sha1(shared_secret.encode('utf-8'),
+        hmac_sha1_value = self.hmac_sha1(seed.encode('utf-8'),
                                          counter)
         return str(self.extract(hmac_sha1_value) % (10 ** HOTP.DIGIT))
 
@@ -65,13 +71,19 @@ class TOTP:
 
     TIME_STEP = 30
 
-    def generate(self, shared_secret: str) -> str:
+    def verify(self, key: str, seed: str) -> bool:
+        """
+        Return true if key is a valid otp key, false otherwise.
+        """
+        return key == self.generate(seed)
+
+    def generate(self, seed: str) -> str:
         """
         This method generates the TOTP value using HOTP algorithm and time as
         a counter in HOTP.
 
         Args:
-            shared_secret: The key that used to generate and verify the OTP
+            seed: The key that used to generate and verify the OTP
             value.
 
         Returns:
@@ -80,4 +92,4 @@ class TOTP:
         hotp = HOTP()
         time_steps = floor((settings.INITIAL_TIME - time.time()) /
                            TOTP.TIME_STEP)
-        return hotp.generate(shared_secret, time_steps)
+        return hotp.generate(seed, time_steps)
