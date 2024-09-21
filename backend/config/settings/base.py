@@ -165,7 +165,7 @@ AUTHENTICATION_BACKENDS = [
 # Setting authentication scheme
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-        'api.accounts.authenticate.TokenAuthentication',
+        'api.accounts.authentication.TokenAuthentication',
 	],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

@@ -78,7 +78,6 @@ class LoginView(APIView):
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
-            #response = self.login_user(request, user)
             user.seed = generate_seed()
             user.save()
             logger.debug(str(user.seed))
@@ -128,7 +127,6 @@ class VerifyOTPView(APIView):
         key = TOTP().generate(str(user.seed))
         logger.debug(f'({key}, {otp})')
         if TOTP().generate(str(user.seed)) != str(otp):
-        #if not TOTP().verify(otp, str(user.seed)):
             return Response({'error': 'Key is incorrect'},
                             status=status.HTTP_400_BAD_REQUEST)
         response = self.login_user(request, user)
@@ -140,7 +138,6 @@ class GoogleLoginView(APIView):
     Login with Google.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request: Request) -> Response:
         """
