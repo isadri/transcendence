@@ -24,7 +24,7 @@
 	background-color: var(--fade);
 	display: flex;
 	flex-direction: column;
-	min-width: 375px;
+	/* min-width: 375px; */
 }
 
 .backgroundOfChat {
