@@ -1,6 +1,6 @@
 .Chat {
 	width: 100%;
-	height: 96vh;
+	height: 96dvh;
 	position: relative;
 	display: flex;
 	flex-direction: row;
@@ -9,7 +9,7 @@
 
 .List {
 	width: 30%;
-	height: 96vh;
+	height: 96dvh;
 	border-radius: 30px;
 	background-color: var(--fade);
 	display: flex;
@@ -19,7 +19,7 @@
 
 .Messages {
 	width: 70%;
-	height: 96vh;
+	height: 96dvh;
 	border-radius: 30px;
 	background-color: var(--fade);
 	display: flex;
@@ -28,7 +28,7 @@
 }
 
 .backgroundOfChat {
-	height: 100vh;
+	height: 100dvh;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -59,7 +59,7 @@
 	.Messages {
 		width: 100%;
 		border-radius: 0;
-		height: 90vh;
+		height: 90dvh;
 	}
 
 	.inactive {

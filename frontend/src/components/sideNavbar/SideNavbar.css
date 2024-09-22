@@ -1,5 +1,5 @@
 .Sidebar {
-	height: 96vh;
+	height: 96dvh;
 	width: 6%;
 	background-color: var(--fade);
 	border-radius: 30px;
@@ -8,7 +8,7 @@
 	flex-direction: column;
 	justify-content: space-between;
 	text-align: center;
-	line-height: 4vh;
+	line-height: 4dvh;
 }
 
 .list-items li {

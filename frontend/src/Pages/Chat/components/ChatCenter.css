@@ -6,7 +6,7 @@
 	overflow: hidden;
 	overflow-y: auto;
 	scrollbar-width: thin;
-	padding: 2vh 2vh 0;
+	padding: 2dvh 2dvh 0;
 	scrollbar-color: #888 transparent;
 	font-family: var(--sans);
 }
@@ -19,7 +19,7 @@
 
 .center .message .textMessage {
 	background-color: #d9d9d94d;
-	padding: 0.5vh;
+	padding: 0.5dvh;
 	border-radius: 0 10px 10px 10px;
 	display: flex;
 	flex-direction: column;
@@ -35,7 +35,7 @@
 
 .center .message-own .textMessage {
 	background-color: #8f4854;
-	padding: 0.5vh;
+	padding: 0.5dvh;
 	border-radius: 10px 0 10px 10px;
 	display: flex;
 	flex-direction: column;
@@ -66,7 +66,6 @@
 	height: 100%;
 }
 
-
 @media (max-width: 478px) {
 	.center .message {
 		max-width: 70%;
@@ -75,11 +74,11 @@
 	.center .message-own {
 		max-width: 70%;
 	}
-	
+
 	.center p {
 		font-size: 14px;
 	}
-	
+
 	.center span {
 		font-size: 11px;
 	}

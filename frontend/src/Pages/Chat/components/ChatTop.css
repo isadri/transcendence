@@ -1,12 +1,12 @@
 .top {
-	height: 2vh;
+	height: 2dvh;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	border-radius: 30px 30px 0 0;
 	background-color: var(--itemColor);
 	font-size: 20px;
-	padding: 2.5vh;
+	padding: 2.5dvh;
 	font-family: var(--sans);
 }
 
@@ -27,7 +27,7 @@
 .textInfo {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5vh;
+	gap: 0.5dvh;
 }
 
 .textInfo span {
@@ -58,7 +58,7 @@
 	font-family: var(--sans);
 	position: absolute;
 	right: 2%;
-	top: 5.5vh;
+	top: 5.5dvh;
 	list-style: none;
 	transition: 0.5s;
 	color: black;
@@ -86,7 +86,7 @@
 
 @media (max-width: 478px) {
 	.top {
-		height: 4.5vh;
+		height: 4.5dvh;
 		border-radius: 0;
 	}
 
@@ -117,9 +117,8 @@
 
 	.menu-list {
 		right: 3%;
-		top: 7.5vh;
+		top: 7.5dvh;
 		font-size: 14px;
 		gap: 0.5%;
 	}
-
 }
