@@ -15,12 +15,15 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	const [results, setResults] = useState<Friend[]>([]);
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
+	const Ref = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				ChangeSearchRef.current &&
 				!ChangeSearchRef.current.contains(event.target as Node) &&
+				Ref.current &&
+				!Ref.current.contains(event.target as Node) &&
 				searchFriend.trim() === ""
 			) {
 				setFocusOnSearch(false);
@@ -36,7 +39,6 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 
 	const handleSearchFriend = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-		console.log(value);
 
 		setSearchFriend(value);
 		const filterResults = friends.filter((user) =>
@@ -58,7 +60,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 			</div>
 			<div className="search">
 				<div className="search-container">
-					<div className="iconSearch" ref={ChangeSearchRef}>
+					<div className="iconSearch" >
 						{focusOnSearch ? (
 							<i
 								className="fa-solid fa-arrow-left arrow-icon"
@@ -75,6 +77,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 						value={searchFriend}
 						onChange={handleSearchFriend}
 						onFocus={() => setFocusOnSearch(true)}
+						ref={Ref}
 					/>
 				</div>
 			</div>
