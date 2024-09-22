@@ -53,13 +53,14 @@ const ChatTop = ({
 	return (
 		<div className="top">
 			<div className="profileInfo">
+				<i className="fa-solid fa-arrow-left arrowClose" onClick={() => setSelectedFriend(null)}></i>
 				<img src={selectedFriend.profile} alt="profile" className="image" />
 				<div className="textInfo">
 					<span>{selectedFriend.name}</span>
 					<p>Last seen today 00:56</p>
 				</div>
 			</div>
-			<div  ref={buttonMenuRef}>
+			<div ref={buttonMenuRef}>
 				<i
 					className={`fa-solid fa-ellipsis-vertical icon-menu ${
 						openMenu ? "activeMenu" : ""

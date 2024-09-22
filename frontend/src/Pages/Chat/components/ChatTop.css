@@ -18,8 +18,8 @@
 }
 
 .profileInfo .image {
-	height: 45px;
-	width: 45px;
+	height: 40px;
+	width: 40px;
 	border-radius: 50%;
 	object-fit: cover;
 }
@@ -27,7 +27,7 @@
 .textInfo {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 0.5vh;
 }
 
 .textInfo span {
@@ -80,6 +80,10 @@
 	background-color: #c1596ccc;
 }
 
+.arrowClose {
+	cursor: pointer;
+}
+
 @media (max-width: 478px) {
 	.top {
 		height: 4.5vh;
@@ -117,4 +121,5 @@
 		font-size: 14px;
 		gap: 0.5%;
 	}
+
 }
