@@ -46,7 +46,7 @@ const ChatBody = ({
 				setMessages={setMessages}
 				setBlock={setBlock}
 				block={block}
-				/>
+			/>
 			<ChatCenter messages={messages} />
 			<ChatBottom
 				text={text}

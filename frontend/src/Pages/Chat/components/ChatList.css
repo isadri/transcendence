@@ -59,11 +59,6 @@
 	border: none;
 }
 
-/* .item:last-child:hover {
-	position: relative;
-	border-radius: 0 0 20px 30px;/* i have issue in bottom 
-} */
-
 .item .profile {
 	height: 40px;
 	width: 40px;

@@ -96,13 +96,5 @@
 	.container {
 		border-radius: 0;
 		height: 3.5vh;
-		/* position: relative;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		background-color: var(--itemColor);
-		padding: 2.5vh;
-		font-size: 24px;
-		font-family: var(--sans); */
 	}
 }

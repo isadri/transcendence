@@ -82,22 +82,13 @@
 
 @media (max-width: 478px) {
 	.top {
-		height: 3.5vh;
+		height: 4.5vh;
 		border-radius: 0;
-		/* display: flex;
-		justify-content: space-between;
-		align-items: center;
-		background-color: var(--itemColor);
-		font-size: 20px;
-		padding: 2.5vh;
-		font-family: var(--sans); */
 	}
 
 	.profileInfo .image {
 		height: 40px;
 		width: 40px;
-		/* border-radius: 50%;
-		object-fit: cover; */
 	}
 
 	.textInfo span {
@@ -125,15 +116,5 @@
 		top: 7.5vh;
 		font-size: 14px;
 		gap: 0.5%;
-		/* position: absolute; */
-		/* font-family: var(--sans);
-		list-style: none;
-		transition: 0.5s;
-		color: black;
-		background-color: white;
-		display: flex;
-		flex-direction: column;
-		border-radius: 2px;
-		z-index: 20; */
 	}
 }
