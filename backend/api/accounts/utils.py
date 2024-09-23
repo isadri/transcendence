@@ -7,7 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .serializers import UserSerializer
-from .totp import TOTP
 
 
 def send_otp_email(user: User) -> None:
@@ -17,7 +16,7 @@ def send_otp_email(user: User) -> None:
     user.email_user(
         subject='Email verification',
         message=('Your verification code is: '
-                 f'{TOTP().generate(str(user.seed))}'),
+                 f'{str(user.otp)}'),
         from_email='issam.abk01@gmail.com'
     )
 

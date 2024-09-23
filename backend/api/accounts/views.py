@@ -1,11 +1,13 @@
 import logging
 import os
+import pyotp
 from typing import Optional
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.utils import timezone
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.permissions import AllowAny
@@ -15,7 +17,6 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
-from .totp import TOTP
 from .utils import (
     get_access_token_from_api,
     create_store_tokens_for_user,
@@ -50,7 +51,7 @@ class LoginView(APIView):
     Login a user.
     """
     permission_classes = [AllowAny]
-    # authentication_classes = []
+    authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         logger.debug(f'format: {type(format)}, {format}')
@@ -82,9 +83,10 @@ class LoginView(APIView):
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
-            user.seed = generate_seed()
+            user.seed = pyotp.random_base32()
+            user.otp = pyotp.TOTP(user.seed).now()
+            user.otp_created_at = timezone.now()
             user.save()
-            logger.debug(str(user.seed))
             send_otp_email(user)
             return Response({
                 'detail': 'The verification code sent successfully',
@@ -101,6 +103,7 @@ class VerifyOTPView(APIView):
     This view verify if the otp provided by the user is valid.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def login_user(self, request: Request, user: User) -> Response:
         """
@@ -126,10 +129,8 @@ class VerifyOTPView(APIView):
         otp = request.data['key']
         username = request.data['username']
         user = User.objects.get(username=username)
-        logger.debug(str(user.seed))
-        key = TOTP().generate(str(user.seed))
-        logger.debug(f'({key}, {otp})')
-        if TOTP().generate(str(user.seed)) != str(otp):
+        total_difference = timezone.now() - user.otp_created_at
+        if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is incorrect'},
                             status=status.HTTP_400_BAD_REQUEST)
         response = self.login_user(request, user)
@@ -141,6 +142,7 @@ class GoogleLoginView(APIView):
     Login with Google.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
@@ -163,6 +165,7 @@ class GoogleAuthCodeView(APIView):
     fetches user information (such as username, first name, and last name).
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get_access_token(sefl, authorization_code: str) -> str:
         uri = 'https://oauth2.googleapis.com/token'
@@ -196,8 +199,14 @@ class GoogleAuthCodeView(APIView):
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
                              '?scope=openid profile email')
         user_info = get_user_info(userinfo_endpoint, access_token)
-        response = self.create_user(user_info)
-        return response
+        user = self.create_user(user_info)
+        user.seed = generate_seed()
+        user.otp = pyotp.TOTP(str(user.seed))
+        user.otp_created_at = timezone.now()
+        user.save()
+        return Response({
+            'detail': 'The verification code sent successfully',
+        }, status=status.HTTP_200_OK)
 
 
 class Intra42LoginView(APIView):
@@ -228,7 +237,7 @@ class Intra42AuthCodeView(APIView):
     and email).
     """
     permission_classes = [AllowAny]
-    # authentication_classes = []
+    authentication_classes = []
 
     def get_access_token(self, authorization_code: str) -> str:
         """
@@ -262,6 +271,8 @@ class Intra42AuthCodeView(APIView):
             return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
         user = create_user(user_info['login'], user_info['email'])
         user.seed = generate_seed()
+        user.otp = pyotp.TOTP(str(user.seed))
+        user.otp_created_at = timezone.now()
         user.save()
         send_otp_email(user)
         return Response({
@@ -274,6 +285,7 @@ class RegisterView(APIView):
     Create a new user.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request: Request, format: Optional[str] = None) -> Response:
         """

@@ -109,9 +109,10 @@ class User(PermissionsMixin, AbstractBaseUser):
             ' Unselect this instead of deleting accounts.'
         )
     )
-    date_joined = models.DateTimeField(_('date joined'),
-                                       default=timezone.now)
-    seed = models.CharField(max_length=20, blank=True, null=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    seed = models.CharField(max_length=40, blank=True, null=True)
+    otp = models.CharField(max_length=6, blank=True, null=True)
+    otp_created_at = models.DateTimeField(blank=True, null=True)
 
     objects = UserManager()
 
