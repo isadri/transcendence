@@ -24,7 +24,6 @@ from .utils import (
     get_user_info,
     state_match,
     send_otp_email,
-    generate_seed,
 )
 
 
@@ -94,7 +93,6 @@ class LoginView(APIView):
         elif not User.objects.filter(username=username).exists():
             logger.debug('User does not exist')
             return Response(status=status.HTTP_404_NOT_FOUND)
-        logger.debug(f'Invalid password ({username}, {password})')
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -200,10 +198,7 @@ class GoogleAuthCodeView(APIView):
                              '?scope=openid profile email')
         user_info = get_user_info(userinfo_endpoint, access_token)
         user = self.create_user(user_info)
-        user.seed = generate_seed()
-        user.otp = pyotp.TOTP(str(user.seed))
-        user.otp_created_at = timezone.now()
-        user.save()
+        send_otp_email(user)
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
@@ -270,10 +265,6 @@ class Intra42AuthCodeView(APIView):
         if status_code != 200:
             return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
         user = create_user(user_info['login'], user_info['email'])
-        user.seed = generate_seed()
-        user.otp = pyotp.TOTP(str(user.seed))
-        user.otp_created_at = timezone.now()
-        user.save()
         send_otp_email(user)
         return Response({
             'detail': 'The verification code sent successfully',

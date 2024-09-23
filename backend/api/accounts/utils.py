@@ -1,7 +1,7 @@
 from django.conf import settings
 import requests
-import secrets
-import string
+import pyotp
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -19,24 +19,6 @@ def send_otp_email(user: User) -> None:
                  f'{str(user.otp)}'),
         from_email='issam.abk01@gmail.com'
     )
-
-
-def generate_seed() -> str:
-    """
-    Return a random secret.
-    """
-    choices = string.ascii_lowercase + string.ascii_uppercase + string.digits
-    seed = ''.join(secrets.choice(choices) for _ in range(20))
-    return seed
-
-
-def generate_password() -> str:
-    """
-    Generate and return a password.
-    """
-    characters = string.ascii_letters + string.digits + string.punctuation
-    password = ''.join(secrets.choice(characters) for _ in range(30))
-    return password
 
 
 def get_tokens_for_user(user: User) -> tuple[str, str]:
@@ -118,6 +100,10 @@ def create_user(username: str, email: str) -> Response:
             username=username,
             email=email,
         )
+    user.seed = pyotp.random_base32()
+    user.otp = pyotp.TOTP(str(user.seed))
+    user.otp_created_at = timezone.now()
+    user.save()
     return user
 
 
