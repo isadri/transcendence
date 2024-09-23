@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
@@ -21,6 +22,8 @@ urlpatterns = [
         name='auth-code-google'),
     path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json'])
 
 
 #urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

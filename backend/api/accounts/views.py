@@ -1,11 +1,13 @@
 import logging
 import os
+from typing import Optional
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from rest_framework import generics, status
+from rest_framework import generics
+from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -33,7 +35,7 @@ class HomeView(APIView):
     The home page view.
     """
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
@@ -48,15 +50,17 @@ class LoginView(APIView):
     Login a user.
     """
     permission_classes = [AllowAny]
+    #authentication_classes = []
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
+        logger.debug(f'format: {type(format)}, {format}')
         return Response({
             'login with 42': 'http://127.0.0.1:8000/api/accounts/login/42auth',
             'login with google': 'http://127.0.0.1:8000/api/accounts/'
                                  'login/google'
         })
 
-    def post(self, request: Request) -> Response:
+    def post(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Read the username and the password from the request and try to
         authenticate the user.
@@ -119,7 +123,7 @@ class VerifyOTPView(APIView):
         logger.info(f'{user.username} has logged in successfully')
         return response
 
-    def post(self, request: Request) -> Response:
+    def post(self, request: Request, format: Optional[str] = None) -> Response:
         otp = request.data['key']
         username = request.data['username']
         user = User.objects.get(username=username)
@@ -139,7 +143,7 @@ class GoogleLoginView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Directs the user to the authorization server.
         """
@@ -182,7 +186,7 @@ class GoogleAuthCodeView(APIView):
         username = user_info['email'].split('@')[0].replace('.', '_')
         return create_user(username, user_info['email'])
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
@@ -203,7 +207,7 @@ class Intra42LoginView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Directs the user to the authorization server
         """
@@ -255,7 +259,7 @@ class Intra42AuthCodeView(APIView):
         }
         return create_user(info)
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
@@ -278,7 +282,7 @@ class RegisterView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def post(self, request: Request) -> Response:
+    def post(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Create a new user.
 
@@ -299,7 +303,7 @@ class LogoutView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Logout the user.
         """
