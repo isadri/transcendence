@@ -45,13 +45,6 @@ INSTALLED_APPS = [
 	'api.accounts',
 	'api.friends',
 
-    # 2FA
-    #'django_otp',
-    #'django_otp.plugins.otp_static',
-    #'django_otp.plugins.otp_totp',
-    #'two_factor',
-    #'two_factor.plugins.phonenumber',
-
     'oauth2_provider',
 ]
 
@@ -77,9 +70,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'allauth.account.middleware.AccountMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-
-    # 2FA
-    #'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
