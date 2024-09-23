@@ -1,3 +1,4 @@
+import base64
 from django.conf import settings
 import requests
 import secrets
@@ -26,8 +27,7 @@ def generate_seed() -> str:
     """
     Return a random secret.
     """
-    choices = (string.ascii_lowercase + string.ascii_uppercase + string.digits
-               + string.punctuation)
+    choices = string.ascii_lowercase + string.ascii_uppercase + string.digits
     seed = ''.join(secrets.choice(choices) for _ in range(20))
     return seed
 
