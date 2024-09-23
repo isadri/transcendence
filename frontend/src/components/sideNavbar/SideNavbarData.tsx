@@ -18,6 +18,12 @@ const SideNavbarData = [
 		link: ["/profile"],
 	},
 	{
+		id: "Friends",
+		icon: <i className="fa-solid fa-user-group"></i>,
+		name: "Friends",
+		link: ["/friends"],
+	},
+	{
 		id: "Game",
 		icon: <i className="fa-solid fa-gamepad icon"></i>,
 		name: "Game",

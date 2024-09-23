@@ -91,17 +91,17 @@
 	}
 
 	.profileInfo .image {
-		height: 40px;
-		width: 40px;
+		height: 5vh;
+		width: 8vw;
 	}
 
 	.textInfo span {
 		font-weight: 400;
-		font-size: 19px;
+		font-size: 18px;
 	}
 
 	.textInfo p {
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 200;
 	}
 

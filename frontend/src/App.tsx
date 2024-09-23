@@ -10,6 +10,7 @@ import Game from "./Pages/Game/Game";
 import Setting from "./Pages/Setting/Setting";
 import Contact from "./Pages/Contact/Contact";
 import NoPage from "./Pages/NoPage/NoPage";
+import Friends from "./Pages/Friends/Friends";
 
 function App() {
 	return (
@@ -23,6 +24,7 @@ function App() {
 						<Route index path="home" element={<Home />} />
 						<Route path="chat" element={<Chat />} />
 						<Route path="profile" element={<Profile />} />
+						<Route path="friends" element={<Friends />} />
 						<Route path="game" element={<Game />} />
 						<Route path="setting" element={<Setting />} />
 						<Route path="contact" element={<Contact />} />
