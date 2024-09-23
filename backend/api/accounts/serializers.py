@@ -1,7 +1,4 @@
-from django.db import models
 from rest_framework import serializers
-import io
-import qrcode
 
 from .models import User
 
@@ -28,9 +25,6 @@ class UserSerializer(serializers.ModelSerializer):
         Returns:
             New User instance.
         """
-        provisioning_uri = pyotp.totp.TOTP(seed).provisioning_uri(
-            name=validated_data['email'], issuer_name='Ping Pong'
-        )
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],

@@ -1,6 +1,4 @@
 import hmac
-import random
-import string
 import time
 from hashlib import sha1
 from math import floor
@@ -50,9 +48,9 @@ class HOTP:
         # signed vs unsigned modulo computations (by RFC 4226)
         # https://datatracker.ietf.org/doc/html/rfc4226#section-5.3.
         bin_code: int = ((hmac_sha1_value[offset] & 0x7f) << 24 |
-                    (hmac_sha1_value[offset + 1] & 0xff) << 16 |
-                    (hmac_sha1_value[offset + 2] & 0xff) << 8 |
-                    (hmac_sha1_value[offset + 3]))
+                         (hmac_sha1_value[offset + 1] & 0xff) << 16 |
+                         (hmac_sha1_value[offset + 2] & 0xff) << 8 |
+                         (hmac_sha1_value[offset + 3]))
         return bin_code
 
     @classmethod
@@ -62,7 +60,7 @@ class HOTP:
         Return the HOTP value.
         """
         hmac_sha1_value = cls.hmac_sha1(seed.encode('utf-8'),
-                                         counter)
+                                        counter)
         return str(cls.extract(hmac_sha1_value) % (10 ** HOTP.DIGIT))
 
 
@@ -98,5 +96,5 @@ class TOTP:
             OTP value.
         """
         time_steps: float = floor((self.created_at - time.time()) /
-                           TOTP.TIME_STEP)
+                                  TOTP.TIME_STEP)
         return HOTP.generate(seed, time_steps)

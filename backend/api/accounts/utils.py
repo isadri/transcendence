@@ -1,9 +1,7 @@
-import base64
 from django.conf import settings
 import requests
 import secrets
 import string
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -18,7 +16,8 @@ def send_otp_email(user: User) -> None:
     """
     user.email_user(
         subject='Email verification',
-        message=f'Your verification code is: {TOTP().generate(str(user.seed))}',
+        message=('Your verification code is: '
+                 f'{TOTP().generate(str(user.seed))}'),
         from_email='issam.abk01@gmail.com'
     )
 
@@ -109,30 +108,18 @@ def create_store_tokens_for_user(user: User, status_code: int) -> Response:
 
 def create_user(username: str, email: str) -> Response:
     """
-    Create a user if does not exist.
+    Create a user.
 
-    This funtion checks if a user exists, otherwise it creates a new one,
-    creates a refresh and access tokens for the user and stores the access
-    token through Set-Cookie header in the response.
-
-    Args:
-        user_info: Dict containing user information for creating or getting a
-                user.
-
-    Returns:
-        A Response object containing the user, and refresh and access tokens.
+    This funtion checks if a user exists, otherwise it creates a new one.
     """
     try:
         user = User.objects.get(username=username)
-        status_code = status.HTTP_200_OK
     except User.DoesNotExist:
         user = User.objects.create_user(
             username=username,
             email=email,
-            #password=generate_password(),
-            )
-        status_code = status.HTTP_201_CREATED
-    return create_store_tokens_for_user(user, status_code)
+        )
+    return user
 
 
 def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:

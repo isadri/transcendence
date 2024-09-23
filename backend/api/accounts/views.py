@@ -50,7 +50,7 @@ class LoginView(APIView):
     Login a user.
     """
     permission_classes = [AllowAny]
-    #authentication_classes = []
+    # authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         logger.debug(f'format: {type(format)}, {format}')
@@ -89,7 +89,6 @@ class LoginView(APIView):
             return Response({
                 'detail': 'The verification code sent successfully',
             }, status=status.HTTP_200_OK)
-            return response
         elif not User.objects.filter(username=username).exists():
             logger.debug('User does not exist')
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -99,7 +98,7 @@ class LoginView(APIView):
 
 class VerifyOTPView(APIView):
     """
-    This class verify if the otp provided by the user is valid.
+    This view verify if the otp provided by the user is valid.
     """
     permission_classes = [AllowAny]
 
@@ -118,7 +117,7 @@ class VerifyOTPView(APIView):
         Returns:
             A Response object with the user, and refresh and access tokens.
         """
-        login(request, user, backend='oauth2_provider.backends.OAuth2Backend')
+        login(request, user)
         response = create_store_tokens_for_user(user, status.HTTP_200_OK)
         logger.info(f'{user.username} has logged in successfully')
         return response
@@ -206,6 +205,7 @@ class Intra42LoginView(APIView):
     Login with 42.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
@@ -228,6 +228,7 @@ class Intra42AuthCodeView(APIView):
     and email).
     """
     permission_classes = [AllowAny]
+    # authentication_classes = []
 
     def get_access_token(self, authorization_code: str) -> str:
         """
@@ -246,19 +247,6 @@ class Intra42AuthCodeView(APIView):
         }
         return get_access_token_from_api(uri, payload)
 
-    def create_user(self, user_info: dict[str, str]) -> Response:
-        """
-        Create a user and returns a response containing the user information
-        along with the refresh and access tokens.
-
-        This function use the create_user function from utils.py.
-        """
-        info = {
-            'username': user_info['login'],
-            'email': user_info['email'],
-        }
-        return create_user(info)
-
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
@@ -272,8 +260,13 @@ class Intra42AuthCodeView(APIView):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
-        response = create_user(user_info['login'], user_info['email'])
-        return response
+        user = create_user(user_info['login'], user_info['email'])
+        user.seed = generate_seed()
+        user.save()
+        send_otp_email(user)
+        return Response({
+            'detail': 'The verification code sent successfully',
+        }, status=status.HTTP_200_OK)
 
 
 class RegisterView(APIView):
@@ -292,7 +285,7 @@ class RegisterView(APIView):
         """
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
