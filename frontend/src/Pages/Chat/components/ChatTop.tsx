@@ -53,7 +53,10 @@ const ChatTop = ({
 	return (
 		<div className="top">
 			<div className="profileInfo">
-				<i className="fa-solid fa-arrow-left arrowClose" onClick={() => setSelectedFriend(null)}></i>
+				<i
+					className="fa-solid fa-arrow-left arrowClose"
+					onClick={() => setSelectedFriend(null)}
+				></i>
 				<img src={selectedFriend.profile} alt="profile" className="image" />
 				<div className="textInfo">
 					<span>{selectedFriend.name}</span>

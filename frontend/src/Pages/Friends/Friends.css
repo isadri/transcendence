@@ -1,0 +1,131 @@
+.FriendContainer {
+	width: 100%;
+	height: 96dvh;
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	background-color: var(--fade);
+	border-radius: 30px;
+	font-family: var(--sans);
+	gap: 3%;
+}
+
+.menuFriends {
+	width: 30%;
+	margin: 4% 0 4% 4%;
+	border-radius: 30px;
+	background-color: #332733;
+	display: flex;
+	flex-direction: column;
+	font-size: 18px;
+}
+
+.menuFriends ul {
+	list-style: none;
+	text-align: center;
+	margin: 4vh 6%;
+}
+
+.menuFriends ul li {
+	background-color: var(--fade);
+	margin-bottom: 4.5vh;
+	padding: 10%;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.menuFriends ul .selectedItem {
+	background-color: var(--primary);
+}
+
+.menuFriends ul .selectedItem:hover {
+	background-color: var(--primary);
+}
+
+.menuFriends ul li:hover {
+	background-color: #8f4854;
+}
+
+.bodyFriends {
+	width: 70%;
+	margin: 4% 4% 4% 0;
+	border-radius: 30px;
+	background-color: #332733;
+	display: flex;
+	flex-direction: column;
+}
+
+.searchFriend {
+	display: flex;
+	justify-content: center;
+	padding: 8% 0;
+}
+
+.searchfrienContainer {
+	display: flex;
+	align-items: center;
+	border-radius: 50px;
+	padding: 2%;
+	border: 1px solid white;
+	width: 70%;
+	background-color: transparent;
+}
+
+.searchfrienContainer .search-icon {
+	color: white;
+	margin-right: 10px;
+	cursor: pointer;
+}
+.searchfrienContainer .arrow-icon {
+	color: white;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.searchfrienContainer input {
+	border: none;
+	outline: none;
+	background-color: transparent;
+	color: white;
+	font-size: 16px;
+	flex: 1;
+}
+
+.searchfrienContainer input::placeholder {
+	color: white;
+	font-size: 16px;
+}
+
+.friendProfile {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	background-color: var(--fade);
+	margin: 4%;
+	padding: 2%;
+	border-radius: 10px;
+}
+
+.imageNameFriend {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 30px;
+}
+
+.friendProfile .friendImage {
+	height: 40px;
+	width: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.friendProfile .iconFriend {
+	display: flex;
+	flex-direction: row;
+}
+
+.friendProfile .iconFriend .user {
+	margin-right: 10px;
+}
