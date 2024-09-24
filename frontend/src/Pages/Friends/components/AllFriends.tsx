@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import DataFriends from "../../Chat/components/DataFriends.tsx";
 import { Friend } from "../../Chat/components/types.ts";
+import "./AllFriends.css"
 
 interface AllFriendsProps {
 	displayAllFriends: boolean;
