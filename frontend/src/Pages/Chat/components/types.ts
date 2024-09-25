@@ -11,8 +11,8 @@ export interface Message {
 
 export interface Friend {
 	id: number;
-	profile: string;
 	name: string;
+	profile: string;
 	message: string;
 	time: string;
 	status: ReactNode;

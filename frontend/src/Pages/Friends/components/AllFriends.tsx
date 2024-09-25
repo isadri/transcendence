@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import DataFriends from "../../Chat/components/DataFriends.tsx";
 import { Friend } from "../../Chat/components/types.ts";
-import "./AllFriends.css"
+import "./AllFriends.css";
 
 interface AllFriendsProps {
 	displayAllFriends: boolean;
@@ -89,7 +89,7 @@ const AllFriends = ({
 								</div>
 								<div className="iconFriend">
 									<i className="fa-solid fa-user user"></i>
-									<i className="fa-solid fa-comment-dots"></i>
+									<i className="fa-solid fa-comment-dots chat"></i>
 								</div>
 							</div>
 						);
