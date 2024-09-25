@@ -3,7 +3,6 @@ import ChatList from "./ChatList";
 import "./List.css";
 import { Friend } from "./types";
 
-
 interface ListProps {
 	friends: Friend[];
 	onSelectFriend: (friend: Friend) => void;
@@ -14,6 +13,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	const [searchFriend, setSearchFriend] = useState("");
 	const [results, setResults] = useState<Friend[]>([]);
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
+	const [listAllFriends, setListAllFriends] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
 
@@ -56,11 +56,16 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 		<div className="list">
 			<div className="container">
 				<div>Messages</div>
-				<img src="/ChatImages/newChat.svg" alt="New Chat" className="newChat" />
+				<img
+					src="/ChatImages/newChat.svg"
+					alt="New Chat"
+					className="newChat"
+					onClick={() => setListAllFriends((prev) => !prev)}
+				/>
 			</div>
 			<div className="search">
 				<div className="search-container">
-					<div className="iconSearch" >
+					<div className="iconSearch">
 						{focusOnSearch ? (
 							<i
 								className="fa-solid fa-arrow-left arrow-icon"
@@ -90,6 +95,8 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 				selectedFriend={selectedFriend}
 				setSearchFriend={setSearchFriend}
 				setFocusOnSearch={setFocusOnSearch}
+				listAllFriends={listAllFriends}
+				setListAllFriends={setListAllFriends}
 			/>
 		</div>
 	);

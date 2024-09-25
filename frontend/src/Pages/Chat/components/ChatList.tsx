@@ -7,6 +7,8 @@ interface ChatListProps {
 	selectedFriend: Friend | null;
 	setSearchFriend: React.Dispatch<React.SetStateAction<string>>;
 	setFocusOnSearch: React.Dispatch<React.SetStateAction<boolean>>;
+	listAllFriends: boolean;
+	setListAllFriends: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatList = ({
@@ -15,6 +17,8 @@ const ChatList = ({
 	selectedFriend,
 	setSearchFriend,
 	setFocusOnSearch,
+	listAllFriends,
+	setListAllFriends,
 }: ChatListProps) => {
 	return (
 		<div className="ChatList">
@@ -28,17 +32,18 @@ const ChatList = ({
 						onSelectFriend(friend)
 						setSearchFriend("")
 						setFocusOnSearch(false)
+						setListAllFriends(false)
 					}}
 				>
 					<img src={friend.profile} alt="profile" className="profile" />
 					<div className="text">
 						<span>{friend.name}</span>
-						<p>{friend.message}</p>
+						{!listAllFriends && <p>{friend.message}</p>}
 					</div>
-					<div className="ChatStatus">
+					{!listAllFriends && <div className="ChatStatus">
 						<div>{friend.time}</div>
 						{friend.status}
-					</div>
+					</div>}
 				</div>
 			))}
 		</div>
