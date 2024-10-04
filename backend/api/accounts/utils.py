@@ -101,7 +101,7 @@ def create_user(username: str, email: str) -> Response:
             email=email,
         )
     user.seed = pyotp.random_base32()
-    user.otp = pyotp.TOTP(str(user.seed))
+    user.otp = pyotp.TOTP(str(user.seed)).now()
     user.otp_created_at = timezone.now()
     user.save()
     return user
