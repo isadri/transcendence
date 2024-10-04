@@ -53,7 +53,6 @@ class LoginView(APIView):
     authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
-        logger.debug(f'format: {type(format)}, {format}')
         return Response({
             'login with 42': 'http://127.0.0.1:8000/api/accounts/login/42auth',
             'login with google': 'http://127.0.0.1:8000/api/accounts/'
@@ -120,7 +119,7 @@ class VerifyOTPView(APIView):
         """
         login(request, user)
         response = create_store_tokens_for_user(user, status.HTTP_200_OK)
-        logger.info(f'{user.username} has logged in successfully')
+        logger.info('%s has logged in successfully', user.username)
         return response
 
     def post(self, request: Request, format: Optional[str] = None) -> Response:
@@ -165,7 +164,17 @@ class GoogleAuthCodeView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def get_access_token(sefl, authorization_code: str) -> str:
+    def get_access_token(self, authorization_code: str) -> str:
+        """
+        Get access token from the Google API.
+        
+        This method makes a request to Google API to get the access token that
+        will be used to get user information. The request contains
+        authorization_code which is necessary to authenticate with the API.
+
+        Returns:
+            The access token
+        """
         uri = 'https://oauth2.googleapis.com/token'
         payload = {
             'code': authorization_code,
@@ -184,6 +193,7 @@ class GoogleAuthCodeView(APIView):
         This function use the create_user function from utils.py.
         """
         username = user_info['email'].split('@')[0].replace('.', '_')
+        logger.debug(user_info)
         return create_user(username, user_info['email'])
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
@@ -196,7 +206,7 @@ class GoogleAuthCodeView(APIView):
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
                              '?scope=openid profile email')
-        user_info = get_user_info(userinfo_endpoint, access_token)
+        user_info, _ = get_user_info(userinfo_endpoint, access_token)
         user = self.create_user(user_info)
         send_otp_email(user)
         return Response({
@@ -306,7 +316,7 @@ class LogoutView(APIView):
         logout(request)
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
-        logger.debug(f'{request.user.username} has logged out')
+        logger.debug('%s has logged out', request.user.username)
         return response
 
 
