@@ -4,7 +4,7 @@
 	position: relative;
 	display: flex;
 	flex-direction: row;
-	background-color: var(--fade);
+	/* background-color: var(--fade); */
 	border-radius: 30px;
 	font-family: var(--sans);
 	gap: 3%;
@@ -14,7 +14,7 @@
 	width: 30%;
 	margin: 4% 0 4% 4%;
 	border-radius: 30px;
-	background-color: #332733;
+	background-color: #d9d9d91C;
 	display: flex;
 	flex-direction: column;
 	font-size: 18px;
@@ -50,7 +50,7 @@
 	width: 70%;
 	margin: 4% 4% 4% 0;
 	border-radius: 30px;
-	background-color: #332733;
+	background-color: #d9d9d91C;
 	display: flex;
 	flex-direction: column;
 }

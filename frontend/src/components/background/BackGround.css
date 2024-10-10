@@ -83,6 +83,21 @@ body {
 	top: 27%;
 }
 
+@media (min-width: 1800px) {
+    .mainPage {
+        background-color: rgba(217,217,217,0.1);
+        border-radius: 15px;
+    }
+    .main_container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .mainPage {
+        width: 70%;
+    }
+}
+
 @media (max-width: 1024px) {
 	.rectangle1 {
 		width: 66%;

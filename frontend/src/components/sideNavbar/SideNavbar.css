@@ -2,7 +2,7 @@
 	height: 96dvh;
 	width: 6%;
 	background-color: var(--fade);
-	border-radius: 30px;
+    border-radius: 20px;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -47,12 +47,12 @@
 }
 
 @media (min-width: 2000px) {
-	.Sidebar {
-		width: 5%;
-		border-radius: 40px;
-		line-height: 66px;
-	}
-	.list-items li {
-		font-size: 26px;
-	}
+    .Sidebar {
+        width: 5%;
+        /* border-radius: 40px; */
+        line-height: 66px;
+    }
+    .list-items  li {
+        font-size: 26px;
+    }
 }

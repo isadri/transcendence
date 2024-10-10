@@ -1,0 +1,76 @@
+.Home-LastAchievement{
+    width: 33%;
+    height: 72vh;
+    background-color: var(--fade);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.Home-LastAchievement h2{
+    color: var(--primary);
+    font-family: var(--sans);
+    margin: 6% 0 3% 5%;
+}
+
+.Home-AchivementRows{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+    max-height: 86%;
+    /* height: 100%; */
+    font-family: var(--sans);
+    /* padding-top: 5%; */
+    overflow-y: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
+}
+
+.Home-AchivementRows::-webkit-scrollbar {
+    display: none;  
+}
+
+.Home-Achivement{
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    align-items: center;
+    background-color: var(--fade);
+    border-radius: 10px;
+    margin-bottom: 6%;
+    font-size: 14px;
+    padding: 3% 4% 3% 4%;
+}
+
+.Home-AchivementImg{
+    width: 10%;
+}
+
+.Home-AchivementInfo{
+    display: flex;
+    flex-direction: column;
+    margin-left: 3%;
+}
+
+.Home-AchivementInfo *:nth-child(2){
+    font-size: 10px;
+    margin-top: 2%;
+}
+
+@media only screen and (max-width: 1150px){
+    
+    .Home-AchivementInfo{
+        margin-left: 7%;
+    }
+}
+
+
+@media only screen and (max-width: 800px){
+    .Home-LastAchievement{
+        height: 35vh;
+        width: 100%;
+        margin-top: 2vh;
+    }
+}

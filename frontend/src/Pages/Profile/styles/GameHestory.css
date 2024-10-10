@@ -1,0 +1,76 @@
+.Home-GameHestory{
+    height: 72vh;
+    background-color: var(--fade);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.Home-GameHestory h2{
+    color: var(--primary);
+    font-family: var(--sans);
+    margin: 5% 0 2% 5%;
+}
+
+
+.Home-GameHestory .Home-HeaderRow *:not(:nth-child(1)){
+    padding-right: 6%;
+}
+
+.Home-GameHestory .Home-tableRows{
+    font-family: var(--sans);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-height: 86%;
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none;
+}
+
+.Home-GameHestory .Home-tableRows::-webkit-scrollbar {
+    display: none;  
+}
+
+.Home-GameHestory .Home-tableRows .Home-rows{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    text-align: center;
+    background-color: var(--fade);
+    border-radius: 20px;
+    height: 55vh;
+    padding: 3% 5% 3% 5%;
+    font-size: 14px;
+    margin-bottom: 4%;
+}
+
+.Home-GameHestory .Home-tableRows .Home-rows .Home-xp{
+   display: flex;
+   flex-direction: row;
+}
+
+.Home-GameHestory .Home-tableRows .Home-rows .Home-xp *:nth-child(2){
+    margin-left: 6%;
+}
+
+.Home-GameHestory .Home-tableRows .Home-rows *:nth-child(3){
+    color: #DE8F9E;
+}
+
+.Home-GameHestory .Home-tableRows .Home-win *:not(:nth-child(3)){
+    color: #00ff00;
+}
+
+.Home-GameHestory .Home-tableRows .Home-Lose *:not(:nth-child(3)){
+    color: #ff0000;
+}
+
+@media only screen and (max-width: 800px){
+    .Home-GameHestory{
+        height: 35vh;
+    }
+}
