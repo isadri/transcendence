@@ -44,14 +44,18 @@ function Authentication() {
                 <div className='RightContent'>
                     <h1>Hello, Friend!</h1>
                     <span>Share your details and begin your journey with us today.</span>
-                    <button type='submit'>Sing Up</button>
+                    <div className='buttons'>
+                        <button type='submit' id="registerBtn" className='btn'>Sing Up</button>
+                    </div>
                 </div>
                 <div className='LeftContent'>
                     <h1>Welcome Back!</h1>
                     <span>To stay connected with us, 
                         please log in using your personal information, 
                         Google account, or your Intra account.</span>
-                    <button type='submit'>Sing In</button>
+                    <div className='buttons'>
+                        <button type='submit' id="registerBtn" className='btn'>Sing Ip</button>
+                    </div>
                 </div>
             </div>
         </div>    
