@@ -13,38 +13,40 @@ function navBar() {
   }
   return (
     <>
-      <div className="navBar">
         <nav className="nav">
-          <a href="#" className="logo">
+          <a href="/" className="logo">
             <img src={logo} alt="logo" className="logo" />
           </a>
           <div id="items">
             <ul>
               <li>
-                <a href="#">Home</a>
+                <a href="/landing">Home</a>
               </li>
               <li>
-                <a href="#">AboutUs</a>
+                <a href="/aboutUs">AboutUs</a>
               </li>
               <li>
-                <a href="#">License</a>
+                <a href="/license">License</a>
               </li>
             </ul>
           </div>
           <div className="buttons">
-            <button className="btn" id="loginBtn">
-              Sign In
-            </button>
-            <button className="btn" id="registerBtn">
-              Sign Up
-            </button>
+            <a href="/signIn">
+              <button className="btn" id="loginBtn">
+                Sign In
+              </button>
+            </a>
+            <a href="/signUp">
+              <button className="btn" id="registerBtn">
+                Sign Up
+              </button>
+            </a>
           </div>
           <div className="barIcon">
             <i className="fa-solid fa-bars" onClick={handelClick}></i>
           </div>
         </nav>
       {value === true ? <ResponsiveBar/> : null}
-      </div>
     </>
   );
 }

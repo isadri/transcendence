@@ -4,16 +4,7 @@
     box-sizing: border-box;
 }
 
-.navBar{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 110px;
-    width: 100%;
-    font-family: var(--sans);
-}
-
-nav{
+.nav{
     position: fixed;
     top: 0;
     display: flex;
@@ -25,9 +16,9 @@ nav{
     background-color: var(--fade);
 }
 
-.logo{
-    padding-left: 4px;
-    width: 70px;
+.nav .logo{
+    padding: 5px;
+    width: 80px;
 }
 
 #items ul{
@@ -82,7 +73,7 @@ nav{
     }
     .barIcon{
         display: flex;
-        color: wh;
+        color: white;
         padding: 0 8px;
         font-size: 30px;
         cursor: pointer;

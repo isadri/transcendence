@@ -4,7 +4,6 @@ import NavBar from '../../components/FirstNavBar/navBar'
 function landing() {
   return (
     <>
-        <NavBar/>
         <div className='landing'>
           <div className='landingCon'>
             <h1>welcome to our game </h1>

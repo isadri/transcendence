@@ -1,9 +1,10 @@
-import React from 'react'
+import './SignIn.css'
+import Authentication from '../Authentication'
 
 function SignIn() {
   return (
-    <div>
-      
+    <div className='SingInParent'>
+      <Authentication/>
     </div>
   )
 }
