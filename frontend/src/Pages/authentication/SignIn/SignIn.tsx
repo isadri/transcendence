@@ -4,7 +4,7 @@ import Authentication from '../Authentication'
 function SignIn() {
   return (
     <div className='SingInParent'>
-      <Authentication/>
+      <Authentication value={true}/>
     </div>
   )
 }
