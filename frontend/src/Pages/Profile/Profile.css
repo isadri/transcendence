@@ -1,4 +1,4 @@
-.Profile{
+.Home-Profile{
     width: 100%;
     height: 96vh;
     position: relative;
@@ -6,51 +6,51 @@
     flex-direction: column;
 }
 
-.firstRaw, .SecondRaw{
+.Home-firstRaw, .Home-SecondRaw{
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.SecondRaw{
+.Home-SecondRaw{
     padding-top: 25px;
 }
 
-.SecondRaw .AddRaw{
+.Home-SecondRaw .Home-AddRaw{
     display: flex;
     flex-direction: column;
     width: 40%;
 }
 
 
-.SecondRaw .AddRaw .LastAchievement{
+.Home-SecondRaw .Home-AddRaw .Home-LastAchievement{
     display: none;
 }
 
 @media only screen and (max-width: 1150px){
-    .Profile{
+    .Home-Profile{
         overflow-y: auto;
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
-    .Profile::-webkit-scrollbar {
+    .Home-Profile::-webkit-scrollbar {
         display: none;
     }
-    .firstRaw{
+    .Home-firstRaw{
         display: flex;
         flex-direction: column;
     }
 }
 
 @media only screen and (max-width: 800px){
-    .SecondRaw .LastAchievement{
+    .Home-SecondRaw .Home-LastAchievement{
         display: none;
     }
-    .SecondRaw .AddRaw .LastAchievement{
+    .Home-SecondRaw .Home-AddRaw .Home-LastAchievement{
         display: flex;
     }
-    .SecondRaw .AddRaw{
+    .Home-SecondRaw .Home-AddRaw{
         width: 90%;
     }
 }

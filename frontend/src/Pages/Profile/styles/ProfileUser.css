@@ -1,4 +1,4 @@
-.ProfileUser{
+.Home-ProfileUser{
     width: 55%;
     height: 22vh;
     background-color: var(--fade);
@@ -8,7 +8,7 @@
     justify-content: center;
 }
 
-.ProfileUser .ProfileElements{
+.Home-ProfileUser .Home-ProfileElements{
     display: flex;
     flex-direction: column;
     /* align-items: center; */
@@ -16,7 +16,7 @@
     height: 22vh;
 }
 
-.ProfileUser .Btn{
+.Home-ProfileUser .Home-Btn{
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -24,7 +24,7 @@
     margin-top: -1%;
 }
 
-.ProfileUser .Btn button{
+.Home-ProfileUser .Home-Btn button{
     background-color: var(--primary);
     color: white;
     border: 1px solid var(--primary);
@@ -35,21 +35,21 @@
     font-size: 1vh;
 }
 
-.ProfileUser h2{
+.Home-ProfileUser h2{
     color: var(--primary);
     font-family: var(--sans);
     margin-left: 5%;
     font-size: 2vh;
 }
 
-.ProfileContent{
+.Home-ProfileContent{
     /* height: 15vh; */
     display: flex;
     flex-direction: column;
     margin-top: 1%;
 }
 
-.imgUser{
+.Home-imgUser{
     width: 30%;
     display: flex;
     flex-direction: row;
@@ -58,10 +58,10 @@
     /* margin-top: 2%; */
 }
 
-.img img{
+.Home-img img{
     width: 8vh;
 }
-.UserName{
+.Home-UserName{
     display: flex;
     flex-direction: column;
     margin-left: 20%;
@@ -69,13 +69,13 @@
 }
 
 
-.UserName .online{
+.Home-UserName .Home-online{
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.UserName .online .Circle{
+.Home-UserName .Home-online .Home-Circle{
     width: 8%;
     height: 0.6vh;
     background-color: #00ff00;
@@ -85,12 +85,12 @@
     margin-top: 4px;
 }
 
-.UserName *:not(:nth-child(2)){
+.Home-UserName *:not(:nth-child(2)){
     font-size: 2vh;
     font-weight: 400;
 }
 
-.UserName *:not(:nth-child(1)){
+.Home-UserName *:not(:nth-child(1)){
     font-size: 1.5vh;
     font-weight: 400;
     margin-top: 4%;
@@ -99,12 +99,12 @@
 }
 
 
-.ProfileContent .ProfileLevel{
+.Home-ProfileContent .Home-ProfileLevel{
     display: flex;
     flex-direction: column;
 }
 
-.XpClass{
+.Home-XpClass{
     display: flex;
     justify-content: end;
     margin: 0 6% 1% 0;
@@ -112,7 +112,7 @@
     font-family: var(--sans);
 }
 
-.level-bar {
+.Home-level-bar {
     width: 90%;
     background-color: var(--fade);
     border-radius: 20px;
@@ -120,19 +120,19 @@
     height: 2vh;
     overflow: hidden;
     position:relative;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.Home-2);
 }
 
-.level-bar-fill {
+.Home-level-bar-fill {
     height: 100%;
     background-color: var(--primary);
     width: 70%;
     border-radius: 15px;
     transition: width 0.4s ease;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.Home-2);
 }
 
-.level-text {
+.Home-level-text {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -144,7 +144,7 @@
 
 
 
-.levelUpUser{
+.Home-levelUpUser{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -157,7 +157,7 @@
 }
 
 @media only screen and (max-width: 1150px){
-    .ProfileUser{
+    .Home-ProfileUser{
         width: 100%;
     }
 }

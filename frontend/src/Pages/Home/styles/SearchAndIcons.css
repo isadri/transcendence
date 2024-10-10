@@ -1,5 +1,5 @@
 
-.search {
+.Home-search {
     border: 1px solid white;
     border-radius: 15px;
     padding: 2px;
@@ -8,7 +8,7 @@
     height: 23px;
 }
 
-.search input {
+.Home-search input {
     border: none;
     outline: none;
     background-color: transparent;
@@ -16,16 +16,16 @@
     margin-left: 8px;
 }
 
-.search i {
+.Home-search i {
     margin-left: 8px;
 }
 
-.Icons {
+.Home-Icons {
     display: flex;
     align-items: center;
 }
 
-.Icons div {
+.Home-Icons div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,10 +39,10 @@
 }
 
 @media only screen and (max-width: 478px){
-    .Icons{
+    .Home-Icons{
         display: none;
     }
-    .search{
+    .Home-search{
         width: 100%;
     }
 }

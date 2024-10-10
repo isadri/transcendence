@@ -8,13 +8,13 @@ import './Profile.css'
 
 const Profile = () => {
   return (
-    <div className="Profile">
-      <div className="firstRaw">
+    <div className="Home-Profile">
+      <div className="Home-firstRaw">
         <ProfileUser/>
         <BadgesList/>
       </div>
-      <div className="SecondRaw">
-        <div className="AddRaw">
+      <div className="Home-SecondRaw">
+        <div className="Home-AddRaw">
           <GameHestory/>
           <LastAchievement/>
         </div>

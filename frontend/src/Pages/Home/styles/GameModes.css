@@ -1,22 +1,22 @@
-.GameModes{
+.Home-GameModes{
     display: flex;
     flex-direction: column;
     /* width: 90%; */
     padding: 5px;
 }
 
-.GameModes h2{
+.Home-GameModes h2{
     font-family: var(--mono) ;
     color: var(--primary);
     font-weight: 800;
 }
 
-.GameContents{
+.Home-GameContents{
     display: flex;
     justify-content: space-between;
 }
 
-.Mode{
+.Home-Mode{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -30,20 +30,20 @@
     font-family: var(--mono);
 }
 
-.Mode:hover{
+.Home-Mode:hover{
     border: 1px solid var(--primary);
     transform: translateY(-10px);
     box-shadow: 0 10px 20px var(--primary);
 }
 
-.Mode div p{
+.Home-Mode div p{
     font-size: 12px;
     font-weight: 320;
     padding-top: 15px;
     font-family: var(--sans);
 }
 
-.Mode div button{
+.Home-Mode div button{
     background-color: #ff000000;
     border: 1px solid white;
     border-radius: 20px;
@@ -54,21 +54,21 @@
     cursor: pointer;
 }
 
-.Mode div button:hover{
+.Home-Mode div button:hover{
     background-color: #57265a;
     border: 1px solid #57265a;
 }
 
 @media only screen and (max-width: 1073px){
-    .GameContents{
+    .Home-GameContents{
         display: flex;
         flex-direction: column;
         align-items: center;
     }
-    .GameModes{
+    .Home-GameModes{
         width: 100%;
     }
-    .Mode{
+    .Home-Mode{
         width: 90%;
     }
 }

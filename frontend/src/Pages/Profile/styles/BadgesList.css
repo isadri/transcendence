@@ -1,4 +1,4 @@
-.BadgesList{
+.Home-BadgesList{
     width: 40%;
     background-color: var(--fade);
     border-radius: 20px;
@@ -7,14 +7,14 @@
     flex-direction: column;
 }
 
-.BadgesList h2{
+.Home-BadgesList h2{
     color: var(--primary);
     font-family: var(--sans);
     margin: 5% 0 0 5%;
     font-size: 2vh;
 }
 
-.badgesList {
+.Home-badgesList {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -29,7 +29,7 @@
     margin-right: 2%;
 }
 
-.badgesScroll{
+.Home-badgesScroll{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -39,33 +39,33 @@
     width: 100%;
 }
 
-.badgesList::-webkit-scrollbar {
+.Home-badgesList::-webkit-scrollbar {
     width: 0;
 }
 
-.badgesList .child{
+.Home-badgesList .Home-child{
     cursor: pointer;
 }
 
-.badgesList{
+.Home-badgesList{
     display: flex;
 }
 
-.badgesList .child img{
+.Home-badgesList .Home-child img{
     width: 130px;
     height: 150px;
 }
 
 
-.badgesList .child:not(:nth-child(2)){
+.Home-badgesList .Home-child:not(:nth-child(2)){
     opacity: 0.3;
 }
 
-.badgesList .child:nth-child(1){
+.Home-badgesList .Home-child:nth-child(1){
     filter:brightness(0);
     opacity: 0.1;
 }
-.badgesScroll button{
+.Home-badgesScroll button{
     background-color: #ff000000;
     border: none;
     cursor: pointer;
@@ -74,43 +74,43 @@
     font-weight: 700;
 }
 
-.badgesScroll button:hover{
+.Home-badgesScroll button:hover{
     color: var(--primary);
 }
 
 @media only screen and (max-width: 1255px){
-    .badgesList {
+    .Home-badgesList {
         margin-left: 0;
         margin-right: 0;
     }
 }
 
 @media only screen and (max-width: 1150px){
-    .BadgesList{
+    .Home-BadgesList{
         width: 100%;
         margin-top: 2%;
     }
-    .BadgesList h2{
+    .Home-BadgesList h2{
         margin-top: 3%;
     }
 }
 
 @media only screen and (max-width: 800px){
-    .badgesList {
+    .Home-badgesList {
         max-width: 300px;
     }
-    .badgesList .child img{
+    .Home-badgesList .Home-child img{
         width: 100px;
         height: 130px;
     }
 }
 
 @media only screen and (max-width: 400px){
-    .badgesList {
+    .Home-badgesList {
         max-width: 200px;
         margin-top: 3%;
     }
-    .badgesList .child img{
+    .Home-badgesList .Home-child img{
         width: 70px;
         height: 110px;
     }

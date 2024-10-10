@@ -5,10 +5,10 @@ import RMode from '../images/randomMode.svg'
 
 function GameModes() {
   return (
-    <div className='GameModes'>
+    <div className='Home-GameModes'>
       <h2>Game Modes</h2>
-      <div className='GameContents'>
-        <div className='Mode'>
+      <div className='Home-GameContents'>
+        <div className='Home-Mode'>
           <div>
               <h4>Random Mode</h4>
               <p>Start play with random person</p>
@@ -18,7 +18,7 @@ function GameModes() {
               <img src={RMode} alt="" />
           </div>
         </div>
-        <div className='Mode'>
+        <div className='Home-Mode'>
           <div>
               <h4>Ai Mode</h4>
               <p>Computer Challenge</p>
@@ -28,7 +28,7 @@ function GameModes() {
             <img src={AMode} alt="" />
           </div>
         </div>
-        <div className='Mode'>
+        <div className='Home-Mode'>
           <div>
               <h4>Friends Mode</h4>
               <p>start play with your friends</p>

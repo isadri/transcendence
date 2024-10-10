@@ -1,27 +1,27 @@
-.LastGame{
+.Home-LastGame{
     width: 50%;
     padding-top: 20px;
     font-family: var(--mono);
     padding-left: 20px;
 }
 
-.LastGame h2{
+.Home-LastGame h2{
     color: var(--primary);
     font-weight: 800;
 }
 
-.LastGame .table{
+.Home-LastGame .Home-table{
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: var(--fade);
     border-radius: 15px;
-    height: 45.5vh;
+    height: 45.Home-5vh;
     margin-top: 2%;
     width: 100%;
 }
 
-.LastGame .RowEle{
+.Home-LastGame .Home-RowEle{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -34,7 +34,7 @@
 }
 
 
-.LastGame .Row1{
+.Home-LastGame .Home-Row1{
     width: 40%;
     display: flex;
     align-items: center;
@@ -42,14 +42,14 @@
     margin-left: 4%;
 }
 
-.LastGame .Row2{
+.Home-LastGame .Home-Row2{
     width: 20%;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.LastGame .Row3{
+.Home-LastGame .Home-Row3{
     width: 40%;
     display: flex;
     align-items: center;
@@ -57,29 +57,29 @@
     margin-right: 4%;
 }
 
-.LastGame .Row3 img, .LastGame .Row1 img{
+.Home-LastGame .Home-Row3 img, .Home-LastGame .Home-Row1 img{
     width: 45px;
 }
 
-.Row1 span{
+.Home-Row1 span{
     margin-left: 10px;
 }
 
-.Row3 span{
+.Home-Row3 span{
     margin-right: 10px;
 }
 
-.score1{
+.Home-score1{
     margin-right: 10px;
 }
 
-.score2{
+.Home-score2{
     margin-left: 12px;
 }
 
 
 @media only screen and (max-width: 1073px){
-    .LastGame
+    .Home-LastGame
     {
         width: 100%;
         padding-left: 0px;
@@ -88,18 +88,20 @@
 }
 
 @media only screen and (max-width: 750px){
-    .LastGame
+    .Home-LastGame
     {
         width: 100%;
         padding-left: 0px;
     }
-    .Row1 span, .Row3 span{
+    .Home-Row1 span, .Home-Row3 span{
         display: none;
     }
-    .LastGame .Row3 img, .LastGame .Row1 img{
-        width: 30px;
-    }
-    .LastGame .RowEle{
+    .Home-LastGame .Home-RowEle{
         height: 7vh;
+    }
+}
+@media only screen and (max-width: 400px){
+    .Home-LastGame .Home-Row3 img, .Home-LastGame .Home-Row1 img{
+        width: 30px;
     }
 }

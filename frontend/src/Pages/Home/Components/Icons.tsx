@@ -2,7 +2,7 @@
 
 function Icons() {
   return (
-    <span className='Icons'>
+    <span className='Home-Icons'>
         <div>
           <i className="fa-solid fa-bell"></i>
         </div>

@@ -1,26 +1,26 @@
-.friendsProfile{
+.Home-friendsProfile{
     width: 22%;
     background-color: var(--fade);
     height: 72vh;
     border-radius: 20px;
 }
 
-.friendsProfile  h2{
+.Home-friendsProfile  h2{
     color: var(--primary);
     font-family: var(--sans);
     margin: 8.5% 0 5.5% 5%;
 }
 
-.friendProfile .title{
+.Home-friendProfile .Home-title{
     display: flex;
     align-items: center;
 }
 
-.friendsProfile  .title *:nth-child(1) {
+.Home-friendsProfile  .Home-title *:nth-child(1) {
     display: none;
 }
 
-.FriensList{
+.Home-FriensList{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,11 +32,11 @@
     scrollbar-width: none; 
 }
 
-.FriensList .table .tableRows::-webkit-scrollbar {
+.Home-FriensList .Home-table .Home-tableRows::-webkit-scrollbar {
     display: none;  
 }
 
-.FriensList .friend{
+.Home-FriensList .Home-friend{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -46,38 +46,38 @@
     padding: 0 4% 3% 0;
 }
 
-.FriensList .friend:not(:nth-child(1)){
+.Home-FriensList .Home-friend:not(:nth-child(1)){
     padding: 3% 4% 3% 0;
 }
 
-.FriensList .friend .friendInfo{
+.Home-FriensList .Home-friend .Home-friendInfo{
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.FriensList .friend .friendInfo img{
+.Home-FriensList .Home-friend .Home-friendInfo img{
     width: 43%;
 }
 
-.FriensList .friend .friendName{
+.Home-FriensList .Home-friend .Home-friendName{
     display: flex;
     flex-direction: column;
     margin-left: 5%;
     font-family: var(--sans);
 }
 
-.FriensList .friend .friendName *:nth-child(1){
+.Home-FriensList .Home-friend .Home-friendName *:nth-child(1){
     font-size: 16px;
 } 
 
-.FriensList .friend .friendName *:nth-child(2){
+.Home-FriensList .Home-friend .Home-friendName *:nth-child(2){
     font-size: 10px;
     font-weight: 200;
     margin: 10% 0 0 5%;
 } 
 
-.FriensList .friend .friendProfile{
+.Home-FriensList .Home-friend .Home-friendProfile{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -85,15 +85,15 @@
 }
 
 
-.FriensList .friend .friendProfile *:nth-child(1){
+.Home-FriensList .Home-friend .Home-friendProfile *:nth-child(1){
     color: var(--primary);
 }
 
 @media only screen and (max-width: 1150px){
-    .FriensList .friend .friendProfile{
+    .Home-FriensList .Home-friend .Home-friendProfile{
         justify-content: end;
     }
-    .friendProfile *:nth-child(1){
+    .Home-friendProfile *:nth-child(1){
         display: none;
     }
 }
@@ -101,10 +101,10 @@
 
 
 @media only screen and (max-width: 800px){
-    .friendsProfile{
+    .Home-friendsProfile{
         width: 8%;
     }
-    .friendsProfile  .title *:nth-child(1) {
+    .Home-friendsProfile  .Home-title *:nth-child(1) {
         color: var(--primary);
         display: flex;
         justify-content: center;
@@ -112,17 +112,17 @@
         margin-bottom: 8%;
     }
 
-    .friendsProfile h2{
+    .Home-friendsProfile h2{
         display: none;
     }
-    .friendProfile *:nth-child(2){
+    .Home-friendProfile *:nth-child(2){
         display: none;
     }
     
-     .FriensList .friend *:nth-child(2){
+     .Home-FriensList .Home-friend *:nth-child(2){
         display: none;
     }
-    .FriensList .friend .friendInfo img{
+    .Home-FriensList .Home-friend .Home-friendInfo img{
         margin-left: 3%;
         margin-top: 20%;
         width: 99%;

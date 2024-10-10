@@ -1,4 +1,4 @@
-.ChatRev{
+.Home-ChatRev{
     width: 4%;
     display: flex;
     text-align: center;
@@ -9,17 +9,17 @@
 }
 
 
-.ChatRev .Icon{
+.Home-ChatRev .Home-Icon{
     display: flex;
     justify-content: center;
 }
 
-.ChatRev i {
+.Home-ChatRev i {
     position: absolute;
     margin-top: 30px;
 }
 
-.friends{
+.Home-friends{
     margin-top: 50px;
     align-items: center;
     overflow-y: auto;
@@ -28,24 +28,24 @@
     border-radius: 20px;
 }
 
-.friends::-webkit-scrollbar {
+.Home-friends::-webkit-scrollbar {
     display: none;  
 }
 
-.friends-item{
+.Home-friends-item{
     cursor: pointer;
 }
 
-.friends-item:not(:nth-child(1)) {
+.Home-friends-item:not(:nth-child(1)) {
     margin-top: 12.5px;
     
 }
-.ChatRev .friends img {
+.Home-ChatRev .Home-friends img {
     width: 60%;
 }
 
 @media only screen and (max-width: 1073px){
-    .ChatRev{
+    .Home-ChatRev{
         max-height: 55vh;
         width: 10%;
     }

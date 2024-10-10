@@ -4,7 +4,7 @@ import WlcmImg from '../images/girl.svg'
 function Welcome() {
   return (
     <>
-        <div className='content'>
+        <div className='Home-content'>
           <h3>Welcome back, User1!</h3>
           <p>
           Feeling sharp today? We've got a fresh batch of challenges waiting for you.
@@ -15,7 +15,7 @@ function Welcome() {
           So grab your paddle, step up to the table, and let's see what you've got!
           </p>
         </div>
-        <div className='Image'>
+        <div className='Home-Image'>
           <img src={WlcmImg} alt="" />
         </div> 
     </>

@@ -12,22 +12,22 @@ import './styles/SearchAndIcons.css'
 
 function Home() {
   return (
-    <div className='homePage'>
-      <div className='searchAndIcons'>
+    <div className='Home-homePage'>
+      <div className='Home-searchAndIcons'>
         <Search/>
         <Icons/>
       </div>
-      <div className='welcome'>
+      <div className='Home-welcome'>
         <Welcome/>
         <Profile/>
       </div>
-      <div className='userInfo'>
-        <div className='game'>
-          <div className='modeChat'>
+      <div className='Home-userInfo'>
+        <div className='Home-game'>
+          <div className='Home-modeChat'>
             <GameModes/>
             <Chat/>
           </div>
-          <div className='gameStatis'>
+          <div className='Home-gameStatis'>
             <GameRank/>
             <LastGame/>
           </div>

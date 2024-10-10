@@ -1,125 +1,118 @@
-import { useEffect } from 'react'
 import '../styles/GameHestory.css'
 
 function GameHestory() {
 
   return (
-    <div className='GameHestory'>
+    <div className='Home-GameHestory'>
       <h2>Game Hestory</h2>
-      {/* <div className='table'> */}
-        {/* <div className='HeaderRow'>
-          <span>Result</span>
-          <span>Level xp</span>
-          <span>Time</span>
-        </div> */}
-        <div className='tableRows'>
-          <div className='rows win'>
-            <span>Win</span>
-            <div className='xp'>
+        <div className='Home-tableRows'>
+          <div className='Home-rows Home-win'>
+            <span>Home-Win</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-up-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows win'>
-            <span>Win</span>
-            <div className='xp'>
+          <div className='Home-rows Home-win'>
+            <span>Home-Win</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-up-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows win'>
-            <span>Win</span>
-            <div className='xp'>
+          <div className='Home-rows Home-win'>
+            <span>Home-Win</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-up-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>150</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
             <span>10 minute ago</span>
           </div>
-          <div className='rows Lose'>
-            <span>Lose</span>
-            <div className='xp'>
+          <div className='Home-rows Home-Lose'>
+            <span>Home-Lose</span>
+            <div className='Home-xp'>
               <span>50</span>
               <i className="fa-solid fa-arrow-down-long"></i>
             </div>
