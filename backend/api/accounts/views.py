@@ -9,6 +9,7 @@ from django.contrib.auth import logout
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -48,14 +49,14 @@ class HomeView(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-class LoginView(APIView):
+class LoginViewSet(viewsets.ViewSet):
     """
-    Login a user.
+    A ViewSet for login a user.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def post(self, request: Request, format: Optional[str] = None) -> Response:
+    def create(self, request: Request) -> Response:
         """
         Get the username and the password from the request and try to
         authenticate the user.
@@ -85,16 +86,17 @@ class LoginView(APIView):
         return Response({
             'error': 'A user with that password does not exist.'
         }, status=status.HTTP_404_NOT_FOUND)
+        
 
 
-class LoginWith2FAView(APIView):
+class LoginWith2FAViewSet(viewsets.ViewSet):
     """
-    Login a user with 2fa.
+    A ViewSet for login a user with 2FA.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def post(self, request: Request, format: Optional[str] = None) -> Response:
+    def create(self, request: Request) -> Response:
         """
         Read the username and the password from the request and try to
         authenticate the user.
@@ -130,14 +132,14 @@ class LoginWith2FAView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class VerifyOTPView(APIView):
+class VerifyOTPViewSet(viewsets.ViewSet):
     """
-    This view verify if the otp provided by the user is valid.
+    A ViewSet for verifying if the otp provided by the user is valid.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def post(self, request: Request, format: Optional[str] = None) -> Response:
+    def create(self, request: Request) -> Response:
         otp = request.data['key']
         username = request.data['username']
         user = User.objects.get(username=username)
@@ -155,7 +157,7 @@ class VerifyOTPView(APIView):
         return response
 
 
-class GoogleLoginView(APIView):
+class GoogleLoginViewSet(viewsets.ViewSet):
     """
     Login a user using Google
 
@@ -171,7 +173,7 @@ class GoogleLoginView(APIView):
         username = user_info['email'].split('@')[0].replace('.', '_')
         return get_user(username, user_info['email'])
 
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
+    def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
@@ -196,7 +198,7 @@ class GoogleLoginView(APIView):
         return response
 
 
-class GoogleLoginWith2FAView(APIView):
+class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
     """
     2FA with Google.
 
@@ -238,7 +240,7 @@ class GoogleLoginWith2FAView(APIView):
         username = user_info['email'].split('@')[0].replace('.', '_')
         return create_user(username, user_info['email'])
 
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
+    def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
@@ -256,7 +258,7 @@ class GoogleLoginWith2FAView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class IntraLoginView(APIView):
+class IntraLoginViewSet(viewsets.ViewSet):
     """
     Login a user using 42 and associate with the user a refresh token
     and access token.
@@ -266,7 +268,7 @@ class IntraLoginView(APIView):
     and email).
     """
 
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
+    def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
@@ -290,7 +292,7 @@ class IntraLoginView(APIView):
         return response
 
 
-class IntraLoginWith2FAView(APIView):
+class IntraLoginWith2FAViewSet(viewsets.ViewSet):
     """
     2FA authentication with 42.
 
@@ -318,7 +320,7 @@ class IntraLoginWith2FAView(APIView):
         }
         return get_access_token_from_api(token_endpoint, payload)
 
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
+    def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
@@ -338,21 +340,15 @@ class IntraLoginWith2FAView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class RegisterView(APIView):
+
+class RegisterViewSet(viewsets.ViewSet):
     """
-    Create a new user.
+    A ViewSet for creating new user.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def post(self, request: Request, format: Optional[str] = None) -> Response:
-        """
-        Create a new user.
-
-        Returns:
-            The information of the new user. Returns error message if the data
-            provided is not valid.
-        """
+    def create(self, request: Request) -> Response:
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -360,13 +356,13 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LogoutView(APIView):
+class LogoutViewSet(viewsets.ViewSet):
     """
     Logout a the currently active user.
     """
     permission_classes = [AllowAny]
 
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
+    def list(self, request: Request) -> Response:
         """
         Logout the user.
         """
