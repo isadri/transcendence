@@ -1,12 +1,12 @@
 from django.conf import settings
-import requests
 import pyotp
+import os
+import requests
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
-from .serializers import UserSerializer
 
 
 def send_otp_email(user: User) -> None:
@@ -50,44 +50,21 @@ def store_token_in_cookies(response: Response, token: str) -> None:
     )
 
 
-def get_access_token_from_api(uri: str, payload: dict[str, str]) -> str:
+def get_access_token_from_api(token_endpoint: str,
+                              payload: dict[str, str]) -> str:
     """
     Obtain the access token by making a post request to the token endpoint.
 
     Args:
-        uri: The token endpoint URI
+        token_endpoint: The token endpoint.
         payload: A dictionary that must contain the following parameters:
-                grant_type, code, redirect_uri and client_id
+                grant_type, code, redirect_uri and client_id.
     """
-    response = requests.post(uri, params=payload)
+    response = requests.post(token_endpoint, params=payload)
     return response.json().get('access_token')
 
 
-def create_store_tokens_for_user(user: User, status_code: int) -> Response:
-    """
-    Create new refresh and access tokens and stores them in the Set-Cookie
-    header of the returned response.
-
-    Args:
-        user: The user for which the refresh and access tokens will be
-        created.
-        status_code: The status code of the response.
-
-    Returns:
-        A Response object containing the user along with her refresh and
-        access tokens.
-    """
-    refresh_token, access_token = get_tokens_for_user(user)
-    response = Response({
-        'user': UserSerializer(user).data,
-        'refresh_token': refresh_token,
-        'access_token': access_token
-    }, status=status_code)
-    store_token_in_cookies(response, access_token)
-    return response
-
-
-def create_user(username: str, email: str) -> Response:
+def create_user(username: str, email: str) -> User:
     """
     Create a user.
 
@@ -104,6 +81,22 @@ def create_user(username: str, email: str) -> Response:
     user.otp = pyotp.TOTP(str(user.seed)).now()
     user.otp_created_at = timezone.now()
     user.save()
+    return user
+
+
+def get_user(username: str, email: str) -> User:
+    """
+    Get a user.
+
+    This funtion checks if a user exists, otherwise it creates a new one.
+    """
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create_user(
+            username=username,
+            email=email
+        )
     return user
 
 
@@ -128,3 +121,47 @@ def state_match(state: str) -> bool:
     Check if the given state is valid.
     """
     return state == settings.OAUTH2_STATE_PARAMETER
+
+
+def get_access_token_google(authorization_code: str) -> str:
+    """
+    Get the access token from Google API.
+
+    This function makes a request to Google API to get the access token that
+    will be used to get user information. The request contains
+    authorization_code which is necessary to authenticate with the API.
+
+    Returns:
+        The access token.
+    """
+    token_endpoint = 'https://oauth2.googleapis.com/token'
+    payload = {
+        'code': authorization_code,
+        'client_id': os.getenv('GOOGLE_ID'),
+        'client_secret': os.getenv('GOOGLE_SECRET'),
+        'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
+        'grant_type': 'authorization_code'
+    }
+    return get_access_token_from_api(token_endpoint, payload)
+
+
+def get_access_token_42(authorization_code: str) -> str:
+    """
+    Get the access token from 42 API.
+
+    This function makes a request to 42 API to get the access token that
+    will be used to get user information. The request contains
+    authorization_code which is necessary to authenticate with the API.
+
+    Returns:
+        The access token.
+    """
+    token_endpoint = 'https://api.intra.42.fr/token'
+    payload = {
+        'code': authorization_code,
+        'client_id': os.getenv('INTRA_ID'),
+        'client_secret': os.getenv('INTRA_SECRET'),
+        'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
+        'grant_type': 'authorization_code'
+    }
+    return get_access_token_from_api(token_endpoint, payload)

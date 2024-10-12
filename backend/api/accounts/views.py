@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.shortcuts import redirect
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework import status
@@ -19,8 +18,12 @@ from .models import User
 from .serializers import UserSerializer
 from .utils import (
     get_access_token_from_api,
-    create_store_tokens_for_user,
+    get_tokens_for_user,
+    store_token_in_cookies,
+    get_access_token_google,
+    get_access_token_42,
     create_user,
+    get_user,
     get_user_info,
     state_match,
     send_otp_email,
@@ -52,12 +55,44 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
+    def post(self, request: Request, format: Optional[str] = None) -> Response:
+        """
+        Get the username and the password from the request and try to
+        authenticate the user.
+
+        This method tries to authenticate the user with the username and the
+        password given in request, and if the information are not valid, it
+        returns a response indicating that the user with the given information
+        does not exist, otherwise, this method authenticates the user and
+        login the user.
+        """
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            refresh_token, access_token = get_tokens_for_user(user)
+            response = Response({
+                'refresh_token': refresh_token,
+                'access_token': access_token,
+            }, status=status.HTTP_200_OK)
+            store_token_in_cookies(response, access_token)
+            return response
+        if not User.objects.filter(username=username).exists():
+            return Response({
+                'error': 'A user with that username does not exist.'
+            }, status=status.HTTP_404_NOT_FOUND)
         return Response({
-            'login with 42': 'http://127.0.0.1:8000/api/accounts/login/42auth',
-            'login with google': 'http://127.0.0.1:8000/api/accounts/'
-                                 'login/google'
-        })
+            'error': 'A user with that password does not exist.'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+
+class LoginWith2FAView(APIView):
+    """
+    Login a user with 2fa.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request: Request, format: Optional[str] = None) -> Response:
         """
@@ -89,7 +124,7 @@ class LoginView(APIView):
             return Response({
                 'detail': 'The verification code sent successfully',
             }, status=status.HTTP_200_OK)
-        elif not User.objects.filter(username=username).exists():
+        if not User.objects.filter(username=username).exists():
             logger.debug('User does not exist')
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -102,26 +137,6 @@ class VerifyOTPView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def login_user(self, request: Request, user: User) -> Response:
-        """
-        Login the user.
-
-        This method logins the user and creates a refresh and tokens for her.
-        Store the access token in the Set-Cookie header of the returned
-        response.
-
-        Args:
-            request: The received request.
-            user: The user to be logged in.
-
-        Returns:
-            A Response object with the user, and refresh and access tokens.
-        """
-        login(request, user)
-        response = create_store_tokens_for_user(user, status.HTTP_200_OK)
-        logger.info('%s has logged in successfully', user.username)
-        return response
-
     def post(self, request: Request, format: Optional[str] = None) -> Response:
         otp = request.data['key']
         username = request.data['username']
@@ -130,36 +145,64 @@ class VerifyOTPView(APIView):
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is incorrect'},
                             status=status.HTTP_400_BAD_REQUEST)
-        response = self.login_user(request, user)
+        login(request, user)
+        refresh_token, access_token = get_tokens_for_user(user)
+        response = Response({
+            'refresh_token': refresh_token,
+            'access_token': access_token,
+        }, status=status.HTTP_200_OK)
+        store_token_in_cookies(response, access_token)
         return response
 
 
 class GoogleLoginView(APIView):
     """
-    Login with Google.
-    """
-    permission_classes = [AllowAny]
-    authentication_classes = []
-
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
-        """
-        Directs the user to the authorization server.
-        """
-        return redirect('https://accounts.google.com/o/oauth2/v2/auth?'
-                        f'client_id={os.getenv("GOOGLE_ID")}'
-                        f'&redirect_uri={os.getenv("GOOGLE_REDIRECT_URI")}'
-                        f'&state={settings.OAUTH2_STATE_PARAMETER}'
-                        '&scope=openid profile email&response_type=code'
-                        '&display=popup')
-
-
-class GoogleAuthCodeView(APIView):
-    """
-    Login a user using google and associate with the user a refresh token
-    and access token.
+    Login a user using Google
 
     This class requests an access token by authenticating with Google API, and
     fetches user information (such as username, first name, and last name).
+    If the user does not exist, it creates a new one.
+    """
+
+    def get_user(self, user_info: dict[str, str]) -> User:
+        """
+        Extract a username from the email of the user and get the user.
+        """
+        username = user_info['email'].split('@')[0].replace('.', '_')
+        return get_user(username, user_info['email'])
+
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
+        """
+        Authenticate with the authorization server and obtain user information.
+        """
+        if not state_match(request.GET.get('state')):
+            return Response({'error': 'states do not match.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        authorization_code = request.GET.get('code')
+        access_token = get_access_token_google(authorization_code)
+        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
+                             '?scope=openid profile email')
+        user_info, status_code = get_user_info(userinfo_endpoint, access_token)
+        if status_code != 200:
+            return Response(user_info, status=status_code)
+        user = self.get_user(user_info)
+        login(request, user)
+        refresh_token, access_token = get_tokens_for_user(user)
+        response = Response({
+            'refresh_token': refresh_token,
+            'access_token': access_token,
+        }, status=status.HTTP_200_OK)
+        store_token_in_cookies(response, access_token)
+        return response
+
+
+class GoogleLoginWith2FAView(APIView):
+    """
+    2FA with Google.
+
+    This class requests an access token by authenticating with Google API, and
+    fetches user information (such as username, first name, and last name).
+    If the user does not exist, it creates a new one.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -167,7 +210,7 @@ class GoogleAuthCodeView(APIView):
     def get_access_token(self, authorization_code: str) -> str:
         """
         Get access token from the Google API.
-        
+
         This method makes a request to Google API to get the access token that
         will be used to get user information. The request contains
         authorization_code which is necessary to authenticate with the API.
@@ -175,7 +218,7 @@ class GoogleAuthCodeView(APIView):
         Returns:
             The access token
         """
-        uri = 'https://oauth2.googleapis.com/token'
+        token_endpoint = 'https://oauth2.googleapis.com/token'
         payload = {
             'code': authorization_code,
             'client_id': os.getenv('GOOGLE_ID'),
@@ -183,7 +226,7 @@ class GoogleAuthCodeView(APIView):
             'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
             'grant_type': 'authorization_code'
         }
-        return get_access_token_from_api(uri, payload)
+        return get_access_token_from_api(token_endpoint, payload)
 
     def create_user(self, user_info: dict[str, str]) -> Response:
         """
@@ -193,7 +236,6 @@ class GoogleAuthCodeView(APIView):
         This function use the create_user function from utils.py.
         """
         username = user_info['email'].split('@')[0].replace('.', '_')
-        logger.debug(user_info)
         return create_user(username, user_info['email'])
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
@@ -214,28 +256,43 @@ class GoogleAuthCodeView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class Intra42LoginView(APIView):
-    """
-    Login with 42.
-    """
-    permission_classes = [AllowAny]
-    authentication_classes = []
-
-    def get(self, request: Request, format: Optional[str] = None) -> Response:
-        """
-        Directs the user to the authorization server
-        """
-        return redirect('https://api.intra.42.fr/oauth/authorize?'
-                        f'client_id={os.getenv("INTRA_ID")}'
-                        f'&redirect_uri={os.getenv("INTRA_REDIRECT_URI")}'
-                        f'&state={settings.OAUTH2_STATE_PARAMETER}'
-                        '&response_type=code')
-
-
-class Intra42AuthCodeView(APIView):
+class IntraLoginView(APIView):
     """
     Login a user using 42 and associate with the user a refresh token
     and access token.
+
+    This class requests an access token by authenticating with 42 API, and
+    fetches user information (such as username, first name, last name,
+    and email).
+    """
+
+    def get(self, request: Request, format: Optional[str] = None) -> Response:
+        """
+        Authenticate with the authorization server and obtain user information.
+        """
+        if not state_match(request.GET.get('state')):
+            return Response({'error': 'states do not match'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        authorization_code = request.GET.get('code')
+        access_token = get_access_token_42(authorization_code)
+        user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
+                                               access_token)
+        if status_code != 200:
+            return Response(user_info, status=status_code)
+        user = get_user(user_info.get('login'), user_info.get('email'))
+        login(request, user)
+        refresh_token, access_token = get_tokens_for_user(user)
+        response = Response({
+            'refresh_token': refresh_token,
+            'access_token': access_token,
+        }, status=status.HTTP_200_OK)
+        store_token_in_cookies(response, access_token)
+        return response
+
+
+class IntraLoginWith2FAView(APIView):
+    """
+    2FA authentication with 42.
 
     This class requests an access token by authenticating with 42 API, and
     fetches user information (such as username, first name, last name,
@@ -251,7 +308,7 @@ class Intra42AuthCodeView(APIView):
         Returns:
             str: The authorization code obtained from the authorization server.
         """
-        uri = 'https://api.intra.42.fr/oauth/token'
+        token_endpoint = 'https://api.intra.42.fr/oauth/token'
         payload = {
             'grant_type': 'authorization_code',
             'client_id': os.getenv('INTRA_ID'),
@@ -259,7 +316,7 @@ class Intra42AuthCodeView(APIView):
             'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
             'code': authorization_code
         }
-        return get_access_token_from_api(uri, payload)
+        return get_access_token_from_api(token_endpoint, payload)
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
