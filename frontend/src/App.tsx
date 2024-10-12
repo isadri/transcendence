@@ -6,7 +6,6 @@ import './App.css'
 
 import Landing from "./Pages/landing/landing";
 import SignIn from './Pages/authentication/SignIn/SignIn';
-import SignUp from './Pages/authentication/SignUp/SignUp';
 import AboutUs from './Pages/AboutUs/AboutUs';
 import License from './Pages/License/License';
 import Home from './Pages/Home/Home';
@@ -45,12 +44,12 @@ function App() {
           :(
             // <div className='minP'>
             <>
-            <FirstNavBar/> 
+            <FirstNavBar/>
             <Routes>
                 <Route index path="/" element={<Landing />} />
                 <Route index path="landing" element={<Landing />} />
-                <Route index path="signIn" element={<SignIn />} />
-                <Route index path="signUp" element={<SignUp />} />
+                <Route index path="Auth" element={<SignIn/>} />
+                {/* <Route index path="Auth" element={<SignUp/>} /> */}
                 <Route index path="aboutUs" element={<AboutUs />} />
                 <Route index path="license" element={<License />} />
                 <Route path="*" element={<NoPage />} />
