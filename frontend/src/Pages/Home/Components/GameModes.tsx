@@ -1,46 +1,67 @@
-import '../styles/GameModes.css'
-import FMode from '../images/friendsMode.svg'
-import AMode from '../images/aiMode.svg'
-import RMode from '../images/randomMode.svg'
+import "../styles/GameModes.css";
+import FMode from "../images/friendsMode.svg";
+import AMode from "../images/aiMode.svg";
+import RMode from "../images/randomMode.svg";
+import { useState } from "react";
+
+import GameModePopUp from "../../../components/GameModePopUp/GameModePopUp";
+
+const ModesData = [
+    {
+        id: 1,
+        image: RMode,
+        title: "Random Mode",
+        text: "Start play with random person",
+    },
+    {
+        id: 2,
+        image: AMode,
+        title: "Bot Mode",
+        text: "Computer Challenge",
+    },
+    {
+        id: 3,
+        image: FMode,
+        title: "Friends Mode",
+        text: "start play with your friends",
+    },
+];
 
 function GameModes() {
-  return (
-    <div className='Home-GameModes'>
-      <h2>Game Modes</h2>
-      <div className='Home-GameContents'>
-        <div className='Home-Mode'>
-          <div>
-              <h4>Random Mode</h4>
-              <p>Start play with random person</p>
-              <button type='submit'>Start</button>
-          </div>
-          <div>
-              <img src={RMode} alt="" />
-          </div>
-        </div>
-        <div className='Home-Mode'>
-          <div>
-              <h4>Ai Mode</h4>
-              <p>Computer Challenge</p>
-              <button type='submit'>Start</button>
-          </div>
-          <div>
-            <img src={AMode} alt="" />
-          </div>
-        </div>
-        <div className='Home-Mode'>
-          <div>
-              <h4>Friends Mode</h4>
-              <p>start play with your friends</p>
-              <button type='submit'>Start</button>
-          </div>
-          <div>
-            <img src={FMode} alt="" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+    const [mode, setMode] = useState<number>(-1);
+    return (
+        <>
+            <div className="Home-GameModes">
+                <h2>Game Modes</h2>
+                <div className="Home-GameContents">
+                    {ModesData.map((data) => {
+                        return (
+                            <div className="Home-Mode">
+                                <div>
+                                    <h4>{data.title}</h4>
+                                    <p>{data.text}</p>
+                                    <button
+                                        type="submit"
+                                        onClick={() => {
+                                            setMode(data.id);
+                                        }}
+                                    >
+                                        Start
+                                    </button>
+                                </div>
+                                <div>
+                                    <img src={data.image} alt="" />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+            <div style={(mode === 3 || mode === 1  ? {display:"flex"} : {display: "none"})}>
+                <GameModePopUp mode={mode} setter={setMode}/>
+            </div>
+        </>
+    );
 }
 
-export default GameModes
+export default GameModes;
