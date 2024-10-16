@@ -1,0 +1,134 @@
+.AboutUs-comp{
+    width: 90%;
+    height: 70vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: var(--fade);
+    min-height: 700px;
+    border-radius: 20px;
+    max-width: 1200px;
+}
+
+.AboutUs-intro{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    font-family: var(--mono);
+}
+
+.AboutUs-intro h1{
+    color: var(--primary);
+    font-size: 3vh;
+}
+.AboutUs-intro span{
+    margin-top: 2%;
+    font-size: 1.5vh;
+}
+
+.AboutUs-team{
+    display: flex;
+    width: 80%;
+    height: 50vh;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.AboutUs-Creator{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding-top: 10vh;
+    margin-left: 2%;
+    border: solid 1px var(--fade);
+    background-color: var(--fade);
+    border-radius: 10vh;
+    /* width: 90%; */
+    filter: grayscale(100%);
+    pointer-events: auto;
+    overflow: hidden;
+    max-height: 500px;
+    /* max-width: 120px; */
+}
+
+.AboutUs-Creator img{
+    border-top: solid 1px var(--fade);
+    border-radius: 10vh;
+    width: 15vw;
+    max-width: 190px;
+    height: 15vw;
+    max-height: 190px;
+    padding-top: 5vh;
+    /* margin-top: 5vh; */
+}
+
+.AboutUs-Creator:hover{
+    filter: grayscale(0%);
+}
+
+.AboutUs-Creator:nth-child(1):hover {
+    background-color: #e0cdbbb6;
+}
+
+.AboutUs-Creator:nth-child(3):hover{
+    background-color: #f5b0c99b;
+}
+
+.AboutUs-Creator:nth-child(even){
+    transform: translateY(7vh);
+}
+
+.AboutUs-Creator:nth-child(2):hover{
+    background-color: #bbcbc6ba;
+}
+
+.AboutUs-Creator:nth-child(4):hover{
+    background-color: #f4c0326a;
+}
+
+.AboutUs-CreatorInfo{
+    display: flex;
+    flex-direction: column;
+    font-family: var(--mono);
+    font-size: 1.1vh;
+    text-wrap:balance;
+    margin-bottom: 15%;
+}
+
+.AboutUs-CreatorContact{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: row;
+    font-family: var(--mono);
+    font-size: 1.1vh;
+    margin-bottom: 50%;
+    margin-top: 5%;
+}
+
+
+.AboutUs-CreatorContact i{
+    color: white;
+}
+.AboutUs-CreatorContact *:nth-child(2){
+    margin-left: 4px;
+}
+
+/* @media only screen and (min-width: 1330px){
+    .AboutUs-comp{
+        width: 1000px;
+    }
+} */
+/* @media only screen and (max-width: 1000px){
+    .AboutUs-comp{
+        width: 90vw;
+    }
+} */
