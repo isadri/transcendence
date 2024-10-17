@@ -5,14 +5,13 @@ function responsiveBar() {
   return (
     <div className='resBar'>
         <ul >
-          <li><Link to="#">Home</Link></li>
-          <li><Link to="#">AboutUs</Link></li>
-          <li><Link to="#">License</Link></li>
+          <li><Link to="/landing">Home</Link></li>
+          <li><Link to="/aboutUs">AboutUs</Link></li>
+          <li><Link to="/license">License</Link></li>
         </ul>
         <hr className="line" />
         <ul>
-            <li><Link to="#">Sign In</Link></li>
-            <li><Link to="#">Sign Up</Link></li>
+            <li><Link to="/Auth">Join Us</Link></li>
         </ul>
     </div>
   )

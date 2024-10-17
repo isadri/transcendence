@@ -9,7 +9,6 @@ function navBar() {
   const handelClick = () =>{
     setValue(!value)
   }
-console.log(location.pathname);
   const hideNavBar = useLocation().pathname === "/Auth";
   return (
     <>
@@ -43,7 +42,7 @@ console.log(location.pathname);
           </div>
         </nav>
         )}
-        {value === true ? <ResponsiveBar/> : null}
+        {value === true && !hideNavBar ? <ResponsiveBar/> : null}
     </>
   );
 }

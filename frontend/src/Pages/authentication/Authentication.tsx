@@ -26,11 +26,11 @@ function Authentication() {
     <>
         <div className="SingIn" style={{...(!val ? { transform: "translateX(200%)", opacity: 0 } : {}),
           ...(!val && win_width ? {opacity:0}:{opacity:1})}} >
-          <div className='iconBack'>
-            <Link to="/">
-              <i className="fa-solid fa-arrow-left"></i>
-            </Link>
-          </div>
+            <div className='iconBack'>
+              <Link to="/">
+                <i className="fa-solid fa-arrow-left"></i>
+              </Link>
+            </div>
           <h1>Sign In</h1>
           <form action="" className=''>
             <input type="text" name="" id="UserName" placeholder='UserName or Email' />
@@ -59,6 +59,11 @@ function Authentication() {
         </div>
       
         <div className='SingUp' style={{...SingUpStyle, ...(!val && win_width ? {opacity:1, transform: "translateX(0%)"}:{})}}>
+          <div className='iconBack' style={win_width ? {opacity : 1}:{opacity : 0}}>
+              <Link to="/">
+                <i className="fa-solid fa-arrow-left"></i>
+              </Link>
+          </div>
           <h1>Sign Up</h1>
           <form action="">
           {/* <div className='PrimaryInfo'>
@@ -104,23 +109,28 @@ function Authentication() {
                   </div>
               </div>
               <div className='LeftContent' style={!val ?{transform: "translateX(0)"}:{}}>
-                  <h1>Welcome Back!</h1>
-                  <span>To stay connected with us, 
-                    please log in using your personal information, 
-                    Google account, or your Intra account.</span>
-                  <div className='buttons'>
-                    <Link to='/Auth'>
-                      <button type='submit' id="registerBtn" className='btn'
-                        onClick={() => {setVal(true);}}>Sing In</button>
-                    </Link>
-                  </div>
+                <div className='iconBack'>
+                  <Link to="/">
+                    <i className="fa-solid fa-arrow-left"></i>
+                  </Link>
+                </div>
+                <h1>Welcome Back!</h1>
+                <span>To stay connected with us, 
+                  please log in using your personal information, 
+                  Google account, or your Intra account.</span>
+                <div className='buttons'>
+                  <Link to='/Auth'>
+                    <button type='submit' id="registerBtn" className='btn'
+                      onClick={() => {setVal(true);}}>Sing In</button>
+                  </Link>
+                </div>
               </div>
           </div>
-          <div className='iconBack' style={val ? {opacity: 0}: {opacity: 1}}>
-          <Link to="/">
-            <i className="fa-solid fa-arrow-left"></i>
-          </Link>
-        </div>
+          {/* <div className='iconBack' style={val && win_width ? {opacity: 0}: {opacity: 1}}>
+            <Link to="/">
+              <i className="fa-solid fa-arrow-left"></i>
+            </Link>
+          </div> */}
       </div>
     </>
     )

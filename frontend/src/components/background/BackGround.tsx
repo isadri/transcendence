@@ -23,8 +23,8 @@ const BackGround = ({ children, isLogged }: Props) => {
           padding:"0 20px",
           flexDirection : win_width ? "column":  "row",
         } :{
-          flexDirection : "row",
-          justifyContent: "center"
+          flexDirection : "column",
+          justifyContent: "center",
         }
       }
       >

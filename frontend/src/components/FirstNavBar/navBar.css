@@ -80,7 +80,7 @@
     }
     .resBar{
         flex-direction: column;
-        position: relative;
+        position: fixed;
         top: 70px;
         display: flex;
         justify-content: center;
@@ -88,6 +88,7 @@
         color: white;
         background-color: var(--fade);
         width: 100%;
+        z-index: 1;
     }
     
     .resBar ul{
