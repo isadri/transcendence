@@ -5,6 +5,9 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
 
+// import bg1 from "./Images/bg1.png"
+
+
 function Authentication() {
   const [val, setVal] = useState(true);
   // const [sign, setSign] = useState(true);
@@ -58,7 +61,7 @@ function Authentication() {
           </div>
         </div>
       
-        <div className='SingUp' style={{...SingUpStyle, ...(!val && win_width ? {opacity:1, transform: "translateX(0%)"}:{})}}>
+        <div className='SingUp ' style={{...SingUpStyle, ...(!val && win_width ? {opacity:1, transform: "translateX(0%)"}:{})}}>
           <div className='iconBack' style={win_width ? {opacity : 1}:{opacity : 0}}>
               <Link to="/">
                 <i className="fa-solid fa-arrow-left"></i>

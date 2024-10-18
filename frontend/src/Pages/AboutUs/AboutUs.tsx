@@ -19,7 +19,6 @@ function AboutUs() {
                         <div className='AboutUs-CreatorContact'>
                             {item.icons[0]}
                             {item.icons[1]}
-                            {/* {item.icons[2]} */}
                         </div>
                     </div>
                     {item.img}

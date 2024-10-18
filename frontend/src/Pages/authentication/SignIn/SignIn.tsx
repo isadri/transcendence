@@ -4,7 +4,7 @@ import Authentication from '../Authentication'
 function SignIn() {
   return (
     <div className='Auth'>
-      <div className='SingInParent'>
+      <div className='SingInParent curve'>
         <Authentication/>
       </div>
     </div>
