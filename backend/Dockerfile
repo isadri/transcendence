@@ -12,3 +12,5 @@ RUN apt update && apt install -y postgresql
 # Install dependencies
 COPY . .
 RUN pip install -r requirements.txt
+
+ENTRYPOINT [ "bash", "entrypoint.sh" ]
