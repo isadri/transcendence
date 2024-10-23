@@ -7,33 +7,40 @@ volumes:
 services:
   back-end:
     container_name: backend
-    entrypoint: bash entrypoint.sh
     command: python manage.py runserver 0:8000
-    image: backend:42
+    image: backend
     build:
       context: backend
     ports:
       - 8000:8000
-      - 587:587
-    env_file:
-      - .env
     volumes:
-      - ./backend/:/app
+      - ./backend/:/code
     networks:
       - app-network
     depends_on:
       - postgres
 
+  front-end:
+    container_name: frontend
+    image: frontend
+    build: ./frontend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./frontend/src:/code/src
+    networks:
+      - app-network
+    depends_on:
+      - back-end
+
   postgres:
     container_name: postgres
     image: postgres:17beta1
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/posgresql/data
     ports:
       - 5432:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
-    env_file:
-      - .env
     networks:
       - app-network

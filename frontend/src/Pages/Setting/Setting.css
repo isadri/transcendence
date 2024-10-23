@@ -1,0 +1,6 @@
+.settingPage{
+    width: 100%;
+    height: 96vh;
+    position: relative;
+    background-color: var(--fade);
+}
