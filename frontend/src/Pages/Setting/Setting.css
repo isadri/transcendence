@@ -1,0 +1,190 @@
+.Par{
+    width: 100%;
+    height: 96vh;
+    position: relative;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.Par::-webkit-scrollbar {
+    display: none;  
+}
+
+.settingPage{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 96vh;
+    min-height: 900px;
+}
+
+
+.settingPage h1{
+    color: var(--primary);
+    padding-bottom: 1.5%;
+    /* font-size: px; */
+    font-family: var(--sans);
+}
+
+.settingContent {
+    width: 90%;
+    height: 780px;
+    background-color: var(--fade);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--mono);
+    /* min-height: 520px; */
+}
+
+.ChangeAvatar{
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 2.5%;
+}
+
+.ChangeAvatar img{
+    width: 98px;
+    height: 98px;
+    border-radius: 50%;
+}
+
+.ChangeAvatar .btns{
+    width: 220px;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 4%;
+}
+
+.ChangeAvatar .btns button{
+    width: 92px;
+    height: 40px;
+    font-family: var(--mono);
+    border-radius: 15px;
+    color: white;
+    /* font-size: 1.5%; */
+}
+
+.ChangeAvatar .btns *:first-child{
+    border: 1px solid white;
+    background-color: transparent;
+}
+
+.ChangeAvatar .btns *:nth-child(2){
+    border: 1px solid var(--primary);
+    background-color: var(--primary);
+}
+
+.ProfileEdit, .ChangePass{
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.ProfileEdit h2, .ChangePass h2{
+    margin-bottom: 3%;
+    /* font-size: 2.4%; */
+}
+
+.settingContent form{
+    width: 98%;
+    padding-left: 1%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.ProfileEdit-C2, .ChangePass-C2{
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ProfileEdit-C1, .ChangePass-C1{
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.ChangePass-C1 *:nth-child(3){
+    margin-top: 5%;
+}
+
+.settingPage label{
+    font-weight: 100;
+    /* font-size: 1.5%; */
+    margin-left: 3px;
+    margin-bottom: 5px;
+}
+
+.settingPage input{
+    background-color: transparent;
+    border: solid 1px white;
+    border-radius: 8px;
+    /* height: 3vh; */
+    min-height: 35px;
+    color: white;
+    font-family: var(--mono);
+    padding-left: 7px;
+}
+
+.Setting-action{
+    display: flex;
+    width: 80%;
+    padding-bottom: 5%;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+}
+
+.Setting-action button{
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    color: white;
+    border-radius: 15px;
+    width: 12vh;
+    height: 40px;
+    /* font-size: 1.5vw; */
+}
+
+.Setting-action *:nth-child(1){
+    color: #ff0000;
+    cursor: pointer;
+    margin-right: 5px;
+    /* font-size: 1.5vh; */
+}
+
+
+@media only screen and (max-width: 478px) {
+    .ProfileEdit-C2, .ChangePass-C2 ,.ProfileEdit-C1, .ChangePass-C1{
+        width: 100%;
+        margin-top: 5%;
+    }
+    .Setting-action button{
+        width: 20vw;
+        font-size: 2.2vw;
+    }
+    .Setting-action *:nth-child(1){
+        font-size: 2.2vw;
+    }
+    .ProfileEdit h2, .ChangePass h2{
+        font-size: 4vw;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .settingContent{
+        width: 1000px;
+    }
+    
+}

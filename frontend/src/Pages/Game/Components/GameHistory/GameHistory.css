@@ -1,0 +1,17 @@
+.Game-history {
+  margin-top: 2%;
+}
+
+.Game-history h2 {
+  font-family: var(--mono) ;
+  color: var(--primary);
+  font-weight: 800;
+  text-align: center;
+}
+
+.Game-history-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

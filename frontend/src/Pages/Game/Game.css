@@ -1,0 +1,19 @@
+.game-page-container {
+    width: 100%;
+    height: 96vh;
+    align-items: center;
+    position: relative;
+    overflow: auto;
+    -ms-overflow-style: none;  /* Hide scrollbars in IE and Edge */
+    scrollbar-width: none;     /* Hide scrollbars in Firefox */
+}
+
+.game-page-container .Home-GameModes h2{
+  text-align: center;
+}
+
+
+
+.game-page-container .Home-GameModes{
+
+}

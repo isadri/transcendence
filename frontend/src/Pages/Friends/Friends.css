@@ -1,0 +1,56 @@
+.FriendContainer {
+	width: 100%;
+	height: 96dvh;
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	/* background-color: var(--fade); */
+	border-radius: 30px;
+	font-family: var(--sans);
+	gap: 3%;
+}
+
+.menuFriends {
+	width: 30%;
+	margin: 4% 0 4% 4%;
+	border-radius: 30px;
+	background-color: #d9d9d91C;
+	display: flex;
+	flex-direction: column;
+	font-size: 18px;
+}
+
+.menuFriends ul {
+	list-style: none;
+	text-align: center;
+	margin: 4vh 6%;
+}
+
+.menuFriends ul li {
+	background-color: var(--fade);
+	margin-bottom: 4.5vh;
+	padding: 10%;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.menuFriends ul .selectedItem {
+	background-color: var(--primary);
+}
+
+.menuFriends ul .selectedItem:hover {
+	background-color: var(--primary);
+}
+
+.menuFriends ul li:hover {
+	background-color: #8f4854;
+}
+
+.bodyFriends {
+	width: 70%;
+	margin: 4% 4% 4% 0;
+	border-radius: 30px;
+	background-color: #d9d9d91C;
+	display: flex;
+	flex-direction: column;
+}

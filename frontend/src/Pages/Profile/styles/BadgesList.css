@@ -1,0 +1,117 @@
+.Home-BadgesList{
+    width: 40%;
+    background-color: var(--fade);
+    border-radius: 20px;
+    height: 22vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.Home-BadgesList h2{
+    color: var(--primary);
+    font-family: var(--sans);
+    margin: 5% 0 0 5%;
+    font-size: 2vh;
+}
+
+.Home-badgesList {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    height: auto;
+    width: 100%;
+    max-width: 400px;
+    position: relative; 
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.Home-badgesScroll{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 15vh;
+    width: 100%;
+}
+
+.Home-badgesList::-webkit-scrollbar {
+    width: 0;
+}
+
+.Home-badgesList .Home-child{
+    cursor: pointer;
+}
+
+.Home-badgesList{
+    display: flex;
+}
+
+.Home-badgesList .Home-child img{
+    width: 130px;
+    height: 150px;
+}
+
+
+.Home-badgesList .Home-child:not(:nth-child(2)){
+    opacity: 0.3;
+}
+
+.Home-badgesList .Home-child:nth-child(1){
+    filter:brightness(0);
+    opacity: 0.1;
+}
+.Home-badgesScroll button{
+    background-color: #ff000000;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.Home-badgesScroll button:hover{
+    color: var(--primary);
+}
+
+@media only screen and (max-width: 1255px){
+    .Home-badgesList {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media only screen and (max-width: 1150px){
+    .Home-BadgesList{
+        width: 100%;
+        margin-top: 2%;
+    }
+    .Home-BadgesList h2{
+        margin-top: 3%;
+    }
+}
+
+@media only screen and (max-width: 800px){
+    .Home-badgesList {
+        max-width: 300px;
+    }
+    .Home-badgesList .Home-child img{
+        width: 100px;
+        height: 130px;
+    }
+}
+
+@media only screen and (max-width: 400px){
+    .Home-badgesList {
+        max-width: 200px;
+        margin-top: 3%;
+    }
+    .Home-badgesList .Home-child img{
+        width: 70px;
+        height: 110px;
+    }
+}

@@ -4,16 +4,7 @@
     box-sizing: border-box;
 }
 
-.navBar{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 110px;
-    width: 100%;
-    font-family: var(--sans);
-}
-
-nav{
+.nav{
     position: fixed;
     top: 0;
     display: flex;
@@ -23,11 +14,12 @@ nav{
     height: 70px;
     line-height: 10px;
     background-color: var(--fade);
+    z-index: 1;
 }
 
-.logo{
-    padding-left: 4px;
-    width: 70px;
+.nav .logo{
+    padding: 5px;
+    width: 80px;
 }
 
 #items ul{
@@ -73,7 +65,7 @@ nav{
     display: none;
 }
 
-@media only screen and (max-width: 450px){
+@media only screen and (max-width: 430px){
     .buttons .btn{
         display: none;
     }
@@ -82,14 +74,14 @@ nav{
     }
     .barIcon{
         display: flex;
-        color: wh;
+        color: white;
         padding: 0 8px;
         font-size: 30px;
         cursor: pointer;
     }
     .resBar{
         flex-direction: column;
-        position: relative;
+        position: fixed;
         top: 70px;
         display: flex;
         justify-content: center;
@@ -97,6 +89,7 @@ nav{
         color: white;
         background-color: var(--fade);
         width: 100%;
+        z-index: 1;
     }
     
     .resBar ul{

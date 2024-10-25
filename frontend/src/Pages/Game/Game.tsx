@@ -1,6 +1,13 @@
+import GameModes from "../Home/Components/GameModes"
+import GameHistory from "./Components/GameHistory/GameHistory"
+import './Game.css'
+
 const Game = () => {
   return (
-    <div></div>
+    <div className="game-page-container">
+      <GameModes/>
+      <GameHistory/>
+    </div>
   )
 }
 

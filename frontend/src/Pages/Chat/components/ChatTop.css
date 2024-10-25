@@ -1,0 +1,124 @@
+.top {
+	height: 2dvh;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-radius: 30px 30px 0 0;
+	background-color: var(--itemColor);
+	font-size: 20px;
+	padding: 2.5dvh;
+	font-family: var(--sans);
+}
+
+.profileInfo {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 30px;
+}
+
+.profileInfo .image {
+	height: 40px;
+	width: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.textInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5dvh;
+}
+
+.textInfo span {
+	font-weight: 500;
+	font-size: 20px;
+}
+
+.textInfo p {
+	font-size: 14px;
+	font-weight: 300;
+}
+
+.icon-menu {
+	cursor: pointer;
+	text-align: center;
+	width: 25px;
+	padding: 17%;
+	border-radius: 100%;
+	object-fit: cover;
+	transition: 0.5s;
+}
+
+.activeMenu {
+	background-color: #d9d9d94d;
+}
+
+.menu-list {
+	font-family: var(--sans);
+	position: absolute;
+	right: 2%;
+	top: 5.5dvh;
+	list-style: none;
+	transition: 0.5s;
+	color: black;
+	background-color: white;
+	font-size: 19px;
+	display: flex;
+	flex-direction: column;
+	gap: 1%;
+	border-radius: 2px;
+	z-index: 20;
+}
+
+.menu-list li {
+	padding: 20px 40px;
+	cursor: pointer;
+}
+
+.menu-list li:hover {
+	background-color: #c1596ccc;
+}
+
+.arrowClose {
+	cursor: pointer;
+}
+
+@media (max-width: 478px) {
+	.top {
+		height: 4.5dvh;
+		border-radius: 0;
+	}
+
+	.profileInfo .image {
+		height: 5vh;
+		width: 8vw;
+	}
+
+	.textInfo span {
+		font-weight: 400;
+		font-size: 18px;
+	}
+
+	.textInfo p {
+		font-size: 12px;
+		font-weight: 200;
+	}
+
+	.icon-menu {
+		cursor: pointer;
+		text-align: center;
+		width: 25px;
+		padding: 17%;
+		border-radius: 100%;
+		object-fit: cover;
+		transition: 0.5s;
+	}
+
+	.menu-list {
+		right: 3%;
+		top: 7.5dvh;
+		font-size: 14px;
+		gap: 0.5%;
+	}
+}

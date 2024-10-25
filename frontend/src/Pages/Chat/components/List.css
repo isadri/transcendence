@@ -1,0 +1,100 @@
+.list {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100dvh;
+}
+
+.container {
+	position: relative;
+	display: flex;
+	height: 2dvh;
+	flex-direction: row;
+	justify-content: space-between;
+	border-radius: 30px 30px 0 0;
+	background-color: var(--itemColor);
+	padding: 2.5dvh;
+	font-size: 24px;
+	font-family: var(--sans);
+}
+
+.container .newChat {
+	width: 24px;
+	height: 2.5dvh;
+	cursor: pointer;
+}
+
+.container .iconMenu {
+	width: 27px;
+	height: 26px;
+	cursor: pointer;
+	padding: 2px;
+	text-align: center;
+	border-radius: 100%;
+	object-fit: cover;
+	transition: 0.5s;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.activeMenu {
+	background-color: #d9d9d94d;
+}
+
+.search {
+	display: flex;
+	justify-content: center;
+	padding: 8% 0;
+}
+
+.search-container {
+	display: flex;
+	align-items: center;
+	border-radius: 50px;
+	padding: 2%;
+	border: 1px solid white;
+	width: 70%;
+	background-color: transparent;
+}
+
+.search-container .search-icon {
+	color: white;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.search-container .arrow-icon {
+	color: white;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.search-container input {
+	border: none;
+	outline: none;
+	background-color: transparent;
+	color: white;
+	font-size: 16px;
+	flex: 1;
+}
+
+.search-container input::placeholder {
+	color: white;
+	font-size: 16px;
+}
+
+.NotFoundChat {
+	font-size: 1rem;
+	font-family: var(--sans);
+	text-align: center;
+	margin-top: 15%;
+	opacity: 0.6;
+}
+
+@media (max-width: 478px) {
+	.container {
+		border-radius: 0;
+		height: 3.5dvh;
+	}
+}
