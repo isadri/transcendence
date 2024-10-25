@@ -1,4 +1,3 @@
-import logging
 import os
 import pyotp
 from typing import Optional
@@ -31,7 +30,6 @@ from .utils import (
 )
 
 
-logger = logging.getLogger(__name__)
 
 
 class HomeView(APIView):
@@ -127,7 +125,6 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
                 'detail': 'The verification code sent successfully',
             }, status=status.HTTP_200_OK)
         if not User.objects.filter(username=username).exists():
-            logger.debug('User does not exist')
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -369,7 +366,6 @@ class LogoutViewSet(viewsets.ViewSet):
         logout(request)
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
-        logger.debug('%s has logged out', request.user.username)
         return response
 
 

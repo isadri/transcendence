@@ -1,4 +1,3 @@
-import logging
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -9,8 +8,6 @@ from ..accounts.serializers import UserSerializer
 
 
 User = get_user_model()
-
-logger = logging.getLogger(__name__)
 
 
 class FriendSerializer(serializers.ModelSerializer):
@@ -30,7 +27,6 @@ class FriendSerializer(serializers.ModelSerializer):
             serializers.ValidationError: If the friend does not exist or
                 already exists.
         """
-        logger.debug(validated_data)
         #new_friend = User.objects.get(username=validated_data['username'])
         current_user = get_object(self.context['current_user'])
         for friend in validated_data['friends']:

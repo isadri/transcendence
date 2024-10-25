@@ -1,4 +1,3 @@
-import logging
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework import generics
@@ -12,8 +11,6 @@ from .serializers import FriendRequestSenderSerializer
 from .serializers import FriendRequestReceiverSerializer
 from ..accounts.serializers import UserSerializer
 
-
-logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
