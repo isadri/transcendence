@@ -1,0 +1,53 @@
+.GameHistoryItem {
+  width: 80dvw;
+  display: flex;
+  margin-top: 20px;
+  padding: 10px 0;
+  border-radius: 18px;
+  background-color: var(--fade);
+  justify-content: space-between;
+}
+
+.GameHistoryItem div {
+  display: flex;
+  align-items: center;
+}
+
+.GameHistoryItem div img {
+  width: 50px;
+  border-radius:  50%;
+}
+.GameHistoryItemRight
+{
+  display: flex;
+  justify-content: end;
+}
+.GameHistoryItemLeft {
+  /* display: flex;
+  justify-content: end; */
+}
+
+.GameHistoryItemRight img{
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.GameHistoryItemLeft img{
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.GameHistoryItemResult {
+  justify-content: center;
+}
+
+.GameHistoryItemResult img {
+  padding-right: 10px;
+}
+
+@media screen and (max-width: 530px){
+  .GameHistoryItem {
+    width: 85dvw;
+    display: flex;
+    flex-direction: column;
+  }
+}
