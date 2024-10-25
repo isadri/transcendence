@@ -1,1 +1,0 @@
-if width < 720 => on signIn => click on "SignUP" => signin(opacity:0), signup(opacity:1)
