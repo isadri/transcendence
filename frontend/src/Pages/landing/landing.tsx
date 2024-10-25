@@ -1,35 +1,79 @@
-import { Canvas, ThreeElements, useFrame } from '@react-three/fiber'
 import './landing.css'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useGLTF } from '@react-three/drei'
+import { Group, PerspectiveCamera, WebGLRenderer } from 'three';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
-function Model(){
-  const url = new URL("./../../assets/sceen_without_balls.glb", import.meta.url);
-  const nodes = useGLTF(url.pathname)
+// TODO: change the color of floating
+const modelUrl = new URL('../../assets/glb/sceen_without_balls.glb', import.meta.url).href;
+const welcomeUrl = new URL('../../assets/glb/welcome_text.glb', import.meta.url).href;
+const welcomeButtonUrl = new URL('../../assets/glb/welcome_button.glb', import.meta.url).href;
+
+useGLTF.preload(modelUrl);
+useGLTF.preload(welcomeUrl);
+useGLTF.preload(welcomeButtonUrl);
+
+
+function Model() {
+  const sceneRef = useRef<Group>(null!)
+  const navigate = useNavigate()
+
+  useFrame((state, delta) => {
+    sceneRef.current.rotation.y += delta * 0.75
+  })
+
+  const table = useGLTF(modelUrl)
+  const welcome = useGLTF(welcomeUrl)
+  const button = useGLTF(welcomeButtonUrl)
+
 
   return (
-    <group>
-      <primitive object={nodes}/>
-    </group>
+    <>
+      <group position={[0, 1, 0]}>
+        <group ref={sceneRef}>
+          <mesh position={[-0.5, 1.609, 1]}>
+            <sphereGeometry args={[0.08, 30, 30]} />
+            <meshStandardMaterial color={'white'} />
+          </mesh>
+          <mesh position={[-0.5, 1.609, -1.5]}>
+            <sphereGeometry args={[0.08, 30, 30]} />
+            <meshStandardMaterial color={'white'} />
+          </mesh>
+          <mesh position={[0.7, 1.609, -0.8]}>
+            <sphereGeometry args={[0.08, 30, 30]} />
+            <meshStandardMaterial color={'white'} />
+          </mesh>
+          <mesh position={[0.9, 0.54, -0.8]}>
+            <sphereGeometry args={[0.08, 30, 30]} />
+            <meshStandardMaterial color={'white'} />
+          </mesh>
+          <mesh position={[1.5, 0.54, 0.8]}>
+            <sphereGeometry args={[0.08, 30, 30]} />
+            <meshStandardMaterial color={'white'} />
+          </mesh>
+          <mesh position={[-1.4, 0.54, 1]}>
+            <sphereGeometry args={[0.08, 30, 30]} />
+            <meshStandardMaterial color={'white'} />
+          </mesh>
+          <primitive object={table.scene} />
+        </group>
+        <primitive object={welcome.scene} position={[0, -0.5, 3.25]} rotation={[Math.PI / 4, 0, 0]} />
+        <primitive object={button.scene} position={[0, -0.5, 3.25]} rotation={[Math.PI / 4, 0, 0]} onClick={()=> {navigate("/Auth")}}/>
+      </group>
+    </>
   )
 }
 
 function LandingSceen() {
-
-
-  // const tableGltf = useRef<Scene>(null!);
-
-  // useFrame((state, delta)=>{
-  //   tableGltf.current.rotation.y += delta*0.75;
-  // })
-
   return (
     <>
-      <OrbitControls />
-      <perspectiveCamera/>
-      <directionalLight position={[0 , 5, 0]} intensity={2}/>
-      <Model/>
-      {/* <Gltf src={(new URL("./../../assets/sceen_without_balls.glb", import.meta.url)).pathname} ref={tableGltf}/> */}
+      <OrbitControls enableZoom={false} />
+      <perspectiveCamera />
+      <directionalLight position={[0, 5, 0]} intensity={2} />
+      <directionalLight position={[0, 9, 15]} intensity={2} />
+      <Model />
     </>
   )
 }
@@ -40,8 +84,8 @@ function Landing() {
     <>
       <div className='landing'>
         <div className='landing3d'>
-          <Canvas camera={{position: [0, 3, 7]}}>
-            <LandingSceen/>
+          <Canvas camera={{ position: [0, 3, 7] }}>
+            <LandingSceen />
           </Canvas>
         </div>
         {/* <div className='landingCon'>
@@ -53,7 +97,6 @@ function Landing() {
             <button className="btn" id="loginBtn">Join Us</button>
           </div>
         </div> */}
-        
       </div>
     </>
   )
