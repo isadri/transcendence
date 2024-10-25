@@ -1,0 +1,112 @@
+.license-Parent{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    height: 70vh;
+    position: relative;
+    /* background-color: var(--fade); */
+    border-radius: 15px;
+    margin-top: 70px;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* padding-bottom: 14vh; */
+}
+
+.license-Parent::-webkit-scrollbar {
+    display: none;  
+}
+
+.license-text{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 4vh;
+    /* position: fixed; */
+}
+.license-text h1{
+    color: var(--primary);
+    font-size: 3.5vw;
+    font-family: var(--mono);
+}
+
+.license-text  span{
+    font-family: var(--mono);
+    font-size: 2.5vw;
+    border-right: 2px solid white;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: deleting 6s steps(65, end),
+    pause 6s, typing 8s forwards;
+}
+
+@keyframes typing {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 65ch;
+    }
+}
+
+
+@keyframes pause {
+    100% {
+        border-right: 2px solid white;
+    }
+}
+@keyframes deleting {
+    0% {
+        width: 65ch;
+    }
+    100% {
+        width: 0;
+    }
+}
+.license-text  span {
+    animation-iteration-count: infinite;
+}
+
+.License-elements{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.License-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background-color: var(--fade);
+    width: 15vh;
+    height: 15vh;
+    margin-left: 2%;
+    margin-top: 2%;
+}
+
+.License-item img{
+    width: 6vh;
+    height: 6vh;
+}
+
+.License-item h2{
+    margin-top: 4%;
+    font-size: 1vh;
+}
+
+@media only screen and (min-width: 1330px){
+    .license-text h1{
+        font-size: 2vw;
+    }
+    .license-text span{
+        font-size: 1.2vw;
+    }
+}

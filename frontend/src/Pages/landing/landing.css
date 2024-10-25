@@ -1,23 +1,17 @@
+
 .landing{
-    position: relative;
-    top: 80px;
-    width: 40%;
-    color: white;
-    padding: 0 0 0 10%;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-around;
+  height: 100vh;
+  width: 100%;
 }
 
-.landingCon{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    top: 40px;
+.landing .landing3d {
+  width: 100vw;
+  height: 100vh;
 }
-
-.paragraph p{
-    text-align: left;
-    font-size: 20px;
-    margin-top:20px ;
-    padding: 0 20px;
+.landing .landing3d canvas {
+  flex: 1;
 }

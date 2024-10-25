@@ -1,50 +1,48 @@
 import "./navBar.css";
 import logo from "../../assets/lg.svg";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import ResponsiveBar from "./responsiveBar";
 
 function navBar() {
   const [value, setValue] = useState(false);
   const handelClick = () =>{
-    if (value === false)
-      setValue(true);
-    else
-      setValue(false);
+    setValue(!value)
   }
+  const hideNavBar = useLocation().pathname === "/Auth";
   return (
     <>
-      <div className="navBar">
-        <nav className="nav">
-          <a href="#" className="logo">
+      {!hideNavBar &&
+        (<nav className="nav">
+          <Link to="/" className="logo">
             <img src={logo} alt="logo" className="logo" />
-          </a>
+          </Link>
           <div id="items">
             <ul>
               <li>
-                <a href="#">Home</a>
+                <Link to="/landing">Home</Link>
               </li>
               <li>
-                <a href="#">AboutUs</a>
+                <Link to="/aboutUs">AboutUs</Link>
               </li>
               <li>
-                <a href="#">License</a>
+                <Link to="/license">License</Link>
               </li>
             </ul>
           </div>
           <div className="buttons">
-            <button className="btn" id="loginBtn">
-              Sign In
-            </button>
-            <button className="btn" id="registerBtn">
-              Sign Up
-            </button>
+            <Link to="/Auth">
+              <button className="btn" id="loginBtn">
+                Join Us
+              </button>
+            </Link>
           </div>
           <div className="barIcon">
             <i className="fa-solid fa-bars" onClick={handelClick}></i>
           </div>
         </nav>
-      {value === true ? <ResponsiveBar/> : null}
-      </div>
+        )}
+        {value === true && !hideNavBar ? <ResponsiveBar/> : null}
     </>
   );
 }

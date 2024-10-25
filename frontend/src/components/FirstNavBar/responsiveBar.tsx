@@ -1,17 +1,17 @@
 import "./navBar.css";
+import { Link } from "react-router-dom";
 
 function responsiveBar() {
   return (
     <div className='resBar'>
         <ul >
-          <li><a href="#">Home</a></li>
-          <li><a href="#">AboutUs</a></li>
-          <li><a href="#">License</a></li>
+          <li><Link to="/landing">Home</Link></li>
+          <li><Link to="/aboutUs">AboutUs</Link></li>
+          <li><Link to="/license">License</Link></li>
         </ul>
         <hr className="line" />
         <ul>
-            <li><a href="#">Sign In</a></li>
-            <li><a href="#">Sign Up</a></li>
+            <li><Link to="/Auth">Join Us</Link></li>
         </ul>
     </div>
   )

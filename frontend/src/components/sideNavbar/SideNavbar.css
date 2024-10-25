@@ -20,8 +20,8 @@
 	flex-direction: column;
 }
 
-.logo {
-	padding: 3%;
+.list-items .logo {
+    padding: 10px;
 }
 
 .active {
