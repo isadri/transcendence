@@ -46,6 +46,8 @@ INSTALLED_APPS = [
 	'api.friends',
 
     'oauth2_provider',
+	
+    'api.chat',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
