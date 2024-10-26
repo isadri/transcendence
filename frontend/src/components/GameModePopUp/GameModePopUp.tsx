@@ -1,6 +1,5 @@
 import "./GameModePopUp.css"
 import TImage from "../../assets/cup.png"
-// import SImage from "../../assets/rackets.png"
 import SImage from "../../Pages/Home/images/randomMode.svg"
 
 
@@ -10,7 +9,6 @@ interface GameModePopUpProps {
 }
 
 function GameModePopUp({mode, setter}:GameModePopUpProps) {
-  console.log(mode);
   return (
     <>
     <div className="GameModePopUpBlur">
