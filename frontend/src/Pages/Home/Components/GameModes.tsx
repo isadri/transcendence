@@ -36,7 +36,7 @@ function GameModes() {
                 <div className="Home-GameContents">
                     {ModesData.map((data) => {
                         return (
-                            <div className="Home-Mode">
+                            <div className="Home-Mode" key={data.id}>
                                 <div>
                                     <h4>{data.title}</h4>
                                     <p>{data.text}</p>
