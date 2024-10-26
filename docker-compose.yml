@@ -3,6 +3,7 @@ networks:
 
 volumes:
   postgres_data:
+  modules_files:
 
 services:
   back-end:
@@ -22,18 +23,19 @@ services:
     depends_on:
       - postgres
 
-  #front-end:
-  #  container_name: frontend
-  #  image: frontend
-  #  build: ./frontend
-  #  ports:
-  #    - 5000:5000
-  #  volumes:
-  #    - ./frontend/src:/code/src
-  #  networks:
-  #    - app-network
-  #  depends_on:
-  #    - back-end
+  front-end:
+   container_name: frontend
+   image: frontend
+   build: ./frontend
+   ports:
+     - 5000:5000
+   volumes:
+     - ./frontend:/code/
+     - modules_files:/code/node_modules
+   networks:
+     - app-network
+   depends_on:
+     - back-end
 
   postgres:
     container_name: postgres
