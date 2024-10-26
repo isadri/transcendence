@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   app-network:
 
@@ -7,42 +5,46 @@ volumes:
   postgres_data:
 
 services:
-  # back-end:
-  #   container_name: backend
-  #   command: python manage.py runserver 0:8000
-  #   image: backend
-  #   build:
-  #     context: backend
-  #   ports:
-  #     - 8000:8000
-  #   volumes:
-  #     - ./backend/:/code
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     - postgres
-
-  front-end:
-    container_name: frontend
-    image: frontend
-    build: ./frontend
+  back-end:
+    container_name: backend
+    command: python manage.py runserver 0:8000
+    image: backend
+    build:
+      context: backend
     ports:
-      - 5000:5000
+      - 8000:8000
     volumes:
-      - ./frontend/src:/code/src
+      - ./backend/:/code
     networks:
       - app-network
-    # depends_on:
-    #   - back-end
+    env_file:
+      - .env
+    depends_on:
+      - postgres
 
-  # postgres:
-  #   container_name: postgres
-  #   image: postgres:17beta1
-  #   volumes:
-  #     - postgres_data:/var/lib/posgresql/data
-  #   ports:
-  #     - 5432:5432
-  #   environment:
-  #     - POSTGRES_HOST_AUTH_METHOD=trust
-  #   networks:
-  #     - app-network
+  #front-end:
+  #  container_name: frontend
+  #  image: frontend
+  #  build: ./frontend
+  #  ports:
+  #    - 5000:5000
+  #  volumes:
+  #    - ./frontend/src:/code/src
+  #  networks:
+  #    - app-network
+  #  depends_on:
+  #    - back-end
+
+  postgres:
+    container_name: postgres
+    image: postgres:17beta1
+    volumes:
+      - postgres_data:/var/lib/posgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    env_file:
+      - .env
+    networks:
+      - app-network
