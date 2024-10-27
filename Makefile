@@ -1,6 +1,6 @@
 
 up:
-	@docker-compose up -d
+	@docker-compose up
 
 up-with-build:
 	@docker-compose up -d --build

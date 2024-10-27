@@ -7,7 +7,7 @@ import mainRouter from './Routing/mainRouting';
 import landingRouter from './Routing/landingrouting';
 
 function App() {
-  let [isLogged, setIsLogged] = useState(true);
+  let [isLogged, setIsLogged] = useState(false);
   return (
     <>
       <BackGround isLogged={isLogged}>
