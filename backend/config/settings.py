@@ -199,3 +199,12 @@ EMAIL_USE_TLS = True
 
 
 ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
