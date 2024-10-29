@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
 
     'api.chat',
+    'channels',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
@@ -99,8 +100,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -144,6 +143,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
