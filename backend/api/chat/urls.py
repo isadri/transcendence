@@ -1,7 +1,7 @@
 # chat/urls.py
-from django.urls import path
-from . import views
+# from django.urls import path
+# from . import views
 
-urlpatterns = [
-    path("", views.message_page),
-]
+# urlpatterns = [
+#     path("", views.message_page),
+# ]

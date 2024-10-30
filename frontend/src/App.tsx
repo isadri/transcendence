@@ -11,7 +11,7 @@ function App() {
   return (
     <>
       <BackGround isLogged={isLogged}>
-        <RouterProvider router={ isLogged ? m ainRouter : landingRouter} />
+        <RouterProvider router={ isLogged ? mainRouter : landingRouter} />
       </BackGround>
     </>
   )
