@@ -14,7 +14,6 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.views import TokenVerifyView
 
-
 def get_user_token_data(request) -> dict:
     """
     Gets current user data stored on access token
@@ -43,6 +42,17 @@ def get_user_token_data(request) -> dict:
     except Exception as e:
         raise AuthenticationFailed(e)
 
+def get_current_user_id(request) -> int:
+    """
+    Gets current user id from access token
+
+    Args:
+        request: the request to get the cookies
+    """
+    data = get_user_token_data(request)
+    if not data or not data['user_id']:
+        raise AuthenticationFailed("Something went wrong.")
+    return data['user_id']
 
 def send_otp_email(user: User) -> None:
     """
