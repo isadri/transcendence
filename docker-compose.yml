@@ -22,6 +22,7 @@ services:
       - .env
     depends_on:
       - postgres
+    restart: on-failure
 
   front-end:
    container_name: frontend
@@ -36,6 +37,7 @@ services:
      - app-network
    depends_on:
      - back-end
+   restart: on-failure
 
   postgres:
     container_name: postgres
@@ -50,3 +52,4 @@ services:
       - .env
     networks:
       - app-network
+    restart: on-failure
