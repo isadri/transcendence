@@ -1,8 +1,10 @@
 
 up:
-	@docker-compose up -d
+	@docker-compose up
+upd:
+	@docker-compose up
 
-up-with-build:
+build:
 	@docker-compose up -d --build
 
 down:
