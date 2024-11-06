@@ -9,6 +9,51 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 
 
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.backends import TokenBackend
+from rest_framework_simplejwt.views import TokenVerifyView
+
+def get_user_token_data(request) -> dict:
+    """
+    Gets current user data stored on access token
+
+    Args:
+        request: the request to get the cookies
+    Return:
+        returns a dict of user data, example :
+        {
+            "token_type": string,
+            "exp": number,
+            "iat": number,
+            "jti": string,
+            "user_id": number
+        }
+    """
+    try:
+        token = request.COOKIES.get(settings.AUTH_COOKIE)
+        if not token:
+            raise AuthenticationFailed("Authentication credentials were not provided.")
+        token_decoder = TokenBackend(
+            algorithm=settings.SIMPLE_JWT['ALGORITHM'],
+            signing_key=settings.SIMPLE_JWT['SIGNING_KEY']
+        )
+        return (token_decoder.decode(token, verify=True))
+    except Exception as e:
+        raise AuthenticationFailed(e)
+
+def get_current_user_id(request) -> int:
+    """
+    Gets current user id from access token
+
+    Args:
+        request: the request to get the cookies
+    """
+    data = get_user_token_data(request)
+    if not data or not data['user_id']:
+        raise AuthenticationFailed("Something went wrong.")
+    return data['user_id']
+
 def send_otp_email(user: User) -> None:
     """
     Send an email to the user containg the otp key.

@@ -1,7 +1,7 @@
 FROM python:3.12.3-bullseye
 
 # Set working directory
-WORKDIR /app
+WORKDIR /code
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
