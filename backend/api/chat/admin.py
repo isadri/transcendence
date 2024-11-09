@@ -1,15 +1,3 @@
-# from django.contrib import admin
-# from .models import Inbox, Chat
-
-# @admin.register(Inbox)
-# class InboxAdmin(admin.ModelAdmin):
-#     list_display = ('reciever', 'sender', 'last_msg', 'date')  # Use 'reciever' here to match model field
-
-# @admin.register(Chat)
-# class ChatAdmin(admin.ModelAdmin):
-#     list_display = ('reciever', 'sender', 'message', 'timestamp')  # Use 'reciever' here to match model field
-
-
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
 from .models import Chat, Message
@@ -50,7 +38,6 @@ class MessageAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        
         # Only show messages where the logged-in user is either user1 or user2 of the chat
         return qs.filter(chat__user1=request.user) | qs.filter(chat__user2=request.user)
 

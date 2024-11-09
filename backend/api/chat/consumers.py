@@ -116,7 +116,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data['message']
+        message = data['message'] 
         sender_id = self.user.id
 
         # Save the message to the database

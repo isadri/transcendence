@@ -170,6 +170,8 @@ SIMPLE_JWT = {
 	'REFRESH_TOKEN_LIFETIME': timedelta(hours=20),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': '021AA___qq02passkey-',
 }
 
 AUTH_COOKIE = 'access_token'

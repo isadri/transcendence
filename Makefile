@@ -1,8 +1,10 @@
 
 up:
 	@docker-compose up
+upd:
+	@docker-compose up
 
-up-with-build:
+build:
 	@docker-compose up -d --build
 
 down:
@@ -21,8 +23,6 @@ makemigrations:
 
 migrate:
 	@docker-compose exec -it back-end python manage.py migrate $(APPNAME)
-
-miupdate: makemigrations migrate
 
 shell:
 	@docker-compose exec -it back-end python manage.py shell
