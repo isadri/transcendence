@@ -1,0 +1,74 @@
+.GameWarmUp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 2dvh 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.GameWarmUp h2{
+    color: var(--primary);
+}
+
+.WarmUpVs{
+    width: 100%;
+    /* height: 100%; */
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.WarmUpOther{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.WarmUpVsPlayer{
+    background-color: var(--fade);
+    width: 30%;
+    /* height: 30%; */
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px;
+    padding: 2% 0;
+}
+
+.WarmUpVsImageDiv {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.WarmUpVsBadge {
+    top: 73%;
+    right: 30%;
+    height: 30%;
+    position: absolute;
+}
+
+.WarmUpVsPlayerInfo {
+    width: 90%;
+    display: flex;
+    padding-top: 2%;
+    /* flex-direction: row; */
+    justify-content: space-around;
+}
+
+.WarmUpVsAvatar {
+    width: 50%;
+    border-radius: 50%;
+}
+
+.WarmUpVsImage {
+    /* padding-right: 4px; */
+    height: 80%;
+}

@@ -10,6 +10,7 @@ import SideNavbar from '../components/sideNavbar/SideNavbar';
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
+import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 
 
 // isLogged  routing table and layout
@@ -43,7 +44,7 @@ const mainRoutingTable = [
       },
       {
         path: "/game/1v1/",
-        element: <Friends />,
+        element: <WarmUp />,
       },
       {
         path: "/game/1v1/:gameId",
