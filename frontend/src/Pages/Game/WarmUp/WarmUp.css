@@ -72,3 +72,11 @@
     /* padding-right: 4px; */
     height: 80%;
 }
+
+.WarmUpBox {
+    display: flex;
+    justify-content: center;
+    /* flex-direction: column; */
+    margin: 10% 0;
+    width: 100%;
+}

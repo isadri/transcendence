@@ -2,6 +2,7 @@ import vsImage from "../../Home/images/Group.svg";
 import avatar from "../../AboutUs/images/Your_profil_pict.png";
 import badge from "../../Profile/images/badge1.svg";
 import "./WarmUp.css";
+import "./../Components/gameHistoryItem/GameHistoryitem.css"
 
 const PlayerCard = () => {
   return (
@@ -19,7 +20,35 @@ const PlayerCard = () => {
 };
 
 
-// const WarmUp
+const WarmUpBox = () => {
+  return (
+    <div className="GameHistoryItem">
+      <div className="GameHistoryItemLeft">
+        <img src={avatar}/>
+        <span>user56789012345</span>
+      </div>
+      <div className="GameHistoryItemResult">
+        {/* <div> 1 </div> */}
+        <img src={vsImage}/>
+        {/* <div> 1 </div> */}
+      </div>
+      <div className="GameHistoryItemRight">
+        <span>user56789012345</span>
+        <img src={avatar}/>
+      </div>
+    </div>
+  )
+}
+
+const ReadyContext = () => {
+  return (
+    <div className="WarmUpReadyContext">
+      <div className="WarmupReady">
+
+      </div>
+    </div>
+  )
+}
 
 const WarmUp = () => {
   return (
@@ -32,8 +61,8 @@ const WarmUp = () => {
             <img src={vsImage} className="WarmUpVsImage" />
             <PlayerCard />
           </div>
-          <div className="WarmUpMiniVs">
-
+          <div className="WarmUpBox">
+            <WarmUpBox/>
           </div>
         </div>
       </div>
