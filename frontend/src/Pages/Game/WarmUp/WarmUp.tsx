@@ -4,16 +4,35 @@ import badge from "../../Profile/images/badge1.svg";
 import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
 
-const PlayerCard = () => {
+const PlayerCard = ({enemy = false} : {enemy?:boolean}) => {
   return (
     <div className="WarmUpVsPlayer">
       <div className="WarmUpVsImageDiv">
-        <img src={avatar} className="WarmUpVsAvatar" />
-        <img src={badge} className="WarmUpVsBadge" />
+        {
+          true && enemy ?
+          <div className="WarmUpVsPlus" >
+            <div>
+              <i className="fa-solid fa-plus fa-2xl"></i>
+            </div>
+            <img src={avatar} className="WarmUpVsAvatar" />
+          </div>
+          :
+          <>
+            <img src={avatar} className="WarmUpVsAvatar" />
+            <img src={badge} className="WarmUpVsBadge" />
+          </>
+        }
       </div>
       <div className="WarmUpVsPlayerInfo">
-        <h4>username</h4>
-        <h4>4.5 lvl</h4>
+        {
+        true && enemy ?
+        <h4>Invite a friend</h4>
+        :
+        <>
+          <h4>username</h4>
+          <h4>4.5 lvl</h4>
+        </>
+        } 
       </div>
     </div>
   );
@@ -62,7 +81,7 @@ const WarmUp = () => {
           <div className="WarmUpVs">
             <PlayerCard />
             <img src={vsImage} className="WarmUpVsImage" />
-            <PlayerCard />
+            <PlayerCard enemy/>
           </div>
           <div className="WarmUpBox">
             <WarmUpBox/>
