@@ -80,3 +80,29 @@
     margin: 10% 0;
     width: 100%;
 }
+.WarmUpReadyContext {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.WarmUpReadyContext  button{
+    background-color: var(--fade);
+    padding: 15px 0;
+    margin: 0 1px;
+    border: none;
+    width: 20%;
+    font-size: large;
+}
+
+.WarmUpReadyBtn {
+    color: white;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+}
+
+.WarmUpAbortBtn {
+    color: red;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+}

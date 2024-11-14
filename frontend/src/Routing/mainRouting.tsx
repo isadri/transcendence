@@ -43,7 +43,7 @@ const mainRoutingTable = [
         element: <Game />,
       },
       {
-        path: "/game/1v1/",
+        path: "/game/warmup/",
         element: <WarmUp />,
       },
       {
@@ -55,11 +55,7 @@ const mainRoutingTable = [
   {
     path: "/setting",
     element: <Setting />
-  },
-  {
-    path: "/setting",
-    element: <Setting />
-  },
+  }
 ]
 
 function MainLayout() {

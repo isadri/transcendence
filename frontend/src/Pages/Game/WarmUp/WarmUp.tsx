@@ -28,9 +28,7 @@ const WarmUpBox = () => {
         <span>user56789012345</span>
       </div>
       <div className="GameHistoryItemResult">
-        {/* <div> 1 </div> */}
         <img src={vsImage}/>
-        {/* <div> 1 </div> */}
       </div>
       <div className="GameHistoryItemRight">
         <span>user56789012345</span>
@@ -43,9 +41,14 @@ const WarmUpBox = () => {
 const ReadyContext = () => {
   return (
     <div className="WarmUpReadyContext">
-      <div className="WarmupReady">
-
-      </div>
+      {/* <div className="WarmupReady"> */}
+        <button className="WarmUpReadyBtn">
+          Ready
+        </button>
+        <button className="WarmUpAbortBtn">
+          Abort
+        </button>
+      {/* </div> */}
     </div>
   )
 }
@@ -64,6 +67,7 @@ const WarmUp = () => {
           <div className="WarmUpBox">
             <WarmUpBox/>
           </div>
+          <ReadyContext/>
         </div>
       </div>
     </>
