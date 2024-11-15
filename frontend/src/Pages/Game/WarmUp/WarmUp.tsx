@@ -83,9 +83,9 @@ const WarmUp = () => {
             <img src={vsImage} className="WarmUpVsImage" />
             <PlayerCard enemy/>
           </div>
-          <div className="WarmUpBox">
+          {/* <div className="WarmUpBox">
             <WarmUpBox/>
-          </div>
+          </div> */}
           <ReadyContext/>
         </div>
       </div>
