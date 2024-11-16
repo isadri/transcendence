@@ -20,7 +20,17 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, related_name='messages', on_delete=models.CASCADE)
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
+    file = models.FileField(upload_to='chat_files/%y/%m/%d', null=True, blank=True)
+    image = models.ImageField(upload_to='chat_files/%y/%m/%d', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Message from {self.sender.username} in chat {self.chat.id}"
+
+
+class Inbox(models.Model):
+    name = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    last_message = models.CharField()
+    seen = models.BooleanField(default=False)
+    nbrs_unseen = models.PositiveIntegerField(default=0)
+    # avatar = models.ImageField()

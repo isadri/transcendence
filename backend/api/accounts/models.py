@@ -6,7 +6,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.core.mail import send_mail
 from django.db import models
-from django.utils import timezone
+from django.utils import timezone, tree
 from django.utils.translation import gettext_lazy as _
 
 from .validators import lowercase_username_validator
@@ -113,6 +113,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     seed = models.CharField(max_length=40, blank=True, null=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
+
+    # Add friends field
+    # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
     objects = UserManager()
 
