@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db import transaction
 
 from . import friends
 
@@ -19,7 +20,7 @@ class FriendList(models.Model):
         """
         return self.user.username
 
-    def add_friend(self, new_friend: 'User') -> None:
+    def add_friend(self, new_friend) -> None:
         """
         add a new friend to the list of friends of the current user, and add
         the current user to the list of friends of new_friend.
@@ -27,8 +28,8 @@ class FriendList(models.Model):
         Raises:
             friends.AlreadyExistsError: If new_friend already exists.
         """
-        if new_friend in self.friends.all():
-            raise friends.AlreadyExistsError
+        # if new_friend in self.friends.all():
+        #     raise friends.AlreadyExistsError
         self.friends.add(new_friend)
 
     def remove_friend(self, friend):
@@ -59,6 +60,17 @@ class FriendList(models.Model):
             return True
         return False
 
+
+
+STATUS_CHOICES = (
+    # ('send', 'send'),
+    ('pending', 'pending'),
+    ('accepted', 'accepted'),
+    ('declined', 'declined'),
+    ('cancel', 'cancel'),
+    ('blocked', 'blocked'),
+)
+
 class FriendRequest(models.Model):
     """
     Generate friend requests.
@@ -73,9 +85,12 @@ class FriendRequest(models.Model):
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL,
                                on_delete=models.CASCADE,
                                related_name='receiver')
-    # a friend request been active when it's either been accepted or inactive if it's declined
-    is_active = models.BooleanField(blank=True, null=False, default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default="pending")
+    blocked_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                   on_delete=models.SET_NULL,
+                                   null=True, blank=True,
+                                   related_name='blocked_requests')
 
     def __str__(self) -> str:
         return self.sender.username
@@ -84,29 +99,90 @@ class FriendRequest(models.Model):
         """
         Accept the friend request.
         Update both sender and receiver friend lists
+        This method also marks the friend request as accepted.
         """
-        receiver_friend = FriendList.objects.get(user=self.receiver)
-        if receiver_friend:
-            receiver_friend.add_friend(self.sender)
-            sender_friend = FriendList.objects.get(user=self.sender)
-            if sender_friend:
-                sender_friend.add_friend(self.receiver)
-                self.is_active = False
-                self.save() # he is not sure if this is correct
+        try:
+            """
+            transaction.atomic() is a good practice when making multiple database
+            operations that depend on each other. It ensures atomicity—either all operations
+            succeed, or none are applied, maintaining database consistency.
+            """
+            with transaction.atomic():
+                receiver_friend_list, _ = FriendList.objects.get_or_create(user=self.receiver)
+                receiver_friend_list.add_friend(self.sender)
 
-    def decline(self):
+                sender_friend_list, _ = FriendList.objects.get_or_create(user=self.sender)
+                sender_friend_list.add_friend(self.receiver)
+
+                self.status = 'accepted'
+                self.save()
+        except Exception as e:
+            # Optionally, log the exception for debugging
+            raise ValueError(f"Failed to accept the friend request: {str(e)}")
+
+
+    def block(self, blocker_user):
         """
-        Decline a friend request.
-        It is 'declined' by setting the 'is_active' field to False
+        Block a user from the friend request.
+        The blocker_user must be either the sender or receiver.
         """
-        self.is_active = False
-        self.save() # he is not sure if this is correct
+        try:
+            if blocker_user not in [self.sender, self.receiver]:
+                raise ValueError("The blocker_user must be either the sender or the receiver.")
         
-    def cancel(self):
-        """
-        Cancel a friend request.
-        It is 'cancelled' by setting the 'is_active' field to False.
-        This is only different with respect to 'declining' through the notification that is genetated.
-        """
-        self.is_active = False
-        self.save()
+            # Determine the user being blocked
+            user_to_block = self.receiver if blocker_user == self.sender else self.sender
+        
+            with transaction.atomic():
+                # Remove the user-to-block from the blocker's friend list (if they exist there)
+                blocker_user_friend_list, _ = FriendList.objects.get_or_create(user=blocker_user)
+                blocker_user_friend_list.remove_friend(user_to_block)
+        
+                # Remove the blocker from the user-to-block's friend list
+                user_to_block_friend_list, _ = FriendList.objects.get_or_create(user=user_to_block)
+                user_to_block_friend_list.remove_friend(blocker_user)
+        
+                # Update the FriendRequest status and record who blocked whom
+                self.status = 'blocked'
+                self.blocked_by = blocker_user
+                self.save()
+        except Exception as e:
+            raise ValueError(f"Failed to block the friend request: {str(e)}")
+
+    # def block(self, blocker_user):
+    #     """
+    #     block a friend request.
+    #     """
+    #     try:
+    #         if blocker_user not in [self.sender, self.receiver]:
+    #             raise ValueError("the blocker_user must be either the sender or the receiver.")
+    #         user_to_block = self.receiver if blocker_user == self.sender else self.sender
+    #         with transaction.atomic():
+    #             blocker_user_friend_list, _ = FriendList.objects.get(user=blocker_user)
+    #             blocker_user_friend_list.remove_friend(user_to_block)
+
+    #             user_to_block_friend_list, _ = FriendList.objects.get(user=user_to_block)
+    #             user_to_block_friend_list.remove_friend(blocker_user)
+
+    #             self.status = 'blocked'
+    #             self.blocked_by = blocker_user
+    #             self.save()
+    #     except Exception as e:
+    #         # Optionally, log the exception for debugging
+    #         raise ValueError(f"Failed to block the friend request: {str(e)}")
+    # def decline(self):
+    #     """
+    #     Decline a friend request.
+    #     It is 'declined' by setting the 'is_active' field to False
+    #     """
+    #     self.is_active = False
+    #     self.save() # he is not sure if this is correct
+        
+    # def cancel(self):
+    #     """
+    #     Cancel a friend request.
+    #     It is 'cancelled' by setting the 'is_active' field to False.
+    #     This is only different with respect to 'declining' through the notification that is genetated.
+    #     """
+    #     self.is_active = False
+    #     self.save()

@@ -1,13 +1,18 @@
 from django.contrib import admin
 
-from .models import Friend, FriendRequest
+from .models import FriendList, FriendRequest
 
-
-@admin.register(Friend)
-class FriendAdmin(admin.ModelAdmin):
+class FriendListAdmin(admin.ModelAdmin):
     readonly_fields = ['user', 'friends']
+    class Meta:
+        model = FriendList
+
+admin.site.register(FriendList, FriendListAdmin)
 
 
-@admin.register(FriendRequest)
 class FriendRequestAdmin(admin.ModelAdmin):
-    list_display = ['sender', 'receiver', 'when']
+    list_display = ['sender', 'receiver', 'timestamp']
+    class Meta:
+        model = FriendRequest
+
+admin.site.register(FriendRequest, FriendRequestAdmin)
