@@ -21,7 +21,7 @@ function Ball() {
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
     position: [0, 0.2, 0],
-    args: [0.06],
+    args: [0.12],
     material:material
   }));
   
@@ -36,11 +36,15 @@ function Ball() {
       }
 
     })
+
+    return () => {
+      reposition()
+    }
   }, [api])
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[0.06, 30, 30]} />
+      <sphereGeometry args={[0.12, 30, 30]} />
       <meshStandardMaterial />
     </mesh>
   );
@@ -53,7 +57,7 @@ function Table() {
   const [ref, api] = useBox(() => ({
     position: [0, 0, 0],
     type: "Static",
-    args: [1.9038, 0.0364, 3.629],
+    args: [1.9038*2, 0.0364*2, 3.629*2],
     material: material
   }));
 
@@ -61,6 +65,7 @@ function Table() {
   return (
     <>
       <primitive
+        scale={[2,2,2]}
         ref={ref}
         object={table.scene}
         position={[0, 0, 0]}
@@ -78,10 +83,10 @@ function Racket({position, mine=false}: RacketProps){
   const material = new Material();
   material.name = "racket_mat"
   const [ref, api] = useBox(() => ({
-    mass: 10,
-    type:"Static",
+    mass: 100,
+    // type:"Static",
     position: position,
-    args: [0.5, 0.15, 0.2],
+    args: [0.8, 0.15, 0.3],
     material: material
   }));
 
@@ -89,9 +94,13 @@ function Racket({position, mine=false}: RacketProps){
     if (mine){
       api.position.subscribe(([x, y, z]) =>{
         if  (event.key == "ArrowRight")
-          api.position.set(x + 0.02, y, z)
+          api.position.set(x + 0.04, y, z)
         if  (event.key == "ArrowLeft")
-          api.position.set(x - 0.02, y, z)
+          api.position.set(x - 0.04, y, z)
+        if  (event.key == "ArrowUp")
+          api.position.set(x, y, z - 0.04)
+        if  (event.key == "ArrowDown")
+          api.position.set(x, y, z + 0.04)
       })
     }
   }
@@ -113,7 +122,7 @@ function Racket({position, mine=false}: RacketProps){
 
   return (
     <mesh ref={ref} position={position}>
-      <boxGeometry args={[0.5, 0.15, 0.2]} />
+      <boxGeometry args={[0.8, 0.15, 0.3]} />
       <meshStandardMaterial/>
     </mesh>
   )
@@ -139,8 +148,8 @@ function GameTable() {
     <>
       <Ball />
       <Table />
-      <Racket position={[0, 0.09, +1.6]} mine/>
-      <Racket position={[0, 0.09, -1.6]}/>
+      <Racket position={[0, 0.09, +3.2]} mine/>
+      <Racket position={[0, 0.09, -3.2]}/>
       <primitive object={new AxesHelper(5)} />
 
     </>
