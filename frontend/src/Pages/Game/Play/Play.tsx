@@ -16,29 +16,55 @@ const tableUrl = new URL("../images/pongTable.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
 
 function Ball() {
-  const material = new Material();
-  material.name = "ball_mat"
+  const material = new Material("ball_mat");
+  // material.name = "ball_mat"
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
     position: [0, 0.2, 0],
     args: [0.12],
-    material:material
+    velocity: [0, 0, 10],
+    ccdIterations: 20,
+    ccdSpeedThreshold: 1e-4,
+    material:material,
+    angularVelocity:[0, 0, 0],
+    onCollide: (event) => {
+      const {body, contact} = event
+      const { velocity } = body
+      if (body.name == "paddle"){
+        const spinFactor = 2;
+        // api.angularVelocity.set(
+        //   velocity[2] * spinFactor,
+        //   0,
+        //   -velocity[0] * spinFactor
+        // )
+      }
+    },
   }));
   
 
-  api.velocity.set(0, 0, 9);
   useEffect(() => {
     const reposition = api.position.subscribe(([x, y, z]) => {
       if (y < -3)
       {
-        api.position.set(0, 0.2, 0);
-        api.velocity.set(0, 0, 9);
+        api.position.set(0, 0.2, 0)
+        api.velocity.set(0, 0, 10)
       }
-
     })
+
+    const interval = setInterval(() => {
+      api.velocity.subscribe(([vx, vy, vz]) => {
+        const maxSpeed = 10;
+        api.velocity.set( // later
+          Math.max(-maxSpeed, Math.min(maxSpeed, vx)),
+          Math.max(-maxSpeed, Math.min(maxSpeed, vy)),
+          Math.max(-maxSpeed, Math.min(maxSpeed, vz))
+        );
+      });
+    }, 50); // Update every 50ms
 
     return () => {
       reposition()
+      clearInterval(interval)
     }
   }, [api])
 
@@ -51,8 +77,7 @@ function Ball() {
 }
 
 function Table() {
-  const material = new Material();
-  material.name = "table_mat"
+  const material = new Material("table_mat");
   const table = useGLTF(tableUrl);
   const [ref, api] = useBox(() => ({
     position: [0, 0, 0],
@@ -75,34 +100,41 @@ function Table() {
 }
 
 
-interface RacketProps {
+interface Paddlerops {
   position: any, // can be  Vector3 or Triplet,
   mine?:boolean
 }
-function Racket({position, mine=false}: RacketProps){
+
+function Paddle({position, mine=false}: Paddlerops){
   const material = new Material();
-  material.name = "racket_mat"
+  material.name = "paddle_mat"
   const [ref, api] = useBox(() => ({
-    mass: 100,
-    // type:"Static",
+    type: "Kinematic",
     position: position,
-    args: [0.8, 0.15, 0.3],
+    args: [1, 0.25, 0.4],
     material: material
   }));
 
   const onKeyDown = (event: KeyboardEvent) => {
-    if (mine){
-      api.position.subscribe(([x, y, z]) =>{
-        if  (event.key == "ArrowRight")
+    api.position.subscribe(([x, y, z]) =>{
+      if (mine){
+        if  (event.key == "ArrowRight" )
           api.position.set(x + 0.04, y, z)
-        if  (event.key == "ArrowLeft")
+        else if  (event.key == "ArrowLeft")
           api.position.set(x - 0.04, y, z)
-        if  (event.key == "ArrowUp")
-          api.position.set(x, y, z - 0.04)
-        if  (event.key == "ArrowDown")
-          api.position.set(x, y, z + 0.04)
-      })
-    }
+        // else if  (event.key == "keyA")
+          //   api.position.set(x, y, z - 0.04)
+        // else if  (event.key == "ArrowDown")
+        //   api.position.set(x, y, z + 0.04)
+      }
+      else {
+          if  (event.key == "A" || event.key == "a")
+            api.position.set(x + 0.04, y, z)
+          else if  (event.key == "D" || event.key == "d")
+            api.position.set(x - 0.04, y, z)
+          
+      }
+    })
   }
 
   const onKeyUp = (event: KeyboardEvent) => {
@@ -121,12 +153,33 @@ function Racket({position, mine=false}: RacketProps){
   }, [api, onKeyDown, onKeyUp, mine])
 
   return (
-    <mesh ref={ref} position={position}>
-      <boxGeometry args={[0.8, 0.15, 0.3]} />
+    <mesh ref={ref} position={position}  name="paddle">
+      <boxGeometry args={[1, 0.25, 0.4]} />
       <meshStandardMaterial/>
     </mesh>
   )
 }
+
+interface SideWallProps {
+  position: any
+}
+function SideWall({position} : SideWallProps) {
+  const material = new Material();
+  material.name = "side_mat"
+  const [ref, api] = useBox(() => ({
+    position: position,
+    args: [0.5, 0.8, 3.629*2],
+    material: material
+  }));
+
+  return (
+    <mesh position={position}  name="side_wall" visible={false}>
+      <boxGeometry args={[0.5, 0.8, 3.629*2]} />
+      <meshStandardMaterial/>
+    </mesh>
+  )
+}
+
 
 function GameTable() {
   // contact  beetween the ball and the table 
@@ -135,11 +188,16 @@ function GameTable() {
     restitution: 0,
   });
   // contact  beetween the racket and the table 
-  useContactMaterial("racket_mat", "table_mat", {
+  useContactMaterial("paddle_mat", "table_mat", {
     friction:0.9,
     restitution: 0,
   });
-  useContactMaterial("racket_mat", "ball_mat", {
+
+  useContactMaterial("paddle_mat", "ball_mat", {
+    friction:0,
+    restitution: 1,
+  });
+  useContactMaterial("side_mat", "ball_mat", {
     friction:0,
     restitution: 1,
   });
@@ -148,10 +206,11 @@ function GameTable() {
     <>
       <Ball />
       <Table />
-      <Racket position={[0, 0.09, +3.2]} mine/>
-      <Racket position={[0, 0.09, -3.2]}/>
+      <Paddle position={[0, 0.09, +3.2]} mine/>
+      <Paddle position={[0, 0.09, -3.2]}/>
       <primitive object={new AxesHelper(5)} />
-
+      <SideWall position={[2.15, 0, 0]}/>
+      <SideWall position={[-2.15, 0, 0]}/>
     </>
   );
 }
@@ -164,7 +223,7 @@ const Play = () => {
       <directionalLight position={[-50, 9, 5]} intensity={1} />
       <directionalLight position={[-50, 9, -5]} intensity={1} />
       <directionalLight position={[3, 9, 5]} intensity={2} />
-      <Physics gravity={[0, -9.81, 0]}>
+      <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
         <Debug>
           <GameTable />
         </Debug>
