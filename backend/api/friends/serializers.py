@@ -58,15 +58,14 @@ class FriendListSerializer(serializers.ModelSerializer):
         model = FriendList
         fields = ['user', 'friends']
 
-
 class FriendRequestReceiverSerializer(serializers.ModelSerializer):
     """
     A serializer for receivers of the friend requests.
     """
     class Meta:
         model = FriendRequest
-        read_only_fields = ['sender','status']
-        fields = ['sender', 'receiver', 'status', 'timestamp']
+        read_only_fields = ['sender','status', 'blocked_by']
+        fields = ['sender', 'receiver', 'status', 'timestamp', 'blocked_by']
 
 
 # class FriendRequestAcceptSerializer(serializers.ModelSerializer):

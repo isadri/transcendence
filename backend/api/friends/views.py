@@ -76,14 +76,13 @@ class FriendRequestDeclineView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, pk: int):
+    def delete(self, request, pk: int):
         try:
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
            status=status.HTTP_404_NOT_FOUND)
-        friend_request.status = 'declined'
-        friend_request.save()
+        friend_request.delete()
         return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
 class FriendRequestCancelView(APIView):
@@ -92,32 +91,14 @@ class FriendRequestCancelView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, pk: int):
+    def delete(self, request, pk: int):
         try:
             friend_request = FriendRequest.objects.get(sender=request.user, receiver=pk, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
            status=status.HTTP_404_NOT_FOUND)
-        friend_request.status = 'cancel'
-        friend_request.save()
+        friend_request.delete()
         return Response({'message': 'Friend request cancel.'}, status=status.HTTP_200_OK)
-
-# class FriendRequestBlockView(APIView):
-#     """
-#     This view is used to block friend request
-#     """
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, pk: int):
-#         try:
-#             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='accepted') or \
-#                 FriendRequest.objects.get(sender=request.user, receiver=pk, status='accepted')
-#         except FriendRequest.DoesNotExist:
-#            return Response({'error': 'Friend request not found or already processed.'},
-#            status=status.HTTP_404_NOT_FOUND)
-#         friend_request.block(request.user)
-#         return Response({'message': 'Friend request blocked.'}, status=status.HTTP_200_OK)
-
 
 class FriendRequestBlockView(APIView):
     """
@@ -148,20 +129,30 @@ class FriendRequestBlockView(APIView):
 
 class FriendRequestUnblockView(APIView):
     """
-    This view is used to unblock friend request
+    This view is used to unblock a friend request.
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk: int):
         try:
-            friend_request = FriendRequest.objects.get(sender=request.user, receiver=pk, status='blocked') \
-            | FriendRequest.objects.get(sender=pk, receiver=request.user, status='blocked')
-        except FriendRequest.DoesNotExist:
-           return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
-        friend_request.status = 'accepted'
-        friend_request.save()
-        return Response({'message': 'Friend request unblocked.'}, status=status.HTTP_200_OK)
+            # Find the FriendRequest where the user is either sender or receiver
+            friend_request = FriendRequest.objects.filter(
+                    Q(sender=request.user, receiver_id=pk) |
+                    Q(sender_id=pk, receiver=request.user),
+                    status='blocked',
+                    blocked_by=request.user,
+                    ).first()
+            print(friend_request)
+            if not friend_request:
+                return Response({'error': 'No blocked request found.'},
+                                status=status.HTTP_404_NOT_FOUND)
+
+            friend_request.unblock(request.user)
+            return Response({'message': 'Friend request unblocked.'}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Failed to unblock the friend request: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PendingFriendRequestsView(generics.ListAPIView):
     """
@@ -183,6 +174,19 @@ class AcceptedFriendRequestsView(generics.ListAPIView):
 
     def get_queryset(self):
         return FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
+
+class BlockedFriendRequestsView(generics.ListAPIView):
+    """
+    View to list all blocked friend requests.
+    """
+    serializer_class = FriendRequestReceiverSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FriendRequest.objects.filter(
+            Q(receiver=self.request.user) | Q(sender=self.request.user),
+            status="blocked"
+        )
 
 
 class FriendListView(generics.ListAPIView):
