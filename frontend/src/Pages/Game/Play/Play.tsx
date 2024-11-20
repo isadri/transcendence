@@ -17,7 +17,6 @@ useGLTF.preload(tableUrl);
 
 function Ball() {
   const material = new Material("ball_mat");
-  // material.name = "ball_mat"
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
     position: [0, 0.2, 0],
@@ -29,15 +28,8 @@ function Ball() {
     angularVelocity:[0, 0, 0],
     onCollide: (event) => {
       const {body, contact} = event
-      const { velocity } = body
-      if (body.name == "paddle"){
-        const spinFactor = 2;
-        // api.angularVelocity.set(
-        //   velocity[2] * spinFactor,
-        //   0,
-        //   -velocity[0] * spinFactor
-        // )
-      }
+      if (body.name == "paddle")
+        api.velocity.subscribe(([x, y, z]) => {if (!x) api.velocity.set(contact.rj[0] * 5 , y, z)})
     },
   }));
   
@@ -51,25 +43,13 @@ function Ball() {
       }
     })
 
-    const interval = setInterval(() => {
-      api.velocity.subscribe(([vx, vy, vz]) => {
-        const maxSpeed = 10;
-        api.velocity.set( // later
-          Math.max(-maxSpeed, Math.min(maxSpeed, vx)),
-          Math.max(-maxSpeed, Math.min(maxSpeed, vy)),
-          Math.max(-maxSpeed, Math.min(maxSpeed, vz))
-        );
-      });
-    }, 50); // Update every 50ms
-
     return () => {
       reposition()
-      clearInterval(interval)
     }
   }, [api])
 
   return (
-    <mesh ref={ref}>
+    <mesh ref={ref} name="ball">
       <sphereGeometry args={[0.12, 30, 30]} />
       <meshStandardMaterial />
     </mesh>
@@ -118,19 +98,19 @@ function Paddle({position, mine=false}: Paddlerops){
   const onKeyDown = (event: KeyboardEvent) => {
     api.position.subscribe(([x, y, z]) =>{
       if (mine){
-        if  (event.key == "ArrowRight" )
+        if  (event.key == "ArrowRight" && x < 1.4)
           api.position.set(x + 0.04, y, z)
-        else if  (event.key == "ArrowLeft")
+         if  (event.key == "ArrowLeft" && x > -1.4)
           api.position.set(x - 0.04, y, z)
         // else if  (event.key == "keyA")
           //   api.position.set(x, y, z - 0.04)
         // else if  (event.key == "ArrowDown")
         //   api.position.set(x, y, z + 0.04)
       }
-      else {
-          if  (event.key == "A" || event.key == "a")
+      if (!mine) {
+          if ((event.key == "A" || event.key == "a")  && x < 1.4)
             api.position.set(x + 0.04, y, z)
-          else if  (event.key == "D" || event.key == "d")
+           if  ((event.key == "D" || event.key == "d") && x > -1.4)
             api.position.set(x - 0.04, y, z)
           
       }
@@ -147,8 +127,8 @@ function Paddle({position, mine=false}: Paddlerops){
     window.addEventListener("keyup", onKeyUp)
 
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
+      // window.removeEventListener("keydown", onKeyDown);
+      // window.removeEventListener("keyup", onKeyUp);
     };
   }, [api, onKeyDown, onKeyUp, mine])
 
@@ -224,9 +204,9 @@ const Play = () => {
       <directionalLight position={[-50, 9, -5]} intensity={1} />
       <directionalLight position={[3, 9, 5]} intensity={2} />
       <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
-        <Debug>
+        {/* <Debug> */}
           <GameTable />
-        </Debug>
+        {/* </Debug> */}
       </Physics>
     </Canvas>
   );
