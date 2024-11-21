@@ -13,8 +13,8 @@ const Friends = () => {
 	const [activeSection, setActiveSection] = useState("allFriends");
 
 	return (
-		<div className="FriendContainer">
-			<div className="menuFriends">
+		<div className="Friend-Container">
+			<div className="friendsMenuFriends">
 				<ul>
 					<li
 						onClick={() => {
@@ -22,7 +22,7 @@ const Friends = () => {
 						}}
 						className={`${activeSection == "allFriends" ? "selectedItem" : ""}`}
 						>
-						All Friends
+						Friends
 					</li>
 					<li
 						className={`${activeSection == "friendRequests" ? "selectedItem" : ""}`}
@@ -51,11 +51,10 @@ const Friends = () => {
 				</ul>
 			</div>
 			<div className="bodyFriends">
-			{activeSection === "allFriends" && <AllFriends results={results}
-					setResults={setResults} />}
-			{activeSection === "friendRequests" && <FriendRequests setResults={setResults} />}
-			{activeSection === "addFriends" && <AddFriends results={results} setResults={setResults} />}
-			{activeSection === "blockedFriends" && <BlockedFriends setResults={setResults} />}
+				{activeSection === "allFriends" && <AllFriends results={results} setResults={setResults} />}
+				{activeSection === "friendRequests" && <FriendRequests setResults={setResults} />}
+				{activeSection === "addFriends" && <AddFriends results={results} setResults={setResults} />}
+				{activeSection === "blockedFriends" && <BlockedFriends setResults={setResults} />}
 			</div>
 		</div>
 	);
