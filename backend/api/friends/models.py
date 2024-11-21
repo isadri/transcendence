@@ -65,8 +65,6 @@ class FriendList(models.Model):
 STATUS_CHOICES = (
     ('pending', 'pending'),
     ('accepted', 'accepted'),
-    # ('declined', 'declined'),
-    # ('cancel', 'cancel'),
     ('blocked', 'blocked'),
 )
 
