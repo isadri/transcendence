@@ -5,11 +5,11 @@ from rest_framework.response import Response
 from .models import Chat, Message
 from .serializers import ChatSerializer, MessageSerializer
 from api.accounts.models import User
-# from api.accounts.utils import get_current_user_id
 from rest_framework.exceptions import PermissionDenied
 
+from api.friends.models import FriendList
 
-class ChatViewSet(viewsets.ModelViewSet):
+class ChatView(viewsets.ModelViewSet):
     serializer_class = ChatSerializer
     permission_classes = [IsAuthenticated]
 
@@ -27,13 +27,23 @@ class ChatViewSet(viewsets.ModelViewSet):
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        try:
+            friend_list1 = FriendList.objects.get(user=user1)
+        except FriendList.DoesNotExist:
+            return Response({'error': 'Friend list not found.'},
+            status=status.HTTP_400_BAD_REQUEST)
+
+        if friend_list1.objects.filter(id=user2.id).exists():
+            return Response({'error': 'You cannot create chat with a user who is not your friend.'},
+            status=status.HTTP_400_BAD_REQUEST)
+
         # Ensure the chat doesn't already exist
         chat, created = Chat.objects.get_or_create(user1=user1, user2=user2)
 
         serializer = self.get_serializer(chat)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
-class MessageViewSet(viewsets.ModelViewSet):
+class MessageView(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 

@@ -5,7 +5,6 @@ from django.db.models.deletion import SET_NULL
 
 from . import friends
 
-
 class FriendList(models.Model):
     """
     Friends model to create list of friends.
@@ -176,20 +175,3 @@ class FriendRequest(models.Model):
                 self.save()
         except Exception as e:
             raise ValueError(f"Failed to block the friend request: {str(e)}")
-
-    # def decline(self):
-    #     """
-    #     Decline a friend request.
-    #     It is 'declined' by setting the 'is_active' field to False
-    #     """
-    #     self.is_active = False
-    #     self.save() # he is not sure if this is correct
-        
-    # def cancel(self):
-    #     """
-    #     Cancel a friend request.
-    #     It is 'cancelled' by setting the 'is_active' field to False.
-    #     This is only different with respect to 'declining' through the notification that is genetated.
-    #     """
-    #     self.is_active = False
-    #     self.save()

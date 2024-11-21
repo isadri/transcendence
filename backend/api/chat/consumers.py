@@ -17,7 +17,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Verify if the user is part of the chat (either as user1 or user2)
         try:
             self.chat = await self.get_chat()
-            if not self.is_user_in_chat():
+            if not self.is_in_chat():
                 await self.close()
                 return
         except Chat.DoesNotExist:
@@ -25,7 +25,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Join the chat room group
-        await self.channel_layer.group_add(
+        await self.channel_layer.group_add( # Adds the WebSocket connection to a group named chat_<chat_id>.
             self.room_group_name,
             self.channel_name
         )
@@ -43,7 +43,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = data.get('message')
 
         # Check if the user is still a part of the chat
-        if not self.is_user_in_chat():
+        if not self.is_in_chat():
             await self.send(text_data=json.dumps({
                 'error': 'You are not a participant in this chat.'
             }))
@@ -76,6 +76,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """Fetch the chat instance asynchronously."""
         return await Chat.objects.aget(id=self.chat_id)
 
-    def is_user_in_chat(self):
+    def is_in_chat(self):
         """Check if the user is either user1 or user2 in the chat."""
         return self.chat.user1 == self.user or self.chat.user2 == self.user
