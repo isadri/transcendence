@@ -33,7 +33,7 @@ class ChatView(viewsets.ModelViewSet):
             return Response({'error': 'Friend list not found.'},
             status=status.HTTP_400_BAD_REQUEST)
 
-        if friend_list1.objects.filter(id=user2.id).exists():
+        if not friend_list1.friends.filter(id=user2.id).exists():
             return Response({'error': 'You cannot create chat with a user who is not your friend.'},
             status=status.HTTP_400_BAD_REQUEST)
 
