@@ -23,6 +23,7 @@ SITE_ID = 2
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +47,9 @@ INSTALLED_APPS = [
 	'api.friends',
 
     'oauth2_provider',
+
+    'api.chat',
+    'channels',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
@@ -95,8 +99,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -169,7 +171,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-     'SIGNING_KEY': '021AA___qq02passkey-',
+    'SIGNING_KEY': '021AA___qq02passkey-',
 }
 
 AUTH_COOKIE = 'access_token'
@@ -195,3 +197,15 @@ EMAIL_PORT = '587'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
