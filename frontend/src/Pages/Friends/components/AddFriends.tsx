@@ -4,13 +4,11 @@ import { Friend } from "../../Chat/components/types.ts";
 import "./AddFriends.css"
 
 interface AddFriendsProps {
-	displayAddFriends: boolean;
 	results: Friend[];
 	setResults: React.Dispatch<React.SetStateAction<Friend[]>>;
 }
 
 const AddFriends = ({
-	displayAddFriends,
 	results,
 	setResults,
 }: AddFriendsProps) => {
@@ -57,42 +55,40 @@ const AddFriends = ({
 	const friendsList = searchFriend ? results : DataFriends;
 	return (
 		<div>
-			{displayAddFriends && (
-				<>
-					<div className="searchFriend">
-						<div className="searchfrienContainer">
-							{focusOnSearch ? (
-								<i
-									className="fa-solid fa-arrow-left arrow-icon"
-									onClick={handleReturnToList}
-									ref={ChangeSearchRef}
-								></i>
-							) : (
-								<i className="fa-solid fa-magnifying-glass search-icon"></i>
-							)}
-							<input
-								type="text"
-								placeholder="search..."
-								value={searchFriend}
-								onChange={handleSearchFriend}
-								onFocus={() => setFocusOnSearch(true)}
-								ref={Ref}
-							/>
-						</div>
+			<>
+				<div className="searchFriend">
+					<div className="searchfrienContainer">
+						{focusOnSearch ? (
+							<i
+								className="fa-solid fa-arrow-left arrow-icon"
+								onClick={handleReturnToList}
+								ref={ChangeSearchRef}
+							></i>
+						) : (
+							<i className="fa-solid fa-magnifying-glass search-icon"></i>
+						)}
+						<input
+							type="text"
+							placeholder="search..."
+							value={searchFriend}
+							onChange={handleSearchFriend}
+							onFocus={() => setFocusOnSearch(true)}
+							ref={Ref}
+						/>
 					</div>
-					{friendsList.map((friend) => {
-						return (
-							<div className="friendProfile" key={friend.id}>
-								<div className="imageNameFriend">
-									<img src={friend.profile} alt="" className="friendImage" />
-									<span>{friend.name}</span>
-								</div>
-								<button className="addFriend">Add Friend</button>
+				</div>
+				{friendsList.map((friend) => {
+					return (
+						<div className="friendProfile" key={friend.id}>
+							<div className="imageNameFriend">
+								<img src={friend.profile} alt="" className="friendImage" />
+								<span>{friend.name}</span>
 							</div>
-						);
-					})}
-				</>
-			)}
+							<button className="addFriend">Add Friend</button>
+						</div>
+					);
+				})}
+			</>
 		</div>
 	);
 };
