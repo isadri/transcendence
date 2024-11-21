@@ -8,7 +8,7 @@ import BlockedFriend from "./components/BlockedFriend.tsx";
 
 const Friends = () => {
 	const [results, setResults] = useState<Friend[]>([]);
-	const [displayAllFriends, setDisplayAllFriends] = useState(false);
+	const [displayAllFriends, setDisplayAllFriends] = useState(true);
 	const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
 	const [displayAddFriends, setDisplayAddFriends] = useState(false);
 	const [displayBlockedFriend, setDisplayBlockedFriend] = useState(false);

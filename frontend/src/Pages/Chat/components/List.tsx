@@ -53,8 +53,8 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	};
 
 	return (
-		<div className="list">
-			<div className="container">
+		<div className="chat-list">
+			<div className="chat-container">
 				<div>Messages</div>
 				<img
 					src="/ChatImages/newChat.svg"
@@ -63,17 +63,17 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 					onClick={() => setListAllFriends((prev) => !prev)}
 				/>
 			</div>
-			<div className="search">
-				<div className="search-container">
-					<div className="iconSearch">
+			<div className="chat-search">
+				<div className="chat-search-container">
+					<div className="chat-iconSearch">
 						{focusOnSearch ? (
 							<i
-								className="fa-solid fa-arrow-left arrow-icon"
+								className="fa-solid fa-arrow-left chat-arrow-icon"
 								onClick={handleReturnToList}
 								ref={ChangeSearchRef}
 							></i>
 						) : (
-							<i className="fa-solid fa-magnifying-glass search-icon"></i>
+							<i className="fa-solid fa-magnifying-glass chat-search-icon"></i>
 						)}
 					</div>
 					<input

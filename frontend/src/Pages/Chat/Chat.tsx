@@ -40,7 +40,7 @@ const Chat = () => {
 		<div className="Chat">
 			{isSmallDevice ? (
 				!selectedFriend && (
-					<div className="List">
+					<div className="Chat-List">
 						<ListChat
 							friends={DataFriends}
 							onSelectFriend={handleSelectFriend}
@@ -49,7 +49,7 @@ const Chat = () => {
 					</div>
 				)
 			) : (
-				<div className="List">
+				<div className="Chat-List">
 					<ListChat
 						friends={DataFriends}
 						onSelectFriend={handleSelectFriend}
