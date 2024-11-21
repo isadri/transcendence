@@ -1,6 +1,6 @@
 import { Canvas, Vector3 } from "@react-three/fiber";
 import "./Play.css";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, Text, useGLTF } from "@react-three/drei";
 import {
   Debug,
   Physics,
@@ -9,28 +9,40 @@ import {
   useSphere,
 } from "@react-three/cannon";
 import { Material } from 'cannon-es';
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AxesHelper } from "three";
 
 const tableUrl = new URL("../images/pongTable.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
 
+// the context of the game result
+interface ResultContext {
+  result: [number, number];
+  setResult: React.Dispatch<React.SetStateAction<[number, number]>>;
+}
+const resultsContext = createContext<ResultContext | null>(null)
+
+
 function Ball() {
+  const res = useContext(resultsContext);
   const material = new Material("ball_mat");
+
+  const randomX = (Math.random() * 2 - 1) * (1.9038*2)
+  
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
     position: [0, 0.2, 0],
     args: [0.12],
-    velocity: [0, 0, 10],
+    velocity: [randomX, 0, 7],
     ccdIterations: 20,
     ccdSpeedThreshold: 1e-4,
     material:material,
-    angularVelocity:[0, 0, 0],
-    onCollide: (event) => {
-      const {body, contact} = event
-      if (body.name == "paddle")
-        api.velocity.subscribe(([x, y, z]) => {if (!x) api.velocity.set(contact.rj[0] * 5 , y, z)})
-    },
+    // angularVelocity:[, 0, 0],
+    // onCollide: (event) => {
+    //   const {body, contact} = event
+    //   if (body.name == "paddle")
+    //     api.velocity.subscribe(([x, y, z]) => {if (!x) api.velocity.set(contact.rj[0] * 5 , y, z)})
+    // },
   }));
   
 
@@ -38,21 +50,33 @@ function Ball() {
     const reposition = api.position.subscribe(([x, y, z]) => {
       if (y < -3)
       {
+        const randomX = (Math.random() * 2 - 1) * (1.9038*2)
         api.position.set(0, 0.2, 0)
-        api.velocity.set(0, 0, 10)
+        api.velocity.set(randomX, 0, 7)
+        if (res){
+          console.log("result flwl",res)
+          const {result, setResult} = res
+        if (z > 0)
+          setResult([result[0], result[1]+1])
+        else
+          setResult([result[0]+1, result[1]])
+        }
+        // console.log(result)
       }
     })
 
     return () => {
       reposition()
     }
-  }, [api])
+  }, [api, res])
 
   return (
-    <mesh ref={ref} name="ball">
-      <sphereGeometry args={[0.12, 30, 30]} />
-      <meshStandardMaterial />
-    </mesh>
+    <>
+      <mesh ref={ref} name="ball">
+        <sphereGeometry args={[0.12, 30, 30]} />
+        <meshStandardMaterial />
+      </mesh>
+    </>
   );
 }
 
@@ -99,19 +123,15 @@ function Paddle({position, mine=false}: Paddlerops){
     api.position.subscribe(([x, y, z]) =>{
       if (mine){
         if  (event.key == "ArrowRight" && x < 1.4)
-          api.position.set(x + 0.04, y, z)
+          api.position.set(x + 0.09, y, z)
          if  (event.key == "ArrowLeft" && x > -1.4)
-          api.position.set(x - 0.04, y, z)
-        // else if  (event.key == "keyA")
-          //   api.position.set(x, y, z - 0.04)
-        // else if  (event.key == "ArrowDown")
-        //   api.position.set(x, y, z + 0.04)
+          api.position.set(x - 0.09, y, z)
       }
       if (!mine) {
-          if ((event.key == "A" || event.key == "a")  && x < 1.4)
-            api.position.set(x + 0.04, y, z)
-           if  ((event.key == "D" || event.key == "d") && x > -1.4)
-            api.position.set(x - 0.04, y, z)
+          if ((event.key == "D" || event.key == "d")  && x < 1.4)
+            api.position.set(x + 0.09, y, z)
+           if  ((event.key == "A" || event.key == "a") && x > -1.4)
+            api.position.set(x - 0.09, y, z)
           
       }
     })
@@ -195,20 +215,25 @@ function GameTable() {
   );
 }
 
+
 const Play = () => {
+  const [result, setResult] = useState<[number, number]>([0, 0])
   return (
-    <Canvas camera={{ position: [0, 2, 5] }}>
-      <OrbitControls />
-      <perspectiveCamera />
-      <directionalLight position={[-50, 9, 5]} intensity={1} />
-      <directionalLight position={[-50, 9, -5]} intensity={1} />
-      <directionalLight position={[3, 9, 5]} intensity={2} />
-      <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
-        {/* <Debug> */}
-          <GameTable />
-        {/* </Debug> */}
-      </Physics>
-    </Canvas>
+    <resultsContext.Provider value={{result, setResult}}>
+      <Canvas camera={{ position: [0, 2, 5] }}>
+        <OrbitControls />
+        <perspectiveCamera />
+        <directionalLight position={[-50, 9, 5]} intensity={1} />
+        <directionalLight position={[-50, 9, -5]} intensity={1} />
+        <directionalLight position={[3, 9, 5]} intensity={2} />
+        <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
+          <Debug>
+            <GameTable />
+          </Debug>
+        </Physics>
+      </Canvas>
+        <h1 >{result[0]} vs {result[1]}</h1>
+    </resultsContext.Provider>
   );
 };
 
