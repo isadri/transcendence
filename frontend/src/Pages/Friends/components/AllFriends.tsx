@@ -31,19 +31,25 @@ const AllFriends = () => {
 
 		document.addEventListener("mousedown", handleClickOutside);
 
-		axios.get("http://0.0.0.0:8000/api/friends/friends/", {
-			withCredentials: true, // Include cookies in the request
-		})
-		.then(response => {
-			// console.log(response.data); // Set the response data to state
-			setGetFriends(response.data.friends)
-		})
-		.catch(err => {
-				console.log(err.data); // Set the response data to state
-		  });
+		const fetchFriend = () => {
+			axios.get("http://0.0.0.0:8000/api/friends/friends", {
+				withCredentials: true, // Include cookies in the request
+			})
+			.then(response => {
+				// console.log(response.data); // Set the response data to state
+				setGetFriends(response.data.friends)
+			})
+			.catch(err => {
+					console.log(err.data); // Set the response data to state
+			  });
+		}
+
+		fetchFriend()
+		const intervalId = setInterval(fetchFriend, 5000);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
+			clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 

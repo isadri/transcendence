@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import DataFriends from "../../Chat/components/DataFriends.tsx";
-import { Friend } from "../../Chat/components/types.ts";
 import "./AddFriends.css"
+import axios from "axios";
 
-interface AddFriendsProps {
-	results: Friend[];
-	setResults: React.Dispatch<React.SetStateAction<Friend[]>>;
+interface AllUsers {
+	id: number;
+	username: string;
+	avatar: string;
 }
 
-const AddFriends = ({
-	results,
-	setResults,
-}: AddFriendsProps) => {
+const AddFriends = () => {
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
+	const [allUsers, setAllUsers] = useState<AllUsers[]>([])
+	const [results, setResults] = useState<AllUsers[]>([]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -30,10 +29,27 @@ const AddFriends = ({
 			}
 		};
 
+		const fetchUsers = () => {
+			axios.get("http://0.0.0.0:8000/api/friends/users", {
+				withCredentials: true, // Include cookies in the request
+			})
+			.then(response => {
+				// console.log(response.data); // Set the response data to state
+				setAllUsers(response.data)
+			})
+			.catch(err => {
+					console.log(err.data); // Set the response data to state
+			  });
+		}
+
+		fetchUsers()
+		const intervalId = setInterval(fetchUsers, 5000);
+
 		document.addEventListener("mousedown", handleClickOutside);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
+			clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -41,8 +57,8 @@ const AddFriends = ({
 		const value = event.target.value;
 
 		setSearchFriend(value);
-		const filterResults = DataFriends.filter((user) =>
-			user.name.toLowerCase().includes(value.toLowerCase())
+		const filterResults = allUsers.filter((user) =>
+			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
 	};
@@ -52,7 +68,22 @@ const AddFriends = ({
 		setSearchFriend("");
 	};
 
-	const friendsList = searchFriend ? results : DataFriends;
+	const handleSendRequests = (id: number) => {
+		axios
+			.post("http://0.0.0.0:8000/api/friends/send/", {receiver: id}, {
+				withCredentials: true,
+			})
+			.then(() => {
+				setAllUsers((prev) =>
+					prev.filter((request) => request.id !== id)
+				);
+			})
+			.catch((error) => {
+				console.error("Error accepting friend request:", error);
+			});
+	};
+
+	const friendsList = searchFriend ? results : allUsers;
 	return (
 		<div>
 			<>
@@ -81,10 +112,12 @@ const AddFriends = ({
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.profile} alt="" className="friendImage" />
-								<span>{friend.name}</span>
+								<img src={friend.avatar} alt="" className="friendImage" />
+								<span>{friend.username}</span>
 							</div>
-							<button className="addFriend">Add Friend</button>
+							<button className="addFriend"
+									onClick={() => handleSendRequests(friend.id)}
+							>Add Friend</button>
 						</div>
 					);
 				})}

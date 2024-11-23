@@ -66,17 +66,13 @@ const Friends = () => {
 				</ul>
 			</div>
 			<div className="bodyFriends">
-				{activeSection === "allFriends" && (
-					<AllFriends/>
-				)}
-				{activeSection === "friendRequests" && (
-					<FriendRequests setResults={setResults} />
-				)}
+				{activeSection === "allFriends" && <AllFriends/>}
+				{activeSection === "friendRequests" && <FriendRequests/>}
 				{activeSection === "addFriends" && (
-					<AddFriends results={results} setResults={setResults} />
+					<AddFriends/>
 				)}
 				{activeSection === "blockedFriends" && (
-					<BlockedFriends setResults={setResults} />
+					<BlockedFriends  />
 				)}
 			</div>
 		</div>
