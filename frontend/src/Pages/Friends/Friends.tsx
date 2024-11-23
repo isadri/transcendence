@@ -5,45 +5,60 @@ import AllFriends from "./components/AllFriends.tsx";
 import FriendRequests from "./components/FriendRequests.tsx";
 import AddFriends from "./components/AddFriends.tsx";
 import BlockedFriends from "./components/BlockedFriends.tsx";
-// import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
+
+// import axios from "axios";
 
 const Friends = () => {
-	// const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [results, setResults] = useState<Friend[]>([]);
 	const [activeSection, setActiveSection] = useState("allFriends");
 
+	// useEffect(() => {
+	// 	axios.get("http://0.0.0.0:8000/api/friends/friends/", {
+	// 		withCredentials: true, // Include cookies in the request
+	// 	})
+	// 	.then(response => {
+	// 		console.log(response.data); // Set the response data to state
+	// 	})
+	// 	.catch(err => {
+	// 		  console.log(err.data); // Set the response data to state
+	// 	  });
+	// }, []);
 	return (
 		<div className="Friend-Container">
 			<div className="friendsMenuFriends">
 				<ul>
 					<li
 						onClick={() => {
-							setActiveSection("allFriends")
+							setActiveSection("allFriends");
 						}}
 						className={`${activeSection == "allFriends" ? "selectedItem" : ""}`}
-						>
+					>
 						Friends
 					</li>
 					<li
-						className={`${activeSection == "friendRequests" ? "selectedItem" : ""}`}
+						className={`${
+							activeSection == "friendRequests" ? "selectedItem" : ""
+						}`}
 						onClick={() => {
-							setActiveSection("friendRequests")
+							setActiveSection("friendRequests");
 						}}
-						>
+					>
 						Friend Requests
 					</li>
 					<li
 						className={`${activeSection == "addFriends" ? "selectedItem" : ""}`}
 						onClick={() => {
-							setActiveSection("addFriends")
+							setActiveSection("addFriends");
 						}}
-						>
+					>
 						Add Friend
 					</li>
 					<li
-						className={`${activeSection == "blockedFriends" ? "selectedItem" : ""}`}
+						className={`${
+							activeSection == "blockedFriends" ? "selectedItem" : ""
+						}`}
 						onClick={() => {
-							setActiveSection("blockedFriends")
+							setActiveSection("blockedFriends");
 						}}
 					>
 						Blocked Friend
@@ -51,10 +66,18 @@ const Friends = () => {
 				</ul>
 			</div>
 			<div className="bodyFriends">
-				{activeSection === "allFriends" && <AllFriends results={results} setResults={setResults} />}
-				{activeSection === "friendRequests" && <FriendRequests setResults={setResults} />}
-				{activeSection === "addFriends" && <AddFriends results={results} setResults={setResults} />}
-				{activeSection === "blockedFriends" && <BlockedFriends setResults={setResults} />}
+				{activeSection === "allFriends" && (
+					<AllFriends/>
+				)}
+				{activeSection === "friendRequests" && (
+					<FriendRequests setResults={setResults} />
+				)}
+				{activeSection === "addFriends" && (
+					<AddFriends results={results} setResults={setResults} />
+				)}
+				{activeSection === "blockedFriends" && (
+					<BlockedFriends setResults={setResults} />
+				)}
 			</div>
 		</div>
 	);

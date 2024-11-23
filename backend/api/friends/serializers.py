@@ -10,15 +10,15 @@ User = get_user_model()
 class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'avatar']
 
 class FriendListSerializer(serializers.ModelSerializer):
-    user = FriendSerializer(read_only=True)
+    # user = FriendSerializer(read_only=True)
     friends = FriendSerializer(many=True, read_only=True)
 
     class Meta:
         model = FriendList
-        fields = ['user', 'friends']
+        fields = ['friends']
 
 class FriendRequestReceiverSerializer(serializers.ModelSerializer):
     """

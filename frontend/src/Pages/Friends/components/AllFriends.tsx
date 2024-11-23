@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import DataFriends from "../../Chat/components/DataFriends.tsx";
-import { Friend } from "../../Chat/components/types.ts";
 import "./AllFriends.css";
+import axios from "axios";
 
-interface AllFriendsProps {
-	results: Friend[];
-	setResults: React.Dispatch<React.SetStateAction<Friend[]>>;
+interface GetFriends {
+	id: number;
+	username: string;
+	avatar: string;
 }
 
-const AllFriends = ({
-	results,
-	setResults,
-}: AllFriendsProps) => {
+const AllFriends = () => {
+	const [results, setResults] = useState<GetFriends[]>([]);
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
+	const [getFriends, setGetFriends] = useState<GetFriends[]>([])
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -32,6 +31,17 @@ const AllFriends = ({
 
 		document.addEventListener("mousedown", handleClickOutside);
 
+		axios.get("http://0.0.0.0:8000/api/friends/friends/", {
+			withCredentials: true, // Include cookies in the request
+		})
+		.then(response => {
+			// console.log(response.data); // Set the response data to state
+			setGetFriends(response.data.friends)
+		})
+		.catch(err => {
+				console.log(err.data); // Set the response data to state
+		  });
+
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
@@ -41,8 +51,8 @@ const AllFriends = ({
 		const value = event.target.value;
 
 		setSearchFriend(value);
-		const filterResults = DataFriends.filter((user) =>
-			user.name.toLowerCase().includes(value.toLowerCase())
+		const filterResults = getFriends.filter((user) =>
+			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
 	};
@@ -52,7 +62,7 @@ const AllFriends = ({
 		setSearchFriend("");
 	};
 
-	const friendsList = searchFriend ? results : DataFriends;
+	const friendsList = searchFriend ? results : getFriends;
 	return (
 		<div>
 			<>
@@ -81,8 +91,8 @@ const AllFriends = ({
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.profile} alt="" className="friendImage" />
-								<span>{friend.name}</span>
+								<img src={friend.avatar} alt="" className="friendImage" />
+								<span>{friend.username}</span>
 							</div>
 							<div className="iconFriend">
 								<i className="fa-solid fa-user user"></i>
