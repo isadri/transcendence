@@ -1,6 +1,10 @@
 import { Canvas, Vector3 } from "@react-three/fiber";
 import "./Play.css";
-import { OrbitControls, Text, useGLTF } from "@react-three/drei";
+import vs from "../../Home/images/Group.svg"
+import pic from "../../Home/images/profile.svg"
+import "../../Home/styles/LastGame.css"
+
+import { Box, OrbitControls, Text, useGLTF } from "@react-three/drei";
 import {
   Debug,
   Physics,
@@ -10,7 +14,7 @@ import {
 } from "@react-three/cannon";
 import { Material } from 'cannon-es';
 import { createContext, useContext, useEffect, useState } from "react";
-import { AxesHelper } from "three";
+import { AxesHelper, DoubleSide, Fog, MathUtils, PlaneGeometry } from "three";
 
 const tableUrl = new URL("../images/pongTable.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
@@ -220,19 +224,44 @@ const Play = () => {
   const [result, setResult] = useState<[number, number]>([0, 0])
   return (
     <resultsContext.Provider value={{result, setResult}}>
-      <Canvas camera={{ position: [0, 2, 5] }}>
-        <OrbitControls />
-        <perspectiveCamera />
-        <directionalLight position={[-50, 9, 5]} intensity={1} />
-        <directionalLight position={[-50, 9, -5]} intensity={1} />
-        <directionalLight position={[3, 9, 5]} intensity={2} />
-        <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
-          <Debug>
-            <GameTable />
-          </Debug>
-        </Physics>
-      </Canvas>
-        <h1 >{result[0]} vs {result[1]}</h1>
+      <div className="PlayScreen">
+        <Canvas camera={{ position: [0, 2, 5] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 40); }}>
+          <OrbitControls  maxPolarAngle={MathUtils.degToRad(100)}/>
+          {/* <perspectiveCamera /> */}
+          <directionalLight position={[-50, 9, 5]} intensity={1} />
+          <directionalLight position={[-50, -9, -5]} intensity={1} />
+          <pointLight position={[5, 9, -5]} intensity={1} />
+          <directionalLight position={[3, 9, 5]} intensity={2} />
+          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
+            {/* <Debug> */}
+              <mesh rotation={[Math.PI/2, 0, 0]} position={[0, -2.1,0]}>
+                <planeGeometry args={[100, 100]}/>
+                <meshStandardMaterial side={DoubleSide} color={"#c1596c"}/>
+              </mesh>
+              <GameTable />
+            {/* </Debug> */}
+          </Physics>
+        </Canvas>
+        <div className="Home-LastGame PlayResult">
+          <div className='Home-RowEle'>
+            <div className='Home-Row1'>
+                <img src={pic} alt="" />
+                <span>user1kkkkkkkkkk</span>
+            </div>
+            <div>
+            <div className='Home-Row2'>
+              <span className='Home-score1'>{result[0]}</span>
+              <img src={vs} alt="" />
+              <span className='Home-score2'>{result[1]}</span>
+            </div>
+            </div>
+            <div className='Home-Row3'>
+                <span>user2hhhhhhhhhh</span>
+                <img src={pic} alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
     </resultsContext.Provider>
   );
 };

@@ -1,0 +1,14 @@
+.PlayResult {
+  top: 5%;
+  padding: 0 20%;
+  width: 100%;
+  position: absolute;
+}
+
+.PlayScreen {
+  background-color: black;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  position: fixed;
+}
