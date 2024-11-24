@@ -1,28 +1,14 @@
 import { useState } from "react";
 import "./Friends.css";
-import { Friend } from "../Chat/components/types.ts";
 import AllFriends from "./components/AllFriends.tsx";
 import FriendRequests from "./components/FriendRequests.tsx";
 import AddFriends from "./components/AddFriends.tsx";
 import BlockedFriends from "./components/BlockedFriends.tsx";
 
-// import axios from "axios";
 
 const Friends = () => {
-	const [results, setResults] = useState<Friend[]>([]);
 	const [activeSection, setActiveSection] = useState("allFriends");
 
-	// useEffect(() => {
-	// 	axios.get("http://0.0.0.0:8000/api/friends/friends/", {
-	// 		withCredentials: true, // Include cookies in the request
-	// 	})
-	// 	.then(response => {
-	// 		console.log(response.data); // Set the response data to state
-	// 	})
-	// 	.catch(err => {
-	// 		  console.log(err.data); // Set the response data to state
-	// 	  });
-	// }, []);
 	return (
 		<div className="Friend-Container">
 			<div className="friendsMenuFriends">
@@ -68,12 +54,8 @@ const Friends = () => {
 			<div className="bodyFriends">
 				{activeSection === "allFriends" && <AllFriends/>}
 				{activeSection === "friendRequests" && <FriendRequests/>}
-				{activeSection === "addFriends" && (
-					<AddFriends/>
-				)}
-				{activeSection === "blockedFriends" && (
-					<BlockedFriends  />
-				)}
+				{activeSection === "addFriends" && <AddFriends/>}
+				{activeSection === "blockedFriends" && <BlockedFriends/>}
 			</div>
 		</div>
 	);
