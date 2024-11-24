@@ -1,10 +1,11 @@
-import { Canvas, Vector3 } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import "./Play.css";
+import winner from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
 import pic from "../../Home/images/profile.svg"
 import "../../Home/styles/LastGame.css"
 
-import { Box, OrbitControls, Text, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import {
   Debug,
   Physics,
@@ -14,7 +15,8 @@ import {
 } from "@react-three/cannon";
 import { Material } from 'cannon-es';
 import { createContext, useContext, useEffect, useState } from "react";
-import { AxesHelper, DoubleSide, Fog, MathUtils, PlaneGeometry } from "three";
+import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
+import { Link } from "react-router-dom";
 
 const tableUrl = new URL("../images/pongTable.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
@@ -41,12 +43,6 @@ function Ball() {
     ccdIterations: 20,
     ccdSpeedThreshold: 1e-4,
     material:material,
-    // angularVelocity:[, 0, 0],
-    // onCollide: (event) => {
-    //   const {body, contact} = event
-    //   if (body.name == "paddle")
-    //     api.velocity.subscribe(([x, y, z]) => {if (!x) api.velocity.set(contact.rj[0] * 5 , y, z)})
-    // },
   }));
   
 
@@ -57,15 +53,13 @@ function Ball() {
         const randomX = (Math.random() * 2 - 1) * (1.9038*2)
         api.position.set(0, 0.2, 0)
         api.velocity.set(randomX, 0, 7)
-        if (res){
-          console.log("result flwl",res)
+        if (res) {
           const {result, setResult} = res
-        if (z > 0)
-          setResult([result[0], result[1]+1])
-        else
-          setResult([result[0]+1, result[1]])
+          if (z > 0)
+            setResult([result[0], result[1]+1])
+          else
+            setResult([result[0]+1, result[1]])
         }
-        // console.log(result)
       }
     })
 
@@ -126,15 +120,15 @@ function Paddle({position, mine=false}: Paddlerops){
   const onKeyDown = (event: KeyboardEvent) => {
     api.position.subscribe(([x, y, z]) =>{
       if (mine){
-        if  (event.key == "ArrowRight" && x < 1.4)
+        if  ((event.key == "ArrowRight" && x < 1.4) || (event.key == "ArrowUp" && x < 1.4))
           api.position.set(x + 0.09, y, z)
-         if  (event.key == "ArrowLeft" && x > -1.4)
+         if  ((event.key == "ArrowLeft" && x > -1.4) || (event.key == "ArrowDown" && x > -1.4))
           api.position.set(x - 0.09, y, z)
       }
       if (!mine) {
-          if ((event.key == "D" || event.key == "d")  && x < 1.4)
+          if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w")  && x < 1.4)
             api.position.set(x + 0.09, y, z)
-           if  ((event.key == "A" || event.key == "a") && x > -1.4)
+           if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -1.4)
             api.position.set(x - 0.09, y, z)
           
       }
@@ -151,8 +145,8 @@ function Paddle({position, mine=false}: Paddlerops){
     window.addEventListener("keyup", onKeyUp)
 
     return () => {
-      // window.removeEventListener("keydown", onKeyDown);
-      // window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
     };
   }, [api, onKeyDown, onKeyUp, mine])
 
@@ -177,7 +171,7 @@ function SideWall({position} : SideWallProps) {
   }));
 
   return (
-    <mesh position={position}  name="side_wall" visible={false}>
+    <mesh ref={ref} position={position}  name="side_wall" visible={false}>
       <boxGeometry args={[0.5, 0.8, 3.629*2]} />
       <meshStandardMaterial/>
     </mesh>
@@ -212,7 +206,7 @@ function GameTable() {
       <Table />
       <Paddle position={[0, 0.09, +3.2]} mine/>
       <Paddle position={[0, 0.09, -3.2]}/>
-      <primitive object={new AxesHelper(5)} />
+      {/* <primitive object={new AxesHelper(5)} /> */}
       <SideWall position={[2.15, 0, 0]}/>
       <SideWall position={[-2.15, 0, 0]}/>
     </>
@@ -221,18 +215,17 @@ function GameTable() {
 
 
 const Play = () => {
-  const [result, setResult] = useState<[number, number]>([0, 0])
+  const [result, setResult] = useState<[number, number]>([0, 0]) 
   return (
     <resultsContext.Provider value={{result, setResult}}>
       <div className="PlayScreen">
         <Canvas camera={{ position: [0, 2, 5] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 40); }}>
           <OrbitControls  maxPolarAngle={MathUtils.degToRad(100)}/>
-          {/* <perspectiveCamera /> */}
           <directionalLight position={[-50, 9, 5]} intensity={1} />
           <directionalLight position={[-50, -9, -5]} intensity={1} />
           <pointLight position={[5, 9, -5]} intensity={1} />
           <directionalLight position={[3, 9, 5]} intensity={2} />
-          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120}>
+          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120} isPaused={result[0] === 7 || result[1] === 7}>
             {/* <Debug> */}
               <mesh rotation={[Math.PI/2, 0, 0]} position={[0, -2.1,0]}>
                 <planeGeometry args={[100, 100]}/>
@@ -246,7 +239,7 @@ const Play = () => {
           <div className='Home-RowEle'>
             <div className='Home-Row1'>
                 <img src={pic} alt="" />
-                <span>user1kkkkkkkkkk</span>
+                <span>Player 1</span>
             </div>
             <div>
             <div className='Home-Row2'>
@@ -256,11 +249,27 @@ const Play = () => {
             </div>
             </div>
             <div className='Home-Row3'>
-                <span>user2hhhhhhhhhh</span>
+                <span>Player 2</span>
                 <img src={pic} alt="" />
             </div>
           </div>
         </div>
+        {
+           result[0] === 7 || result[1] === 7 
+          ?
+          <div className="winnerPopUp">
+            <h2>The Winner</h2>
+            <img src={winner} alt="" className="winnerPic"/>
+            <img src={pic} alt="" />
+            <h3>{result[0] === 7 ? "Player 1" : "Player 2"}</h3>
+            <div className="winnerBtns">
+              <Link to={"/"}><i className="fa-solid fa-house"></i></Link>
+              <Link to={"../"}><i className="fa-solid fa-arrow-left"></i></Link>
+            </div>
+          </div>
+          :
+          <></>
+        }
       </div>
     </resultsContext.Provider>
   );
