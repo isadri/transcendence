@@ -24,20 +24,20 @@ services:
       - postgres
     restart: on-failure
 
-  front-end:
-   container_name: frontend
-   image: frontend
-   build: ./frontend
-   ports:
-     - 5000:5000
-   volumes:
-     - ./frontend:/code/
-     - modules_files:/code/node_modules
-   networks:
-     - app-network
-   depends_on:
-     - back-end
-   restart: on-failure
+  #front-end:
+  #  container_name: frontend
+  #  image: frontend
+  #  build: ./frontend
+  #  ports:
+  #    - 5000:5000
+  #  volumes:
+  #    - ./frontend:/code/
+  #    - modules_files:/code/node_modules
+  #  networks:
+  #    - app-network
+  #  depends_on:
+  #    - back-end
+  #  restart: on-failure
 
   postgres:
     container_name: postgres
@@ -53,3 +53,16 @@ services:
     networks:
       - app-network
     restart: on-failure
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.16.1
+    container_name: logstash
+    command: bin/logstash -f pipeline/basic.conf --config.reload.automatic
+    stdin_open: true
+    tty: true
+    ports:
+      - 5044:5044
+    volumes:
+      - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
+    networks:
+      - app-network

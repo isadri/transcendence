@@ -1,8 +1,7 @@
-
 up:
 	@docker-compose up
 upd:
-	@docker-compose up
+	@docker-compose up -d
 
 build:
 	@docker-compose up -d --build
@@ -10,7 +9,7 @@ build:
 down:
 	@docker-compose down
 
-re: down up-with-build
+re: down build
 
 exec:
 	@docker-compose exec -it back-end $(CMD)
@@ -32,6 +31,3 @@ dbshell:
 
 create-superuser:
 	@docker-compose exec -it back-end python manage.py createsuperuser
-
-check-style:
-	@bash checker.sh
