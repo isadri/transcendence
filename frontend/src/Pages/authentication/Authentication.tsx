@@ -1,16 +1,67 @@
 import './Authenthication.css'
 import intra from './Images/intra.svg'
 import Google from './Images/Google.svg'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Context, useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
+import axios from 'axios'
+import {loginContext} from './../../App'
+
 
 // import bg1 from "./Images/bg1.png"
 
 
+
 function Authentication() {
+  const authContext = useContext(loginContext)
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [val, setVal] = useState(true);
-  // const [sign, setSign] = useState(true);
+
+  const data_login = {
+      username,
+      password
+  }
+  const url_login = 'http://localhost:8000/api/accounts/login/'
+  
+  const data_reg = {
+    username,
+    password,
+    email
+  }
+  const url_reg = 'http://localhost:8000/api/accounts/register/'
+  
+  const handelSubmit = (e: any) => {
+    e.preventDefault();
+    const endpont = val ? url_login : url_reg
+    const data = val ? data_login : data_reg
+    axios.post(endpont, data, {withCredentials: true})
+          .then((response) => {
+              !val ? setVal(true) : (navigate('/'), authContext?.setIsLogged(true));
+              
+              setUsername('')
+              setEmail('')
+              setPassword('')
+          })
+          .catch((error) => {
+            console.log("error !!")
+          });
+  }
+  // const handelSubmit = (e: any) => {
+  //   e.preventDefault();
+  //   const endpoint = islogin ? url_login : url_reg
+  //   const data = islogin ? data_login : data_reg
+  //   axios.post(endpoint, data)
+  //         .then((response) => {
+  //           console.log(`${islogin ? 'Login' : 'Register'} successful:`, response.data);
+  //         })
+  //           .catch((error) => {
+  //               console.log("error !!")
+  //         });
+  // }
+
   const win_width = useMediaQuery("only screen and (max-width : 720px)");
   const SingUpStyle = !val ?
     (
@@ -27,7 +78,7 @@ function Authentication() {
     ):{transform: "translateX(-100%)"};
     return (
     <>
-        <div className="SingIn" style={{...(!val ? { transform: "translateX(200%)", opacity: 0 } : {}),
+      <div className="SingIn" style={{...(!val ? { transform: "translateX(200%)", opacity: 0 } : {}),
           ...(!val && win_width ? {opacity:0}:{opacity:1})}} >
             <div className='iconBack'>
               <Link to="/">
@@ -35,11 +86,13 @@ function Authentication() {
               </Link>
             </div>
           <h1>Sign In</h1>
-          <form action="" className=''>
-            <input type="text" name="" id="UserName" placeholder='UserName or Email' />
-            <input type="text" name="" id="Pass" placeholder='Password'/>
+          <form onSubmit={handelSubmit}>
+            <input type="text" name="username" id="UserName" placeholder='UserName or Email'
+             value={username} onChange={(e) => setUsername(e.target.value)} required/>
+            <input type="text" name="password" id="Pass" placeholder='Password'
+            value={password} onChange={(e) => setPassword(e.target.value)} required/>
             <Link to="">Forget your password?</Link>
-            <button type='submit'>Sign in</button>
+            <button type='submit' aria-label="Sign in">Sign in</button>
             <span className='RespSign'>Don't have an account? <Link to="" onClick={() => {setVal(false)}}>Sign Up</Link></span>
           </form>
           <div className='lines'>
@@ -59,28 +112,25 @@ function Authentication() {
               </a>
             </div>
           </div>
-        </div>
-      
-        <div className='SingUp ' style={{...SingUpStyle, ...(!val && win_width ? {opacity:1, transform: "translateX(0%)"}:{})}}>
+      </div>
+      <div className='SingUp ' style={{...SingUpStyle, ...(!val && win_width ? {opacity:1, transform: "translateX(0%)"}:{})}}>
           <div className='iconBack' style={win_width ? {opacity : 1}:{opacity : 0}}>
               <Link to="/">
                 <i className="fa-solid fa-arrow-left"></i>
               </Link>
           </div>
           <h1>Sign Up</h1>
-          <form action="">
-          {/* <div className='PrimaryInfo'>
-            <input type="text" placeholder="First Name"/>
-            <input type="text" placeholder="Last Name"/>
-          </div> */}
-          <input type="text" placeholder="UserName"/>
-          <input type="text" placeholder="Email"/>
-          <input type="text" placeholder="Create Password"/>
-          <input type="text" placeholder="Confirm Password"/>
-
-          <button type='submit'>Sign Up</button>
-          <span className='RespSign'>Already have an account? <Link to="" onClick={() => {setVal(true)}}>Sign In</Link></span>
-        </form>
+          <form onSubmit={handelSubmit}>
+            <input type="text" name="username" id="UserName" placeholder='UserName'
+               value={username} onChange={(e) => setUsername(e.target.value)} required/>
+            <input type="text" name="Email" id="Email"  placeholder="Email"
+              value={email} onChange={(e) => setEmail(e.target.value)} required/>
+            <input type="text" name="password" id="Pass" placeholder='Password'
+            value={password} onChange={(e) => setPassword(e.target.value)} required/>
+            <input type="text" placeholder="Confirm Password"/>
+            <button type='submit'>Sign Up</button>
+            <span className='RespSign'>Already have an account? <Link to="" onClick={() => {setVal(true)}}>Sign In</Link></span>
+          </form>
         <div className='lines'>
           <span></span>
           <p>OR</p>
