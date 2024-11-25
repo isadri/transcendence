@@ -169,7 +169,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-     'SIGNING_KEY': '021AA___qq02passkey-',
+    'SIGNING_KEY': '021AA___qq02passkey-',
 }
 
 AUTH_COOKIE = 'access_token'
@@ -195,3 +195,25 @@ EMAIL_PORT = '587'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'logstash': {
+            'class': 'logstash.TCPLogstashHandler',
+            'host': 'logstash',
+            'port': 5959,
+            'version': 1,
+            'message_type': 'logstash',
+            'fqdn': False,
+        },
+    },
+    'loggers': {
+        'api': {
+            'handlers': ['logstash'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
