@@ -45,11 +45,11 @@ const AllFriends = () => {
 		}
 
 		fetchFriend()
-		const intervalId = setInterval(fetchFriend, 5000);
+		// const intervalId = setInterval(fetchFriend, 5000);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			clearInterval(intervalId);
+			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 

@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     Raises:
         serializers.ValidationError: If any of user fields are not valid.
     """
-    avatar = serializers.ImageField(default='default.jpg')
+    avatar = serializers.ImageField(default='default.jpeg')
 
     class Meta:
         model = User

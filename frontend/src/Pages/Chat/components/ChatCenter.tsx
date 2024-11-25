@@ -1,13 +1,15 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
-import { Message } from "./types";
+import { GetFriends, FriendsMessages } from "../Chat";
+// import { Message } from "./types";
 // import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 
 interface ChatCenterProps {
-	messages: Message[];
+	selectedFriend: GetFriends;
+	messages: FriendsMessages[];
 }
 
-const ChatCenter = ({ messages }: ChatCenterProps) => {
+const ChatCenter = ({ selectedFriend, messages }: ChatCenterProps) => {
 	// const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const endRef = useRef<HTMLDivElement>(null);
 
@@ -18,11 +20,11 @@ const ChatCenter = ({ messages }: ChatCenterProps) => {
 	return (
 		<div className="center">
 			{messages.map((value, index) => {
-				const isOwnMessage = value.senderId === 2;
+				const isOwnMessage = value.sender;
 				return (
 					<div key={index} className={isOwnMessage ? "message-own" : "message"}>
 						{!isOwnMessage && (
-							<img src={value.profile} alt="profile" className="profile" />
+							<img src={selectedFriend.avatar} alt="profile" className="profile" />
 						)}
 						<div className="textMessage">
 							{value.image && (
@@ -32,8 +34,8 @@ const ChatCenter = ({ messages }: ChatCenterProps) => {
 									className="imgPartage"
 								/>
 							)}
-							<p>{value.message}</p>
-							<span>{value.time}</span>
+							<p>{value.content}</p>
+							<span>{value.timestamp}</span>
 						</div>
 					</div>
 				);

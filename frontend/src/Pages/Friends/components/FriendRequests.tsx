@@ -33,12 +33,12 @@ const FriendRequests = () => {
 
 		fetchFriendRequests();
 		// Set up an interval to fetch new data every 10 seconds
-		const intervalId = setInterval(fetchFriendRequests, 5000);
+		// const intervalId = setInterval(fetchFriendRequests, 5000);
 
 		// Clean up the interval when the component unmounts
-		return () => {
-			clearInterval(intervalId);
-		};
+		// return () => {
+		// 	// clearInterval(intervalId);
+		// };
 	}, []);
 
 	const handleAcceptRequest = (id: number) => {

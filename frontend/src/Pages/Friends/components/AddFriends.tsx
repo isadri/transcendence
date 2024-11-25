@@ -43,13 +43,13 @@ const AddFriends = () => {
 		}
 
 		fetchUsers()
-		const intervalId = setInterval(fetchUsers, 5000);
+		// const intervalId = setInterval(fetchUsers, 5000);
 
 		document.addEventListener("mousedown", handleClickOutside);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			clearInterval(intervalId);
+			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 

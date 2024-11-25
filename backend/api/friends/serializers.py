@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import FriendList, FriendRequest
-from ..accounts.serializers import UserSerializer
 
 
 User = get_user_model()

@@ -4,14 +4,15 @@ import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
 import moment from "moment";
-import { Friend, Message } from "./types";
+import { GetFriends, FriendsMessages } from "../Chat";
+// import { Friend, Message } from "./types";
 
 interface ChatBodyProps {
-	selectedFriend: Friend;
-	messages: Message[];
-	onSendMessage: (message: Message) => void;
-	setSelectedFriend: React.Dispatch<React.SetStateAction<Friend | null>>;
-	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+	selectedFriend: GetFriends;
+	messages: FriendsMessages[];
+	onSendMessage: (message: string) => void;
+	setSelectedFriend: React.Dispatch<React.SetStateAction<GetFriends | null>>;
+	setMessages: React.Dispatch<React.SetStateAction<FriendsMessages[]>>;
 }
 
 const ChatBody = ({
@@ -27,13 +28,7 @@ const ChatBody = ({
 
 	const handleSend = () => {
 		if (text.trim()) {
-			const newMessage: Message = {
-				message: text,
-				senderId: 2,
-				receiverId: selectedFriend.id,
-				time: moment().format("LT"),
-			};
-			onSendMessage(newMessage);
+			onSendMessage(text);
 			setText("");
 		}
 	};
@@ -47,14 +42,14 @@ const ChatBody = ({
 				setBlock={setBlock}
 				block={block}
 			/>
-			<ChatCenter messages={messages} />
-			<ChatBottom
+			<ChatCenter messages={messages} selectedFriend={selectedFriend} />
+			{/* <ChatBottom
 				text={text}
 				setText={setText}
 				handleSend={handleSend}
 				ref={ref}
 				block={block}
-			/>
+			/> */}
 		</div>
 	);
 };

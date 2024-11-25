@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import ChatList from "./ChatList";
 import "./List.css";
-import { Friend } from "./types";
+// import { Friend } from "./types";
+import { GetFriends } from "../Chat";
+import axios from "axios";
 
 interface ListProps {
-	friends: Friend[];
-	onSelectFriend: (friend: Friend) => void;
-	selectedFriend: Friend | null;
+	friends: GetFriends[];
+	onSelectFriend: (friend: GetFriends) => void;
+	selectedFriend: GetFriends | null;
 }
 
-const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
+const ListChat = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	const [searchFriend, setSearchFriend] = useState("");
-	const [results, setResults] = useState<Friend[]>([]);
+	const [results, setResults] = useState<GetFriends[]>([]);
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const [listAllFriends, setListAllFriends] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 
 		setSearchFriend(value);
 		const filterResults = friends.filter((user) =>
-			user.name.toLowerCase().includes(value.toLowerCase())
+			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
 	};
@@ -102,4 +104,4 @@ const List = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 	);
 };
 
-export default List;
+export default ListChat;
