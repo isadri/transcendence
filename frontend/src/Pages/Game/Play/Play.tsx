@@ -18,7 +18,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
 import { Link } from "react-router-dom";
 
-const tableUrl = new URL("../images/pongTable.glb", import.meta.url).href;
+const tableUrl = new URL("../../../assets/glb/tableLwa3ra.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
 
 // the context of the game result
@@ -39,7 +39,7 @@ function Ball() {
     mass: 0.1,
     position: [0, 0.2, 0],
     args: [0.12],
-    velocity: [randomX, 0, 7],
+    velocity: [randomX, 0, 5],
     ccdIterations: 20,
     ccdSpeedThreshold: 1e-4,
     material:material,
@@ -84,7 +84,7 @@ function Table() {
   const [ref, api] = useBox(() => ({
     position: [0, 0, 0],
     type: "Static",
-    args: [1.9038*2, 0.0364*2, 3.629*2],
+    args: [6.1469, 0.0364*2, 8.65640],
     material: material
   }));
 
@@ -92,7 +92,7 @@ function Table() {
   return (
     <>
       <primitive
-        scale={[2,2,2]}
+        scale={[1,1,1]}
         ref={ref}
         object={table.scene}
         position={[0, 0, 0]}
@@ -120,15 +120,15 @@ function Paddle({position, mine=false}: Paddlerops){
   const onKeyDown = (event: KeyboardEvent) => {
     api.position.subscribe(([x, y, z]) =>{
       if (mine){
-        if  ((event.key == "ArrowRight" && x < 1.4) || (event.key == "ArrowUp" && x < 1.4))
+        if  ((event.key == "ArrowRight" && x < (3.07345 - 0.5)) || (event.key == "ArrowUp" && x < (3.07345 - 0.5)))
           api.position.set(x + 0.09, y, z)
-         if  ((event.key == "ArrowLeft" && x > -1.4) || (event.key == "ArrowDown" && x > -1.4))
+         if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.5)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.5)))
           api.position.set(x - 0.09, y, z)
       }
       if (!mine) {
-          if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w")  && x < 1.4)
+          if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w")  && x < (3.07345 - 0.5))
             api.position.set(x + 0.09, y, z)
-           if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -1.4)
+           if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -(3.07345 - 0.5))
             api.position.set(x - 0.09, y, z)
           
       }
@@ -153,7 +153,7 @@ function Paddle({position, mine=false}: Paddlerops){
   return (
     <mesh ref={ref} position={position}  name="paddle">
       <boxGeometry args={[1, 0.25, 0.4]} />
-      <meshStandardMaterial/>
+      <meshStandardMaterial />
     </mesh>
   )
 }
@@ -166,13 +166,13 @@ function SideWall({position} : SideWallProps) {
   material.name = "side_mat"
   const [ref, api] = useBox(() => ({
     position: position,
-    args: [0.5, 0.8, 3.629*2],
+    args: [0.5, 0.8, 8.65640],
     material: material
   }));
 
   return (
     <mesh ref={ref} position={position}  name="side_wall" visible={false}>
-      <boxGeometry args={[0.5, 0.8, 3.629*2]} />
+      <boxGeometry args={[0.5, 0.8, 8.65640]} />
       <meshStandardMaterial/>
     </mesh>
   )
@@ -204,11 +204,11 @@ function GameTable() {
     <>
       <Ball />
       <Table />
-      <Paddle position={[0, 0.09, +3.2]} mine/>
-      <Paddle position={[0, 0.09, -3.2]}/>
-      {/* <primitive object={new AxesHelper(5)} /> */}
-      <SideWall position={[2.15, 0, 0]}/>
-      <SideWall position={[-2.15, 0, 0]}/>
+      <Paddle position={[0, 0.09, +(8.65640 -1)/ 2]} mine/>
+      <Paddle position={[0, 0.09, -(8.65640 -1)/ 2]}/>
+      <primitive object={new AxesHelper(5)} />
+      <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
+      <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
     </>
   );
 }
@@ -219,7 +219,7 @@ const Play = () => {
   return (
     <resultsContext.Provider value={{result, setResult}}>
       <div className="PlayScreen">
-        <Canvas camera={{ position: [0, 2, 5] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 40); }}>
+        <Canvas camera={{ position: [0, 2, 5] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
           <OrbitControls  maxPolarAngle={MathUtils.degToRad(100)}/>
           <directionalLight position={[-50, 9, 5]} intensity={1} />
           <directionalLight position={[-50, -9, -5]} intensity={1} />
@@ -227,8 +227,8 @@ const Play = () => {
           <directionalLight position={[3, 9, 5]} intensity={2} />
           <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120} isPaused={result[0] === 7 || result[1] === 7}>
             {/* <Debug> */}
-              <mesh rotation={[Math.PI/2, 0, 0]} position={[0, -2.1,0]}>
-                <planeGeometry args={[100, 100]}/>
+              <mesh rotation={[Math.PI/2, 0, 0]} position={[0, -5,0]}>
+                <planeGeometry args={[300, 300]}/>
                 <meshStandardMaterial side={DoubleSide} color={"#c1596c"}/>
               </mesh>
               <GameTable />
