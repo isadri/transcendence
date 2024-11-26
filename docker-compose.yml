@@ -57,56 +57,98 @@ services:
   #  restart: on-failure
 
   setup:
-    build:
-      context: elk
-      args:
-        STACK_VERSION: ${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     container_name: setup
-    user: "0" # run the container as the root user
-    stdin_open: true
-    tty: true
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
     env_file:
       - .env
+    user: "0"
+    command: >
+      bash -c '
+        if [ -z "$ELASTIC_PASSWORD" ]; then
+          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
+          exit 1;
+        fi;
+
+        if [ -z "$KIBANA_PASSWORD" ]; then
+          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
+          exit 1;
+        fi;
+        if [ ! -f config/certs/ca.zip ]; then
+          echo "Creating CA";
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+
+        if [ ! -f config/certs/certs.zip ]; then
+          echo "Creating certs";
+          echo -ne \
+          "instances:\n"\
+          "  - name: \"elasticsearch\"\n"\
+          "    dns:\n"\
+          "      - \"elasticsearch\"\n"\
+          "      - \"localhost\"\n"\
+          "    ip:\n"\
+          "      - \"127.0.0.1\"\n"\
+          "  - name: \"kibana\"\n"\
+          "    dns:\n"\
+          "      - \"kibana\"\n"\
+          "      - \"localhost\"\n"\
+          "    ip:\n"\
+          "      - \"127.0.0.1\"\n"\
+          > config/certs/instances.yml;
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi;
+        echo "Setting file permissions"
+        chown -R root:root config/certs;
+
+        echo "Waiting for Elasticsearch availability";
+        until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+
+        echo "Setting kibana_system password";
+        until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+
+        echo "All done!";
+      '
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt]" ]
+      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]"]
       interval: 1s
       timeout: 5s
-      retries: 90
-
+      retries: 120
   elasticsearch:
+    depends_on:
+      setup:
+        condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     container_name: elasticsearch
-    environment:
-      - node.name=elasticsearch
-      - cluster.name=elk-stack
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - xpack.license.self_generated.type=${LICENSE}
-      - discovery.type=single-node
-      - xpack.security.transport.ssl.enabled=true
-      - xpack.security.transport.ssl.verification_mode=certificate
-      - xpack.security.transport.ssl.key=certs/elasticsearch/elasticsearch.key
-      - xpack.security.transport.ssl.certificate=certs/elasticsearch/elasticsearch.crt
-      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
-      - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.verification_mode=certificate
-      - xpack.security.http.ssl.key=certs/elasticsearch/elasticsearch.key
-      - xpack.security.http.ssl.certificate=certs/elasticsearch/elasticsearch.crt
-      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
-      - bootstrap.memory_lock=true
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata:/usr/share/elasticsearch/data
-    #depends_on:
-    #  setup:
-    #    condition: service_healthy
-    ports:
-      - 9200:9200
     networks:
       - app-network
+    ports:
+      - ${ES_PORT}:9200
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=certs/elasticsearch/elasticsearch.key
+      - xpack.security.http.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/elasticsearch/elasticsearch.key
+      - xpack.security.transport.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
     ulimits:
       memlock:
         soft: -1
@@ -115,11 +157,116 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q \"missing authentication credentials\""
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
         ]
       interval: 10s
       timeout: 10s
-      retries: 90
+      retries: 120
+
+  #setup:
+  #  image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+  #  container_name: setup
+  #  user: "0" # run the container as the root user
+  #  command: >
+  #    bash -c '
+  #      if [ -z "$ELASTIC_PASSWORD" ]; then
+  #        echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
+  #        exit 1;
+  #      if [ -z "$KIBANA_PASSWORD" ]; then
+  #        echo "Set the KIBANA_PASSWORD environment variable in the .env file";
+  #        exit 1;
+  #      fi;
+
+  #      if [ ! -f config/certs/ca.zip ]; then
+  #        echo "Creating CA";
+  #        bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+  #        unzip config/certs/ca.zip -d config/certs;
+  #      fi;
+
+  #      if [ ! -f config/certs/certs.zip ]; then
+  #        echo "Creating certs";
+  #        echo -e \
+  #        "instances:\n"\
+  #        "  - name: \"elasticsearch\"\n"\
+  #        "    dns:\n"\
+  #        "      - \"elasticsearch\"\n"\
+  #        "      - \"localhost\"\n"\
+  #        "    ip:\n"\
+  #        "      - \"127.0.0.1\"\n"\
+  #        "  - name: \"kibana\"\n"\
+  #        "    dns:\n"\
+  #        "      - \"kibana\"\n"\
+  #        "      - \"localhost\"\n"\
+  #        "    ip:\n"\
+  #        "      - \"127.0.0.1\"\n"\
+  #        > config/certs/instances.yml;
+  #        bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+  #        unzip config/certs/certs.zip -d config/certs;
+  #      fi;
+  #      echo "Setting file permissions"
+  #      chown -R root:root config/certs;
+
+  #      echo "Waiting for Elasticsearch availability";
+  #      until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+
+  #      echo "Setting kibana_system password";
+  #      until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+  #      echo "All done!";
+  #    '
+  #  volumes:
+  #    - certs:/usr/share/elasticsearch/config/certs
+  #  env_file:
+  #    - .env
+  #  networks:
+  #    - app-network
+  #  healthcheck:
+  #    test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt]" ]
+  #    interval: 1s
+  #    timeout: 5s
+  #    retries: 90
+
+  #elasticsearch:
+  #  depends_on:
+  #    setup:
+  #      condition: service_healthy
+  #  image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+  #  container_name: elasticsearch
+  #  environment:
+  #    - node.name=elasticsearch
+  #    - cluster.name=elk-stack
+  #    - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+  #    - xpack.license.self_generated.type=${LICENSE}
+  #    - discovery.type=single-node
+  #    - xpack.security.transport.ssl.enabled=true
+  #    - xpack.security.transport.ssl.verification_mode=certificate
+  #    - xpack.security.transport.ssl.key=certs/elasticsearch/elasticsearch.key
+  #    - xpack.security.transport.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+  #    - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+  #    - xpack.security.http.ssl.enabled=true
+  #    - xpack.security.http.ssl.key=certs/elasticsearch/elasticsearch.key
+  #    - xpack.security.http.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+  #    - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+  #    - bootstrap.memory_lock=true
+  #  volumes:
+  #    - certs:/usr/share/elasticsearch/config/certs
+  #    - esdata:/usr/share/elasticsearch/data
+  #  ports:
+  #    - 9200:9200
+  #  networks:
+  #    - app-network
+  #  ulimits:
+  #    memlock:
+  #      soft: -1
+  #      hard: -1
+  #  healthcheck:
+  #    test:
+  #      [
+  #        "CMD-SHELL",
+  #        "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q \"missing authentication credentials\""
+  #      ]
+  #    interval: 10s
+  #    timeout: 10s
+  #    retries: 90
 
   #kibana:
   #  image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
@@ -137,8 +284,6 @@ services:
   #  image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
   #  container_name: logstash
   #  command: bin/logstash -f pipeline/logstash.conf --config.reload.automatic
-  #  stdin_open: true
-  #  tty: true
   #  ports:
   #    - 5044:5044
   #  volumes:
