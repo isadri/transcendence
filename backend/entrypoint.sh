@@ -5,6 +5,18 @@ python manage.py makemigrations accounts
 python manage.py makemigrations friends
 python manage.py migrate
 
+if [ -z "$DJANGO_SUPERUSER_USERNAME" ]; then
+	echo "DJANGO_SUPERUSER_USERNAME environment variable is not set";
+fi;
+
+if [ -z "$DJANGO_SUPERUSER_EMAIL" ]; then
+	echo "DJANGO_SUPERUSER_EMAIL environment variable is not set";
+fi;
+
+if [ -z "$DJANGO_SUPERUSER_PASSWORD" ]; then
+	echo "DJANGO_SUPERUSER_PASSWORD environment variable is not set";
+fi;
+
 cat << EOF | python manage.py shell
 from django.contrib.auth import get_user_model
 import os
