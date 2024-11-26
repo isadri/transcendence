@@ -263,7 +263,7 @@ const Play = () => {
   return (
     <resultsContext.Provider value={{result, setResult}}>
       <div className="PlayScreen">
-        <Canvas camera={{ position: [0, 2, 5] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
+        <Canvas camera={{ position: [0, 5, 8] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
           <OrbitControls  maxPolarAngle={MathUtils.degToRad(100)}/>
           <directionalLight position={[-50, 9, 5]} intensity={1} />
           <directionalLight position={[-50, -9, -5]} intensity={1} />
