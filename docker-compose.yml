@@ -5,6 +5,7 @@ volumes:
   postgres_data:
   modules_files:
   esdata:
+  certs:
 
 services:
   back-end:
@@ -55,16 +56,42 @@ services:
       - app-network
     restart: on-failure
 
+  setup:
+    build:
+      context: elk
+      args:
+        STACK_VERSION: ${STACK_VERSION}
+    container_name: setup
+    user: "0" # run the container as the root user
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt]" ]
+      interval: 1s
+      timeout: 5s
+      retries: 90
+
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     container_name: elasticsearch
     environment:
+      - cluster.name: elk-stack
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.client_authentication=required
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.key=config/certs/elasticsearch/elasticsearch.key
+      - xpack.security.transport.ssl.certificate=config/certs/elasticsearch/elasticsearch.crt
+      - xpack.security.transport.ssl.certificate_authorities=config/certs/ca/ca.crt
       - bootstrap.memory_lock=true
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.license.self_generated.type=${LICENSE}
     volumes:
+      - certs:/usr/share/elasticsearch/config/certs
       - esdata:/usr/share/elasticsearch/data
+    depends_on:
+      setup:
+        condition: service_healthy
     ulimits:
       memlock:
         soft: -1
@@ -75,7 +102,7 @@ services:
       - app-network
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.16.0
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     container_name: kibana
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
@@ -87,9 +114,9 @@ services:
       - elasticsearch
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.16.1
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     container_name: logstash
-    command: bin/logstash -f pipeline/basic.conf --config.reload.automatic
+    command: bin/logstash -f pipeline/logstash.conf --config.reload.automatic
     stdin_open: true
     tty: true
     ports:

@@ -2,18 +2,9 @@
 
 ### ELK
 
-
-### Run Elasticsearch in Docker
-
-1.
-```bash
-docker pull docker.elastic.co/elasticsearch/elasticsearch:8.16.0
-```
-
-2.
-
-```bash
-docker run --rm --name elasticsearch_container -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "xpack.security.enabled=false" docker.elastic.co/elasticsearch/elasticsearch:8.16.0
-```
-
-Setting the `xpack.security.enabled` environment to `false` is used to disable HTTPS.
+* `xpack.security.transport.ssl.enabled=true`: enables TLS/SSL on the transport networking layer, which nodes use to communicate with each other.
+* `xpack.security.transport.ssl.client_authentication=required`: forces a client to present a certificate.
+* `xpack.security.transport.ssl.verification_mode=certificate`: validates the provided certificate and verifies that it's signed by a trusted authority (CA).
+* `xpack.security.transport.ssl.key=config/certs/elasticsearch/elasticsearch.key`: Specifies the path of the private key of the node.
+* `xpack.security.transport.ssl.certificate=config/certs/elasticsearch/elasticsearch.crt`: Specifies the path of the certificate that is associated with the key.
+* `xpack.security.transport.ssl.certificate_authorities=config/certs/ca/ca.crt`: Specifies the certificate files that should be trusted.
