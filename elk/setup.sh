@@ -27,16 +27,19 @@ if [ ! -f config/certs/certs.zip ]; then
 	"      - \"127.0.0.1\"\n"\
 	"    dns:\n"\
 	"      - \"elasticsearch\"\n"\
+	"      - \"localhost\"\n"\
 	"  - name: \"kibana\"\n"\
 	"    ip:\n"\
 	"      - \"127.0.0.1\"\n"\
 	"    dns:\n"\
 	"      - \"kibana\"\n"\
+	"      - \"localhost\"\n"\
 	"  - name: \"logstash\"\n"\
 	"    ip:\n"\
 	"      - \"127.0.0.1\"\n"\
 	"    dns:\n"\
 	"      - \"logstash\"\n"\
+	"      - \"localhost\"\n"\
 	> config/certs/instances.yml
 	bin/elasticsearch-certutil cert --silent --pem --out config/certs/certs.zip \
 	--in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt \
