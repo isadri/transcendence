@@ -3,12 +3,13 @@ import ChatList from "./ChatList";
 import "./List.css";
 // import { Friend } from "./types";
 import { GetFriends } from "../Chat";
-import axios from "axios";
+import { GetChats } from "./ChatList";
+// import axios from "axios";
 
 interface ListProps {
 	friends: GetFriends[];
-	onSelectFriend: (friend: GetFriends) => void;
-	selectedFriend: GetFriends | null;
+	onSelectFriend: (friend: GetChats) => void;
+	selectedFriend: GetChats | null;
 }
 
 const ListChat = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {

@@ -1,16 +1,14 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
-import { GetFriends, FriendsMessages } from "../Chat";
-// import { Message } from "./types";
-// import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
+// import { GetFriends } from "../Chat";
+import { GetChats, ChatMessage } from "./ChatList";
 
 interface ChatCenterProps {
-	selectedFriend: GetFriends;
-	messages: FriendsMessages[];
+	selectedFriend: GetChats;
+	messages: ChatMessage[];
 }
 
 const ChatCenter = ({ selectedFriend, messages }: ChatCenterProps) => {
-	// const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const endRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -19,12 +17,19 @@ const ChatCenter = ({ selectedFriend, messages }: ChatCenterProps) => {
 
 	return (
 		<div className="center">
-			{messages.map((value, index) => {
-				const isOwnMessage = value.sender;
+			{selectedFriend.messages.map((value, index) => {
+				const isOwnMessage = value.sender === selectedFriend.user1;
 				return (
-					<div key={index} className={isOwnMessage ? "message-own" : "message"}>
+					<div
+						key={index}
+						className={isOwnMessage ? "message-own" : "message"}
+					>
 						{!isOwnMessage && (
-							<img src={selectedFriend.avatar} alt="profile" className="profile" />
+							<img
+								src={selectedFriend.user2.avatar}
+								alt="profile"
+								className="profile"
+							/>
 						)}
 						<div className="textMessage">
 							{value.image && (
