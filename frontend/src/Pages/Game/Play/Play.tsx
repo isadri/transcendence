@@ -63,12 +63,9 @@ function Ball() {
         setTimeout(() => api.velocity.set(randomX, 0, z < 0 ?-7 :7), 500);
         if (res) {
           const {result, setResult} = res
-          if (z > 0)
-            setResult([result[0], result[1]+1])
-          else
-            setResult([result[0]+1, result[1]])
+          setResult((z > 0) ? [result[0], result[1]+1]: [result[0]+1, result[1]]) 
+        }
         setCanScore(true)
-      }
       }
     })
 
@@ -124,31 +121,40 @@ function Paddle({position, mine=false}: Paddlerops){
     args: [1.5, 0.5, 0.5],
     material: material
   }));
+  const speed = 2.5
+  const [direction, setDirection] = useState<[number, number, number]>([0, 0, 0]);
 
-  const onKeyDown = (event: KeyboardEvent) => {
-    api.position.subscribe(([x, y, z]) =>{
-      if (mine){
-        if  ((event.key == "ArrowRight" && x < (3.07345 - 0.5)) || (event.key == "ArrowUp" && x < (3.07345 - 0.5)))
-          api.position.set(x + 0.09, y, z)
-         if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.5)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.5)))
-          api.position.set(x - 0.09, y, z)
-      }
-      if (!mine) {
-          if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w")  && x < (3.07345 - 0.5))
-            api.position.set(x + 0.09, y, z)
-           if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -(3.07345 - 0.5))
-            api.position.set(x - 0.09, y, z)
-          
-      }
-    })
-  }
-
-  const onKeyUp = (event: KeyboardEvent) => {
-    api.position.subscribe(([x, y, z]) =>{
-      api.position.set(x, y, z);
-    })
-  }
   useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      api.position.subscribe(([x, y, z]) =>{
+        if (mine){
+          if  ((event.key == "ArrowRight" && x < (3.07345 - 0.5)) || (event.key == "ArrowUp" && x < (3.07345 - 0.5)))
+            setDirection([speed, 0, 0])
+          if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.5)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.5)))
+            setDirection([-speed, 0,0])
+        }
+        if (!mine) {
+            if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w")  && x < (3.07345 - 0.5))
+              setDirection([speed, 0, 0])
+            if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -(3.07345 - 0.5))
+              setDirection([-speed, 0, 0])
+            
+        }
+      })
+    }
+
+    const onKeyUp = (event: KeyboardEvent) => {
+      api.velocity.subscribe(() => {
+        const {key} = event
+        console.log(key);
+        
+        if (mine && (key == "ArrowRight" || key == "ArrowLeft" || key == "ArrowUp" || key == "ArrowDown"))
+          setDirection([0, 0, 0])
+        if (!mine && (key == "A" || key == "a" || key == "d" || key == "D" || key == "S" || key == "s" || key == "W" || key == "w"))
+          setDirection([0, 0, 0])
+      })
+    }
+
     window.addEventListener("keydown", onKeyDown)
     window.addEventListener("keyup", onKeyUp)
 
@@ -156,7 +162,12 @@ function Paddle({position, mine=false}: Paddlerops){
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [api, onKeyDown, onKeyUp, mine])
+  }, [mine, direction])
+
+
+  useEffect(() => {
+    api.velocity.set(...direction);
+  }, [direction, api, mine]);
 
   return (
     <mesh ref={ref} position={position}  name="paddle">
