@@ -32,8 +32,9 @@ const resultsContext = createContext<ResultContext | null>(null)
 function Ball() {
   const res = useContext(resultsContext);
   const material = new Material("ball_mat");
+  const [canScore, setCanScore] = useState(true);
 
-  const randomX = (Math.random() * 2 - 1) * (1.9038*2)
+  var randomX = (Math.random() * 2 - 1) * 3
   
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
@@ -43,30 +44,38 @@ function Ball() {
     ccdIterations: 20,
     ccdSpeedThreshold: 1e-4,
     material:material,
+    onCollide: (event) => {
+      const {body} = event
+      if (body.name === "goal_wall" && canScore)
+        setCanScore(false)
+    },
   }));
   
 
   useEffect(() => {
     const reposition = api.position.subscribe(([x, y, z]) => {
-      if (y < -3)
+      if (!canScore)
       {
-        const randomX = (Math.random() * 2 - 1) * (1.9038*2)
+        
+        const randomX = (Math.random() * 2 - 1) * 3
         api.position.set(0, 0.2, 0)
-        api.velocity.set(randomX, 0, 7)
+        api.velocity.set(0, 0, 0)
+        setTimeout(() => api.velocity.set(randomX, 0, z < 0 ?-7 :7), 500);
         if (res) {
           const {result, setResult} = res
           if (z > 0)
             setResult([result[0], result[1]+1])
           else
             setResult([result[0]+1, result[1]])
-        }
+        setCanScore(true)
+      }
       }
     })
 
     return () => {
       reposition()
     }
-  }, [api, res])
+  }, [api, res, canScore, setCanScore])
 
   return (
     <>
@@ -87,7 +96,6 @@ function Table() {
     args: [6.1469, 0.0364*2, 8.65640],
     material: material
   }));
-
 
   return (
     <>
@@ -113,7 +121,7 @@ function Paddle({position, mine=false}: Paddlerops){
   const [ref, api] = useBox(() => ({
     type: "Kinematic",
     position: position,
-    args: [1, 0.25, 0.4],
+    args: [1.5, 0.5, 0.5],
     material: material
   }));
 
@@ -152,7 +160,7 @@ function Paddle({position, mine=false}: Paddlerops){
 
   return (
     <mesh ref={ref} position={position}  name="paddle">
-      <boxGeometry args={[1, 0.25, 0.4]} />
+      <boxGeometry args={[1.5, 0.5, 0.5]} />
       <meshStandardMaterial />
     </mesh>
   )
@@ -162,8 +170,7 @@ interface SideWallProps {
   position: any
 }
 function SideWall({position} : SideWallProps) {
-  const material = new Material();
-  material.name = "side_mat"
+  const material = new Material("side_mat");
   const [ref, api] = useBox(() => ({
     position: position,
     args: [0.5, 0.8, 8.65640],
@@ -173,6 +180,26 @@ function SideWall({position} : SideWallProps) {
   return (
     <mesh ref={ref} position={position}  name="side_wall" visible={false}>
       <boxGeometry args={[0.5, 0.8, 8.65640]} />
+      <meshStandardMaterial/>
+    </mesh>
+  )
+}
+
+interface GoalWallProps {
+  position: any
+}
+
+function GoalWall({position} : GoalWallProps) {
+  const material = new Material("goal_mat");
+  const [ref, api] = useBox(() => ({
+    position: position,
+    args: [6.1469, 0.8, 0.5],
+    material: material
+  }));
+
+  return (
+    <mesh ref={ref} position={position}  name="goal_wall">
+      <boxGeometry args={[6.1469, 0.5, 0.5]} />
       <meshStandardMaterial/>
     </mesh>
   )
@@ -199,6 +226,10 @@ function GameTable() {
     friction:0,
     restitution: 1,
   });
+  useContactMaterial("goal_mat", "ball_mat", {
+    friction:0,
+    restitution: 1,
+  });
 
   return (
     <>
@@ -209,6 +240,8 @@ function GameTable() {
       <primitive object={new AxesHelper(5)} />
       <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
       <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
+      <GoalWall position={[0, 0, (8.65640+ 0.5)/2]}/>
+      <GoalWall position={[0, 0, -(8.65640+ 0.4)/2]}/>
     </>
   );
 }
