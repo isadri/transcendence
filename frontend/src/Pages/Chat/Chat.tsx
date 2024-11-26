@@ -7,10 +7,6 @@ import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import axios from "axios";
 import { GetChats } from "./components/ChatList";
 
-// import { Friend, Message } from "../Chat/components/types";
-// import DataFriends from "./components/DataFriends";
-// import DataMessage from "./components/DataMessage";
-
 export interface GetFriends {
 	id: number;
 	username: string;
@@ -20,15 +16,10 @@ export interface GetFriends {
 const Chat = () => {
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
-	// const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
 
 	useEffect(() => {
-		// if (selectedFriend) {
-		// 	setMessages(DataMessage[selectedFriend.name] || []);
-		// }
-
 		const fetchFriend = () => {
 			axios
 				.get("http://0.0.0.0:8000/api/friends/friends", {
@@ -43,53 +34,12 @@ const Chat = () => {
 				});
 		};
 
-		// const fetchMessages = (chatId: number) => {
-		// 	axios.get(`http://0.0.0.0:8000/api/chats/chats/?id=${chatId}`, {
-		// 		withCredentials: true, // Include cookies in the request
-		// 	})
-		// 	.then(response => {
-		// 		setMessages(response.data.messages)
-		// 		// console.log(response.data.friends)
-		// 	})
-		// 	.catch(err => {
-		// 			console.log(err.data); // Set the response data to state
-		// 	  });
-		// }
-
 		fetchFriend();
-		// if (selectedFriend) {
-		// 	const chatId = selectedFriend.id
-		// 	fetchMessages(chatId)
-		// }
 	}, [selectedFriend]);
 
 	const handleSelectFriend = (friend: GetChats) => {
 		setSelectedFriend(friend);
 	};
-
-	// const handleSendMessage = (newMessage: string) => {
-	// 	if (selectedFriend) {
-	// 		const chatId = selectedFriend.id
-	// 		axios.post("http://0.0.0.0:8000/api/chats/messages/", {chat: chatId, content: newMessage}, {
-	// 			withCredentials: true, // Include cookies in the request
-	// 		})
-	// 		.then(response => {
-	// 			setMessages((prevMessages) => [...prevMessages, response.data]);
-	// 			// console.log(response.data.friends)
-	// 		})
-	// 		.catch(err => {
-	// 				console.log(err.data); // Set the response data to state
-	// 		});
-	// 		// const updatedMessage: Message = {
-	// 		// 	senderId: 2,
-	// 		// 	receiverId: 1,
-	// 		// 	profile: "/images/wallpaper.jpeg",
-	// 		// 	message: newMessage.message,
-	// 		// 	time: moment().format("LT"),
-	// 		// };
-	// 		// setMessages((prevMessages) => [...prevMessages, updatedMessage]);
-	// 	}
-	// };
 
 	return (
 		<div className="Chat">
@@ -112,45 +62,39 @@ const Chat = () => {
 					/>
 				</div>
 			)}
-			{/* {isSmallDevice ? (
+			{isSmallDevice ? (
 				<div className={`Messages ${selectedFriend ? "" : "inactive"}`}>
 					{selectedFriend ? (
 						<ChatBody
 							selectedFriend={selectedFriend}
-							messages={messages}
-							onSendMessage={handleSendMessage}
 							setSelectedFriend={setSelectedFriend}
-							setMessages={setMessages}
 						/>
 					) : (
 						<div></div>
 					)}
 				</div>
-			) : ( */}
-			<div className="Messages">
-				{selectedFriend ? (
-					<ChatBody
-						selectedFriend={selectedFriend}
-						// messages={messages}
-						// onSendMessage={handleSendMessage}
-						setSelectedFriend={setSelectedFriend}
-						// setMessages={setMessages}
-					/>
-				) : (
-					<div className="backgroundOfChat">
-						<img
-							src="./ChatImages/backgroundOfChat.svg"
-							alt="backgroundOfChat"
+			) : (
+				<div className="Messages">
+					{selectedFriend ? (
+						<ChatBody
+							selectedFriend={selectedFriend}
+							setSelectedFriend={setSelectedFriend}
 						/>
-						<span>Welcome to Chat!</span>
-						<p>
-							Please select a friend from your contacts list to start a
-							conversation. We're here when you're ready to chat!
-						</p>
-					</div>
-				)}
-			</div>
-			{/* )} */}
+					) : (
+						<div className="backgroundOfChat">
+							<img
+								src="./ChatImages/backgroundOfChat.svg"
+								alt="backgroundOfChat"
+							/>
+							<span>Welcome to Chat!</span>
+							<p>
+								Please select a friend from your contacts list to start a
+								conversation. We're here when you're ready to chat!
+							</p>
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 };

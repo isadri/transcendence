@@ -7,30 +7,18 @@ import moment from "moment";
 import { GetFriends } from "../Chat";
 import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
-// import { Friend, Message } from "./types";
-
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
-	// onSendMessage: (message: string) => void;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
 }
 
-const ChatBody = ({
-	selectedFriend,
-	// onSendMessage,
-	setSelectedFriend,
-}: ChatBodyProps) => {
-	// const [text, setText] = useState("");
+const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
 	const [block, setBlock] = useState(false);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
-		// if (selectedFriend) {
-		// 	setMessages(DataMessage[selectedFriend.name] || []);
-		// }
-
 		const fetchMessages = (chatId: number) => {
 			axios
 				.get(`http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`, {
@@ -62,9 +50,6 @@ const ChatBody = ({
 			/>
 			<ChatCenter messages={messages} selectedFriend={selectedFriend} />
 			<ChatBottom
-				// text={text}
-				// setText={setText}
-				// handleSend={handleSend}
 				selectedFriend={selectedFriend}
 				setMessages={setMessages}
 				ref={ref}

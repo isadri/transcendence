@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import ChatList from "./ChatList";
 import "./List.css";
-// import { Friend } from "./types";
 import { GetFriends } from "../Chat";
 import { GetChats } from "./ChatList";
-// import axios from "axios";
 
 interface ListProps {
 	friends: GetFriends[];

@@ -1,7 +1,6 @@
-// import { Friend, Message } from "./types";
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
-import { ChatMessage } from "./ChatBody";
+import { ChatMessage } from "./ChatList";
 import { GetChats } from "./ChatList";
 
 interface ChatTopProps {

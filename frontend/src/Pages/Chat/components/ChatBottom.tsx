@@ -5,9 +5,6 @@ import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
 
 interface ChatBottomProps {
-	// text: string;
-	// setText: React.Dispatch<React.SetStateAction<string>>;
-	// handleSend: () => void;
 	selectedFriend: GetChats;
 	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	block: boolean;
@@ -39,14 +36,6 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			};
 		}, []);
 
-		// const handleSend = () => {
-		// 	if (text.trim()) {
-		// 		// setMessages(text);
-		// 		setMessages((prevMessages) => [...prevMessages, content: text])
-		// 		setText("");
-		// 	}
-		// };
-
 		const handleSendMessage = (newMessage: string) => {
 			if (selectedFriend && newMessage.trim()) {
 				const chatId = selectedFriend.id;
@@ -55,26 +44,20 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 						"http://0.0.0.0:8000/api/chat/messages/",
 						{ chat: chatId, content: newMessage },
 						{
-							withCredentials: true, // Include cookies in the request
+							withCredentials: true,
 						}
 					)
 					.then((response) => {
 						console.log(newMessage);
-						setMessages((prevMessages) => [...(prevMessages || []), response.data]);
-						// setMessages((prevMessages) => [...prevMessages, response.data]);
+						setMessages((prevMessages) => [
+							...(prevMessages || []),
+							response.data,
+						]);
 						setText("");
 					})
 					.catch((err) => {
-						console.log(err.data); // Set the response data to state
+						console.log(err.data);
 					});
-				// const updatedMessage: Message = {
-				// 	senderId: 2,
-				// 	receiverId: 1,
-				// 	profile: "/images/wallpaper.jpeg",
-				// 	message: newMessage.message,
-				// 	time: moment().format("LT"),
-				// };
-				// setMessages((prevMessages) => [...prevMessages, updatedMessage]);
 			}
 		};
 
@@ -88,7 +71,6 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 			if (event.key === "Enter") {
 				event.preventDefault();
-				// handleSend();
 				handleSendMessage(text);
 				setText("");
 				setOpen(false);
@@ -120,7 +102,6 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 								ref={ref}
 							/>
 						</div>
-						{/* <button className="subButton" onClick={handleSend}> */}
 						<button
 							className="subButton"
 							onClick={() => handleSendMessage(text)}

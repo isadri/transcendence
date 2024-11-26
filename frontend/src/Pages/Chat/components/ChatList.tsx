@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
-// import { Friend } from "./types";
 
 export interface ChatMessage {
 	id: number;
@@ -61,25 +60,25 @@ const ChatList = ({
 		fetchChats();
 	}, []);
 
-	const handleAddConversationRequests = (id: number) => {
-		axios
-			.post(
+	const handleAddConversationRequests = async (id: number) => {
+		const existingChat = chats.find((chat) => chat.user2.id === id);
+
+		if (existingChat) {
+			onSelectFriend(existingChat);
+			return;
+		}
+		try {
+			const response = await axios.post(
 				"http://0.0.0.0:8000/api/chat/chats/",
 				{ user2: id },
-				{
-					withCredentials: true,
-				}
-			)
-			.then((response) => {
-				console.log(response.data);
-				// need to add this to the conversation
-				// setAllUsers((prev) =>
-				// 	prev.filter((request) => request.id !== id)
-				// );
-			})
-			.catch((error) => {
-				console.error("Error accepting friend request:", error);
-			});
+				{ withCredentials: true }
+			);
+
+			setChats((prevChats) => [...prevChats, response.data]);
+			console.log(response.data);
+		} catch (error) {
+			console.error("Error creating conversation:", error);
+		}
 	};
 
 	return (
@@ -92,8 +91,14 @@ const ChatList = ({
 							}`}
 							key={friend.id}
 							onClick={() => {
-								handleAddConversationRequests(friend.id);
-								onSelectFriend(friend);
+								handleAddConversationRequests(friend.id).then(() => {
+									const newChat = chats.find(
+										(chat) => chat.user2.id === friend.id
+									);
+									if (newChat) {
+										onSelectFriend(newChat);
+									}
+								});
 								setSearchFriend("");
 								setFocusOnSearch(false);
 								setListAllFriends(false);

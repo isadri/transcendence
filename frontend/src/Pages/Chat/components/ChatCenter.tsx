@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
-// import { GetFriends } from "../Chat";
 import { GetChats, ChatMessage } from "./ChatList";
 
 interface ChatCenterProps {
@@ -20,10 +19,7 @@ const ChatCenter = ({ selectedFriend, messages }: ChatCenterProps) => {
 			{selectedFriend.messages.map((value, index) => {
 				const isOwnMessage = value.sender === selectedFriend.user1;
 				return (
-					<div
-						key={index}
-						className={isOwnMessage ? "message-own" : "message"}
-					>
+					<div key={index} className={isOwnMessage ? "message-own" : "message"}>
 						{!isOwnMessage && (
 							<img
 								src={selectedFriend.user2.avatar}
