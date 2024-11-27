@@ -1,1 +1,5 @@
+server.host: 0.0.0.0
 elasticsearch.username: "kibana_system"
+elasticsearch.password: ${KIBANA_PASSWORD}
+elasticsearch.ssl.certificateAuthorities: config/certs/ca/ca.crt
+elasticsearch.hosts: https://elasticsearch:9200

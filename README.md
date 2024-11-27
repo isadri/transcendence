@@ -36,9 +36,15 @@
 
 ## Kibana
 
-* `ELASTICSEARCH_HOSTS: '[https://elasticsearch:9200]'`: the urls of the Elasticsearch instances to use for all the queries.
-* `ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.zip`: path to the CA certificate, which make up a trusted certificate chain for Elasticsearch. This chain is used by Kibana to establish trust when making outbound SSL/TLS connections to Elasticsearch.
-* `XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY`: Kibana stores entities such as dashboards, visualizations, alerts, actions, and advanced settings as saved objects. `xpack.encryptedSavedObjects.encryptionKey` is used to encrypt sensitive properties of saved objects before they're stored in Elasticsearch, if it's not set, objects will be saved in plain text.
+* `elasticsearch.username` and `elasticsearch.password`: set the username and the password that the Kibana server will use.
 
-> [!WARNING]
-> The default mechanism for Reporting privileges will work differently in future versions, which will affect the behavior of this cluster. Set "xpack.reporting.roles.enabled" to "false" to adopt the future behavior before upgrading.
+* `elasticsearch.ssl.certificateAuthorities: config/certs/ca/ca.crt`: path to the CA certificate, which makes up a trusted certificate chain for Elasticsearch. This chain is used by Kibana to establish trust when making outbound TLS connections to Elasticsearch.
+
+* `elasticsearch.hosts: https://elasticsearch:9200`: the url of the Elasticsearch instance to use for all the queries. using `https` protocol enable TLS for outbound connections to Elasticsearch.
+
+Generating a random key for xpack.reporting.encryptionKey. To prevent sessions from being invalidated on restart, please set xpack.reporting.encryptionKey in the kibana.yml or use the bin/kibana-encryption-keys command.
+
+
+ APIs are disabled because the Encrypted Saved Objects plugin is missing encryption key. Please set xpack.encryptedSavedObjects.encryptionKey in the kibana.yml or use the bin/kibana-encryption-keys command.
+
+Session cookies will be transmitted over insecure connections. This is not recommended.
