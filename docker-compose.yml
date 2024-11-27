@@ -24,20 +24,20 @@ services:
       - postgres
     restart: on-failure
 
-  front-end:
-   container_name: frontend
-   image: frontend
-   build: ./frontend
-   ports:
-     - 5000:5000
-   volumes:
-     - ./frontend:/code/
-     - modules_files:/code/node_modules
-   networks:
-     - app-network
-   depends_on:
-     - back-end
-   restart: on-failure
+  #front-end:
+  #  container_name: frontend
+  #  image: frontend
+  #  build: ./frontend
+  #  ports:
+  #    - 5000:5000
+  #  volumes:
+  #    - ./frontend:/code/
+  #    - modules_files:/code/node_modules
+  #  networks:
+  #    - app-network
+  #  depends_on:
+  #    - back-end
+  #  restart: on-failure
 
   postgres:
     container_name: postgres

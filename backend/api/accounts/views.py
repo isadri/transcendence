@@ -346,6 +346,7 @@ class RegisterViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
+        request.data['username'] = request.data['username'].lower()
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
