@@ -10,7 +10,7 @@ build:
 down:
 	@docker-compose down
 
-re: down up-with-build
+re: down build
 
 exec:
 	@docker-compose exec -it back-end $(CMD)

@@ -42,8 +42,12 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
+        serializer =  UserSerializer(request.user)
+        data = serializer.data
+        data.pop("password", None)
+
         if request.user.is_authenticated:
-            return Response(status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 

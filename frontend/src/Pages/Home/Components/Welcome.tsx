@@ -1,11 +1,18 @@
+import { useContext } from 'react';
+import { loginContext } from '../../../App';
 import WlcmImg from '../images/girl.svg'
 
 
 function Welcome() {
-  return (
-    <>
+  const userContext = useContext(loginContext)
+  if (userContext)
+  {
+    const  {user} = userContext
+    console.log(user);
+    return (
+      <>
         <div className='Home-content'>
-          <h3>Welcome back, User1!</h3>
+          <h3>Welcome back, {user.username}!</h3>
           <p>
           Feeling sharp today? We've got a fresh batch of challenges waiting for you.
           You can smash your way through some AI opponents in Practice Mode,
@@ -20,6 +27,7 @@ function Welcome() {
         </div> 
     </>
   )
+}
 }
 
 export default Welcome

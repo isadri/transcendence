@@ -9,8 +9,16 @@ import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
 import './styles/SearchAndIcons.css'
+import { useContext } from 'react'
+import { loginContext } from '../../App'
 
 function Home() {
+  const userContext = useContext(loginContext)
+  if (userContext)
+  {
+    const  {user} = userContext
+    console.log(user);
+  }
   return (
     <div className='Home-homePage'>
       <div className='Home-searchAndIcons'>

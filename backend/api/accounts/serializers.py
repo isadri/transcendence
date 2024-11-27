@@ -10,12 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
     Raises:
         serializers.ValidationError: If any of user fields are not valid.
     """
-    avatar = serializers.ImageField(default='default.jpg')
+    avatar = serializers.ImageField(default='../../media/default.jpeg')
 
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'password', 'avatar'
+            'id', 'username', 'email', 'password', 'avatar'
             ]
 
     def create(self, validated_data: dict[str, str]) -> User:

@@ -1,12 +1,20 @@
 import ProfileImg from "../images/profile.svg";
 import Cbadge from "../images/CourentBadge.svg";
+import { useContext } from "react";
+import { loginContext } from "../../../App";
 
 function Profile() {
+  const userContext = useContext(loginContext)
+  if (userContext)
+  {
+    const  {user} = userContext
+    console.log(user);
+  }
   return (
     <div className="Home-profile">
       <div className="Home-ProfImg">
         <a href="profile">
-          <img src={ProfileImg} alt="" />
+          <img src={"http://localhost:8000" + userContext?.user.avatar} alt="" />
         </a>
         <a href="profile">
           <span>user1gfhghf</span>

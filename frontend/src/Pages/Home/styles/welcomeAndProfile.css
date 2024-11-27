@@ -97,17 +97,18 @@
 }
 
 .Home-ProfImg{
-    display: flex;
+     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: start;
-    margin-left: 5px;
+    margin-left: 14px;
+    width: 50%;
 }
 
 .Home-ProfImg img{
+    border-radius: 50%;
     position: relative;
     top: 8px;
-    width: 80%;
+    width: 90%;
 }
 
 .Home-ProfImg a span{
@@ -117,6 +118,7 @@
     font-family: var(--mono);
     color: white;
     font-size: 14px;
+    margin-left: 8%;
 }
 
 .Home-user{

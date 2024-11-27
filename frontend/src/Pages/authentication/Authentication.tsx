@@ -1,15 +1,11 @@
 import './Authenthication.css'
 import intra from './Images/intra.svg'
 import Google from './Images/Google.svg'
-import { Context, useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
 import axios from 'axios'
 import {loginContext} from './../../App'
-
-
-// import bg1 from "./Images/bg1.png"
-
 
 
 function Authentication() {
@@ -19,7 +15,8 @@ function Authentication() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [val, setVal] = useState(true);
-
+  const [Error, setError] = useState(false);
+  const [errorList, setErrorList] = useState<string[][]>([]);
   const data_login = {
       username,
       password
@@ -38,29 +35,38 @@ function Authentication() {
     const endpont = val ? url_login : url_reg
     const data = val ? data_login : data_reg
     axios.post(endpont, data, {withCredentials: true})
-          .then((response) => {
+          .then(() => {
               !val ? setVal(true) : (navigate('/'), authContext?.setIsLogged(true));
-              
               setUsername('')
               setEmail('')
               setPassword('')
           })
           .catch((error) => {
-            console.log("error !!")
-          });
+            setError(true)
+            if (error.response){
+              const list = []
+              const errors = error.response.data;
+              for (const field in errors) {
+                  if (errors[field].length > 0) {
+                      list.push([field, errors[field][0]])
+                  }
+              }
+              setErrorList(list)
+             }
+             else if (error.request){
+              //to do
+             }
+        });
   }
-  // const handelSubmit = (e: any) => {
-  //   e.preventDefault();
-  //   const endpoint = islogin ? url_login : url_reg
-  //   const data = islogin ? data_login : data_reg
-  //   axios.post(endpoint, data)
-  //         .then((response) => {
-  //           console.log(`${islogin ? 'Login' : 'Register'} successful:`, response.data);
-  //         })
-  //           .catch((error) => {
-  //               console.log("error !!")
-  //         });
-  // }
+  const checkError = (str: string) => {
+    for (let i = 0; i < errorList.length; i++) {
+      console.log("Checking:", errorList[i][0], "against:", str);
+      if (errorList[i][0] === str)
+        console.log(errorList[i])
+        return errorList[i];
+    }
+    return "empty";
+  };
 
   const win_width = useMediaQuery("only screen and (max-width : 720px)");
   const SingUpStyle = !val ?
@@ -87,6 +93,10 @@ function Authentication() {
             </div>
           <h1>Sign In</h1>
           <form onSubmit={handelSubmit}>
+            {
+              Error && checkError("error") && checkError("error")[0] === "error" &&
+              <p className='errorSet'>Invalid username or password</p>
+            }
             <input type="text" name="username" id="UserName" placeholder='UserName or Email'
              value={username} onChange={(e) => setUsername(e.target.value)} required/>
             <input type="text" name="password" id="Pass" placeholder='Password'
@@ -122,12 +132,24 @@ function Authentication() {
           <h1>Sign Up</h1>
           <form onSubmit={handelSubmit}>
             <input type="text" name="username" id="UserName" placeholder='UserName'
-               value={username} onChange={(e) => setUsername(e.target.value)} required/>
+              value={username} onChange={(e) => setUsername(e.target.value)} required/>
+              {
+                Error && checkError("username") && checkError("username")[0] === "username" &&
+                <p className='errorSet'>{checkError("username")[1]}</p>
+              }
             <input type="text" name="Email" id="Email"  placeholder="Email"
               value={email} onChange={(e) => setEmail(e.target.value)} required/>
+              {
+                Error && checkError("email") && checkError("email")[0] === "email" &&
+                <p className='errorSet'>{checkError("email")[1]}</p>
+              }
             <input type="text" name="password" id="Pass" placeholder='Password'
             value={password} onChange={(e) => setPassword(e.target.value)} required/>
-            <input type="text" placeholder="Confirm Password"/>
+            {
+              Error && checkError("password") && checkError("password")[0] === "password" &&
+              <p className='errorSet'>{checkError("password")[1]}</p>
+            }
+            <input type="text" placeholder="Confirm Password" required/>
             <button type='submit'>Sign Up</button>
             <span className='RespSign'>Already have an account? <Link to="" onClick={() => {setVal(true)}}>Sign In</Link></span>
           </form>
