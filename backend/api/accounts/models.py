@@ -9,7 +9,7 @@ from django.db import models
 from django.utils import timezone, tree
 from django.utils.translation import gettext_lazy as _
 
-from .validators import lowercase_username_validator
+from .validators import username_validator
 # from ..friends.models import Friend
 
 
@@ -72,7 +72,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     """
 
     username_validators = [
-        ASCIIUsernameValidator(), lowercase_username_validator
+        ASCIIUsernameValidator(), username_validator
     ]
 
     username = models.CharField(
