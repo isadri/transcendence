@@ -7,7 +7,7 @@ def username_validator(username: str) -> str:
     """
     Raise ValidationError if username contains invalid character.
     """
-    if not username[0].islower() and username[0] != '_':
+    if not username[0] in string.ascii_lowercase and username[0] != '_':
         raise ValidationError('username can begin with a lowercase '
                               'character or _ only.')
     if len(username) < 3 or len(username) > 15:
