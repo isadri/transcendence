@@ -19,18 +19,18 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
-		const fetchMessages = (chatId: number) => {
-			axios
-				.get(`http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`, {
-					withCredentials: true, // Include cookies in the request
-				})
-				.then((response) => {
-					setMessages(response.data.messages);
-					// console.log(response.data.friends)
-				})
-				.catch((err) => {
-					console.log(err.data); // Set the response data to state
-				});
+		const fetchMessages = async (chatId: number) => {
+			try {
+				const response = await axios.get(
+					`http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
+					{
+						withCredentials: true,
+					}
+				);
+				setMessages(response.data.messages);
+			} catch (err) {
+				console.log("Error in fetching chats", err);
+			}
 		};
 
 		if (selectedFriend) {

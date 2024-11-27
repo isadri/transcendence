@@ -43,18 +43,18 @@ const ChatList = ({
 	const [chats, setChats] = useState<GetChats[]>([]);
 
 	useEffect(() => {
-		const fetchChats = () => {
-			axios
-				.get("http://0.0.0.0:8000/api/chat/chats/", {
-					withCredentials: true, // Include cookies in the request
-				})
-				.then((response) => {
-					setChats(response.data);
-					// console.log(response.data.friends)
-				})
-				.catch((err) => {
-					console.log(err.data); // Set the response data to state
-				});
+		const fetchChats = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/chat/chats/",
+					{
+						withCredentials: true, // Include cookies in the request
+					}
+				);
+				setChats(response.data);
+			} catch (err) {
+				console.log(err); // Set the response data to state
+			}
 		};
 
 		fetchChats();

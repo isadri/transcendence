@@ -36,28 +36,25 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			};
 		}, []);
 
-		const handleSendMessage = (newMessage: string) => {
+		const handleSendMessage = async (newMessage: string) => {
 			if (selectedFriend && newMessage.trim()) {
 				const chatId = selectedFriend.id;
-				axios
-					.post(
+				try {
+					const response = await axios.post(
 						"http://0.0.0.0:8000/api/chat/messages/",
 						{ chat: chatId, content: newMessage },
 						{
 							withCredentials: true,
 						}
-					)
-					.then((response) => {
-						console.log(newMessage);
-						setMessages((prevMessages) => [
-							...(prevMessages || []),
-							response.data,
-						]);
-						setText("");
-					})
-					.catch((err) => {
-						console.log(err.data);
-					});
+					);
+					setMessages((prevMessages) => [
+						...(prevMessages || []),
+						response.data,
+					]);
+					setText("");
+				} catch (err) {
+					console.error("Error sending message:", err);
+				}
 			}
 		};
 

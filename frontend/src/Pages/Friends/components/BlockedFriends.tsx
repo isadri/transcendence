@@ -14,23 +14,24 @@ const BlockedFriends = () => {
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
 
 	useEffect(() => {
-		const fetchBlockedFriend = () => {
-			axios
-				.get("http://0.0.0.0:8000/api/friends/blocked", {
-					withCredentials: true, // Include cookies in the request
-				})
-				.then((response) => {
-					const senderData = response.data.map((request: any) => ({
-						id: request.sender.id,
-						username: request.sender.username,
-						avatar: request.sender.avatar,
-					}));
+		const fetchBlockedFriend = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/friends/blocked",
+					{
+						withCredentials: true, // Include cookies in the request
+					}
+				);
+				const senderData = response.data.map((request: any) => ({
+					id: request.sender.id,
+					username: request.sender.username,
+					avatar: request.sender.avatar,
+				}));
 
-					setBlockedFriend(senderData);
-				})
-				.catch((err) => {
-					console.error("Error fetching data:", err);
-				});
+				setBlockedFriend(senderData);
+			} catch (err) {
+				console.error("Error fetching data:", err);
+			}
 		};
 
 		fetchBlockedFriend();
@@ -43,39 +44,35 @@ const BlockedFriends = () => {
 		// };
 	}, []);
 
-	const handleUnblockRequests = (id: number) => {
-		axios
-			.post(`http://0.0.0.0:8000/api/friends/unblock/${id}`, null, {
+	const handleUnblockRequests = async (id: number) => {
+		try {
+			await axios.post(`http://0.0.0.0:8000/api/friends/unblock/${id}`, null, {
 				withCredentials: true,
-			})
-			.then(() => {
-				setBlockedFriend((prev) =>
-					prev.filter((request) => request.id !== id)
-				);
-			})
-			.catch((error) => {
-				console.error("Error accepting friend request:", error);
 			});
+			setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}
 	};
 
 	return (
 		<div>
-				{blockedfriend.map((friend) => {
-					return (
-						<div className="friendProfile BlockedFriend" key={friend.id}>
-							<div className="imageNameFriend">
-								<img src={friend.avatar} alt="" className="friendImage" />
-								<span>{friend.username}</span>
-							</div>
-							<button
-								className="unblock"
-								onClick={() => handleUnblockRequests(friend.id)}
-							>
-								Unblock
-							</button>
+			{blockedfriend.map((friend) => {
+				return (
+					<div className="friendProfile BlockedFriend" key={friend.id}>
+						<div className="imageNameFriend">
+							<img src={friend.avatar} alt="" className="friendImage" />
+							<span>{friend.username}</span>
 						</div>
-					);
-				})}
+						<button
+							className="unblock"
+							onClick={() => handleUnblockRequests(friend.id)}
+						>
+							Unblock
+						</button>
+					</div>
+				);
+			})}
 		</div>
 	);
 };

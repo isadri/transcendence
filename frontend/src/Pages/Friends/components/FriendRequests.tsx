@@ -12,23 +12,24 @@ const FriendRequests = () => {
 	const [friendRequests, setFriendRequests] = useState<FriendRequests[]>([]);
 
 	useEffect(() => {
-		const fetchFriendRequests = () => {
-			axios
-				.get("http://0.0.0.0:8000/api/friends/pending", {
-					withCredentials: true, // Include cookies in the request
-				})
-				.then((response) => {
-					const senderData = response.data.map((request: any) => ({
-						id: request.sender.id,
-						username: request.sender.username,
-						avatar: request.sender.avatar,
-					}));
+		const fetchFriendRequests = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/friends/pending",
+					{
+						withCredentials: true, // Include cookies in the request
+					}
+				);
+				const senderData = response.data.map((request: any) => ({
+					id: request.sender.id,
+					username: request.sender.username,
+					avatar: request.sender.avatar,
+				}));
 
-					setFriendRequests(senderData);
-				})
-				.catch((err) => {
-					console.error("Error fetching data:", err);
-				});
+				setFriendRequests(senderData);
+			} catch (err) {
+				console.error("Error fetching data:", err);
+			}
 		};
 
 		fetchFriendRequests();
@@ -41,34 +42,26 @@ const FriendRequests = () => {
 		// };
 	}, []);
 
-	const handleAcceptRequest = (id: number) => {
-		axios
-			.post(`http://0.0.0.0:8000/api/friends/accept/${id}`, null, {
+	const handleAcceptRequest = async (id: number) => {
+		try {
+			await axios.post(`http://0.0.0.0:8000/api/friends/accept/${id}`, null, {
 				withCredentials: true,
-			})
-			.then(() => {
-				setFriendRequests((prev) =>
-					prev.filter((request) => request.id !== id)
-				);
-			})
-			.catch((error) => {
-				console.error("Error accepting friend request:", error);
 			});
+			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}
 	};
 
-	const handleDeleteRequests = (id: number) => {
-		axios
-			.delete(`http://0.0.0.0:8000/api/friends/decline/${id}`, {
+	const handleDeleteRequests = async (id: number) => {
+		try {
+			await axios.delete(`http://0.0.0.0:8000/api/friends/decline/${id}`, {
 				withCredentials: true,
-			})
-			.then(() => {
-				setFriendRequests((prev) =>
-					prev.filter((request) => request.id !== id)
-				);
-			})
-			.catch((error) => {
-				console.error("Error decline friend request:", error);
 			});
+			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error decline friend request:", error);
+		}
 	};
 	return (
 		<div>

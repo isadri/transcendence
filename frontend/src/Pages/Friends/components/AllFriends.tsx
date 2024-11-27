@@ -14,7 +14,7 @@ const AllFriends = () => {
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
-	const [getFriends, setGetFriends] = useState<GetFriends[]>([])
+	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -31,20 +31,21 @@ const AllFriends = () => {
 
 		document.addEventListener("mousedown", handleClickOutside);
 
-		const fetchFriend = () => {
-			axios.get("http://0.0.0.0:8000/api/friends/friends", {
-				withCredentials: true, // Include cookies in the request
-			})
-			.then(response => {
-				// console.log(response.data); // Set the response data to state
-				setGetFriends(response.data.friends)
-			})
-			.catch(err => {
-					console.log(err.data); // Set the response data to state
-			  });
-		}
+		const fetchFriend = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/friends/friends",
+					{
+						withCredentials: true, // Include cookies in the request
+					}
+				);
+				setGetFriends(response.data.friends);
+			} catch (err) {
+				console.log("Error to fetch friends.",err); // Set the response data to state
+			}
+		};
 
-		fetchFriend()
+		fetchFriend();
 		// const intervalId = setInterval(fetchFriend, 5000);
 
 		return () => {

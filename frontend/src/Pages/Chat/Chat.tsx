@@ -20,18 +20,18 @@ const Chat = () => {
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
 
 	useEffect(() => {
-		const fetchFriend = () => {
-			axios
-				.get("http://0.0.0.0:8000/api/friends/friends", {
-					withCredentials: true, // Include cookies in the request
-				})
-				.then((response) => {
-					setGetFriends(response.data.friends);
-					// console.log(response.data.friends)
-				})
-				.catch((err) => {
-					console.log(err.data); // Set the response data to state
-				});
+		const fetchFriend = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/friends/friends",
+					{
+						withCredentials: true,
+					}
+				);
+				setGetFriends(response.data?.friends || []);
+			} catch (err) {
+				console.error("Error fetching friends:", err);
+			}
 		};
 
 		fetchFriend();

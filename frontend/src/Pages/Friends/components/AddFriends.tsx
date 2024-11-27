@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./AddFriends.css"
+import "./AddFriends.css";
 import axios from "axios";
 
 interface AllUsers {
@@ -13,7 +13,7 @@ const AddFriends = () => {
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
-	const [allUsers, setAllUsers] = useState<AllUsers[]>([])
+	const [allUsers, setAllUsers] = useState<AllUsers[]>([]);
 	const [results, setResults] = useState<AllUsers[]>([]);
 
 	useEffect(() => {
@@ -29,20 +29,21 @@ const AddFriends = () => {
 			}
 		};
 
-		const fetchUsers = () => {
-			axios.get("http://0.0.0.0:8000/api/friends/users", {
-				withCredentials: true, // Include cookies in the request
-			})
-			.then(response => {
-				// console.log(response.data); // Set the response data to state
-				setAllUsers(response.data)
-			})
-			.catch(err => {
-					console.log(err.data); // Set the response data to state
-			  });
-		}
+		const fetchUsers = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/friends/users",
+					{
+						withCredentials: true,
+					}
+				);
+				setAllUsers(response.data);
+			} catch (err) {
+				console.log("Error fetching users:", err);
+			}
+		};
 
-		fetchUsers()
+		fetchUsers();
 		// const intervalId = setInterval(fetchUsers, 5000);
 
 		document.addEventListener("mousedown", handleClickOutside);
@@ -68,19 +69,19 @@ const AddFriends = () => {
 		setSearchFriend("");
 	};
 
-	const handleSendRequests = (id: number) => {
-		axios
-			.post("http://0.0.0.0:8000/api/friends/send/", {receiver: id}, {
-				withCredentials: true,
-			})
-			.then(() => {
-				setAllUsers((prev) =>
-					prev.filter((request) => request.id !== id)
-				);
-			})
-			.catch((error) => {
-				console.error("Error accepting friend request:", error);
-			});
+	const handleSendRequests = async (id: number) => {
+		try {
+			await axios.post(
+				"http://0.0.0.0:8000/api/friends/send/",
+				{ receiver: id },
+				{
+					withCredentials: true,
+				}
+			);
+			setAllUsers((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}
 	};
 
 	const friendsList = searchFriend ? results : allUsers;
@@ -115,9 +116,12 @@ const AddFriends = () => {
 								<img src={friend.avatar} alt="" className="friendImage" />
 								<span>{friend.username}</span>
 							</div>
-							<button className="addFriend"
-									onClick={() => handleSendRequests(friend.id)}
-							>Add Friend</button>
+							<button
+								className="addFriend"
+								onClick={() => handleSendRequests(friend.id)}
+							>
+								Add Friend
+							</button>
 						</div>
 					);
 				})}
