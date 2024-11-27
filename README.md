@@ -42,9 +42,48 @@
 
 * `elasticsearch.hosts: https://elasticsearch:9200`: the url of the Elasticsearch instance to use for all the queries. using `https` protocol enable TLS for outbound connections to Elasticsearch.
 
+---
+
+* `xpack.reporting.encryptionKey`: encryption key that Kibana uses to protect sensitive infomation, used here because of the following warning at Kiaban startup.
+
+```bash
 Generating a random key for xpack.reporting.encryptionKey. To prevent sessions from being invalidated on restart, please set xpack.reporting.encryptionKey in the kibana.yml or use the bin/kibana-encryption-keys command.
+```
 
+---
 
- APIs are disabled because the Encrypted Saved Objects plugin is missing encryption key. Please set xpack.encryptedSavedObjects.encryptionKey in the kibana.yml or use the bin/kibana-encryption-keys command.
+* `xpack.encryptedSavedObjects.encryptionKey`: Kibana stores entities such as dashboards, visualizations, alerts, actions, and advanced settings as saved objects, which are kept in a dedicated, internal Elasticsearch index. Encryption sensitive information means that a malicious party with access to the Kibana internal indices won't be able to extract that information without also knowing the encryption key.
 
+```bash
+APIs are disabled because the Encrypted Saved Objects plugin is missing encryption key. Please set xpack.encryptedSavedObjects.encryptionKey in the kibana.yml or use the bin/kibana-encryption-keys command.
+```
+
+---
+
+* `xpack.security.secureCookies`: set the `secure` attribute so that cookies will be transmitted only over HTTPS.
+
+```bash
 Session cookies will be transmitted over insecure connections. This is not recommended.
+```
+
+---
+
+* `xpack.security.encryptionKey`: used to encrypt session information.
+
+```bash
+Generating a random key for xpack.security.encryptionKey. To prevent sessions from being invalidated on restart, please set xpack.security.encryptionKey in the kibana.yml or use the bin/kibana-encryption-keys command.
+```
+
+---
+
+* `server.ssl.enabled: true`: enable TLS for inbound connections to Kibana. A certificate and its corresponding private key must be provided as the next setting does.
+
+* `server.ssl.certificate: config/certs/kibana/kibana.yml` and `server.ssl.key: config/certs/kibana/kibana.key`:  paths to the server certificate and its corresponding private key. These are used by Kibana to establish trust when receiving inbound TLS connections from users.
+
+---
+
+* `xpack.reporting.roles.enabled: false`: (from documentation)[https://www.elastic.co/guide/en/kibana/current/reporting-settings-kb.html#reporting-advanced-settings].
+
+```bash
+The default mechanism for Reporting privileges will work differently in future versions, which will affect the behavior of this cluster. Set "xpack.reporting.roles.enabled" to "false" to adopt the future behavior before upgrading.
+```
