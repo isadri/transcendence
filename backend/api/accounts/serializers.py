@@ -1,3 +1,4 @@
+import re
 from rest_framework import serializers
 
 from .models import User
@@ -17,6 +18,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'username', 'email', 'password', 'avatar'
             ]
+
+    def validate_password(self, value: str) -> str:
+        """
+        Validate the password.
+        
+        Raises:
+            serializers.ValidationError: If the password is not valid.
+        """
+        if len(value) < 8:
+            raise serializers.ValidationError('password too short. '
+                                              'At least 8 characters.')
+        regexp = re.compile('^([a-z]+|[A-Z]+|[0-9]){8,}')
 
     def create(self, validated_data: dict[str, str]) -> User:
         """
