@@ -1,3 +1,4 @@
+from config.settings import AUTH_PASSWORD_VALIDATORS
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework import generics
@@ -7,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
 from .models import FriendList, FriendRequest
-from .serializers import FriendRequestReceiverSerializer, FriendListSerializer
+from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
 
 User = get_user_model()
 
@@ -198,3 +199,26 @@ class FriendListView(generics.ListAPIView):
             return Response(serializer.data)
         except FriendList.DoesNotExist:
             return Response({"friends": []})
+
+
+class UserListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        friends_ids = FriendRequest.objects.filter(
+            Q(sender=request.user, status__in=['accepted', 'pending', "blocked"]) |
+            Q(receiver=request.user, status__in=['accepted', 'pending', 'blocked'])
+        ).values_list('sender_id', 'receiver_id')
+
+        # Flatten the list of friend IDs
+        friends_ids = {friend_id for pair in friends_ids for friend_id in pair}
+
+        # Add the current user's ID to exclude them as well
+        friends_ids.add(request.user.id)
+
+        # Get all users who are not in the friends list
+        non_friends = User.objects.exclude(id__in=friends_ids)
+
+        # Serialize and return the data
+        serializer = FriendSerializer(non_friends, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

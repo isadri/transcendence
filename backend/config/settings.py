@@ -111,13 +111,19 @@ DATABASES = {
     }
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+
+APPEND_SLASH = False
+
 CORS_ALLOWED_ORIGINS = [
     "http://0.0.0.0:5000",
-    "http://localhost:5000",
     "http://127.0.0.1:5000",
+    "http://127.0.0.1:8000",
 ]
+
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_PRIVATE_NETWORK = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -169,8 +175,8 @@ REST_FRAMEWORK = {
 
 # JWT settings
 SIMPLE_JWT = {
-	'ACCESS_TOKEN_LIFETIME': timedelta(hours=3000),
-	'REFRESH_TOKEN_LIFETIME': timedelta(hours=3000),
+	'ACCESS_TOKEN_LIFETIME': timedelta(hours=2400),
+	'REFRESH_TOKEN_LIFETIME': timedelta(hours=2400),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',

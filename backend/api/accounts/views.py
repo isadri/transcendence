@@ -69,7 +69,7 @@ class LoginViewSet(viewsets.ViewSet):
         does not exist, otherwise, this method authenticates the user and
         login the user.
         """
-        username = request.data.get('username')
+        username = request.data.get('username').lower()
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
@@ -116,7 +116,7 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             A Response object indicating if a user is successfully
             authenticated or the user does not exist.
         """
-        username = request.data['username']
+        username = request.data['username'].lower()
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
@@ -142,7 +142,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
 
     def create(self, request: Request) -> Response:
         otp = request.data['key']
-        username = request.data['username']
+        username = request.data['username'].lower()
         user = User.objects.get(username=username)
         total_difference = timezone.now() - user.otp_created_at
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
@@ -171,7 +171,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         """
         Extract a username from the email of the user and get the user.
         """
-        username = user_info['email'].split('@')[0].replace('.', '_')
+        username = user_info['email'].split('@')[0].replace('.', '_').lower()
         return get_user(username, user_info['email'])
 
     def list(self, request: Request) -> Response:
@@ -238,7 +238,7 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
 
         This function use the create_user function from utils.py.
         """
-        username = user_info['email'].split('@')[0].replace('.', '_')
+        username = user_info['email'].split('@')[0].replace('.', '_').lower()
         return create_user(username, user_info['email'])
 
     def list(self, request: Request) -> Response:
@@ -350,6 +350,7 @@ class RegisterViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
+        request.data['username'] = request.data['username'].lower()
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

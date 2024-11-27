@@ -1,5 +1,5 @@
 .Chat {
-	width: 100%;
+	width: 100vw;
 	height: 96dvh;
 	position: relative;
 	display: flex;
@@ -7,7 +7,7 @@
 	gap: 1%;
 }
 
-.List {
+.Chat-List {
 	width: 30%;
 	height: 96dvh;
 	border-radius: 30px;
@@ -51,7 +51,7 @@
 }
 
 @media (max-width: 478px) {
-	.List {
+	.Chat-List {
 		width: 100%;
 		border-radius: 0;
 	}

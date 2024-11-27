@@ -1,19 +1,21 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { GetChats, ChatMessage } from "./ChatList";
+import axios from "axios";
 
 interface ChatBottomProps {
-	text: string;
-	setText: React.Dispatch<React.SetStateAction<string>>;
-	handleSend: () => void;
+	selectedFriend: GetChats;
+	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	block: boolean;
 }
 
 const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
-	({ text, setText, handleSend, block }, ref) => {
+	({ block, setMessages, selectedFriend }, ref) => {
 		const [open, setOpen] = useState(false);
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
+		const [text, setText] = useState("");
 
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
@@ -34,6 +36,28 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			};
 		}, []);
 
+		const handleSendMessage = async (newMessage: string) => {
+			if (selectedFriend && newMessage.trim()) {
+				const chatId = selectedFriend.id;
+				try {
+					const response = await axios.post(
+						"http://0.0.0.0:8000/api/chat/messages/",
+						{ chat: chatId, content: newMessage },
+						{
+							withCredentials: true,
+						}
+					);
+					setMessages((prevMessages) => [
+						...(prevMessages || []),
+						response.data,
+					]);
+					setText("");
+				} catch (err) {
+					console.error("Error sending message:", err);
+				}
+			}
+		};
+
 		const handleEmojiClick = (emojiObject: EmojiClickData) => {
 			setText((prev) => prev + emojiObject.emoji);
 			if (ref && "current" in ref && ref.current) {
@@ -44,7 +68,8 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 			if (event.key === "Enter") {
 				event.preventDefault();
-				handleSend();
+				handleSendMessage(text);
+				setText("");
 				setOpen(false);
 			}
 		};
@@ -74,7 +99,10 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 								ref={ref}
 							/>
 						</div>
-						<button className="subButton" onClick={handleSend}>
+						<button
+							className="subButton"
+							onClick={() => handleSendMessage(text)}
+						>
 							<i className="fa-solid fa-paper-plane send-icon"></i>
 						</button>
 					</>

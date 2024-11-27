@@ -1,11 +1,12 @@
-import { Friend, Message } from "./types";
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
+import { ChatMessage } from "./ChatList";
+import { GetChats } from "./ChatList";
 
 interface ChatTopProps {
-	selectedFriend: Friend;
-	setSelectedFriend: React.Dispatch<React.SetStateAction<Friend | null>>;
-	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+	selectedFriend: GetChats;
+	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
+	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	setBlock: React.Dispatch<React.SetStateAction<boolean>>;
 	block: boolean;
 }
@@ -57,9 +58,13 @@ const ChatTop = ({
 					className="fa-solid fa-arrow-left arrowClose"
 					onClick={() => setSelectedFriend(null)}
 				></i>
-				<img src={selectedFriend.profile} alt="profile" className="image" />
+				<img
+					src={selectedFriend.user2.avatar}
+					alt="profile"
+					className="image"
+				/>
 				<div className="textInfo">
-					<span>{selectedFriend.name}</span>
+					<span>{selectedFriend.user2.username}</span>
 					<p>Last seen today 00:56</p>
 				</div>
 			</div>

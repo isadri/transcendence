@@ -30,6 +30,8 @@ class FriendList(models.Model):
         """
         # if new_friend in self.friends.all():
         #     raise friends.AlreadyExistsError
+        if new_friend in self.friends.all():
+            raise ValueError("This friend is already in the friend list.")
         self.friends.add(new_friend)
 
     def remove_friend(self, friend):
