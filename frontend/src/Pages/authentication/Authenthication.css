@@ -240,6 +240,13 @@
     font-size: 1.1vh;
     margin-top: 4%;
 }
+.validSet{
+    color : green;
+    font-weight: 100;
+    font-size: 1.1vh;
+    margin-top: 4%;
+}
+
 
 @media only screen and (max-width: 720px){
     .SecondContainer{
