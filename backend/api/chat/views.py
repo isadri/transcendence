@@ -6,8 +6,47 @@ from .models import Chat, Message
 from .serializers import ChatSerializer, MessageSerializer
 from api.accounts.models import User
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 
 from api.friends.models import FriendList
+from django.db.models import Q
+
+class UserChatView(APIView):
+    """
+    API view to fetch the chat details between the authenticated user and the specified user2.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user2_id: int):
+        user1 = request.user  # The authenticated user
+
+        # Validate user2_id
+        if user1.id == user2_id:
+            return Response({'error': 'You cannot start a chat with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user2 = User.objects.get(id=user2_id)
+        except User.DoesNotExist:
+            return Response({'error': 'The specified user does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch the chat between the two users
+        chat = Chat.objects.filter(
+            (Q(user1=user1) & Q(user2=user2)) | (Q(user1=user2) & Q(user2=user1))
+        ).first()
+
+        if not chat:
+            return Response({'error': 'No chat found between the two users.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch all messages in the chat
+        messages = Message.objects.filter(chat=chat).order_by('timestamp')
+
+        # Serialize chat and messages
+        chat_data = ChatSerializer(chat).data
+
+        return Response({
+            'chat': chat_data,
+        }, status=status.HTTP_200_OK)
 
 class ChatView(viewsets.ModelViewSet):
     serializer_class = ChatSerializer
@@ -42,6 +81,16 @@ class ChatView(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(chat)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+# class ChatListView(ListAPIView):
+#     serializer_class = ChatSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         # Retrieve only the chats that involve the authenticated user
+#         user = self.request.user
+#         return Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
+
 
 class MessageView(viewsets.ModelViewSet):
     serializer_class = MessageSerializer

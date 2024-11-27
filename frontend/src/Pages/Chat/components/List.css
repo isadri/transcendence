@@ -1,16 +1,17 @@
-.list {
+.chat-list {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 	height: 100dvh;
 }
 
-.container {
+.chat-list .chat-container {
 	position: relative;
 	display: flex;
 	height: 2dvh;
 	flex-direction: row;
 	justify-content: space-between;
+	align-items: center;
 	border-radius: 30px 30px 0 0;
 	background-color: var(--itemColor);
 	padding: 2.5dvh;
@@ -18,13 +19,13 @@
 	font-family: var(--sans);
 }
 
-.container .newChat {
+.chat-container .newChat {
 	width: 24px;
 	height: 2.5dvh;
 	cursor: pointer;
 }
 
-.container .iconMenu {
+.chat-container .iconMenu {
 	width: 27px;
 	height: 26px;
 	cursor: pointer;
@@ -42,13 +43,13 @@
 	background-color: #d9d9d94d;
 }
 
-.search {
+.chat-search {
 	display: flex;
 	justify-content: center;
 	padding: 8% 0;
 }
 
-.search-container {
+.chat-search-container {
 	display: flex;
 	align-items: center;
 	border-radius: 50px;
@@ -58,19 +59,19 @@
 	background-color: transparent;
 }
 
-.search-container .search-icon {
+.chat-search-container .chat-search-icon {
 	color: white;
 	margin-right: 10px;
 	cursor: pointer;
 }
 
-.search-container .arrow-icon {
+.chat-search-container .chat-arrow-icon {
 	color: white;
 	margin-right: 10px;
 	cursor: pointer;
 }
 
-.search-container input {
+.chat-search-container input {
 	border: none;
 	outline: none;
 	background-color: transparent;
@@ -79,7 +80,7 @@
 	flex: 1;
 }
 
-.search-container input::placeholder {
+.chat-search-container input::placeholder {
 	color: white;
 	font-size: 16px;
 }
@@ -93,7 +94,7 @@
 }
 
 @media (max-width: 478px) {
-	.container {
+	.chat-list .chat-container {
 		border-radius: 0;
 		height: 3.5dvh;
 	}

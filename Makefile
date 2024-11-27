@@ -5,12 +5,12 @@ upd:
 	@docker-compose up
 
 build:
-	@docker-compose up -d --build
+	@docker-compose up --build
 
 down:
 	@docker-compose down
 
-re: down up-with-build
+re: down build
 
 exec:
 	@docker-compose exec -it back-end $(CMD)

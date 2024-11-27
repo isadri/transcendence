@@ -1,23 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import DataFriends from "../../Chat/components/DataFriends.tsx";
-import { Friend } from "../../Chat/components/types.ts";
-import "./AddFriends.css"
+import "./AddFriends.css";
+import axios from "axios";
 
-interface AddFriendsProps {
-	displayAddFriends: boolean;
-	results: Friend[];
-	setResults: React.Dispatch<React.SetStateAction<Friend[]>>;
+interface AllUsers {
+	id: number;
+	username: string;
+	avatar: string;
 }
 
-const AddFriends = ({
-	displayAddFriends,
-	results,
-	setResults,
-}: AddFriendsProps) => {
+const AddFriends = () => {
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
+	const [allUsers, setAllUsers] = useState<AllUsers[]>([]);
+	const [results, setResults] = useState<AllUsers[]>([]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -32,10 +29,28 @@ const AddFriends = ({
 			}
 		};
 
+		const fetchUsers = async () => {
+			try {
+				const response = await axios.get(
+					"http://0.0.0.0:8000/api/friends/users",
+					{
+						withCredentials: true,
+					}
+				);
+				setAllUsers(response.data);
+			} catch (err) {
+				console.log("Error fetching users:", err);
+			}
+		};
+
+		fetchUsers();
+		// const intervalId = setInterval(fetchUsers, 5000);
+
 		document.addEventListener("mousedown", handleClickOutside);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
+			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -43,8 +58,8 @@ const AddFriends = ({
 		const value = event.target.value;
 
 		setSearchFriend(value);
-		const filterResults = DataFriends.filter((user) =>
-			user.name.toLowerCase().includes(value.toLowerCase())
+		const filterResults = allUsers.filter((user) =>
+			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
 	};
@@ -54,45 +69,63 @@ const AddFriends = ({
 		setSearchFriend("");
 	};
 
-	const friendsList = searchFriend ? results : DataFriends;
+	const handleSendRequests = async (id: number) => {
+		try {
+			await axios.post(
+				"http://0.0.0.0:8000/api/friends/send/",
+				{ receiver: id },
+				{
+					withCredentials: true,
+				}
+			);
+			setAllUsers((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}
+	};
+
+	const friendsList = searchFriend ? results : allUsers;
 	return (
 		<div>
-			{displayAddFriends && (
-				<>
-					<div className="searchFriend">
-						<div className="searchfrienContainer">
-							{focusOnSearch ? (
-								<i
-									className="fa-solid fa-arrow-left arrow-icon"
-									onClick={handleReturnToList}
-									ref={ChangeSearchRef}
-								></i>
-							) : (
-								<i className="fa-solid fa-magnifying-glass search-icon"></i>
-							)}
-							<input
-								type="text"
-								placeholder="search..."
-								value={searchFriend}
-								onChange={handleSearchFriend}
-								onFocus={() => setFocusOnSearch(true)}
-								ref={Ref}
-							/>
-						</div>
+			<>
+				<div className="searchFriend">
+					<div className="searchfrienContainer">
+						{focusOnSearch ? (
+							<i
+								className="fa-solid fa-arrow-left arrow-icon"
+								onClick={handleReturnToList}
+								ref={ChangeSearchRef}
+							></i>
+						) : (
+							<i className="fa-solid fa-magnifying-glass search-icon"></i>
+						)}
+						<input
+							type="text"
+							placeholder="search..."
+							value={searchFriend}
+							onChange={handleSearchFriend}
+							onFocus={() => setFocusOnSearch(true)}
+							ref={Ref}
+						/>
 					</div>
-					{friendsList.map((friend) => {
-						return (
-							<div className="friendProfile" key={friend.id}>
-								<div className="imageNameFriend">
-									<img src={friend.profile} alt="" className="friendImage" />
-									<span>{friend.name}</span>
-								</div>
-								<button className="addFriend">Add Friend</button>
+				</div>
+				{friendsList.map((friend) => {
+					return (
+						<div className="friendProfile" key={friend.id}>
+							<div className="imageNameFriend">
+								<img src={friend.avatar} alt="" className="friendImage" />
+								<span>{friend.username}</span>
 							</div>
-						);
-					})}
-				</>
-			)}
+							<button
+								className="addFriend"
+								onClick={() => handleSendRequests(friend.id)}
+							>
+								Add Friend
+							</button>
+						</div>
+					);
+				})}
+			</>
 		</div>
 	);
 };
