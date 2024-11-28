@@ -10,23 +10,24 @@ volumes:
   kibconfig:
 
 services:
-  #back-end:
-  #  container_name: backend
-  #  command: python manage.py runserver 0:8000
-  #  image: backend
-  #  build:
-  #    context: backend
-  #  ports:
-  #    - 8000:8000
-  #  volumes:
-  #    - ./backend/:/code
-  #  networks:
-  #    - app-network
-  #  env_file:
-  #    - .env
-  #  depends_on:
-  #    - postgres
-  #  restart: on-failure
+  back-end:
+    container_name: backend
+    command: python manage.py runserver 0:8000
+    image: backend
+    build:
+      context: backend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/:/code
+      - ./backend/logstash.db:/code/logstash.db
+    networks:
+      - app-network
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    restart: on-failure
 
   #front-end:
   #  container_name: frontend
@@ -43,20 +44,20 @@ services:
   #    - back-end
   #  restart: on-failure
 
-  #postgres:
-  #  container_name: postgres
-  #  image: postgres:17beta1
-  #  volumes:
-  #    - postgres_data:/var/lib/posgresql/data
-  #  ports:
-  #    - 5432:5432
-  #  environment:
-  #    - POSTGRES_HOST_AUTH_METHOD=trust
-  #  env_file:
-  #    - .env
-  #  networks:
-  #    - app-network
-  #  restart: on-failure
+  postgres:
+    container_name: postgres
+    image: postgres:17beta1
+    volumes:
+      - postgres_data:/var/lib/posgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    env_file:
+      - .env
+    networks:
+      - app-network
+    restart: on-failure
 
   #setup:
   #  image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
@@ -185,5 +186,8 @@ services:
       - 5044:5044
     volumes:
       - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
+      - ./backend/logstash.db:/user/share/logstash/logstash.db
+    env_file:
+      - .env
     networks:
       - app-network
