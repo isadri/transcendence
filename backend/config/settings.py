@@ -201,12 +201,12 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'logstash': {
-            'class': 'logstash.TCPLogstashHandler',
+            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
             'host': 'logstash',
-            'port': 5959,
+            'port': os.getenv('TCP_PORT', 5959),
             'version': 1,
             'message_type': 'logstash',
-            'fqdn': False,
+            'database_path': '/code/logstash.db',
         },
     },
     'loggers': {
