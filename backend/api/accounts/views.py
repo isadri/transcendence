@@ -38,12 +38,15 @@ class HomeView(APIView):
     """
     The home page view.
     """
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
+        logger.debug('OK')
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
