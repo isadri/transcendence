@@ -80,7 +80,7 @@ class UserSerializer(serializers.ModelSerializer):
             New User instance.
         """
         user = User.objects.create_user(
-            username=validated_data['username'],
+            username=validated_data['username'].lower(),#edited by hamza (.lower())
             password=validated_data['password'],
             email=validated_data['email'],
             avatar=validated_data['avatar']

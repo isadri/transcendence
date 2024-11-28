@@ -20,7 +20,7 @@ function Authentication() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  // const [confirmPassword, setConfirmPassword] = useState('');
   const [val, setVal] = useState(true);
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([]);
@@ -34,18 +34,16 @@ function Authentication() {
       username,
       password
   }
-  const url_login = 'http://localhost:8000/api/accounts/login/'
+  const url_login = 'http://0.0.0.0:8000/api/accounts/login/'
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = 'http://localhost:8000/api/accounts/register/'
+  const url_reg = 'http://0.0.0.0:8000/api/accounts/register/'
   
   const handelSubmit = (e: any) => {
-    if (password === confirmPassword)
-    {
       e.preventDefault();
       const endpont = val ? url_login : url_reg
       const data = val ? data_login : data_reg
@@ -72,7 +70,6 @@ function Authentication() {
                 //to do
                }
           });
-    }
   }
   const checkError = (str: string) => {
     for (let i = 0; i < errorList.length; i++) {
@@ -135,21 +132,20 @@ function Authentication() {
         email:""}))
         setEmail(e.target.value)
       }
-      else if (str === "confirmPassword"){
-        setConfirmPassword(e.target.value)
-        if (e.target.value !== password)
-        {
-          SetErrors(prevState => ({
-            ...prevState,
-            confirmPassword:"password do not match!!"}))
-          }
-        else{
-          SetErrors(prevState => ({
-            ...prevState,
-            confirmPassword:""}))
-        }
-
-    }
+    // else if (str === "confirmPassword"){
+    //   setConfirmPassword(e.target.value)
+    //   if (e.target.value !== password)
+    //   {
+    //     SetErrors(prevState => ({
+    //       ...prevState,
+    //       confirmPassword:"password do not match!!"}))
+    //     }
+    //   else{
+    //     SetErrors(prevState => ({
+    //       ...prevState,
+    //       confirmPassword:""}))
+    //   }
+    // }
   }
 
   const win_width = useMediaQuery("only screen and (max-width : 720px)");
@@ -242,11 +238,11 @@ function Authentication() {
             {
               !Error && errors.password !== ''  && <p className='errorSet' >{errors.password}</p>
             }
-            <input type="text" placeholder="Confirm Password"
-            onChange={(e) => {handelRegisterErorrs(e,"confirmPassword")}} required/>
-            {
+            <input type="text" placeholder="Confirm Password"required/>
+            {/* {
+                onChange={(e) => {handelRegisterErorrs(e,"confirmPassword")}} 
               !Error && errors.confirmPassword !== ''  && <p className='errorSet' >{errors.confirmPassword}</p>
-            }
+            } */}
             <button type='submit'>Sign Up</button>
             <span className='RespSign'>Already have an account? <Link to="" onClick={() => {setVal(true)}}>Sign In</Link></span>
           </form>
