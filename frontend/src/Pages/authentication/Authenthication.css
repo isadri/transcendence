@@ -54,7 +54,7 @@
     width: 45%;
 }
 
-.SingUp form, .SingIn form{
+.SingUp .form, .SingIn .form{
     display: flex;
     flex-direction: column;
 }
@@ -268,4 +268,5 @@
         margin: 4% 4%;
     }
 }
+
 

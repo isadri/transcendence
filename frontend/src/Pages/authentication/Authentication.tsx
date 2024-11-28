@@ -20,7 +20,7 @@ function Authentication() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  // const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [val, setVal] = useState(true);
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([]);
@@ -34,16 +34,18 @@ function Authentication() {
       username,
       password
   }
-  const url_login = 'http://0.0.0.0:8000/api/accounts/login/'
+  const url_login = 'http://localhost:8000/api/accounts/login/'
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = 'http://0.0.0.0:8000/api/accounts/register/'
+  const url_reg = 'http://localhost:8000/api/accounts/register/'
   
-  const handelSubmit = (e: any) => {
+  const handelSubmit = (e: any, str: string) => {
+    if (str === "singin" || (str === "singup" && confirmPassword === password))
+    {
       e.preventDefault();
       const endpont = val ? url_login : url_reg
       const data = val ? data_login : data_reg
@@ -70,12 +72,12 @@ function Authentication() {
                 //to do
                }
           });
+    }
   }
+
   const checkError = (str: string) => {
     for (let i = 0; i < errorList.length; i++) {
-      console.log("Checking:", errorList[i][0], "against:", str);
       if (errorList[i][0] === str)
-        console.log(errorList[i])
         return errorList[i];
     }
     return "empty";
@@ -132,20 +134,21 @@ function Authentication() {
         email:""}))
         setEmail(e.target.value)
       }
-    // else if (str === "confirmPassword"){
-    //   setConfirmPassword(e.target.value)
-    //   if (e.target.value !== password)
-    //   {
-    //     SetErrors(prevState => ({
-    //       ...prevState,
-    //       confirmPassword:"password do not match!!"}))
-    //     }
-    //   else{
-    //     SetErrors(prevState => ({
-    //       ...prevState,
-    //       confirmPassword:""}))
-    //   }
-    // }
+      else if (str === "confirmPassword"){
+        setConfirmPassword(e.target.value)
+        if (e.target.value !== password)
+        {
+          SetErrors(prevState => ({
+            ...prevState,
+            confirmPassword:"password do not match!!"}))
+          }
+        else{
+          SetErrors(prevState => ({
+            ...prevState,
+            confirmPassword:""}))
+        }
+
+    }
   }
 
   const win_width = useMediaQuery("only screen and (max-width : 720px)");
@@ -172,7 +175,7 @@ function Authentication() {
               </Link>
             </div>
           <h1>Sign In</h1>
-          <form onSubmit={handelSubmit}>
+          <div className='form' >
             {
               Error && checkError("error") && checkError("error")[0] === "error" &&
               <p className='errorSet'>Invalid username or password</p>
@@ -182,9 +185,9 @@ function Authentication() {
             <input type="text" name="password" id="Pass" placeholder='Password'
             value={password} onChange={(e) => setPassword(e.target.value)} required/>
             <Link to="">Forget your password?</Link>
-            <button type='submit' aria-label="Sign in">Sign in</button>
+            <button type='submit' aria-label="Sign in" onClick={(e) => handelSubmit(e, "singin")}>Sign in</button>
             <span className='RespSign'>Don't have an account? <Link to="" onClick={() => {setVal(false)}}>Sign Up</Link></span>
-          </form>
+          </div>
           <div className='lines'>
             <span></span>
             <p>OR</p>
@@ -210,42 +213,43 @@ function Authentication() {
               </Link>
           </div>
           <h1>Sign Up</h1>
-          <form onSubmit={handelSubmit}>
+          {/* <form onSubmit={handelSubmit}> */}
+          <div className='form'>
             <input type="text" name="username" id="UserName" placeholder='UserName'
-              value={username} onChange={(e) => {handelRegisterErorrs(e,"username")}} required/>
+              value={username} onChange={(e) => {handelRegisterErorrs(e, "username")}} required/>
               {
                 Error && checkError("username") && checkError("username")[0] === "username" &&
                 <p className='errorSet'>{checkError("username")[1]}</p>
               }
               {
-                !Error &&  errors.username !== '' && <p className='errorSet' >{errors.username}</p>
+                errors.username !== '' && <p className='errorSet' >{errors.username}</p>
               }
             <input type="email" name="Email" id="Email"  placeholder="Email"
-              value={email} onChange={(e) => {handelRegisterErorrs(e,"email")}} required/>
+              value={email} onChange={(e) => {handelRegisterErorrs(e, "email")}} required/>
               {
                 Error && checkError("email") && checkError("email")[0] === "email" &&
                 <p className='errorSet'>{checkError("email")[1]}</p>
               }
               {
-                !Error &&  errors.email !== '' && <p className='errorSet' >{errors.email}</p>
+                errors.email !== '' && <p className='errorSet' >{errors.email}</p>
               }
             <input type="text" name="password" id="Pass" placeholder='Password'
-            value={password} onChange={(e) => {handelRegisterErorrs(e,"password")}}required/>
+            value={password} onChange={(e) => {handelRegisterErorrs(e, "password")}} required/>
             {
               Error && checkError("password") && checkError("password")[0] === "password" &&
               <p className='errorSet'>{checkError("password")[1]}</p>
             }
             {
-              !Error && errors.password !== ''  && <p className='errorSet' >{errors.password}</p>
+              errors.password !== ''  && <p className='errorSet' >{errors.password}</p>
             }
-            <input type="text" placeholder="Confirm Password"required/>
-            {/* {
-                onChange={(e) => {handelRegisterErorrs(e,"confirmPassword")}} 
-              !Error && errors.confirmPassword !== ''  && <p className='errorSet' >{errors.confirmPassword}</p>
-            } */}
-            <button type='submit'>Sign Up</button>
+            <input type="text" placeholder="Confirm Password"
+            onChange={(e) => {handelRegisterErorrs(e, "confirmPassword")}} required/>
+            {
+              errors.confirmPassword !== ''  && <p className='errorSet' >{errors.confirmPassword}</p>
+            }
+            <button type='submit' onClick={(e) => {handelSubmit(e, "singup")}}>Sign Up</button>
             <span className='RespSign'>Already have an account? <Link to="" onClick={() => {setVal(true)}}>Sign In</Link></span>
-          </form>
+          </div>
         <div className='lines'>
           <span></span>
           <p>OR</p>
@@ -300,3 +304,4 @@ function Authentication() {
 }
 
 export default Authentication
+
