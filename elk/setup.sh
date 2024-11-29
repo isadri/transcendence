@@ -72,23 +72,22 @@ https://elasticsearch:9200/_security/user/kibana_system/_password \
 echo "Creating logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_writer \
--d "{\"cluster\":[\"manage_index_templates\", \"monitor\"], \"indices\": [{\"names\": [\"logstash-*\"], \"privileges\": [\"write\", \"create\", \"create_index\"]}]}"
+-d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["logstash-*"], "privileges": ["write", "create", "create_index"]}]}'
 
 echo -e "\nCreating logstash_internal user and assign it the logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/logstash_internal \
--d "{\"password\": \"${LOGSTASH_PASSWORD}\", \"roles\": [\"logstash_writer\"], \"full_name\": \"Internal Logstash User\"}"
+-d '{"password": "${LOGSTASH_PASSWORD}", "roles": ["logstash_writer"], "full_name": "Internal Logstash User"}'
 
 echo -e "\nGranting access to the Logstash indices"
 echo "Creating logstash_reader role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_reader \
--d "{\"cluster\": [\"manage_logstash_pipelines\"]}"
+-d '{"cluster": ["manage_logstash_pipelines"]}'
 
 echo -e "\nAssigning Logstash users the logstash_reader role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/logstash_user \
--d "{\"password\": \"$LOGSTASH_PASSWORD\", \"roles\": [\"logstash_reader\", \"logstash_admin\"], \
-\"full_name\": \"kibana user\"}"
+-d '{"password": "$LOGSTASH_PASSWORD", "roles": ["logstash_reader", "logstash_admin"], "full_name": "kibana user"}'
 
 echo -e "\nAll done"
