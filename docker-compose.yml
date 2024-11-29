@@ -74,7 +74,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]" ]
+      test: [ "CMD-SHELL", "[ -f config/certs/logstash/logstash.pkcs8.key ]" ]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -138,6 +138,7 @@ services:
     volumes:
       - certs:/usr/share/logstash/config/certs
       - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
+      - ./elk/logstash/settings/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./backend/logstash.db:/user/share/logstash/logstash.db
     env_file:
       - .env
