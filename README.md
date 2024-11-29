@@ -87,3 +87,13 @@ Generating a random key for xpack.security.encryptionKey. To prevent sessions fr
 ```bash
 The default mechanism for Reporting privileges will work differently in future versions, which will affect the behavior of this cluster. Set "xpack.reporting.roles.enabled" to "false" to adopt the future behavior before upgrading.
 ```
+
+## Logstash
+
+* `ssl_enabled => true`: enable ssl secured communication to Elasticsearch cluster.
+
+* `ssl_key`: ssl key to use. It must be converted to the PKCS8 format and PEM encoded as mentioned in the [documentation](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-elasticsearch.html#plugins-outputs-elasticsearch-ssl_key)
+
+```bash
+xpack.monitoring.enabled has not been defined, but found elasticsearch configuration. Please explicitly set `xpack.monitoring.enabled: true` in logstash.ym
+```
