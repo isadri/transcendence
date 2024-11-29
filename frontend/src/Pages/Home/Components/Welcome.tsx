@@ -12,7 +12,7 @@ function Welcome() {
     return (
       <>
         <div className='Home-content'>
-          <h3>Welcome back, {user.username}!</h3>
+          <h3>Welcome back, user!</h3>
           <p>
           Feeling sharp today? We've got a fresh batch of challenges waiting for you.
           You can smash your way through some AI opponents in Practice Mode,

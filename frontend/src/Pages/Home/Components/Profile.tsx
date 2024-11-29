@@ -14,7 +14,7 @@ function Profile() {
     <div className="Home-profile">
       <div className="Home-ProfImg">
         <a href="profile">
-          <img src={"http://localhost:8000" + userContext?.user.avatar} alt="" />
+          <img src={ProfileImg} alt="" />
         </a>
         <a href="profile">
           <span>user1gfhghf</span>

@@ -1,3 +1,4 @@
+
 import './Authenthication.css'
 import intra from './Images/intra.svg'
 import Google from './Images/Google.svg'
@@ -6,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
 import axios from 'axios'
 import {loginContext} from './../../App'
+
 
 interface errorDataTypes{
   username : string,
@@ -22,6 +24,7 @@ function Authentication() {
   const [email, setEmail] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [val, setVal] = useState(true);
+
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([]);
   const [errors, SetErrors] = useState<errorDataTypes>({
@@ -30,6 +33,7 @@ function Authentication() {
     password : '',
     confirmPassword: ''
   })
+
   const data_login = {
       username,
       password
@@ -44,7 +48,7 @@ function Authentication() {
   const url_reg = 'http://localhost:8000/api/accounts/register/'
   
   const handelSubmit = (e: any, str: string) => {
-    if (str === "singin" || (str === "singup" && confirmPassword === password))
+    if (str === "signin" || (str === "signup" && confirmPassword === password))
     {
       e.preventDefault();
       const endpont = val ? url_login : url_reg
@@ -58,7 +62,7 @@ function Authentication() {
             })
             .catch((error) => {
               setError(true)
-              if (error.response){
+              if (error.response && error.response.data){
                 const list = []
                 const errors = error.response.data;
                 for (const field in errors) {
@@ -71,7 +75,7 @@ function Authentication() {
                else if (error.request){
                 //to do
                }
-          });
+            });
     }
   }
 
@@ -84,73 +88,71 @@ function Authentication() {
   };
 
   const handelRegisterErorrs = (e: any, str : string) => {
-    if (str === "username"){
-      if (!/^[a-zA-Z0-9._-]{3,15}$/.test(e.target.value))
-        SetErrors(prevState => ({
-          ...prevState,
-          username:"Please enter a valid username. It must be at least 3 and 15 characters long ,can only contain letters, numbers, and '_', '-', '.'"}))
-      else
-        SetErrors(prevstate => ({
-          ...prevstate,
-          username:""}))
-      setUsername(e.target.value)
-    }
-    else if (str === "password"){
-      if (e.target.value.length < 8)
-        SetErrors(prevState => ({
-          ...prevState,
-          password: "Password must be at least 8 characters long."
-        }))
-      else if (!/[A-Z]/.test(e.target.value))
-        SetErrors(prevState => ({
-          ...prevState,
-          password:"Password must contain at least one uppercase latter."}))
-      else if (!/[a-z]/.test(e.target.value))
-        SetErrors(prevState => ({
-          ...prevState,
-          password:"Password must contain at least one lowercase letter."}))
-      else if (!/[0-9]/.test(e.target.value))
-        SetErrors(prevState => ({
-          ...prevState,
-          password:"Password must contain at least one digit"}))
-      else if (!/[!@#$%^&*(),.?":{}|<>]/.test(e.target.value))
-        SetErrors(prevState => ({
-          ...prevState,
-          password:"Password must contain at least one special charachter."}))
-      else
-        SetErrors(prevState => ({
-          ...prevState,
-          password:""}))
-      setPassword(e.target.value)
-    }
-    else if (str === "email"){
-      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(e.target.value))
-        SetErrors(prevState => ({
-          ...prevState,
-          email:"Please enter a valid email."}))
-          else
-          SetErrors(prevState => ({
+  if (str === "username"){
+    if (!/^[a-zA-Z0-9._-]{3,15}$/.test(e.target.value))
+      SetErrors(prevState => ({
         ...prevState,
-        email:""}))
-        setEmail(e.target.value)
-      }
-      else if (str === "confirmPassword"){
-        setConfirmPassword(e.target.value)
-        if (e.target.value !== password)
-        {
-          SetErrors(prevState => ({
-            ...prevState,
-            confirmPassword:"password do not match!!"}))
-          }
-        else{
-          SetErrors(prevState => ({
-            ...prevState,
-            confirmPassword:""}))
+        username:"Please enter a valid username. It must be at least 3 and 15 characters long ,can only contain letters, numbers, and '_', '-', '.'"}))
+    else
+      SetErrors(prevstate => ({
+        ...prevstate,
+        username:""}))
+    setUsername(e.target.value)
+  }
+  else if (str === "password"){
+    if (e.target.value.length < 8)
+      SetErrors(prevState => ({
+        ...prevState,
+        password: "Password must be at least 8 characters long."
+      }))
+    else if (!/[A-Z]/.test(e.target.value))
+      SetErrors(prevState => ({
+        ...prevState,
+        password:"Password must contain at least one uppercase latter."}))
+    else if (!/[a-z]/.test(e.target.value))
+      SetErrors(prevState => ({
+        ...prevState,
+        password:"Password must contain at least one lowercase letter."}))
+    else if (!/[0-9]/.test(e.target.value))
+      SetErrors(prevState => ({
+        ...prevState,
+        password:"Password must contain at least one digit"}))
+    else if (!/[!@#$%^&*(),.?":{}|<>]/.test(e.target.value))
+      SetErrors(prevState => ({
+        ...prevState,
+        password:"Password must contain at least one special charachter."}))
+    else
+      SetErrors(prevState => ({
+        ...prevState,
+        password:""}))
+    setPassword(e.target.value)
+  }
+  else if (str === "email"){
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(e.target.value))
+      SetErrors(prevState => ({
+        ...prevState,
+        email:"Please enter a valid email."}))
+        else
+        SetErrors(prevState => ({
+      ...prevState,
+      email:""}))
+      setEmail(e.target.value)
+    }
+    else if (str === "confirmPassword"){
+      setConfirmPassword(e.target.value)
+      if (e.target.value !== password)
+      {
+        SetErrors(prevState => ({
+          ...prevState,
+          confirmPassword:"password do not match!!"}))
         }
-
+      else{
+        SetErrors(prevState => ({
+          ...prevState,
+          confirmPassword:""}))
+      }
     }
   }
-
   const win_width = useMediaQuery("only screen and (max-width : 720px)");
   const SingUpStyle = !val ?
     (
@@ -185,7 +187,7 @@ function Authentication() {
             <input type="text" name="password" id="Pass" placeholder='Password'
             value={password} onChange={(e) => setPassword(e.target.value)} required/>
             <Link to="">Forget your password?</Link>
-            <button type='submit' aria-label="Sign in" onClick={(e) => handelSubmit(e, "singin")}>Sign in</button>
+            <button type='submit' aria-label="Sign in" onClick={e => handelSubmit(e, "signin")}>Sign in</button>
             <span className='RespSign'>Don't have an account? <Link to="" onClick={() => {setVal(false)}}>Sign Up</Link></span>
           </div>
           <div className='lines'>
@@ -213,10 +215,9 @@ function Authentication() {
               </Link>
           </div>
           <h1>Sign Up</h1>
-          {/* <form onSubmit={handelSubmit}> */}
-          <div className='form'>
+          <div className='form' >
             <input type="text" name="username" id="UserName" placeholder='UserName'
-              value={username} onChange={(e) => {handelRegisterErorrs(e, "username")}} required/>
+              value={username} onChange={(e) => handelRegisterErorrs(e, "username")} required/>
               {
                 Error && checkError("username") && checkError("username")[0] === "username" &&
                 <p className='errorSet'>{checkError("username")[1]}</p>
@@ -224,8 +225,8 @@ function Authentication() {
               {
                 errors.username !== '' && <p className='errorSet' >{errors.username}</p>
               }
-            <input type="email" name="Email" id="Email"  placeholder="Email"
-              value={email} onChange={(e) => {handelRegisterErorrs(e, "email")}} required/>
+            <input type="text" name="Email" id="Email"  placeholder="Email"
+              value={email} onChange={(e) => handelRegisterErorrs(e, "email")} required/>
               {
                 Error && checkError("email") && checkError("email")[0] === "email" &&
                 <p className='errorSet'>{checkError("email")[1]}</p>
@@ -234,7 +235,7 @@ function Authentication() {
                 errors.email !== '' && <p className='errorSet' >{errors.email}</p>
               }
             <input type="text" name="password" id="Pass" placeholder='Password'
-            value={password} onChange={(e) => {handelRegisterErorrs(e, "password")}} required/>
+            value={password} onChange={(e) => handelRegisterErorrs(e, "password")} required/>
             {
               Error && checkError("password") && checkError("password")[0] === "password" &&
               <p className='errorSet'>{checkError("password")[1]}</p>
@@ -242,12 +243,11 @@ function Authentication() {
             {
               errors.password !== ''  && <p className='errorSet' >{errors.password}</p>
             }
-            <input type="text" placeholder="Confirm Password"
-            onChange={(e) => {handelRegisterErorrs(e, "confirmPassword")}} required/>
+            <input type="text" placeholder="Confirm Password" value={confirmPassword} onChange={e => handelRegisterErorrs(e, "confirmPassword")}/>
             {
               errors.confirmPassword !== ''  && <p className='errorSet' >{errors.confirmPassword}</p>
             }
-            <button type='submit' onClick={(e) => {handelSubmit(e, "singup")}}>Sign Up</button>
+            <button type='submit' onClick={e => handelSubmit(e, "signup")}>Sign Up</button>
             <span className='RespSign'>Already have an account? <Link to="" onClick={() => {setVal(true)}}>Sign In</Link></span>
           </div>
         <div className='lines'>
@@ -304,4 +304,3 @@ function Authentication() {
 }
 
 export default Authentication
-
