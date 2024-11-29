@@ -38,14 +38,14 @@ function Authentication() {
       username,
       password
   }
-  const url_login = 'http://localhost:8000/api/accounts/login/'
+  const url_login = 'http://0.0.0.0:8000/api/accounts/login/'
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = 'http://localhost:8000/api/accounts/register/'
+  const url_reg = 'http://0.0.0.0:8000/api/accounts/register/'
   
   const handelSubmit = (e: any, str: string) => {
     if (str === "signin" || (str === "signup" && confirmPassword === password))
@@ -218,28 +218,28 @@ function Authentication() {
           <div className='form' >
             <input type="text" name="username" id="UserName" placeholder='UserName'
               value={username} onChange={(e) => handelRegisterErorrs(e, "username")} required/>
-              {
+              {/* {
                 Error && checkError("username") && checkError("username")[0] === "username" &&
                 <p className='errorSet'>{checkError("username")[1]}</p>
-              }
+              } */}
               {
                 errors.username !== '' && <p className='errorSet' >{errors.username}</p>
               }
             <input type="text" name="Email" id="Email"  placeholder="Email"
               value={email} onChange={(e) => handelRegisterErorrs(e, "email")} required/>
-              {
+              {/* {
                 Error && checkError("email") && checkError("email")[0] === "email" &&
                 <p className='errorSet'>{checkError("email")[1]}</p>
-              }
+              } */}
               {
-                errors.email !== '' && <p className='errorSet' >{errors.email}</p>
+                 errors.email !== '' && <p className='errorSet' >{errors.email}</p>
               }
             <input type="text" name="password" id="Pass" placeholder='Password'
             value={password} onChange={(e) => handelRegisterErorrs(e, "password")} required/>
-            {
+            {/* {
               Error && checkError("password") && checkError("password")[0] === "password" &&
               <p className='errorSet'>{checkError("password")[1]}</p>
-            }
+            } */}
             {
               errors.password !== ''  && <p className='errorSet' >{errors.password}</p>
             }
