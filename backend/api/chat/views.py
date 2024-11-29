@@ -11,6 +11,10 @@ from rest_framework.generics import ListAPIView
 
 from api.friends.models import FriendList
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
+
+User = get_user_model()
 
 class UserChatView(APIView):
     """
@@ -103,17 +107,29 @@ class MessageView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         chat_id = self.request.data.get("chat")
+        receiver_id = request.data.get('receiver')
+        content = request.data.get('content')
+
         try:
             chat = Chat.objects.get(id=chat_id)
         except Chat.DoesNotExist:
             return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if chat.user1 != self.request.user and chat.user2 != self.request.user:
+        user = request.user
+        if chat.user1 != user and chat.user2 != user:
             raise PermissionDenied("You are not a participant in this chat.")
+
+        try:
+            receiver = User.objects.get(id=receiver_id)
+        except User.DoesNotExist:
+            return Response({"error": "Receiver not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if receiver != chat.user1 and receiver != chat.user2:
+            raise ValidationError("The receiver must be a participant in the chat.")
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(sender=request.user, chat=chat)
+        serializer.save(sender=request.user, receiver=receiver, chat=chat)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

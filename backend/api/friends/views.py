@@ -138,7 +138,7 @@ class FriendRequestUnblockView(APIView):
                     status='blocked',
                     blocked_by=request.user,
                     ).first()
-            print(friend_request)
+            # print(friend_request)
             if not friend_request:
                 return Response({'error': 'No blocked request found.'},
                                 status=status.HTTP_404_NOT_FOUND)
