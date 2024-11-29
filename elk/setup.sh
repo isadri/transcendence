@@ -37,15 +37,27 @@ if [ ! -f config/certs/certs.zip ]; then
 	"    dns:\n"\
 	"      - kibana\n"\
 	"      - localhost\n"\
+	"  - name: logstash\n"\
+	"    ip:\n"\
+	"      - 127.0.0.1\n"\
+	"    dns:\n"\
+	"      - logstash\n"\
+	"      - localhost\n"\
 	> config/certs/instances.yml
 	bin/elasticsearch-certutil cert --silent --pem --out config/certs/certs.zip \
 	--in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt \
 	--ca-key config/certs/ca/ca.key
 	unzip config/certs/certs -d config/certs
+
+	echo "Convert the Logstash key to the PKCS8 format and PEM encoded"
+	openssl pkcs8 -inform PEM -in config/certs/logstash/logstash.key -topk8 \
+	-nocrypt -outform PEM -out config/certs/logstash/logstash.pkcs8.key
 fi
 
-echo "Setting file permissions"
-chown -R root:root config/certs
+#echo "Setting file permissions"
+#chown -R root:root config/certs
+#find . -type d -exec chmod 750 \{\} \;
+#find . -type f -exec chmod 640 \{\} \;
 
 echo "Waiting for Elasticsearch availability"
 until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | \
@@ -56,7 +68,7 @@ until curl -s -X POST --cacert config/certs/ca/ca.crt \
 -u elastic:$ELASTIC_PASSWORD -H "Content-Type: application/json" \
 https://elasticsearch:9200/_security/user/kibana_system/_password \
 -d "{\"password\": \"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done
-        
+
 echo "Creating logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_writer \
@@ -78,5 +90,5 @@ curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/logstash_user \
 -d "{\"password\": \"$LOGSTASH_PASSWORD\", \"roles\": [\"logstash_reader\", \"logstash_admin\"], \
 \"full_name\": \"kibana user\"}"
-        
+
 echo -e "\nAll done"
