@@ -94,6 +94,16 @@ The default mechanism for Reporting privileges will work differently in future v
 
 * `ssl_key`: ssl key to use. It must be converted to the PKCS8 format and PEM encoded as mentioned in the [documentation](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-elasticsearch.html#plugins-outputs-elasticsearch-ssl_key)
 
+---
+
+* `xpack.monitoring.enabled: true`: enable monitoring.
+
 ```bash
 xpack.monitoring.enabled has not been defined, but found elasticsearch configuration. Please explicitly set `xpack.monitoring.enabled: true` in logstash.ym
 ```
+
+* `xpack.monitoring.elasticsearch.hosts: "https://elasticsearch:9200"`: the Elasticsearch instance to ship Logstash metrics to.
+
+* `xpack.monitoring.elasticsearch.username` and `xpack.monitoring.elasticsearch.password`: provide the username and password that the Logstash instances uses to authenticate for shipping monitoring data.
+
+* `xpack.monitoring.elasticsearch.ssl.certificate_authority: config/certs/ca/ca.crt`: specify the path to the CA certificate for Elasticsearch instance.
