@@ -43,13 +43,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         receiver_id = data.get('receiver')
 
         # Check if the user is exist
+        receiver = None
         try:
             receiver = await User.objects.aget(id=receiver_id)
         except User.DoesNotExist:
             await self.send(text_data=json.dumps({
                 'error': 'This user does not exist.'
             }))
-
 
         # Get or create the chat instance
         chat, _ = await Chat.objects.aget_or_create(

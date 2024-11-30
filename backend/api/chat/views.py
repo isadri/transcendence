@@ -1,14 +1,14 @@
-from django.contrib.auth import models
-from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .models import Chat, Message
-from .serializers import ChatSerializer, MessageSerializer
-from api.accounts.models import User
-from rest_framework.exceptions import PermissionDenied
-from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+# from django.contrib.auth import models
+# from api.accounts.models import User
+# from rest_framework.generics import ListAPIView
 
+from rest_framework.exceptions import PermissionDenied
+from .models import Chat, Message
+from rest_framework.views import APIView
+from .serializers import ChatSerializer, MessageSerializer
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from api.friends.models import FriendList
 from django.db.models import Q
 from django.contrib.auth import get_user_model
@@ -81,7 +81,9 @@ class ChatView(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST)
 
         # Ensure the chat doesn't already exist
-        chat, created = Chat.objects.get_or_create(user1=user1, user2=user2)
+        chat, created = Chat.objects.get_or_create(user1=user1,
+                                                   user2=user2,
+                                                   defaults={'last_message': ''})
 
         serializer = self.get_serializer(chat)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
@@ -124,12 +126,18 @@ class MessageView(viewsets.ModelViewSet):
         except User.DoesNotExist:
             return Response({"error": "Receiver not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        if receiver == user:
+            raise ValidationError("You cannot send a message to yourself.")
+
         if receiver != chat.user1 and receiver != chat.user2:
             raise ValidationError("The receiver must be a participant in the chat.")
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(sender=request.user, receiver=receiver, chat=chat)
+        message = serializer.save(sender=user, receiver=receiver, chat=chat)
+
+        chat.last_message = message.content
+        chat.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

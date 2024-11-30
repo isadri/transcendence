@@ -8,6 +8,7 @@ class Chat(models.Model):
     user2 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='chats_as_user2',
                               on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    last_message = models.TextField(null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -21,7 +22,8 @@ class Chat(models.Model):
 class Message(models.Model):
     chat = models.ForeignKey(Chat, related_name='messages', on_delete=models.CASCADE)
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_messages', on_delete=models.CASCADE)
-    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='received_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='received_messages',
+                                on_delete=models.CASCADE, null=True, blank=True)
     content = models.TextField()
     file = models.FileField(upload_to='chat_files/%y/%m/%d', null=True, blank=True)
     image = models.ImageField(upload_to='chat_files/%y/%m/%d', null=True, blank=True)
