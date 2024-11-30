@@ -160,6 +160,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     fetches user information (such as username, first name, and last name).
     If the user does not exist, it creates a new one.
     """
+    permission_classes = [AllowAny]
 
     def get_user(self, user_info: dict[str, str]) -> User:
         """
@@ -172,9 +173,9 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response({'error': 'states do not match.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        #if not state_match(request.GET.get('state')):
+        #    return Response({'error': 'states do not match.'},
+        #                    status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = get_access_token_google(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
@@ -202,7 +203,6 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
     If the user does not exist, it creates a new one.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get_access_token(self, authorization_code: str) -> str:
         """
