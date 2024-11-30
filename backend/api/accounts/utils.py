@@ -203,13 +203,6 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     return response.json(), response.status_code
 
 
-def state_match(state: str) -> bool:
-    """
-    Check if the given state is valid.
-    """
-    return state == settings.OAUTH2_STATE_PARAMETER
-
-
 def get_access_token_google(authorization_code: str) -> str:
     """
     Get the access token from Google API.

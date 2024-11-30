@@ -25,7 +25,6 @@ from .utils import (
     create_user,
     get_user,
     get_user_info,
-    state_match,
     send_otp_email,
 )
 
@@ -173,9 +172,6 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        #if not state_match(request.GET.get('state')):
-        #    return Response({'error': 'states do not match.'},
-        #                    status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = get_access_token_google(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
@@ -239,8 +235,6 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
@@ -269,9 +263,6 @@ class IntraLoginViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        #if not state_match(request.GET.get('state')):
-        #    return Response({'error': 'states do not match'},
-        #                    status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = get_access_token_42(authorization_code)
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
@@ -321,9 +312,6 @@ class IntraLoginWith2FAViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response({'error': 'states do not match'},
-                            status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code', '')
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
