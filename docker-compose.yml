@@ -74,7 +74,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/logstash/logstash.pkcs8.key ]" ]
+      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.key ]" ]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -110,21 +110,21 @@ services:
       timeout: 10s
       retries: 90
 
-  #kibana:
-  #  depends_on:
-  #    elasticsearch:
-  #      condition: service_healthy
-  #  image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-  #  container_name: kibana
-  #  volumes:
-  #    - certs:/usr/share/kibana/config/certs
-  #    - ./elk/kibana.yml:/usr/share/kibana/config/kibana.yml
-  #  env_file:
-  #    - .env
-  #  ports:
-  #    - ${KIBANA_PORT}:5601
-  #  networks:
-  #    - app-network
+  kibana:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    container_name: kibana
+    volumes:
+      - certs:/usr/share/kibana/config/certs
+      - ./elk/kibana.yml:/usr/share/kibana/config/kibana.yml
+    env_file:
+      - .env
+    ports:
+      - ${KIBANA_PORT}:5601
+    networks:
+      - app-network
 
   logstash:
     depends_on:
