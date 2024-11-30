@@ -15,6 +15,11 @@ if [ -z "$LOGSTASH_PASSWORD" ]; then
 	exit 1
 fi;
 
+if [ -z "$LOGSTASH_USER" ]; then
+	echo "You must set the LOGSTASH_USER environment variable in the .env file"
+	exit 1
+fi;
+
 if [ ! -f config/certs/ca.zip ]; then
 	echo "Generating CA"
 	bin/elasticsearch-certutil ca --silent --pem --out config/certs/ca.zip
@@ -47,14 +52,15 @@ if [ ! -f config/certs/certs.zip ]; then
 	bin/elasticsearch-certutil cert --silent --pem --out config/certs/certs.zip \
 	--in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt \
 	--ca-key config/certs/ca/ca.key
-	unzip config/certs/certs -d config/certs
+	unzip config/certs/certs.zip -d config/certs
 
-	echo "Convert the Logstash key to the PKCS8 format and PEM encoded"
-	openssl pkcs8 -inform PEM -in config/certs/logstash/logstash.key -topk8 \
-	-nocrypt -outform PEM -out config/certs/logstash/logstash.pkcs8.key
+	#echo "Convert the Logstash key to the PKCS8 format and PEM encoded"
+	#openssl pkcs8 -inform PEM -in config/certs/logstash/logstash.key -topk8 \
+	#-nocrypt -outform PEM -out config/certs/logstash/logstash.pkcs8.key
 fi
 
 #echo "Setting file permissions"
+#chmod 664 config/certs/logstash/logstash.pkcs8.key
 #chown -R root:root config/certs
 #find . -type d -exec chmod 750 \{\} \;
 #find . -type f -exec chmod 640 \{\} \;
@@ -72,22 +78,11 @@ https://elasticsearch:9200/_security/user/kibana_system/_password \
 echo "Creating logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_writer \
--d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["logstash-*"], "privileges": ["write", "create", "create_index"]}]}'
+-d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["logstash-*"], "privileges": ["write", "create", "create_index", "manage"]}]}'
 
-echo -e "\nCreating logstash_internal user and assign it the logstash_writer role"
+echo -e "\nCreating $LOGSTASH_USER user and assign it the logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
--H "Content-Type: application/json" https://elasticsearch:9200/_security/user/logstash_internal \
--d '{"password": "${LOGSTASH_PASSWORD}", "roles": ["logstash_writer"], "full_name": "Internal Logstash User"}'
-
-echo -e "\nGranting access to the Logstash indices"
-echo "Creating logstash_reader role"
-curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
--H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_reader \
--d '{"cluster": ["manage_logstash_pipelines"]}'
-
-echo -e "\nAssigning Logstash users the logstash_reader role"
-curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
--H "Content-Type: application/json" https://elasticsearch:9200/_security/user/logstash_user \
--d '{"password": "$LOGSTASH_PASSWORD", "roles": ["logstash_reader", "logstash_admin"], "full_name": "kibana user"}'
+-H "Content-Type: application/json" https://elasticsearch:9200/_security/user/$LOGSTASH_USER \
+-d "{\"password\": \"${LOGSTASH_PASSWORD}\", \"roles\": [\"logstash_writer\"], \"full_name\": \"null\"}"
 
 echo -e "\nAll done"
