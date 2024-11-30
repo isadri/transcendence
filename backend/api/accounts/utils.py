@@ -243,7 +243,7 @@ def get_access_token_42(authorization_code: str) -> str:
     Returns:
         The access token.
     """
-    token_endpoint = 'https://api.intra.42.fr/token'
+    token_endpoint = 'https://api.intra.42.fr/oauth/token/'
     payload = {
         'code': authorization_code,
         'client_id': os.getenv('INTRA_ID'),
