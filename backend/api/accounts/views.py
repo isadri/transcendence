@@ -30,8 +30,6 @@ from .utils import (
 )
 
 
-
-
 class HomeView(APIView):
     """
     The home page view.
@@ -264,14 +262,16 @@ class IntraLoginViewSet(viewsets.ViewSet):
     fetches user information (such as username, first name, last name,
     and email).
     """
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
     def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response({'error': 'states do not match'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        #if not state_match(request.GET.get('state')):
+        #    return Response({'error': 'states do not match'},
+        #                    status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = get_access_token_42(authorization_code)
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
@@ -346,10 +346,9 @@ class RegisterViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
-        request.data._mutable = True
-        request.data['username'] = request.data['username'].lower()
-        request.data._mutable = False
-        serializer = UserSerializer(data=request.data)
+        data_copy = request.data.copy()
+        data_copy['username'] = request.data['username'].lower()
+        serializer = UserSerializer(data=data_copy)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
