@@ -18,7 +18,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class ChatSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True, read_only=True)
-    # user2 = UserSerializer() ######### add this after end of chat modification #########
+    user2 = UserSerializer() ######### add this after end of chat modification #########
 
     class Meta:
         model = Chat
