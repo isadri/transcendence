@@ -23,7 +23,21 @@ SITE_ID = 2
 # Application definition
 
 INSTALLED_APPS = [
+    'api.game',
+    'api.chat',
+	'api.friends',
+	'api.accounts',
+
     'daphne',
+    'channels',
+    'corsheaders',
+
+	'allauth',
+    'oauth2_provider',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,22 +48,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
-
-	'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-
 	'rest_framework_simplejwt.token_blacklist',
-
-	'api.accounts',
-	'api.friends',
-
-    'oauth2_provider',
-
-    'api.chat',
-    'channels',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
