@@ -203,13 +203,6 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     return response.json(), response.status_code
 
 
-def state_match(state: str) -> bool:
-    """
-    Check if the given state is valid.
-    """
-    return state == settings.OAUTH2_STATE_PARAMETER
-
-
 def get_access_token_google(authorization_code: str) -> str:
     """
     Get the access token from Google API.
@@ -243,7 +236,7 @@ def get_access_token_42(authorization_code: str) -> str:
     Returns:
         The access token.
     """
-    token_endpoint = 'https://api.intra.42.fr/token'
+    token_endpoint = 'https://api.intra.42.fr/oauth/token/'
     payload = {
         'code': authorization_code,
         'client_id': os.getenv('INTRA_ID'),
