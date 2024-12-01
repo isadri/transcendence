@@ -11,6 +11,7 @@ import { createBrowserRouter, Outlet } from "react-router-dom";
 import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
+import Start from '../Pages/Game/Start/Start';
 
 
 // isLogged  routing table and layout
@@ -41,6 +42,10 @@ const mainRoutingTable = [
       {
         path: "/game/",
         element: <Game />,
+      },
+      {
+        path: "/game/start",
+        element: <Start />,
       },
       {
         path: "/game/play",
