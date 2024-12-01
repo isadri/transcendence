@@ -101,24 +101,24 @@
     flex-direction: row;
     align-items: center;
     margin-left: 14px;
-    width: 50%;
+    width: 90%;
 }
 
 .Home-ProfImg img{
     border-radius: 50%;
     position: relative;
-    top: 8px;
-    width: 90%;
+    top: 12px;
+    width: 58px;
 }
 
 .Home-ProfImg a span{
     position: relative;
-    top: 8px;
+    top: 12px;
     cursor: pointer;
     font-family: var(--mono);
     color: white;
     font-size: 14px;
-    margin-left: 8%;
+    margin-left: 19%;
 }
 
 .Home-user{

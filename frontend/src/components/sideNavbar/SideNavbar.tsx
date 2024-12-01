@@ -8,6 +8,7 @@ import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { loginContext } from "../../App";
+import { getendpoint } from "../../context/getContextData";
 
 const SideNavbar = () => {
 	const authContext = useContext(loginContext)
@@ -26,7 +27,7 @@ const SideNavbar = () => {
 	};
 
 	const handleLogoutClick = () => {
-		axios.get('http://'+`${authContext?.hostname}`+':8000/api/accounts/logout/', {withCredentials:true})
+		axios.get(getendpoint('api/accounts/logout/'), {withCredentials:true})
       		.then(() =>{
 				authContext?.setIsLogged(false)
 				navigate('/')

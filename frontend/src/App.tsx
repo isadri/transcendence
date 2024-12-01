@@ -9,30 +9,14 @@ import axios from 'axios';
 
 import { loginContext } from './context/context';
 import { userDataType } from './context/context';
-
-// interface userDataType {
-//   id : number,
-//   username : string,
-//   email : string,
-//   avatar : string
-// }
-// interface loginContextData {
-//   isLogged:boolean |null,
-//   setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
-//   hostname: string
-//   // user: userDataType | undefined
-//   // setUser: React.Dispatch<React.SetStateAction<userDataType | undefined>>;
-// }
-
-// const loginContext = createContext<loginContextData | null>(null)
+import { getendpoint } from './context/getContextData';
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
   let [user, setUser] = useState<userDataType>()
-  const hostname = window.location.hostname
-
+  // const hostname = window.location.hostname
   useEffect(() => {
-    axios.get('http://'+`${hostname}`+':8000/',  {withCredentials:true})
+    axios.get(getendpoint(''), {withCredentials:true})
     .then((response) => {
       setIsLogged(true)
       setUser(response.data)
@@ -45,7 +29,7 @@ function App() {
   if (isLogged == null)
     return <></>
   return (
-    <loginContext.Provider value={{ hostname, user, setUser, isLogged, setIsLogged}}>
+    <loginContext.Provider value={{  user, setUser, isLogged, setIsLogged}}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={ isLogged ? mainRouter : landingRouter} />
       </BackGround>
@@ -54,5 +38,4 @@ function App() {
 }
 
 export {loginContext}
-// export type {loginContextData}
 export default App;

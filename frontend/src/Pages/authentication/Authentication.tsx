@@ -2,11 +2,12 @@
 import './Authenthication.css'
 import intra from './Images/intra.svg'
 import Google from './Images/Google.svg'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
 import axios from 'axios'
-import {loginContext} from './../../App'
+// import {loginContext} from './../../App'
+import { getContext, getendpoint } from '../../context/getContextData'
 
 
 interface errorDataTypes{
@@ -17,7 +18,7 @@ interface errorDataTypes{
 }
 
 function Authentication() {
-  const authContext = useContext(loginContext)
+  const authContext = getContext()
   const navigate = useNavigate();
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -39,14 +40,14 @@ function Authentication() {
       password
   }
   // const hostname = window.location.hostname
-  const url_login = 'http://'+`${authContext?.hostname}`+':8000/api/accounts/login/'
+  const url_login = getendpoint('api/accounts/login/')
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = 'http://'+`${authContext?.hostname}`+':8000/api/accounts/register/'
+  const url_reg = getendpoint('api/accounts/register/')
   
   const handelIntraLogin = (e: any) => {
     axios.get('http://localhost:8000/api/accounts/login/intra/')
@@ -67,7 +68,7 @@ function Authentication() {
       })
   }
   const GetUserInfo = () =>{
-    axios.get('http://'+`${authContext?.hostname}`+':8000/',  {withCredentials:true})
+    axios.get(getendpoint(''),  {withCredentials:true})
     .then((response) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
@@ -327,3 +328,4 @@ function Authentication() {
 }
 
 export default Authentication
+

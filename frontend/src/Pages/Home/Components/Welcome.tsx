@@ -1,16 +1,17 @@
-import { useContext } from 'react';
-import { loginContext } from '../../../App';
+// import { useContext } from 'react';
+// import { loginContext } from '../../../App';
 import WlcmImg from '../images/girl.svg'
 
+import { getUser } from '../../../context/getContextData';
 
 function Welcome() {
-  const userContext = useContext(loginContext)
-  if (userContext?.user)
+  const user = getUser()
+  if (user)
   {
     return (
       <>
         <div className='Home-content'>
-          <h3>Welcome back, {userContext?.user?.username}</h3>
+          <h3>Welcome back,{user?.username}</h3>
           <p>
           Feeling sharp today? We've got a fresh batch of challenges waiting for you.
           You can smash your way through some AI opponents in Practice Mode,
@@ -22,7 +23,7 @@ function Welcome() {
         </div>
         <div className='Home-Image'>
           <img src={WlcmImg} alt="" />
-        </div> 
+        </div>
       </>
     )
   }
