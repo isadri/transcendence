@@ -16,8 +16,8 @@ function App() {
   let [user, setUser] = useState<userDataType>()
   // const hostname = window.location.hostname
   useEffect(() => {
-    axios.get(getendpoint(''), {withCredentials:true})
-    .then((response) => {
+    axios.get(getendpoint('http', "/"), {withCredentials:true})
+    .then((response:any) => {
       setIsLogged(true)
       setUser(response.data)
     })

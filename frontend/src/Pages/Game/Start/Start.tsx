@@ -1,7 +1,8 @@
+import { getendpoint } from "../../../context/getContextData";
 
 
 function Start(){
-  const socket = new WebSocket("ws://localhost:8000/ws/game/start/")
+  const socket = new WebSocket(getendpoint("ws", "/ws/game/start/"))
   socket.onopen  = (e) => {
     console.log("open> ", e);
   }
