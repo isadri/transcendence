@@ -3,6 +3,7 @@ import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
@@ -41,7 +42,8 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 				const chatId = selectedFriend.id;
 				try {
 					const response = await axios.post(
-						"http://0.0.0.0:8000/api/chat/messages/",
+						getendpoint("http", "/api/chat/messages/"),
+						// "http://0.0.0.0:8000/api/chat/messages/",
 						{ chat: chatId, content: newMessage },
 						{
 							withCredentials: true,

@@ -7,6 +7,7 @@ import moment from "moment";
 import { GetFriends } from "../Chat";
 import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -22,7 +23,8 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 		const fetchMessages = async (chatId: number) => {
 			try {
 				const response = await axios.get(
-					`http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
+					getendpoint("http", `/api/chat/chats/?id=${chatId}`),
+					// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
 					{
 						withCredentials: true,
 					}

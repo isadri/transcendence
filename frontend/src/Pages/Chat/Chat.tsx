@@ -6,6 +6,7 @@ import moment from "moment";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import axios from "axios";
 import { GetChats } from "./components/ChatList";
+import { getendpoint } from "../../context/getContextData";
 
 export interface GetFriends {
 	id: number;
@@ -23,7 +24,7 @@ const Chat = () => {
 		const fetchFriend = async () => {
 			try {
 				const response = await axios.get(
-					"http://0.0.0.0:8000/api/friends/friends",
+					getendpoint("http", "/api/friends/friends"),
 					{
 						withCredentials: true,
 					}

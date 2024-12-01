@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
 export interface ChatMessage {
 	id: number;
@@ -46,7 +47,8 @@ const ChatList = ({
 		const fetchChats = async () => {
 			try {
 				const response = await axios.get(
-					"http://0.0.0.0:8000/api/chat/chats/",
+					getendpoint("http", "/api/chat/chats/"),
+					// "http://0.0.0.0:8000/api/chat/chats/",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -69,7 +71,8 @@ const ChatList = ({
 		}
 		try {
 			const response = await axios.post(
-				"http://0.0.0.0:8000/api/chat/chats/",
+				getendpoint("http", "/api/chat/chats/"),
+				// "http://0.0.0.0:8000/api/chat/chats/",
 				{ user2: id },
 				{ withCredentials: true }
 			);

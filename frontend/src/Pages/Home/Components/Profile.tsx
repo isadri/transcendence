@@ -11,7 +11,7 @@ function Profile() {
       <div className="Home-profile">
         <div className="Home-ProfImg">
           <a href="profile">
-            <img src={getendpoint(getUser()?.avatar ?? '')} alt="" />
+            <img src={getendpoint("http", "/media/"+getUser()?.avatar ?? '')} alt="" />
           </a>
           <a href="profile">
             <span>{user?.username}</span>
