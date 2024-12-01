@@ -1,21 +1,20 @@
 // import ProfileImg from "../images/profile.svg";
 import Cbadge from "../images/CourentBadge.svg";
-import { useContext } from "react";
-import { loginContext } from "../../../App";
+import { getUser } from "../../../context/getContextData";
+import { getendpoint } from "../../../context/getContextData";
 
 function Profile() {
-  const userContext = useContext(loginContext)
-  console.log('http://'+`${userContext?.hostname}`+':8000/' + userContext?.user?.avatar)
-  if (userContext?.user)
+  const user = getUser()
+  if (user)
   {
     return (
       <div className="Home-profile">
         <div className="Home-ProfImg">
           <a href="profile">
-            <img src={'http://'+`${userContext?.hostname}`+':8000'+userContext?.user?.avatar} alt="" />
+            <img src={getendpoint(getUser()?.avatar ?? '')} alt="" />
           </a>
           <a href="profile">
-            <span>{userContext?.user?.username}</span>
+            <span>{user?.username}</span>
           </a>
         </div>
         <div className="Home-user">
