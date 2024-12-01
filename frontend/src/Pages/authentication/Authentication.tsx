@@ -19,14 +19,14 @@ interface errorDataTypes{
 function Authentication() {
   const authContext = useContext(loginContext)
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [val, setVal] = useState(true);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [val, setVal] = useState(true)
 
   const [Error, setError] = useState(false);
-  const [errorList, setErrorList] = useState<string[][]>([]);
+  const [errorList, setErrorList] = useState<string[][]>([])
   const [errors, SetErrors] = useState<errorDataTypes>({
     username : '',
     email : '',
@@ -38,15 +38,45 @@ function Authentication() {
       username,
       password
   }
-  const url_login = 'http://0.0.0.0:8000/api/accounts/login/'
+  // const hostname = window.location.hostname
+  const url_login = 'http://'+`${authContext?.hostname}`+':8000/api/accounts/login/'
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = 'http://0.0.0.0:8000/api/accounts/register/'
+  const url_reg = 'http://'+`${authContext?.hostname}`+':8000/api/accounts/register/'
   
+  const handelIntraLogin = (e: any) => {
+    axios.get('http://localhost:8000/api/accounts/login/intra/')
+      .then(() =>{
+        // console.log("saccess")
+      })
+      .catch(() => {
+        // console.log("failer")
+      })
+  }
+  const handelgGoogleLogin = (e: any) => {
+    axios.get('http://localhost:8000/api/accounts/login/google/')
+      .then(() =>{
+        // console.log("saccess")
+      })
+      .catch(() => {
+        // console.log("failer")
+      })
+  }
+  const GetUserInfo = () =>{
+    axios.get('http://'+`${authContext?.hostname}`+':8000/',  {withCredentials:true})
+    .then((response) => {
+      authContext?.setIsLogged(true)
+      authContext?.setUser(response.data)
+    })
+    .catch(() => {
+      authContext?.setIsLogged(false)
+      authContext?.setUser(undefined)
+    })
+  }
   const handelSubmit = (e: any, str: string) => {
     if (str === "signin" || (str === "signup" && confirmPassword === password))
     {
@@ -55,7 +85,12 @@ function Authentication() {
       const data = val ? data_login : data_reg
       axios.post(endpont, data, {withCredentials: true})
             .then(() => {
-                !val ? setVal(true) : (navigate('/'), authContext?.setIsLogged(true));
+                !val ? setVal(true) :
+                (
+                  navigate('/'),
+                  authContext?.setIsLogged(true),
+                  GetUserInfo()
+                );
                 setUsername('')
                 setEmail('')
                 setPassword('')
@@ -197,19 +232,19 @@ function Authentication() {
           </div>
           <div className='DirectConx'>
             <div className='GoogleConx'>
-              <a>
+              <div onClick={handelgGoogleLogin}>
                 <img src={Google} alt="" />
-              </a>
+              </div>
             </div>
             <div className='IntraConx'>
-              <a>
+              <div onClick={handelIntraLogin}>
                 <img src={intra} alt="" />
-              </a>
+              </div>
             </div>
           </div>
       </div>
       <div className='SingUp ' style={{...SingUpStyle, ...(!val && win_width ? {opacity:1, transform: "translateX(0%)"}:{})}}>
-          <div className='iconBack' style={win_width ? {opacity : 1}:{opacity : 0}}>
+          <div className='iconBack' style={win_width ? {opacity : 1}:{opacity : 0}} >
               <Link to="/">
                 <i className="fa-solid fa-arrow-left"></i>
               </Link>
@@ -218,28 +253,16 @@ function Authentication() {
           <div className='form' >
             <input type="text" name="username" id="UserName" placeholder='UserName'
               value={username} onChange={(e) => handelRegisterErorrs(e, "username")} required/>
-              {/* {
-                Error && checkError("username") && checkError("username")[0] === "username" &&
-                <p className='errorSet'>{checkError("username")[1]}</p>
-              } */}
               {
                 errors.username !== '' && <p className='errorSet' >{errors.username}</p>
               }
             <input type="text" name="Email" id="Email"  placeholder="Email"
               value={email} onChange={(e) => handelRegisterErorrs(e, "email")} required/>
-              {/* {
-                Error && checkError("email") && checkError("email")[0] === "email" &&
-                <p className='errorSet'>{checkError("email")[1]}</p>
-              } */}
               {
                  errors.email !== '' && <p className='errorSet' >{errors.email}</p>
               }
             <input type="text" name="password" id="Pass" placeholder='Password'
             value={password} onChange={(e) => handelRegisterErorrs(e, "password")} required/>
-            {/* {
-              Error && checkError("password") && checkError("password")[0] === "password" &&
-              <p className='errorSet'>{checkError("password")[1]}</p>
-            } */}
             {
               errors.password !== ''  && <p className='errorSet' >{errors.password}</p>
             }
@@ -257,14 +280,14 @@ function Authentication() {
         </div>
         <div className='DirectConx'>
           <div className='GoogleConx'>
-            <a>
+            <button>
               <img src={Google} alt="" />
-            </a>
+            </button>
           </div>
           <div className='IntraConx'>
-            <a>
+            <div>
               <img src={intra} alt="" />
-            </a>
+            </div>
           </div>
         </div>
       </div>

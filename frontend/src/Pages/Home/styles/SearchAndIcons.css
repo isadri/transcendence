@@ -5,7 +5,8 @@
     padding: 2px;
     display: flex;
     align-items: center;
-    height: 23px;
+    height: 30px;
+    width: 30%;
 }
 
 .Home-search input {
@@ -33,8 +34,8 @@
     padding: 8px;
     border-radius: 50%;
     background-color: var(--fade);
-    width: 20px;
-    height: 20px;
+    width: 29px;
+    height: 29px;
     cursor: pointer;
 }
 
