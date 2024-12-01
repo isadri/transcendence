@@ -21,12 +21,12 @@ router.register(r'logout', views.LogoutViewSet, basename='logout')
 # The frontend should redirect the user to one of these two apis
 # For login with 42, the frontend should redirect the user to the
 # endpoint:
+# For Google:
 # 'https://api.intra.42.fr/oauth/authorize?'
 #                   'client_id={"INTRA_ID"}'
 #                   '&redirect_uri={"INTRA_REDIRECT_URI"}'
 #                   '&state={settings.OAUTH2_STATE_PARAMETER}'
 #                   '&response_type=code'
-# For Google:
 #'https://accounts.google.com/o/oauth2/v2/auth?'
 #                   'client_id={"GOOGLE_ID")}'
 #                   '&redirect_uri={"GOOGLE_REDIRECT_URI")}'

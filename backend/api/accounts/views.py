@@ -39,8 +39,12 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
+        serializer =  UserSerializer(request.user)
+        data = serializer.data
+        data.pop("password", None)
+
         if request.user.is_authenticated:
-            return Response(status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -334,9 +338,9 @@ class RegisterViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
-        data_copy = request.data.copy()
-        data_copy['username'] = request.data['username'].lower()
-        serializer = UserSerializer(data=data_copy)
+        data = request.data.copy()
+        data['username'] = data['username'].lower()
+        serializer = UserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

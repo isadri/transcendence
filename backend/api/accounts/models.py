@@ -91,7 +91,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     avatar = models.ImageField(
         help_text=_('The profile picture'),
         upload_to='avatars',
-        default='default.jpg'
+        default='default.jpeg'
     )
     is_staff = models.BooleanField(
         default=False,

@@ -1,6 +1,6 @@
 import BackGround from '../components/background/BackGround'
 import FirstNavBar from '../components/FirstNavBar/navBar';
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 
 import Landing from "../Pages/landing/landing";
 import SignIn from '../Pages/authentication/SignIn/SignIn';
@@ -48,7 +48,7 @@ const landingRouter = createBrowserRouter([
     path: '/',
     element: <LandingLayout/>,
     children: landingRoutingTable,
-    errorElement : <NoPage/>
+    errorElement : <Navigate to={"/"}/>
   }
 ])
 

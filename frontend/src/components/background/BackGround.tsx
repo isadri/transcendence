@@ -5,7 +5,7 @@ import { useMediaQuery } from "@uidotdev/usehooks";
 
 interface Props {
   children: ReactNode;
-  isLogged: boolean
+  isLogged: boolean | null
 }
 
 const BackGround = ({ children, isLogged }: Props) => {

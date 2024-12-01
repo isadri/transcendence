@@ -7,7 +7,7 @@ import Setting from '../Pages/Setting/Setting';
 
 import BackGround from '../components/background/BackGround'
 import SideNavbar from '../components/sideNavbar/SideNavbar';
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
@@ -61,10 +61,6 @@ const mainRoutingTable = [
     path: "/setting",
     element: <Setting />
   },
-  {
-    path: "/setting",
-    element: <Setting />
-  },
 ]
 
 function MainLayout() {
@@ -81,7 +77,7 @@ const mainRouter = createBrowserRouter([
     path: '/',
     element: <MainLayout/>,
     children: mainRoutingTable,
-    errorElement : <NoPage/>
+    errorElement : <Navigate to={"/"}/>
   }
 ])
 

@@ -11,6 +11,7 @@ import './styles/welcomeAndProfile.css'
 import './styles/SearchAndIcons.css'
 
 function Home() {
+
   return (
     <div className='Home-homePage'>
       <div className='Home-searchAndIcons'>
