@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./SideNavbar.css";
 import SideNavbarData from "./SideNavbarData";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import logo from "./images/logo1.svg";
 import "./SidenavbarMobile.css";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import { useLocation } from "react-router-dom";
+import axios from "axios";
+import { loginContext } from "../../App";
 
 const SideNavbar = () => {
+	const authContext = useContext(loginContext)
+	const navigate = useNavigate();
 	const pathname = useLocation().pathname;
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [activeItem, setActiveItem] = useState<string>(pathname);
@@ -22,6 +26,15 @@ const SideNavbar = () => {
 	};
 
 	const handleLogoutClick = () => {
+		axios.get('http://'+`${authContext?.hostname}`+':8000/api/accounts/logout/', {withCredentials:true})
+      		.then(() =>{
+				authContext?.setIsLogged(false)
+				navigate('/')
+				// console.log("saccess")
+      		})
+      		.catch(() => {
+      			// console.log("failer")
+      		})
 		setLogoutColor((prevColor) =>
 			prevColor === "#ffffffcc" ? "#C1596C" : "#ffffffcc"
 		);
