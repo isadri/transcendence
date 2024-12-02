@@ -5,12 +5,13 @@ interface userDataType {
     username : string,
     email : string,
     avatar : string
-  }
-  interface loginContextData {
-    isLogged:boolean |null,
+}
+
+interface loginContextData {
+    isLogged:boolean | null,
     setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
-    user: userDataType | undefined
-    setUser: React.Dispatch<React.SetStateAction<userDataType | undefined>>;
+    user: userDataType
+    setUser: React.Dispatch<React.SetStateAction<userDataType>>;
 }
 
 export const loginContext = createContext<loginContextData | null>(null)
