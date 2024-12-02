@@ -3,33 +3,49 @@ import avatar from "../../AboutUs/images/Your_profil_pict.png";
 import badge from "../../Profile/images/badge1.svg";
 import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
+import { getUser, getendpoint } from "../../../context/getContextData";
 
-const PlayerCard = ({enemy = false} : {enemy?:boolean}) => {
+
+interface PlayerCardData {
+  enemy?:boolean,
+  isRandom?:boolean,
+}
+
+const PlayerCard = ({enemy = false, isRandom = false} : PlayerCardData) => {
+  const user = getUser()
   return (
     <div className="WarmUpVsPlayer">
       <div className="WarmUpVsImageDiv">
         {
-          true && enemy ?
+          enemy ?
           <div className="WarmUpVsPlus" >
             <div>
-              <i className="fa-solid fa-plus fa-2xl"></i>
+              <i className={`fa-solid ${ isRandom ? "fa-hourglass-start" : "fa-plus"} fa-2xl`}></i>
             </div>
             <img src={avatar} className="WarmUpVsAvatar" />
           </div>
           :
           <>
-            <img src={avatar} className="WarmUpVsAvatar" />
+            <img src={getendpoint("http", user.avatar)} className="WarmUpVsAvatar" />
             <img src={badge} className="WarmUpVsBadge" />
           </>
         }
       </div>
       <div className="WarmUpVsPlayerInfo">
         {
-        true && enemy ?
-        <h4>Invite a friend</h4>
+        enemy ?
+        <>
+        {
+          isRandom
+          ?
+          <h4>waiting ...</h4>
+          :
+          <h4>Invite a friend</h4>
+        }
+        </>
         :
         <>
-          <h4>username</h4>
+          <h4>{user?.username}</h4>
           <h4>4.5 lvl</h4>
         </>
         } 
@@ -72,7 +88,7 @@ const ReadyContext = () => {
   )
 }
 
-const WarmUp = () => {
+const WarmUp = ({isRandom = true} : {isRandom?:boolean}) => {
   return (
     <>
       <div className="GameWarmUp">
@@ -81,7 +97,7 @@ const WarmUp = () => {
           <div className="WarmUpVs">
             <PlayerCard />
             <img src={vsImage} className="WarmUpVsImage" />
-            <PlayerCard enemy/>
+            <PlayerCard enemy isRandom/>
           </div>
           {/* <div className="WarmUpBox">
             <WarmUpBox/>
