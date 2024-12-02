@@ -1,23 +1,31 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
-import { GetChats, ChatMessage } from "./ChatList";
+import { GetChats } from "./ChatList";
+import { useChatContext } from "./context/ChatUseContext";
+import { loginContext } from "../../../App";
+import { getUser } from "../../../context/getContextData";
 
 interface ChatCenterProps {
 	selectedFriend: GetChats;
-	messages: ChatMessage[];
+	// messages: ChatMessage[];
 }
 
-const ChatCenter = ({ selectedFriend, messages }: ChatCenterProps) => {
+const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 	const endRef = useRef<HTMLDivElement>(null);
+	const { messages } = useChatContext();
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: "instant" });
 	}, [messages]);
 
+	const user = getUser();
+	const filteredMessages =
+		messages?.filter((msg) => msg.chat === selectedFriend.id) || [];
 	return (
 		<div className="center">
-			{selectedFriend.messages.map((value, index) => {
-				const isOwnMessage = value.sender === selectedFriend.user1;
+			{filteredMessages.map((value, index) => {
+				const isOwnMessage = value.sender === user?.id;
+				// const friendMessage = value.sender === user?.id;
 				return (
 					<div key={index} className={isOwnMessage ? "message-own" : "message"}>
 						{!isOwnMessage && (

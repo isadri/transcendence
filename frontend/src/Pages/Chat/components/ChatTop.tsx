@@ -1,12 +1,13 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
-import { ChatMessage } from "./ChatList";
+// import { ChatMessage } from "./ChatList";
 import { GetChats } from "./ChatList";
+import { useChatContext } from "./context/ChatUseContext";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
-	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+	// setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	setBlock: React.Dispatch<React.SetStateAction<boolean>>;
 	block: boolean;
 }
@@ -14,13 +15,14 @@ interface ChatTopProps {
 const ChatTop = ({
 	selectedFriend,
 	setSelectedFriend,
-	setMessages,
+	// setMessages,
 	setBlock,
 	block,
 }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
+	const { setMessages } = useChatContext()
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
