@@ -1,22 +1,25 @@
 import { useContext } from "react";
-import {loginContext} from './../App'
+import { loginContext } from "./../App";
 // import axios from "axios";
 
+export const getContext = () => {
+	return useContext(loginContext);
+};
 
-export const getContext = () =>{
-    return useContext(loginContext)
-}
+export const getUser = () => {
+	return getContext()?.user;
+};
 
-export const getUser = () =>{
-    return getContext()?.user
-}
+export const getendpoint = (pro: string, path: string) => {
+	return pro + "://" + `${window.location.hostname}` + ":8000" + path;
+};
 
-export const getendpoint = (path: string) =>{
-    return  'http://'+`${window.location.hostname}` + ':8000/' + path
-}
+// export const getwebsocket = (path: string) => {
+// 	return "ws://" + `${window.location.hostname}` + ":8000/" + path;
+// };
 
 // export  const GetUserInfo = () =>{
-//     axios.get(getendpoint(''),  {withCredentials:true})
+//     axios.get(getendpoint("http", '/'),  {withCredentials:true})
 //     .then((response) => {
 //       getContext()?.setIsLogged(true)
 //       getContext()?.setUser(response.data)

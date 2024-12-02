@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AllFriends.css";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
 interface GetFriends {
 	id: number;
@@ -34,7 +35,8 @@ const AllFriends = () => {
 		const fetchFriend = async () => {
 			try {
 				const response = await axios.get(
-					"http://0.0.0.0:8000/api/friends/friends",
+					getendpoint("http", "/api/friends/friends"),
+					// "http://0.0.0.0:8000/api/friends/friends",
 					{
 						withCredentials: true, // Include cookies in the request
 					}

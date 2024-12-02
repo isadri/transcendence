@@ -3,6 +3,7 @@ import DataFriends from "../../Chat/components/DataFriends.tsx";
 import { Friend } from "../../Chat/components/types.ts";
 import "./BlockedFriends.css";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData.tsx";
 
 interface BlockedFriend {
 	id: number;
@@ -17,7 +18,8 @@ const BlockedFriends = () => {
 		const fetchBlockedFriend = async () => {
 			try {
 				const response = await axios.get(
-					"http://0.0.0.0:8000/api/friends/blocked",
+					getendpoint("http", "/api/friends/blocked"),
+					// "http://0.0.0.0:8000/api/friends/blocked",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -46,7 +48,7 @@ const BlockedFriends = () => {
 
 	const handleUnblockRequests = async (id: number) => {
 		try {
-			await axios.post(`http://0.0.0.0:8000/api/friends/unblock/${id}`, null, {
+			await axios.post(getendpoint("http", `/api/friends/unblock/${id}`), null, {
 				withCredentials: true,
 			});
 			setBlockedFriend((prev) => prev.filter((user) => user.id !== id));

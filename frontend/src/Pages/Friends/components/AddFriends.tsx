@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AddFriends.css";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
 interface AllUsers {
 	id: number;
@@ -32,7 +33,8 @@ const AddFriends = () => {
 		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(
-					"http://0.0.0.0:8000/api/friends/users",
+					getendpoint("http", "/api/friends/users"),
+					// "http://0.0.0.0:8000/api/friends/users",
 					{
 						withCredentials: true,
 					}
@@ -45,9 +47,9 @@ const AddFriends = () => {
 
 		fetchUsers();
 		// const intervalId = setInterval(fetchUsers, 5000);
-
+		
 		document.addEventListener("mousedown", handleClickOutside);
-
+		
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 			// clearInterval(intervalId);
@@ -56,23 +58,24 @@ const AddFriends = () => {
 
 	const handleSearchFriend = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-
+		
 		setSearchFriend(value);
 		const filterResults = allUsers.filter((user) =>
 			user.username.toLowerCase().includes(value.toLowerCase())
-		);
-		setResults(filterResults);
+	);
+	setResults(filterResults);
 	};
-
+	
 	const handleReturnToList = () => {
 		setFocusOnSearch(false);
 		setSearchFriend("");
 	};
-
+	
 	const handleSendRequests = async (id: number) => {
 		try {
 			await axios.post(
-				"http://0.0.0.0:8000/api/friends/send/",
+				getendpoint("http", "/api/friends/send/"),
+				// "http://0.0.0.0:8000/api/friends/send/",
 				{ receiver: id },
 				{
 					withCredentials: true,

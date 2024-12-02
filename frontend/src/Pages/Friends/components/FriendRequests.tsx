@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./FriendRequests.css";
 import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
 interface FriendRequests {
 	id: number;
@@ -15,7 +16,8 @@ const FriendRequests = () => {
 		const fetchFriendRequests = async () => {
 			try {
 				const response = await axios.get(
-					"http://0.0.0.0:8000/api/friends/pending",
+					getendpoint("http", "/api/friends/pending"),
+					// "http://0.0.0.0:8000/api/friends/pending",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -44,7 +46,7 @@ const FriendRequests = () => {
 
 	const handleAcceptRequest = async (id: number) => {
 		try {
-			await axios.post(`http://0.0.0.0:8000/api/friends/accept/${id}`, null, {
+			await axios.post(getendpoint("http", `/api/friends/accept/${id}`), null, {
 				withCredentials: true,
 			});
 			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
@@ -55,7 +57,7 @@ const FriendRequests = () => {
 
 	const handleDeleteRequests = async (id: number) => {
 		try {
-			await axios.delete(`http://0.0.0.0:8000/api/friends/decline/${id}`, {
+			await axios.delete(getendpoint("http", `/api/friends/decline/${id}`), {
 				withCredentials: true,
 			});
 			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
