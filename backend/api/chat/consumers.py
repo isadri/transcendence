@@ -1,7 +1,9 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -43,7 +45,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         receiver_id = data.get('receiver')
 
         # Check if the user is exist
-        receiver = None
+        # receiver = None
         try:
             receiver = await User.objects.aget(id=receiver_id)
         except User.DoesNotExist:
@@ -56,10 +58,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user1=self.user,
             user2=receiver
         )
-
         new_message = await Message.objects.acreate(
             chat=chat,
             sender=self.user,
+            receiver=receiver,
             content=message
         )
 
@@ -68,6 +70,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
+                'chat_id': chat.id,
                 'sender_id': self.user.id,
                 'receiver_id': receiver.id
             }
@@ -79,6 +82,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
+                'chat_id': chat.id,
                 'sender_id': self.user.id,
                 'receiver_id': receiver.id
             }
@@ -88,45 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send message to websocket
         await self.send(text_data=json.dumps({
             'message': event['message'],
+            'chat_id': event['chat_id'],
             'sender_id': event['sender_id'],
             'receiver_id': event['receiver_id']
         }))
-
-
-    #     # Check if the user is still a part of the chat
-    #     if not self.is_in_chat():
-    #         await self.send(text_data=json.dumps({
-    #             'error': 'You are not a participant in this chat.'
-    #         }))
-    #         return
-
-    #     # Save the message to the database
-    #     Message.objects.create(chat=self.chat, sender=self.user, content=message)
-
-    #     # Send the message to the group
-    #     await self.channel_layer.group_send(
-    #         self.room_group_name,
-    #         {
-    #             'type': 'chat_message',
-    #             'message': message,
-    #             'sender_id': self.user.id,
-    #         }
-    #     )
-
-    # async def chat_message(self, event):
-    #     message = event['message']
-    #     sender_id = event['sender_id']
-
-    #     # Send message to WebSocket
-    #     await self.send(text_data=json.dumps({
-    #         'message': message,
-    #         'sender_id': sender_id,
-    #     }))
-
-    # async def get_chat(self):
-    #     """Fetch the chat instance asynchronously."""
-    #     return await Chat.objects.aget(id=self.chat_id)
-
-    # def is_in_chat(self):
-    #     """Check if the user is either user1 or user2 in the chat."""
-    #     return self.chat.user1 == self.user or self.chat.user2 == self.user

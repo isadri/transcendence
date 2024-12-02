@@ -13,7 +13,7 @@ export interface ChatMessage {
 }
 interface ChatContextType {
 	socket: WebSocket | null;
-	sendMessage: (data: { message: string; sender: number; receiver: number }) => void;
+	sendMessage: (data: { message: string; receiver: number }) => void;
 	messages: ChatMessage[];
 	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
@@ -40,8 +40,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		};
 		ws.onmessage = (event) => {
 			try {
-				const data: ChatMessage = JSON.parse(event.data);
-				setMessages((prev) => [...prev, data]);
+				const data = JSON.parse(event.data);
+				console.log("data: ", data);
+				const newMessage: ChatMessage = {
+					id: Date.now(),
+					chat: data.chat_id,
+					sender: data.sender_id,
+					receiver: data.receiver_id,
+					content: data.message,
+					timestamp: new Date().toISOString(),
+					file: null,
+					image: null,
+				}
+				setMessages((prev) => [...prev, newMessage]);
+				console.log("newmessage in websocker: ", messages);
 			} catch (err) {
 				console.error("Error parsing WebSocket message: ", err);
 			}

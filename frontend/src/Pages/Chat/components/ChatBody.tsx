@@ -3,8 +3,8 @@ import "./ChatBody.css";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
-import moment from "moment";
-import { GetFriends } from "../Chat";
+// import moment from "moment";
+// import { GetFriends } from "../Chat";
 import { GetChats } from "./ChatList";
 // import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
@@ -32,7 +32,7 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 						withCredentials: true,
 					}
 				);
-				setMessages(response.data.messages);
+				setMessages(response.data[0].messages);
 			} catch (err) {
 				console.log("Error in fetching chats", err);
 			}
@@ -49,7 +49,6 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 			<ChatTop
 				selectedFriend={selectedFriend}
 				setSelectedFriend={setSelectedFriend}
-				// setMessages={setMessages}
 				setBlock={setBlock}
 				block={block}
 			/>

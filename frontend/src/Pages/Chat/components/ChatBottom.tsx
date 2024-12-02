@@ -5,6 +5,7 @@ import { GetChats } from "./ChatList";
 // import axios from "axios";
 // import { getUser, getendpoint } from "../../../context/getContextData";
 import { ChatMessage, useChatContext } from "./context/ChatUseContext";
+import { getUser } from "../../../context/getContextData";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
@@ -18,7 +19,8 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
 		const [text, setText] = useState("");
-		const { setMessages, sendMessage } = useChatContext()
+		const { messages, sendMessage } = useChatContext()
+		const user = getUser()
 
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
@@ -41,30 +43,39 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 
 		const handleSendMessage = async () => {
 			if (selectedFriend && text.trim()) {
-				sendMessage({
-					// message: text,
-					message: text.trim(),
-					sender: selectedFriend.user1.id,
-					receiver: selectedFriend.user2.id,
-				})
-				console.log(text);
-				
-				const newMessage: ChatMessage = {
-					id: Date.now(),
-					chat: selectedFriend.id,
-					sender: selectedFriend.user1.id,
-					receiver: selectedFriend.user2.id,
-					content: text.trim(),
-					timestamp: new Date().toISOString(),
-					file: null,
-					image: null,
-
+				let receiver_id
+				if (user?.id === selectedFriend.user1.id) {
+					receiver_id = selectedFriend.user2.id
+				} else {
+					receiver_id = selectedFriend.user1.id
 				}
-				console.log("newMessages:", newMessage);
-				setMessages((prev) => {
-					console.log("Previous Messages:", prev);
-					return [...prev, newMessage];
-				});
+				// console.log(receiver_id)
+				sendMessage({
+					message: text.trim(),
+					receiver: receiver_id,
+				})
+				// console.log(text);
+				
+				// const sender_id = getUser()?.id
+				// const id = sender_id == selectedFriend.user1;
+				// console.log(user?.id);
+				
+				// const newMessage: ChatMessage = {
+				// 	id: Date.now(),
+				// 	chat: selectedFriend.id,
+				// 	sender: sender_id,
+				// 	receiver: receiver_id,
+				// 	content: text.trim(),
+				// 	timestamp: new Date().toISOString(),
+				// 	file: null,
+				// 	image: null,
+
+				// }
+				// console.log("newMessages:", newMessage);
+				// setMessages((prev) => {
+				// 	console.log("Previous Messages:", prev);
+				// 	return [...prev, newMessage];
+				// });
 				// setMessages((prev) => [...prev, newMessage])
 				setText("");
 				setOpen(false);

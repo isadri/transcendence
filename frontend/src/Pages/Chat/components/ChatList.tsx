@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
 import { ChatMessage } from "./context/ChatUseContext";
 
 // export interface ChatMessage {
@@ -43,6 +43,7 @@ const ChatList = ({
 	setListAllFriends,
 }: ChatListProps) => {
 	const [chats, setChats] = useState<GetChats[]>([]);
+	const user = getUser();
 
 	useEffect(() => {
 		const fetchChats = async () => {
@@ -114,33 +115,41 @@ const ChatList = ({
 							</div>
 						</div>
 				  ))
-				: chats.map((chat) => (
-						<div
-							className={`item ${
-								selectedFriend?.id === chat.id ? "selected" : ""
-							}`}
-							key={chat.user2.id}
-							onClick={() => {
-								onSelectFriend(chat);
-								setSearchFriend("");
-								setFocusOnSearch(false);
-								setListAllFriends(false);
-							}}
-						>
-							<img src={chat.user2.avatar} alt="profile" className="profile" />
-							<div className="text">
-								<span>{chat.user2.username}</span>
-								{/* {!listAllFriends && <p>{chat.message}</p>} */}
-							</div>
-							{chat.messages.length > 0 && (
-								<p>{chat.messages[chat.messages.length - 1].content}</p>
-							)}
-							{/* {!listAllFriends && <div className="ChatStatus">
+				: chats.map((chat) => {
+						const friend_user =
+							user?.id === chat.user2.id ? chat.user1 : chat.user2;
+						return (
+							<div
+								className={`item ${
+									selectedFriend?.id === chat.id ? "selected" : ""
+								}`}
+								key={friend_user.id}
+								onClick={() => {
+									onSelectFriend(chat);
+									setSearchFriend("");
+									setFocusOnSearch(false);
+									setListAllFriends(false);
+								}}
+							>
+								<img
+									src={friend_user.avatar}
+									alt="profile"
+									className="profile"
+								/>
+								<div className="text">
+									<span>{friend_user.username}</span>
+									{/* {!listAllFriends && <p>{chat.message}</p>} */}
+								</div>
+								{chat.messages.length > 0 && (
+									<p>{chat.messages[chat.messages.length - 1].content}</p>
+								)}
+								{/* {!listAllFriends && <div className="ChatStatus">
 								<div>{friend.time}</div>
 								{friend.status}
 							</div>} */}
-						</div>
-				  ))}
+							</div>
+						);
+				  })}
 		</div>
 	);
 };

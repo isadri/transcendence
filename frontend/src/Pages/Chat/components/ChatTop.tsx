@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from "react";
 // import { ChatMessage } from "./ChatList";
 import { GetChats } from "./ChatList";
 import { useChatContext } from "./context/ChatUseContext";
+import { getUser } from "../../../context/getContextData";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
-	// setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	setBlock: React.Dispatch<React.SetStateAction<boolean>>;
 	block: boolean;
 }
@@ -15,14 +15,14 @@ interface ChatTopProps {
 const ChatTop = ({
 	selectedFriend,
 	setSelectedFriend,
-	// setMessages,
 	setBlock,
 	block,
 }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const { setMessages } = useChatContext()
+	const { setMessages } = useChatContext();
+	const user = getUser();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -53,6 +53,10 @@ const ChatTop = ({
 		setOpenMenu(false);
 	};
 
+	const friend_user =
+		user?.id === selectedFriend.user2.id
+			? selectedFriend.user1
+			: selectedFriend.user2;
 	return (
 		<div className="top">
 			<div className="profileInfo">
@@ -60,13 +64,9 @@ const ChatTop = ({
 					className="fa-solid fa-arrow-left arrowClose"
 					onClick={() => setSelectedFriend(null)}
 				></i>
-				<img
-					src={selectedFriend.user2.avatar}
-					alt="profile"
-					className="image"
-				/>
+				<img src={friend_user.avatar} alt="profile" className="image" />
 				<div className="textInfo">
-					<span>{selectedFriend.user2.username}</span>
+					<span>{friend_user.username}</span>
 					<p>Last seen today 00:56</p>
 				</div>
 			</div>
