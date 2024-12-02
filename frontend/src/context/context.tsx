@@ -9,12 +9,26 @@ interface userDataType {
 
 interface loginContextData {
     isLogged:boolean | null,
-    setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
+    setIsLogged: any
     user: userDataType
-    setUser: React.Dispatch<React.SetStateAction<userDataType>>;
+    setUser: any;
 }
 
-export const loginContext = createContext<loginContextData | null>(null)
+
+const emptyContext = {
+    isLogged:null,
+    setIsLogged: undefined,
+    user: {
+        id : -1,
+        username : "",
+        email : "",
+        avatar : ""
+    },
+    setUser: undefined
+}
+
+
+export const loginContext = createContext<loginContextData>(emptyContext)
 
 export type {loginContextData}
 export type {userDataType}
