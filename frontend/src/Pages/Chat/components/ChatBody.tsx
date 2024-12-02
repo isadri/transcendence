@@ -5,9 +5,11 @@ import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
 import moment from "moment";
 import { GetFriends } from "../Chat";
-import { GetChats, ChatMessage } from "./ChatList";
+import { GetChats } from "./ChatList";
+// import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
+import { useChatContext } from "./context/ChatUseContext";
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -17,7 +19,8 @@ interface ChatBodyProps {
 const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
 	const [block, setBlock] = useState(false);
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const { setMessages } = useChatContext();
+	// const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
 		const fetchMessages = async (chatId: number) => {
@@ -46,14 +49,15 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 			<ChatTop
 				selectedFriend={selectedFriend}
 				setSelectedFriend={setSelectedFriend}
-				setMessages={setMessages}
+				// setMessages={setMessages}
 				setBlock={setBlock}
 				block={block}
 			/>
-			<ChatCenter messages={messages} selectedFriend={selectedFriend} />
+			<ChatCenter selectedFriend={selectedFriend} />
+			{/* <ChatCenter messages={messages} selectedFriend={selectedFriend} /> */}
 			<ChatBottom
 				selectedFriend={selectedFriend}
-				setMessages={setMessages}
+				// setMessages={setMessages}
 				ref={ref}
 				block={block}
 			/>

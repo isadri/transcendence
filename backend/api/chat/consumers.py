@@ -92,6 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'receiver_id': event['receiver_id']
         }))
 
+
     #     # Check if the user is still a part of the chat
     #     if not self.is_in_chat():
     #         await self.send(text_data=json.dumps({

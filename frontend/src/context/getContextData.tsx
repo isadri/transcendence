@@ -10,7 +10,6 @@ export const getUser = () => {
 	return getContext()?.user;
 };
 
-
 export const getendpoint = (pro: string, path: string) => {
 	return pro + "://" + `${window.location.hostname}` + ":8000" + path;
 };

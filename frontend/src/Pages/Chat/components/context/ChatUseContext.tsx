@@ -1,47 +1,72 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-// need to add the user who authenticated
+import { getendpoint } from "../../../../context/getContextData";
+
+export interface ChatMessage {
+	id: number;
+	chat: number;
+	sender: number;
+	receiver: number;
+	content: string;
+	timestamp: string;
+	file?: string | null;
+	image?: string | null;
+}
 interface ChatContextType {
-	// userId: number | null;
 	socket: WebSocket | null;
-	sendMessage: (data: { message: string; receiver: number}) => void;
+	sendMessage: (data: { message: string; sender: number; receiver: number }) => void;
+	messages: ChatMessage[];
+	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
 const ChatContext = createContext<ChatContextType>({
-	// userId: null,
 	socket: null,
 	sendMessage: () => {},
-})
+	messages: [],
+	setMessages: () => {},
+});
 
-export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-	// const [userId, seUserId] = useState<number | null>(null)
-	const [socket, setSocket] = useState<WebSocket | null>(null)
+export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
+	children,
+}) => {
+	const [socket, setSocket] = useState<WebSocket | null>(null);
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
-		const ws = new WebSocket(`ws://0.0.0.0:8000/ws/chat/`)
-		ws.onopen = () => console.log("WebSocket connected")
-		ws.onclose = () => console.log("WebSocket disconnected")
-		
-		setSocket(ws)
+		const ws = new WebSocket(getendpoint("ws", `/ws/chat/`));
+		ws.onopen = () => console.log("WebSocket connected");
+		ws.onclose = () => console.log("WebSocket disconnected");
+		ws.onerror = (error) => {
+			console.error("WebSocket error:", error);
+		};
+		ws.onmessage = (event) => {
+			try {
+				const data: ChatMessage = JSON.parse(event.data);
+				setMessages((prev) => [...prev, data]);
+			} catch (err) {
+				console.error("Error parsing WebSocket message: ", err);
+			}
+		};
 
-		return () => {
-			ws.close(); // Clean up the WebSocket on component unmont
-		}
-	}, [])
+		setSocket(ws);
 
-	const sendMessage = (data: { message: string; receiver: number}) => {
+		return () => ws.close(); // Clean up the WebSocket on component unmont
+	}, []);
+
+	const sendMessage = (data: { message: string; receiver: number }) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(JSON.stringify(data));
+		} else {
+			console.error("WebSocket is not open.");
 		}
-	}
+	};
 
 	return (
-		// <ChatContext.Provider value={{userId, socket, sendMessage}}>
-		<ChatContext.Provider value={{ socket, sendMessage}}>
+		<ChatContext.Provider
+			value={{ socket, sendMessage, messages, setMessages }}
+		>
 			{children}
 		</ChatContext.Provider>
-	)
-
-}
-
+	);
+};
 
 export const useChatContext = () => useContext(ChatContext);
