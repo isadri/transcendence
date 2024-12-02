@@ -214,10 +214,12 @@ LOGGING = {
         },
         'logstash': {
             'level': 'DEBUG',
-            'class': 'logstash.TCPLogstashHandler',
+            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+            'transport': 'logstash_async.transport.TcpTransport',
             'host': 'logstash',
             'port': int(os.getenv('TCP_PORT', 5959)),
             'version': 1,
+            'database_path': None, # use in-memory cache instead of a SQLite database
         },
     },
     'loggers': {
