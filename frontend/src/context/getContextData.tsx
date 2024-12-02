@@ -12,7 +12,7 @@ export const getUser = () =>{
 }
 
 export const getendpoint = (path: string) =>{
-    return  'http://'+`${window.location.hostname}` + ':8000/' + path
+    return  'http://'+`${window.location.hostname}` + ':8000' + path
 }
 
 // export  const GetUserInfo = () =>{

@@ -40,14 +40,14 @@ function Authentication() {
       password
   }
   // const hostname = window.location.hostname
-  const url_login = getendpoint('api/accounts/login/')
+  const url_login = getendpoint('/api/accounts/login/')
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = getendpoint('api/accounts/register/')
+  const url_reg = getendpoint('/api/accounts/register/')
   
   const handelIntraLogin = (e: any) => {
     axios.get('http://localhost:8000/api/accounts/login/intra/')

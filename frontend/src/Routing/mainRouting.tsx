@@ -11,6 +11,7 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
+import Tictactoe from '../Pages/TicTacToe/Tictactoe';
 
 
 // isLogged  routing table and layout
