@@ -212,10 +212,17 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': f'{BASE_DIR}/debug.log',
         },
+        'logstash': {
+            'level': 'DEBUG',
+            'class': 'logstash.TCPLogstashHandler',
+            'host': 'logstash',
+            'port': int(os.getenv('TCP_PORT', 5959)),
+            'version': 1,
+        },
     },
     'loggers': {
         'api.accounts': {
-            'handlers': ['file'],
+            'handlers': ['file', 'logstash'],
             'level': 'DEBUG',
             'propagate': False,
         },
