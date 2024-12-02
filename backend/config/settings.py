@@ -199,21 +199,25 @@ EMAIL_USE_TLS = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] [{levelname}] [{module}.{funcName}] {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
-        'logstash': {
-            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
-            'host': 'logstash',
-            'port': os.getenv('TCP_PORT', 5959),
-            'version': 1,
-            'message_type': 'logstash',
-            'database_path': '/code/logstash.db',
+        'file': {
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+            'class': 'logging.FileHandler',
+            'filename': f'{BASE_DIR}/debug.log',
         },
     },
     'loggers': {
-        'api': {
-            'handlers': ['logstash'],
+        'api.accounts': {
+            'handlers': ['file'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
     },
 }
