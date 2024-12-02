@@ -139,7 +139,6 @@ services:
       - certs:/usr/share/logstash/config/certs
       - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
       - ./elk/logstash/settings/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./backend/logstash.db:/user/share/logstash/logstash.db
     env_file:
       - .env
     networks:
