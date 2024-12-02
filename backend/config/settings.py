@@ -220,6 +220,11 @@ LOGGING = {
             'port': int(os.getenv('TCP_PORT', 5959)),
             'version': 1,
             'database_path': None, # use in-memory cache instead of a SQLite database
+            'ssl_enable': True,
+            'ssl_verify': True,
+            'ca_certs': '/code/certs/ca/ca.crt',
+            'certfile': '/code/certs/app/app.crt',
+            'keyfile': '/code/certs/app/app.key',
         },
     },
     'loggers': {

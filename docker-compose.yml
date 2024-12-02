@@ -20,7 +20,7 @@ services:
       - 8000:8000
     volumes:
       - ./backend/:/code
-      - ./backend/logstash.db:/code/logstash.db
+      - certs:/code/certs
     networks:
       - app-network
     env_file:
