@@ -52,6 +52,10 @@ const mainRoutingTable = [
         element: <Play />,
       },
       {
+        path: "/game/warmup/",
+        element: <WarmUp />,
+      },
+      {
         path: "/game/1v1/:gameId",
         element: <Friends />,
       },

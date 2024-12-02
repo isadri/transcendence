@@ -10,7 +10,7 @@ interface GameModePopUpProps {
 }
 
 function GameModePopUp({mode, setter}:GameModePopUpProps) {
-  const navigator = useNavigate()
+  const navigate = useNavigate()
   return (
     <>
     <div className="GameModePopUpBlur">
