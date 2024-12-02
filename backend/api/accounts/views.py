@@ -46,7 +46,7 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        logger.debug('test')
+        logger.info('access home page')
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -74,6 +74,7 @@ class LoginViewSet(viewsets.ViewSet):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
+            logger.info(f'{username} is logged in')
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
             response = Response({
@@ -150,6 +151,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
             return Response({'error': 'Key is incorrect'},
                             status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
+        logger.info(f'{username} is logged in')
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -191,6 +193,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             return Response(user_info, status=status_code)
         user = self.get_user(user_info)
         login(request, user)
+        logger.info(f'{username} is logged in through Google')
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -284,6 +287,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
+        logger.info(f'{username} is logged in through 42')
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
@@ -354,7 +358,7 @@ class RegisterViewSet(viewsets.ViewSet):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            logger.debug(f'+ new user: {serializer.data}')
+            logger.debug(f'+ new user: {serializer.data['username']}')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -370,6 +374,7 @@ class LogoutViewSet(viewsets.ViewSet):
         Logout the user.
         """
         logout(request)
+        logger.info(f'{username} is logged out')
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
