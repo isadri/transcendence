@@ -16,8 +16,8 @@ interface ChatContextType {
 	sendMessage: (data: { message: string; receiver: number }) => void;
 	messages: ChatMessage[];
 	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-	lastMessage: string | null;
-	setLastMessage: React.Dispatch<React.SetStateAction<string | null>>;
+	lastMessage: { [chatId: number]: string | null };
+	setLastMessage: React.Dispatch<React.SetStateAction<{ [chatId: number]: string | null }>>;
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -25,7 +25,7 @@ const ChatContext = createContext<ChatContextType>({
 	sendMessage: () => {},
 	messages: [],
 	setMessages: () => {},
-	lastMessage: null,
+	lastMessage: {},
 	setLastMessage: () => {},
 });
 
@@ -34,7 +34,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const [socket, setSocket] = useState<WebSocket | null>(null);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
-	const [lastMessage, setLastMessage] = useState<string | null>(null);
+	const [lastMessage, setLastMessage] = useState<{ [chatId: number]: string | null }>({});
 
 	useEffect(() => {
 		const ws = new WebSocket(getendpoint("ws", `/ws/chat/`));
@@ -57,15 +57,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					image: null,
 				}
 				setMessages((prev) => [...prev, newMessage]);
-				setLastMessage(data.message)
-				// console.log("newmessage in websocker: ", messages);
+				setLastMessage((prev) => ({
+					...prev,
+					[data.chat_id]: data.message,
+				  }));
 			} catch (err) {
 				console.error("Error parsing WebSocket message: ", err);
 			}
 		};
-
+		
 		setSocket(ws);
-
+		
 		return () => ws.close(); // Clean up the WebSocket on component unmont
 	}, []);
 

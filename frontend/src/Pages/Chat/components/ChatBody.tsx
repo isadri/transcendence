@@ -33,8 +33,8 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 					}
 				);
 				// console.log("data[0] ", response.data[0]);
+				// console.log(chatId, response.data.messages);
 				setMessages(response.data.messages);
-				console.log(chatId, response.data.messages);
 			} catch (err) {
 				console.log("Error in fetching chats", err);
 			}

@@ -4,6 +4,7 @@ import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { ChatMessage, useChatContext } from "./context/ChatUseContext";
+import { log } from "three/webgpu";
 
 export interface GetChats {
 	id: number;
@@ -35,7 +36,7 @@ const ChatList = ({
 }: ChatListProps) => {
 	const [chats, setChats] = useState<GetChats[]>([]);
 	const user = getUser();
-	const { socket, lastMessage } = useChatContext();
+	const { lastMessage } = useChatContext();
 
 	useEffect(() => {
 		const fetchChats = async () => {
@@ -81,11 +82,10 @@ const ChatList = ({
 	};
 
 	const getLastMessage = (chat: GetChats): string | null => {
-		if (socket && lastMessage) {
-			return lastMessage;
-		}
-		return chat.last_message;
+		// Return the last message from the lastMessages object for the specific chat
+		return lastMessage[chat.id] || chat.last_message || "No messages yet";
 	};
+	  
 
 	return (
 		<div className="ChatList">
