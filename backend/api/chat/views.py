@@ -16,6 +16,38 @@ from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
+
+
+class ChatConversationView(APIView):
+    """
+    API view to fetch the chat details and all messages for a specific chat by its ID.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, chat_id: int):
+        user1 = request.user  # The authenticated user
+
+        try:
+            chat = Chat.objects.get(id=chat_id)
+        except Chat.DoesNotExist:
+            return Response({'error': 'The specified chat does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the authenticated user is part of this chat
+        if user1 not in [chat.user1, chat.user2]:
+            return Response({'error': 'You are not part of this chat.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Fetch all messages for the chat
+        messages = Message.objects.filter(chat=chat).order_by('timestamp')
+
+        # Serialize chat and messages
+        chat_data = ChatSerializer(chat).data
+        message_data = MessageSerializer(messages, many=True).data
+
+        return Response({
+            'chat': chat_data,
+            'messages': message_data
+        }, status=status.HTTP_200_OK)
+
 class UserChatView(APIView):
     """
     API view to fetch the chat details between the authenticated user and the specified user2.

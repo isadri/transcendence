@@ -111,17 +111,16 @@ DATABASES = {
     }
 }
 
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 APPEND_SLASH = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5000",
-    "http://e2r10p14:5000",
-    "http://0.0.0.0:5000",
-    "http://127.0.0.1:5000",
-    "http://127.0.0.1:8000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://0.0.0.0:5000",
+#     "http://127.0.0.1:5000",
+#     "http://e2r2p14:5000",
+#     "http://e2r2p15:5000",
+# ]
 
 
 CORS_ALLOW_CREDENTIALS = True

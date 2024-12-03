@@ -49,53 +49,12 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 				} else {
 					receiver_id = selectedFriend.user1.id
 				}
-				// console.log(receiver_id)
 				sendMessage({
 					message: text.trim(),
 					receiver: receiver_id,
 				})
-				// console.log(text);
-				
-				// const sender_id = getUser()?.id
-				// const id = sender_id == selectedFriend.user1;
-				// console.log(user?.id);
-				
-				// const newMessage: ChatMessage = {
-				// 	id: Date.now(),
-				// 	chat: selectedFriend.id,
-				// 	sender: sender_id,
-				// 	receiver: receiver_id,
-				// 	content: text.trim(),
-				// 	timestamp: new Date().toISOString(),
-				// 	file: null,
-				// 	image: null,
-
-				// }
-				// console.log("newMessages:", newMessage);
-				// setMessages((prev) => {
-				// 	console.log("Previous Messages:", prev);
-				// 	return [...prev, newMessage];
-				// });
-				// setMessages((prev) => [...prev, newMessage])
 				setText("");
 				setOpen(false);
-				// try {
-				// 	const response = await axios.post(
-				// 		getendpoint("http", "/api/chat/messages/"),
-				// 		// "http://0.0.0.0:8000/api/chat/messages/",
-				// 		{ chat: chatId, content: newMessage },
-				// 		{
-				// 			withCredentials: true,
-				// 		}
-				// 	);
-				// 	setMessages((prevMessages) => [
-				// 		...(prevMessages || []),
-				// 		response.data,
-				// 	]);
-				// 	setText("");
-				// } catch (err) {
-				// 	console.error("Error sending message:", err);
-				// }
 			}
 		};
 

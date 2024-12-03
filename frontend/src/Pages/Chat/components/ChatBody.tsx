@@ -26,13 +26,15 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 		const fetchMessages = async (chatId: number) => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", `/api/chat/chats/?id=${chatId}`),
+					getendpoint("http", `/api/chat/chatuser/${chatId}`),
 					// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
 					{
 						withCredentials: true,
 					}
 				);
-				setMessages(response.data[0].messages);
+				// console.log("data[0] ", response.data[0]);
+				setMessages(response.data.messages);
+				console.log(chatId, response.data.messages);
 			} catch (err) {
 				console.log("Error in fetching chats", err);
 			}

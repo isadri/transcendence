@@ -19,16 +19,13 @@ const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 		endRef.current?.scrollIntoView({ behavior: "instant" });
 	}, [messages]);
 
-	const filteredMessages =
-		messages?.filter((msg) => msg.chat === selectedFriend.id) || [];
-
 	return (
 		<div className="center">
-			{filteredMessages.map((value, index) => {
+			{messages.map((value, index) => {
 				const friend_user =
-					user?.id === selectedFriend.user2.id
-						? selectedFriend.user1
-						: selectedFriend.user2;
+				user?.id === selectedFriend.user1.id
+				? selectedFriend.user2
+				: selectedFriend.user1;
 				const isOwnMessage = value.sender === user?.id;
 				return (
 					<div key={index} className={isOwnMessage ? "message-own" : "message"}>
@@ -36,13 +33,13 @@ const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 							<img src={friend_user.avatar} alt="profile" className="profile" />
 						)}
 						<div className="textMessage">
-							{value.image && (
+							{/* {value.image && (
 								<img
 									src={value.image}
 									alt="imgPartage"
 									className="imgPartage"
 								/>
-							)}
+							)} */}
 							<p>{value.content}</p>
 							<span>{value.timestamp}</span>
 						</div>

@@ -3,23 +3,14 @@ import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
-import { ChatMessage } from "./context/ChatUseContext";
-
-// export interface ChatMessage {
-// 	id: number;
-// 	chat: number;
-// 	sender: number;
-// 	content: string;
-// 	timestamp: string;
-// 	file: string | null;
-// 	image: string | null;
-// }
+import { ChatMessage, useChatContext } from "./context/ChatUseContext";
 
 export interface GetChats {
 	id: number;
 	user1: GetFriends;
 	user2: GetFriends;
 	created_at: string;
+	last_message: string | null;
 	messages: ChatMessage[];
 }
 
@@ -44,6 +35,7 @@ const ChatList = ({
 }: ChatListProps) => {
 	const [chats, setChats] = useState<GetChats[]>([]);
 	const user = getUser();
+	const { socket, lastMessage } = useChatContext();
 
 	useEffect(() => {
 		const fetchChats = async () => {
@@ -65,7 +57,9 @@ const ChatList = ({
 	}, []);
 
 	const handleAddConversationRequests = async (id: number) => {
-		const existingChat = chats.find((chat) => chat.user2.id === id);
+		const existingChat = chats.find(
+			(chat) => chat.user1.id === id || chat.user2.id === id
+		);
 
 		if (existingChat) {
 			onSelectFriend(existingChat);
@@ -80,10 +74,17 @@ const ChatList = ({
 			);
 
 			setChats((prevChats) => [...prevChats, response.data]);
-			// console.log(response.data);
+			onSelectFriend(response.data);
 		} catch (error) {
 			console.error("Error creating conversation:", error);
 		}
+	};
+
+	const getLastMessage = (chat: GetChats): string | null => {
+		if (socket && lastMessage) {
+			return lastMessage;
+		}
+		return chat.last_message;
 	};
 
 	return (
@@ -118,6 +119,7 @@ const ChatList = ({
 				: chats.map((chat) => {
 						const friend_user =
 							user?.id === chat.user2.id ? chat.user1 : chat.user2;
+						const lastMessageContent = getLastMessage(chat);
 						return (
 							<div
 								className={`item ${
@@ -138,11 +140,8 @@ const ChatList = ({
 								/>
 								<div className="text">
 									<span>{friend_user.username}</span>
-									{/* {!listAllFriends && <p>{chat.message}</p>} */}
+									{!listAllFriends && <p>{lastMessageContent || ""}</p>}
 								</div>
-								{chat.messages.length > 0 && (
-									<p>{chat.messages[chat.messages.length - 1].content}</p>
-								)}
 								{/* {!listAllFriends && <div className="ChatStatus">
 								<div>{friend.time}</div>
 								{friend.status}

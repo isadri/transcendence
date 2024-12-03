@@ -1,7 +1,10 @@
 import json
+
+from django.db.models.query_utils import Q
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
 from django.contrib.auth import get_user_model
+from channels.db import database_sync_to_async
 
 User = get_user_model()
 
@@ -54,10 +57,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
 
         # Get or create the chat instance
-        chat, _ = await Chat.objects.aget_or_create(
-            user1=self.user,
-            user2=receiver
-        )
+        # chat, _ = await Chat.objects.aget_or_create(
+        #     Q(user1=self.user, user2=receiver) |
+        #     Q(user1=receiver, user2=self.user)
+        # )
+
+        # try:
+        #     chat = await Chat.objects.aget(
+        #         Q(user1=self.user, user2=receiver) |
+        #         Q(user1=receiver, user2=self.user)
+        #     )
+        # except Chat.DoesNotExist:
+        #     chat = await Chat.objects.acreate(user1=self.user, user2=receiver)
+
+
+        chat = await Chat.objects.filter(
+            Q(user1=self.user, user2=receiver) |
+            Q(user1=receiver, user2=self.user)
+        ).afirst()  # Fetch the first match asynchronously
+
+        if not chat:
+            chat = await Chat.objects.acreate(
+                user1=self.user,
+                user2=receiver
+            )
+
+
         new_message = await Message.objects.acreate(
             chat=chat,
             sender=self.user,
@@ -87,6 +112,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'receiver_id': receiver.id
             }
         )
+        chat.last_message = message
+        print("lastmessage: ",chat.last_message)
+        await database_sync_to_async(chat.save)()
 
     async def chat_message(self, event):
         # Send message to websocket

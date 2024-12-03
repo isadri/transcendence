@@ -50,7 +50,7 @@ function Authentication() {
   const url_reg = getendpoint("http", '/api/accounts/register/')
   
   const handelIntraLogin = (e: any) => {
-    axios.get('http://localhost:8000/api/accounts/login/intra/')
+    axios.get(getendpoint('http', '/api/accounts/login/intra/'))
       .then(() =>{
         // console.log("saccess")
       })
