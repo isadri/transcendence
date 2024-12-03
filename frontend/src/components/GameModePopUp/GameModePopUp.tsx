@@ -10,7 +10,7 @@ interface GameModePopUpProps {
 }
 
 function GameModePopUp({mode, setter}:GameModePopUpProps) {
-  const navigate = useNavigate()
+  const navigator = useNavigate()
   return (
     <>
     <div className="GameModePopUpBlur">
@@ -27,7 +27,7 @@ function GameModePopUp({mode, setter}:GameModePopUpProps) {
           <img src={TImage} />
           <h3>Tournament</h3>
         </div>
-        <div className="GameModePopUp1vs1" onClick={() => navigator("/game/start")}>
+        <div className="GameModePopUp1vs1" onClick={() => navigator("/game/warmup")}>
           <img src={SImage} />
           <h3>1v1</h3>
         </div>

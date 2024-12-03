@@ -1,6 +1,6 @@
 from django.urls import path
-from .consumers import GameStart
+from .consumers import RandomGame
 
 websocket_urlpatterns = [
-  path("ws/game/start/", GameStart.as_asgi())
+  path("ws/game/random/", RandomGame.as_asgi())
 ]
