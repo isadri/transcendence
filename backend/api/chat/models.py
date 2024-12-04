@@ -14,7 +14,7 @@ class Chat(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['user1', 'user2'], name='unique_chat'),
-            UniqueConstraint(fields=['user2', 'user1'], name='unique_chat_reverse')
+            # UniqueConstraint(fields=['user2', 'user1'], name='unique_chat_reverse')
         ]
 
     def __str__(self):

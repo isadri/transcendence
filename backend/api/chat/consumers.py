@@ -113,7 +113,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
         chat.last_message = message
-        print("lastmessage: ",chat.last_message)
         await database_sync_to_async(chat.save)()
 
     async def chat_message(self, event):

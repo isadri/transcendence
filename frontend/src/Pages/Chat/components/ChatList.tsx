@@ -56,16 +56,25 @@ const ChatList = ({
 		fetchChats();
 	}, []);
 
+	// useEffect(() => {
+	// 	console.log("Chats array length changed:", chats.length);
+	// 	// Additional logic when chat length changes, if needed
+	//   }, [chats.length]);
+
 	const handleAddConversationRequests = async (id: number) => {
 		const existingChat = chats.find(
 			(chat) => chat.user1.id === id || chat.user2.id === id
 		);
 
+		console.log("chats: ", chats);
 		if (existingChat) {
+			console.log("existing");
+			
 			onSelectFriend(existingChat);
 			return;
 		}
 		try {
+			console.log(id);
 			const response = await axios.post(
 				getendpoint("http", "/api/chat/chats/"),
 				// "http://0.0.0.0:8000/api/chat/chats/",
@@ -84,14 +93,13 @@ const ChatList = ({
 		const lastMsg = lastMessage[chat.id];
 		if (!lastMsg) return chat.last_message;
 		return lastMsg.content;
-	  };
+	};
 
 	const getLastMessageTime = (chat: GetChats): string | null => {
 		const lastMsg = lastMessage[chat.id];
 		if (!lastMsg) return "";
 		return lastMsg.timestamp;
-	  };
-	  
+	};
 
 	const formatTimes = (time: string | null): string => {
 		if (!time) return "";
@@ -157,7 +165,7 @@ const ChatList = ({
 								className={`item ${
 									selectedFriend?.id === chat.id ? "selected" : ""
 								}`}
-								key={friend_user.id}
+								key={chat.id}
 								onClick={() => {
 									onSelectFriend(chat);
 									setSearchFriend("");
@@ -174,10 +182,12 @@ const ChatList = ({
 									<span>{friend_user.username}</span>
 									{!listAllFriends && <p>{lastMessageContent || ""}</p>}
 								</div>
-								{!listAllFriends && <div className="ChatStatus">
-								<div>{formatTimes(lastMessageTime)}</div>
-								{/* {friend.status} */}
-							</div>}
+								{!listAllFriends && (
+									<div className="ChatStatus">
+										<div>{formatTimes(lastMessageTime)}</div>
+										{/* {friend.status} */}
+									</div>
+								)}
 							</div>
 						);
 				  })}

@@ -16,8 +16,6 @@ from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
-
-
 class ChatConversationView(APIView):
     """
     API view to fetch the chat details and all messages for a specific chat by its ID.
@@ -89,13 +87,15 @@ class ChatView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Retrieve only the chats that involve the authenticated user
+        """
+        Retrieve only the chats that involve the authenticated user.
+        """
         user = self.request.user
-        return Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
+        return Chat.objects.filter(Q(user1=user) | Q(user2=user))
 
     def create(self, request, *args, **kwargs):
-        user1 = request.user # the user current signed user
-        user2_id = request.data.get("user2") # the other user
+        user1 = request.user
+        user2_id = request.data.get("user2")
 
         try:
             user2 = User.objects.get(id=user2_id)
@@ -106,19 +106,34 @@ class ChatView(viewsets.ModelViewSet):
             friend_list1 = FriendList.objects.get(user=user1)
         except FriendList.DoesNotExist:
             return Response({'error': 'Friend list not found.'},
-            status=status.HTTP_400_BAD_REQUEST)
+                               status=status.HTTP_400_BAD_REQUEST)
 
         if not friend_list1.friends.filter(id=user2.id).exists():
             return Response({'error': 'You cannot create chat with a user who is not your friend.'},
-            status=status.HTTP_400_BAD_REQUEST)
+                               status=status.HTTP_400_BAD_REQUEST)
 
-        # Ensure the chat doesn't already exist
-        chat, created = Chat.objects.get_or_create(user1=user1,
-                                                   user2=user2,
-                                                   defaults={'last_message': ''})
+        try:
+            # Use filter first to check if the chat exists
+            chat = Chat.objects.filter(
+                Q(user1=user1, user2=user2) | Q(user1=user2, user2=user1)
+            ).first()
 
-        serializer = self.get_serializer(chat)
-        return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+            # If no chat exists, create one
+            if not chat:
+                chat = Chat.objects.create(
+                    user1=user1,
+                    user2=user2,
+                    last_message=''
+                )
+
+            serializer = self.get_serializer(chat)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+           print(f"Error creating chat: {e}")
+           return Response({"error": "An error occurred while creating the chat."},
+                              status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # class ChatListView(ListAPIView):
 #     serializer_class = ChatSerializer
