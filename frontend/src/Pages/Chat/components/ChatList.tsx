@@ -81,10 +81,42 @@ const ChatList = ({
 	};
 
 	const getLastMessage = (chat: GetChats): string | null => {
-		// Return the last message from the lastMessages object for the specific chat
-		return lastMessage[chat.id] || chat.last_message || "";
-	};
+		const lastMsg = lastMessage[chat.id];
+		if (!lastMsg) return chat.last_message;
+		return lastMsg.content;
+	  };
+
+	const getLastMessageTime = (chat: GetChats): string | null => {
+		const lastMsg = lastMessage[chat.id];
+		if (!lastMsg) return "";
+		return lastMsg.timestamp;
+	  };
 	  
+
+	const formatTimes = (time: string | null): string => {
+		if (!time) return "";
+		return Intl.DateTimeFormat("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
+		}).format(new Date(time));
+	};
+
+	// Sort chats by the most recent message timestamp
+	const sortedChats = chats
+		.map((chat) => {
+			const lastMsg = lastMessage[chat.id];
+			return {
+				...chat,
+				last_message: lastMsg?.content || chat.last_message,
+				last_timestamp: lastMsg?.timestamp || chat.created_at,
+			};
+		})
+		.sort(
+			(a, b) =>
+				new Date(b.last_timestamp || "").getTime() -
+				new Date(a.last_timestamp || "").getTime()
+		);
 
 	return (
 		<div className="ChatList">
@@ -115,10 +147,11 @@ const ChatList = ({
 							</div>
 						</div>
 				  ))
-				: chats.map((chat) => {
+				: sortedChats.map((chat) => {
 						const friend_user =
 							user?.id === chat.user2.id ? chat.user1 : chat.user2;
 						const lastMessageContent = getLastMessage(chat);
+						const lastMessageTime = getLastMessageTime(chat);
 						return (
 							<div
 								className={`item ${
@@ -141,10 +174,10 @@ const ChatList = ({
 									<span>{friend_user.username}</span>
 									{!listAllFriends && <p>{lastMessageContent || ""}</p>}
 								</div>
-								{/* {!listAllFriends && <div className="ChatStatus">
-								<div>{friend.time}</div>
-								{friend.status}
-							</div>} */}
+								{!listAllFriends && <div className="ChatStatus">
+								<div>{formatTimes(lastMessageTime)}</div>
+								{/* {friend.status} */}
+							</div>}
 							</div>
 						);
 				  })}
