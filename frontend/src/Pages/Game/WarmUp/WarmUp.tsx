@@ -5,6 +5,7 @@ import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 interface PlayerCardData {
@@ -33,6 +34,7 @@ const socketContext = createContext<ContextData| null>(null)
 const PlayerCard = ({enemy = false, isRandom = false} : PlayerCardData) => {
   const user = getUser()
   const context = useContext(socketContext)
+  const navigator = useNavigate()
   if (context){
     const {socket, setSocket, enemyUser, setEnemyUser, setReady} = context
     useEffect(() => {
@@ -43,7 +45,7 @@ const PlayerCard = ({enemy = false, isRandom = false} : PlayerCardData) => {
         if (data.event == "HANDSHAKING")
         {
           setTimeout(() => {setEnemyUser(data.enemy)}, 2000);
-          // setTimeout(() => {use}, 5000);
+          setTimeout(() => {navigator("/game/play")}, 5000);
         }
         if (data.event == "ABORT")
         {
