@@ -19,6 +19,17 @@ const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 		endRef.current?.scrollIntoView({ behavior: "instant" });
 	}, [messages]);
 
+
+	const formatTimes = (time: string) => {
+		const date = new Date(time)
+		return Intl.DateTimeFormat("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
+		}).format(date)
+	}
+
+
 	return (
 		<div className="center">
 			{messages.map((value, index) => {
@@ -41,7 +52,7 @@ const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 								/>
 							)} */}
 							<p>{value.content}</p>
-							<span>{value.timestamp}</span>
+							<span>{formatTimes(value.timestamp)}</span>
 						</div>
 					</div>
 				);
