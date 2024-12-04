@@ -41,7 +41,10 @@ const PlayerCard = ({enemy = false, isRandom = false} : PlayerCardData) => {
         const data = JSON.parse(e.data)
         console.log(data);
         if (data.event == "HANDSHAKING")
+        {
           setTimeout(() => {setEnemyUser(data.enemy)}, 2000);
+          // setTimeout(() => {use}, 5000);
+        }
         if (data.event == "ABORT")
         {
           setEnemyUser(null)
@@ -133,6 +136,8 @@ const ReadyContext = () => {
   if (context){
     let {socket, ready, setReady, setSocket, setEnemyUser, } = context
     const onReady = () => {
+      if (ready)
+        return
       const newSocket = new WebSocket(getendpoint('ws', '/ws/game/random/'))
       setSocket(newSocket)
       newSocket.onopen = () => {
@@ -151,6 +156,7 @@ const ReadyContext = () => {
           "event" : "ABORT",
         }))
         socket.close()
+        setSocket(null)
         setReady(false)
       }
     }
