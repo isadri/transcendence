@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.request import Request
@@ -5,6 +6,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import Token
 
 from .models import User
+
+
+logger = logging.getLogger(__name__)
 
 
 class TokenAuthentication(JWTAuthentication):
@@ -38,11 +42,14 @@ class TokenAuthentication(JWTAuthentication):
         else:
             raw_token = request.COOKIES.get(settings.AUTH_COOKIE)
         if raw_token is None:
+            logger.error('token does not exist', extra={'index_name': 'errors'})
             return None
         validated_token = self.get_validated_token(raw_token)
         if not validated_token:
+            logger.error('token is not valid', extra={'index_name': 'errors'})
             raise AuthenticationFailed
         user = self.get_user(validated_token)
         if not user:
+            logger.error('user with invalid token', extra={'index_name': 'errors'})
             raise AuthenticationFailed
         return user, validated_token

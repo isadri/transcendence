@@ -46,7 +46,10 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        logger.info('access home page', extra={'index_name': 'access'})
+        logger.info('access home page',
+                    extra={
+                        'index_name': 'access-home-page'
+                    })
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -70,13 +73,15 @@ class LoginViewSet(viewsets.ViewSet):
         does not exist, otherwise, this method authenticates the user and
         login the user.
         """
+        logger.debug('access login page',
+                     extra={'index_name': 'access-login-page'})
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
             logger.info(f'{username} is logged in',
                         extra={
-                            'index_name': 'access',
+                            'index_name': 'login',
                             'username': username,
                         })
             login(request, user)
@@ -168,7 +173,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
         login(request, user)
         logger.info(f'{username} is logged in',
                     extra={
-                        'extra': 'access',
+                        'extra': 'login',
                         'username': username,
                     })
         refresh_token, access_token = get_tokens_for_user(user)
@@ -385,10 +390,12 @@ class RegisterViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
+        logger.debug('access register page',
+                     extra={'index_name': 'access-register-page'})
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            logger.debug(f"new user: {request.data['username']}",
+            logger.info(f"new user: {request.data['username']}",
                         extra={
                             'index_name': 'register',
                             'username': request.data['username']
@@ -408,8 +415,6 @@ class LogoutViewSet(viewsets.ViewSet):
         """
         Logout the user.
         """
-        print('------------>', request.user)
-        print('------------>', request.user.username)
         logger.info(f'{request.user.username} is logged out',
                     extra={
                             'index_name': 'logout',
