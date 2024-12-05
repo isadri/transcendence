@@ -6,7 +6,7 @@ volumes:
   modules_files:
   esdata:
   certs:
-  kibdata:
+  kibanadata:
   kibconfig:
 
 services:
@@ -118,6 +118,7 @@ services:
     container_name: kibana
     volumes:
       - certs:/usr/share/kibana/config/certs
+      - kibanadata:/usr/share/kibana/data
       - ./elk/kibana.yml:/usr/share/kibana/config/kibana.yml
     env_file:
       - .env
