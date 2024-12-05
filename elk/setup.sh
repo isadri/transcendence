@@ -84,9 +84,7 @@ https://elasticsearch:9200/_security/user/kibana_system/_password \
 echo "Creating logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
 -H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_writer \
--d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["*-log"], "privileges": ["write", "create", "create_index"]}]}'
-
-#auto_configure,create_index,manage,all
+-d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["*"], "privileges": ["write", "create", "create_index"]}]}'
 
 echo -e "\nCreating $LOGSTASH_USER user and assign it the logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
