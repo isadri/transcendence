@@ -46,7 +46,7 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        logger.info('access home page')
+        logger.info('access home page', extra={'index_name': 'access'})
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -74,7 +74,11 @@ class LoginViewSet(viewsets.ViewSet):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            logger.info(f'{username} is logged in')
+            logger.info(f'{username} is logged in',
+                        extra={
+                            'index_name': 'access',
+                            'username': username,
+                        })
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
             response = Response({
@@ -84,9 +88,15 @@ class LoginViewSet(viewsets.ViewSet):
             store_token_in_cookies(response, access_token)
             return response
         if not User.objects.filter(username=username).exists():
+            logger.error('Invalid username',
+                         extra={
+                             'index_name': 'errors',
+                             'username': username,
+                         })
             return Response({
                 'error': 'A user with that username does not exist.'
             }, status=status.HTTP_404_NOT_FOUND)
+        logger.error('Invalid password', extra={'index_name': 'errors'})
         return Response({
             'error': 'A user with that password does not exist.'
         }, status=status.HTTP_404_NOT_FOUND)
@@ -127,11 +137,15 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             user.otp_created_at = timezone.now()
             user.save()
             send_otp_email(user)
+            logger.info(f'send email to {username}',
+                        extra={
+                            'index_name': 'emails',
+                            'username': username,
+                        })
             return Response({
                 'detail': 'The verification code sent successfully',
             }, status=status.HTTP_200_OK)
-        if not User.objects.filter(username=username).exists():
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        logger.error('Invalid credentials', extra={'index_name': 'errors'})
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -148,10 +162,15 @@ class VerifyOTPViewSet(viewsets.ViewSet):
         user = User.objects.get(username=username)
         total_difference = timezone.now() - user.otp_created_at
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            logger.error('Incorrect OTP key', extra={'index_name': 'errors'})
             return Response({'error': 'Key is incorrect'},
                             status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
-        logger.info(f'{username} is logged in')
+        logger.info(f'{username} is logged in',
+                    extra={
+                        'extra': 'access',
+                        'username': username,
+                    })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -181,19 +200,22 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response({'error': 'states do not match.'},
-                            status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = get_access_token_google(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
                              '?scope=openid profile email')
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
+            logger.error(user_info, extra={'index_name': 'errors'})
             return Response(user_info, status=status_code)
         user = self.get_user(user_info)
         login(request, user)
-        logger.info(f'{username} is logged in through Google')
+        logger.info(f'{username} is logged in through Google',
+                    extra={
+                        'index_name': 'remote-auth',
+                        'remote_server': 'Google',
+                        'username': username,
+                    })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -249,8 +271,6 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
@@ -258,6 +278,11 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
         user_info, _ = get_user_info(userinfo_endpoint, access_token)
         user = self.create_user(user_info)
         send_otp_email(user)
+        logger.info(f'send email to {user_info['username']}',
+                    extra={
+                        'index_name': 'emails',
+                        'receiver': user_info['username'],
+                    })
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
@@ -277,18 +302,21 @@ class IntraLoginViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response({'error': 'states do not match'},
-                            status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code')
         access_token = get_access_token_42(authorization_code)
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
                                                access_token)
         if status_code != 200:
+            logger.error(user_info, extra={'index_name': 'errors'})
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
-        logger.info(f'{username} is logged in through 42')
         login(request, user)
+        logger.info(f'{username} is logged in through 42',
+                    extra={
+                        'index_name': 'remote-auth',
+                        'remote_server': '42',
+                        'username': user.username,
+                    })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -330,21 +358,23 @@ class IntraLoginWith2FAViewSet(viewsets.ViewSet):
         """
         Authenticate with the authorization server and obtain user information.
         """
-        if not state_match(request.GET.get('state')):
-            return Response({'error': 'states do not match'},
-                            status=status.HTTP_400_BAD_REQUEST)
         authorization_code = request.GET.get('code', '')
         access_token = self.get_access_token(authorization_code)
         userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
+            logger.error(user_info, extra={'index_name': 'errors'})
             return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
         user = create_user(user_info['login'], user_info['email'])
         send_otp_email(user)
+        logger.info(f'send email to {user.username}',
+                    extra={
+                        'index_name': 'emails',
+                        'receiver': user.username,
+                    })
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
-
 
 
 class RegisterViewSet(viewsets.ViewSet):
@@ -358,8 +388,13 @@ class RegisterViewSet(viewsets.ViewSet):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            logger.debug(f'+ new user: {serializer.data['username']}')
+            logger.debug(f"new user: {request.data['username']}",
+                        extra={
+                            'index_name': 'register',
+                            'username': request.data['username']
+                        })
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        logger.error(serializer.errors, extra={'index_name': 'errors'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -373,8 +408,14 @@ class LogoutViewSet(viewsets.ViewSet):
         """
         Logout the user.
         """
+        print('------------>', request.user)
+        print('------------>', request.user.username)
+        logger.info(f'{request.user.username} is logged out',
+                    extra={
+                            'index_name': 'logout',
+                            'username': request.user.username,
+                        })
         logout(request)
-        logger.info(f'{username} is logged out')
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
