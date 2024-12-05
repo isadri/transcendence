@@ -3,13 +3,17 @@ import os
 import pyotp
 from typing import Optional
 from django.conf import settings
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth import (
+    authenticate,
+    login,
+    logout,
+)
 from django.utils import timezone
-from rest_framework import generics
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import (
+    generics,
+    status,
+    viewsets,
+)
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -38,8 +42,6 @@ class HomeView(APIView):
     """
     The home page view.
     """
-    permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get(self, request: Request, format: Optional[str] = None) -> Response:
         """
@@ -48,7 +50,8 @@ class HomeView(APIView):
         """
         logger.info('access home page',
                     extra={
-                        'index_name': 'access-home-page'
+                        'index_name': 'access-home-page',
+                        'user': request.user,
                     })
         if request.user.is_authenticated:
             return Response(status=status.HTTP_200_OK)
@@ -80,10 +83,7 @@ class LoginViewSet(viewsets.ViewSet):
         user = authenticate(request, username=username, password=password)
         if user:
             logger.info(f'{username} is logged in',
-                        extra={
-                            'index_name': 'login',
-                            'username': username,
-                        })
+                        extra={'index_name': 'login', 'user': user })
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
             response = Response({
@@ -94,10 +94,7 @@ class LoginViewSet(viewsets.ViewSet):
             return response
         if not User.objects.filter(username=username).exists():
             logger.error('Invalid username',
-                         extra={
-                             'index_name': 'errors',
-                             'username': username,
-                         })
+                         extra={'index_name': 'errors', 'username': username})
             return Response({
                 'error': 'A user with that username does not exist.'
             }, status=status.HTTP_404_NOT_FOUND)
@@ -143,10 +140,7 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             user.save()
             send_otp_email(user)
             logger.info(f'send email to {username}',
-                        extra={
-                            'index_name': 'emails',
-                            'username': username,
-                        })
+                        extra={'index_name': 'emails', 'user': user})
             return Response({
                 'detail': 'The verification code sent successfully',
             }, status=status.HTTP_200_OK)
@@ -172,10 +166,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
         logger.info(f'{username} is logged in',
-                    extra={
-                        'extra': 'login',
-                        'username': username,
-                    })
+                    extra={'extra': 'login','user': user})
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -219,7 +210,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
                     extra={
                         'index_name': 'remote-auth',
                         'remote_server': 'Google',
-                        'username': username,
+                        'user': user,
                     })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
@@ -284,10 +275,7 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
         user = self.create_user(user_info)
         send_otp_email(user)
         logger.info(f'send email to {user_info['username']}',
-                    extra={
-                        'index_name': 'emails',
-                        'receiver': user_info['username'],
-                    })
+                    extra={'index_name': 'emails', 'receiver': user})
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
@@ -320,7 +308,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
                     extra={
                         'index_name': 'remote-auth',
                         'remote_server': '42',
-                        'username': user.username,
+                        'user': user,
                     })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
@@ -373,10 +361,7 @@ class IntraLoginWith2FAViewSet(viewsets.ViewSet):
         user = create_user(user_info['login'], user_info['email'])
         send_otp_email(user)
         logger.info(f'send email to {user.username}',
-                    extra={
-                        'index_name': 'emails',
-                        'receiver': user.username,
-                    })
+                    extra={'index_name': 'emails', 'receiver': user})
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
@@ -394,12 +379,9 @@ class RegisterViewSet(viewsets.ViewSet):
                      extra={'index_name': 'access-register-page'})
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
             logger.info(f"new user: {request.data['username']}",
-                        extra={
-                            'index_name': 'register',
-                            'username': request.data['username']
-                        })
+                        extra={'index_name': 'register', 'user': user,})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         logger.error(serializer.errors, extra={'index_name': 'errors'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -416,10 +398,7 @@ class LogoutViewSet(viewsets.ViewSet):
         Logout the user.
         """
         logger.info(f'{request.user.username} is logged out',
-                    extra={
-                            'index_name': 'logout',
-                            'username': request.user.username,
-                        })
+                    extra={'index_name': 'logout', 'user': request.user,})
         logout(request)
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
