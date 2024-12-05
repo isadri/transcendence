@@ -200,23 +200,17 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '[{asctime}] [{levelname}] [{module}.{funcName}] {message}',
-            'style': '{',
+        'json': {
+            '()': 'config.formatters.CustomizedJSONFormatter',
         },
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'formatter': 'verbose',
-            'class': 'logging.FileHandler',
-            'filename': f'{BASE_DIR}/debug.log',
-        },
         'logstash': {
             'level': 'DEBUG',
             'class': 'logstash_async.handler.AsynchronousLogstashHandler',
             'transport': 'logstash_async.transport.TcpTransport',
             'host': 'logstash',
+            'formatter': 'json',
             'port': int(os.getenv('TCP_PORT', '5959')),
             'version': 1,
             'database_path': None, # use in-memory cache instead of a SQLite database

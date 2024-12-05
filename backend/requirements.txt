@@ -26,3 +26,4 @@ pillow==10.4.0
 pyotp==2.9.0
 
 python-logstash-async==3.0.0
+JSON-log-formatter==1.1
