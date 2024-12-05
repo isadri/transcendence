@@ -54,7 +54,7 @@ const ChatList = ({
 		};
 
 		fetchChats();
-	}, []);
+	}, [selectedFriend]);
 
 	// useEffect(() => {
 	// 	console.log("Chats array length changed:", chats.length);
@@ -66,7 +66,7 @@ const ChatList = ({
 			(chat) => chat.user1.id === id || chat.user2.id === id
 		);
 
-		console.log("chats: ", chats);
+		// console.log("chats: ", chats);
 		if (existingChat) {
 			console.log("existing");
 			
@@ -74,7 +74,7 @@ const ChatList = ({
 			return;
 		}
 		try {
-			console.log(id);
+			// console.log(id);
 			const response = await axios.post(
 				getendpoint("http", "/api/chat/chats/"),
 				// "http://0.0.0.0:8000/api/chat/chats/",

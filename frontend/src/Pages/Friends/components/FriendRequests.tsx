@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./FriendRequests.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";

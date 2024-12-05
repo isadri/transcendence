@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 // import { ChatMessage } from "./ChatList";
 import { GetChats } from "./ChatList";
 import { useChatContext } from "./context/ChatUseContext";
-import { getUser } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
+import axios from "axios";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
@@ -43,8 +44,23 @@ const ChatTop = ({
 		};
 	}, []);
 
-	const handleDeleteChat = () => {
+	const handleDeleteChat = async () => {
+		try {
+			await axios.delete(
+				getendpoint("http", `/api/chat/chatuser/${selectedFriend.id}`),
+				// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
+				{
+					withCredentials: true,
+				}
+			);
+			// console.log("data[0] ", response.data[0]);
+			// console.log(chatId, response.data.messages);
+			// setMessages(response.data.messages);
+		} catch (err) {
+			console.log("Error in fetching chats", err);
+		}
 		setMessages([]);
+		setSelectedFriend(null);
 		setOpenMenu(false);
 	};
 

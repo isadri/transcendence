@@ -45,6 +45,21 @@ class ChatConversationView(APIView):
             'chat': chat_data,
             'messages': message_data
         }, status=status.HTTP_200_OK)
+    
+    def delete(self, request, chat_id: int):
+        user = request.user
+
+        try:
+            chat = Chat.objects.get(id=chat_id)
+        except Chat.DoesNotExist:
+            return Response({'error': 'The specified chat does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user not in [chat.user1, chat.user2]:
+            return Response({'error': 'You are not a part of this chat.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        chat.delete()
+        return Response({'message': 'Chat and messages have been deleted succesfully for that user.'},
+                         status=status.HTTP_200_OK)
 
 class UserChatView(APIView):
     """
