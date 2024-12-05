@@ -13,6 +13,4 @@ class CustomizedJSONFormatter(json_log_formatter.JSONFormatter):
             extra['user'] = 'Anonymous User'
         if 'time' not in extra:
             extra['time'] = timezone.now()
-        if record.exc_info:
-            extra['exc_info'] = self.formatException(record.exc_info)
         return extra
