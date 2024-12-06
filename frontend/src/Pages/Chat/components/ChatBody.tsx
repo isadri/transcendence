@@ -5,11 +5,11 @@ import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
 // import moment from "moment";
 // import { GetFriends } from "../Chat";
-import { GetChats } from "./ChatList";
+// import { GetChats } from "./ChatList";
 // import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
-import { useChatContext } from "./context/ChatUseContext";
+import { useChatContext, GetChats } from "./context/ChatUseContext";
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;

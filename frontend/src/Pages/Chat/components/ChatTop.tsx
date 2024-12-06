@@ -1,8 +1,8 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
 // import { ChatMessage } from "./ChatList";
-import { GetChats } from "./ChatList";
-import { useChatContext } from "./context/ChatUseContext";
+// import { GetChats } from "./ChatList";
+import { useChatContext, GetChats } from "./context/ChatUseContext";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
 
@@ -22,7 +22,7 @@ const ChatTop = ({
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const { setMessages } = useChatContext();
+	const { setMessages, setChats } = useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
@@ -53,9 +53,7 @@ const ChatTop = ({
 					withCredentials: true,
 				}
 			);
-			// console.log("data[0] ", response.data[0]);
-			// console.log(chatId, response.data.messages);
-			// setMessages(response.data.messages);
+			setChats((prevChats) => prevChats.filter((chat) => chat.id !== selectedFriend.id));
 		} catch (err) {
 			console.log("Error in fetching chats", err);
 		}

@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import { GetFriends } from "../Chat";
+// import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
-import { ChatMessage, useChatContext } from "./context/ChatUseContext";
+import { useChatContext, GetFriends, GetChats } from "./context/ChatUseContext";
 
-export interface GetChats {
-	id: number;
-	user1: GetFriends;
-	user2: GetFriends;
-	created_at: string;
-	last_message: string | null;
-	messages: ChatMessage[];
-}
+// export interface GetChats {
+// 	id: number;
+// 	user1: GetFriends;
+// 	user2: GetFriends;
+// 	created_at: string;
+// 	last_message: string | null;
+// 	messages: ChatMessage[];
+// }
 
 interface ChatListProps {
 	friends: GetFriends[];
@@ -33,9 +33,9 @@ const ChatList = ({
 	listAllFriends,
 	setListAllFriends,
 }: ChatListProps) => {
-	const [chats, setChats] = useState<GetChats[]>([]);
+	// const [chats, setChats] = useState<GetChats[]>([]);
 	const user = getUser();
-	const { lastMessage } = useChatContext();
+	const { lastMessage, setChats, chats } = useChatContext();
 
 	useEffect(() => {
 		const fetchChats = async () => {
@@ -54,7 +54,7 @@ const ChatList = ({
 		};
 
 		fetchChats();
-	}, [selectedFriend]);
+	}, []);
 
 	// useEffect(() => {
 	// 	console.log("Chats array length changed:", chats.length);
@@ -112,19 +112,20 @@ const ChatList = ({
 
 	// Sort chats by the most recent message timestamp
 	const sortedChats = chats
-		.map((chat) => {
-			const lastMsg = lastMessage[chat.id];
-			return {
-				...chat,
-				last_message: lastMsg?.content || chat.last_message,
-				last_timestamp: lastMsg?.timestamp || chat.created_at,
-			};
-		})
-		.sort(
-			(a, b) =>
-				new Date(b.last_timestamp || "").getTime() -
-				new Date(a.last_timestamp || "").getTime()
-		);
+	.map((chat) => {
+		const lastMsg = lastMessage[chat.id];
+		return {
+			...chat,
+			last_message: lastMsg?.content || chat.last_message,
+			last_timestamp: lastMsg?.timestamp || chat.created_at,
+		};
+	})
+	// .filter(chat => chat.messages.length > 0)
+	.sort(
+		(a, b) =>
+			new Date(b.last_timestamp || "").getTime() -
+			new Date(a.last_timestamp || "").getTime()
+	);
 
 	return (
 		<div className="ChatList">
