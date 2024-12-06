@@ -34,22 +34,22 @@ class RandomGame(AsyncWebsocketConsumer):
 
   async def receive(self, text_data):
     data = json.loads(text_data)
-    print(data)
     if data["event"] == "READY":
       self.qeuee[self.user.username] = self
+      print("qeuee", self.qeuee)
       if len(self.qeuee) >= 2:
+        print("aaaaaa")
         iterator = iter(iter(self.qeuee.items()))
         key1 , player1 = next(iterator)
         key2 , player2 = next(iterator)
+        print(player1, player2)
+        print(self.qeuee)
         self.gameMatch = await self.create_game(player1.user, player2.user)
         self.room_name = f"room_{self.gameMatch.id}"
         self.setAsConnected(key1, key2)
         await self.handshaking(key1, key2)
         await self.joinRoom(player1)
         await self.joinRoom(player2)
-        # await self.channel_layer.group_send(self.room_name,{
-        #   "message":"ok"
-        # })
   
 
   @database_sync_to_async
@@ -78,7 +78,6 @@ class RandomGame(AsyncWebsocketConsumer):
         "game_id": self.gameMatch.id,
         "enemy": UserSerializer(self.connected[key2].user).data
       }))
-      print(f"handshake sent to {key1}")
     except Exception as e:
       print(f"handshake of {key1}:> ", e)
 
@@ -97,9 +96,6 @@ class RandomGame(AsyncWebsocketConsumer):
     self.connected[key2] = self.qeuee[key2]
     del self.qeuee[key2]
 
-    print("qeuee", self.qeuee)
-    print("connected", self.connected)
-
   async def player_disconnected(self, event):
         """
         Notify the remaining player that their opponent disconnected.
@@ -108,3 +104,56 @@ class RandomGame(AsyncWebsocketConsumer):
             "event": "ABORT",
             "username": event["username"],
         }))
+
+
+
+
+
+class RemoteGame(AsyncWebsocketConsumer):
+
+  connected = {}
+  async def connect(self):
+    await self.accept()
+    self.user = self.scope["user"]
+    self.game_id = self.scope["url_route"]["kwargs"]['game_id']
+    self.room_name = f"game_{self.game_id}"
+    self.game = await self.getGame(self.game_id)
+    print("enemy=>", self.enemy)
+    await self.channel_layer.group_add(self.room_name, self.channel_name)
+    await self.send(json.dumps({
+      "event": "START",
+      "enemy": UserSerializer(self.enemy).data
+    }))
+
+
+  async def receive(self, text_data):
+    data = json.loads(text_data)
+    print(data)
+
+
+  async def disconnect(self, code):
+   await self.channel_layer.group_send(
+     self.room_name,
+     {
+         "type": "player.disconnected",
+         "username": self.user.username,
+     },
+   )
+
+
+  @database_sync_to_async
+  def getGame(self, game_id):
+    game = Game.objects.get(pk=game_id)#protection
+    game.state = 'S'
+    self.enemy = game.player2
+    return game
+
+
+  async def player_disconnected(self, event):
+    """
+    Notify the remaining player that their opponent disconnected.
+    """
+    await self.send(json.dumps({
+        "event": "ABORT",
+        "username": event["username"],
+    }))

@@ -45,7 +45,7 @@ const PlayerCard = ({enemy = false, isRandom = false} : PlayerCardData) => {
         if (data.event == "HANDSHAKING")
         {
           setTimeout(() => {setEnemyUser(data.enemy)}, 2000);
-          setTimeout(() => {navigator("/game/play")}, 5000);
+          setTimeout(() => {navigator(`/game/remote/${data.game_id}`)}, 5000);
         }
         if (data.event == "ABORT")
         {

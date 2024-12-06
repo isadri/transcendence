@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import "./Play.css";
+import "../Play/Play.css";
 import winner from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
 import pic from "../../Home/images/profile.svg"
@@ -16,7 +16,9 @@ import {
 import { Material } from 'cannon-es';
 import { createContext, useContext, useEffect, useState } from "react";
 import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { getUser, getendpoint } from "../../../context/getContextData";
+import { userDataType } from "../../../context/context";
 
 const tableUrl = new URL("../../../assets/glb/tableLwa3ra.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
@@ -25,6 +27,9 @@ useGLTF.preload(tableUrl);
 interface ResultContext {
   result: [number, number];
   setResult: React.Dispatch<React.SetStateAction<[number, number]>>;
+  user: userDataType,
+  socket: WebSocket,
+  enemy: userDataType
 }
 const resultsContext = createContext<ResultContext | null>(null)
 
@@ -113,6 +118,7 @@ interface Paddlerops {
 }
 
 function Paddle({position, mine=false}: Paddlerops){
+  const context =  useContext(resultsContext)
   const material = new Material();
   material.name = "paddle_mat"
   const [ref, api] = useBox(() => ({
@@ -138,7 +144,6 @@ function Paddle({position, mine=false}: Paddlerops){
               setDirection([speed, 0, 0])
             if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -(3.07345 - 0.5))
               setDirection([-speed, 0, 0])
-            
         }
       })
     }
@@ -146,11 +151,10 @@ function Paddle({position, mine=false}: Paddlerops){
     const onKeyUp = (event: KeyboardEvent) => {
       api.velocity.subscribe(() => {
         const {key} = event
-        console.log(key);
-        
         if (mine && (key == "ArrowRight" || key == "ArrowLeft" || key == "ArrowUp" || key == "ArrowDown"))
           setDirection([0, 0, 0])
-        if (!mine && (key == "A" || key == "a" || key == "d" || key == "D" || key == "S" || key == "s" || key == "W" || key == "w"))
+        if (!mine && (key == "A" || key == "a" || key == "d" || key == "D"
+            || key == "S" || key == "s" || key == "W" || key == "w"))
           setDirection([0, 0, 0])
       })
     }
@@ -167,6 +171,16 @@ function Paddle({position, mine=false}: Paddlerops){
 
   useEffect(() => {
     api.velocity.set(...direction);
+    // if (context)
+    // {
+    //   const {socket} = context
+    //   socket.send(
+    //     JSON.stringify({
+    //       "event" : "MOVE",
+    //       "direction" : direction
+    //     })
+    //   )
+    // }
   }, [direction, api, mine]);
 
   return (
@@ -259,9 +273,12 @@ function GameTable() {
 
 
 const Play = () => {
-  const [result, setResult] = useState<[number, number]>([0, 0]) 
+  const context = useContext(resultsContext)
+  if (context)
+  {
+  const {result, user, enemy} = context
   return (
-    <resultsContext.Provider value={{result, setResult}}>
+    <>
       <div className="PlayScreen">
         <Canvas camera={{ position: [0, 5, 8] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
           <OrbitControls  maxPolarAngle={MathUtils.degToRad(100)}/>
@@ -269,7 +286,7 @@ const Play = () => {
           <directionalLight position={[-50, -9, -5]} intensity={1} />
           <pointLight position={[5, 9, -5]} intensity={1} />
           <directionalLight position={[3, 9, 5]} intensity={2} />
-          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120} isPaused={result[0] === 7 || result[1] === 7}>
+          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120} isPaused={false}>
             {/* <Debug> */}
               <mesh rotation={[Math.PI/2, 0, 0]} position={[0, -5,0]}>
                 <planeGeometry args={[300, 300]}/>
@@ -282,8 +299,8 @@ const Play = () => {
         <div className="Home-LastGame PlayResult">
           <div className='Home-RowEle'>
             <div className='Home-Row1'>
-                <img src={pic} alt="" />
-                <span>Player 1</span>
+                <img src={getendpoint("http", user.avatar)} alt="" />
+                <span>{user.username}</span>
             </div>
             <div>
             <div className='Home-Row2'>
@@ -293,12 +310,12 @@ const Play = () => {
             </div>
             </div>
             <div className='Home-Row3'>
-                <span>Player 2</span>
-                <img src={pic} alt="" />
+                <span>{enemy.username}</span>
+                <img src={getendpoint("http", enemy.avatar)} alt="" />
             </div>
           </div>
         </div>
-        {
+        {/* {
            result[0] === 7 || result[1] === 7 
           ?
           <div className="winnerPopUp">
@@ -313,10 +330,49 @@ const Play = () => {
           </div>
           :
           <></>
-        }
+        } */}
       </div>
-    </resultsContext.Provider>
+    </>
   );
+  }
 };
 
-export default Play;
+// interface ProviderData {
+//   socket: WebSocket,
+//   gameId
+// }
+
+const emptyUser = {
+  id : -1,
+  username : "",
+  email : "",
+  avatar : ""
+}
+
+const Provider = ({socket} : {socket:WebSocket}) => {
+  const user = getUser()
+  const [enemy, setEnemy] = useState<userDataType>(emptyUser)
+  const [result, setResult] = useState<[number, number]>([0, 0])
+
+  socket.onmessage = (e) => {
+    const data = JSON.parse(e.data)
+    if (data.event == "START")
+      setEnemy(data.enemy)
+  }
+  return (
+    <resultsContext.Provider value={{result, setResult, user, socket, enemy}}>
+      <Play/>
+    </resultsContext.Provider>
+  )
+}
+
+
+
+const Remote = () => {
+  const { id } = useParams();
+  const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
+  const socket = new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`))
+  return (<Provider socket={socket}/>)
+}
+
+export default Remote;
