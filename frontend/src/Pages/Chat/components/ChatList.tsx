@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 // import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
@@ -33,7 +33,6 @@ const ChatList = ({
 	listAllFriends,
 	setListAllFriends,
 }: ChatListProps) => {
-	// const [chats, setChats] = useState<GetChats[]>([]);
 	const user = getUser();
 	const { lastMessage, setChats, chats } = useChatContext();
 
@@ -56,17 +55,11 @@ const ChatList = ({
 		fetchChats();
 	}, []);
 
-	// useEffect(() => {
-	// 	console.log("Chats array length changed:", chats.length);
-	// 	// Additional logic when chat length changes, if needed
-	//   }, [chats.length]);
-
 	const handleAddConversationRequests = async (id: number) => {
 		const existingChat = chats.find(
 			(chat) => chat.user1.id === id || chat.user2.id === id
 		);
 
-		// console.log("chats: ", chats);
 		if (existingChat) {
 			console.log("existing");
 			
@@ -74,7 +67,6 @@ const ChatList = ({
 			return;
 		}
 		try {
-			// console.log(id);
 			const response = await axios.post(
 				getendpoint("http", "/api/chat/chats/"),
 				// "http://0.0.0.0:8000/api/chat/chats/",
@@ -120,7 +112,7 @@ const ChatList = ({
 			last_timestamp: lastMsg?.timestamp || chat.created_at,
 		};
 	})
-	// .filter(chat => chat.messages.length > 0)
+	.filter(chat => chat.messages.length > 0)
 	.sort(
 		(a, b) =>
 			new Date(b.last_timestamp || "").getTime() -

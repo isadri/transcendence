@@ -92,6 +92,33 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 						timestamp: newMessage.timestamp,
 					},
 				}));
+				setChats((prevChats) => {
+					const existingChat = prevChats.findIndex(
+						(chat) => chat.id === data.chat_id
+					);
+		
+					if (existingChat !== -1) {
+						// Update existing chat
+						const updatedChats = [...prevChats];
+						updatedChats[existingChat] = {
+							...updatedChats[existingChat],
+							last_message: data.message,
+							messages: [...updatedChats[existingChat].messages, newMessage],
+						};
+						return updatedChats;
+					} else {
+						// Add new chat
+						const newChat: GetChats = {
+							id: data.chat_id,
+							user1: data.sender,
+							user2: data.receiver,
+							created_at: newMessage.timestamp,
+							last_message: data.message,
+							messages: [newMessage],
+						};
+						return [...prevChats, newChat];
+					}
+				});
 			} catch (err) {
 				console.error("Error parsing WebSocket message: ", err);
 			}

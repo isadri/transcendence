@@ -1,10 +1,10 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { GetChats } from "./ChatList";
+// import { GetChats } from "./ChatList";
 // import axios from "axios";
 // import { getUser, getendpoint } from "../../../context/getContextData";
-import { ChatMessage, useChatContext } from "./context/ChatUseContext";
+import { GetChats, useChatContext } from "./context/ChatUseContext";
 import { getUser } from "../../../context/getContextData";
 
 interface ChatBottomProps {
@@ -19,7 +19,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
 		const [text, setText] = useState("");
-		const { messages, sendMessage } = useChatContext()
+		const { sendMessage } = useChatContext()
 		const user = getUser()
 
 		useEffect(() => {
