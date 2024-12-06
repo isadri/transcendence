@@ -71,7 +71,6 @@ class RandomGame(AsyncWebsocketConsumer):
     '''
       notify the client with the game and sent enemy's data
     '''
-    print(self.room_name)
     try:
       await self.connected[key1].send(json.dumps({
         "event" : "HANDSHAKING",
@@ -128,7 +127,16 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   async def receive(self, text_data):
     data = json.loads(text_data)
-    print(data)
+    if  data["event"] == 'MOVE':
+      await self.channel_layer.group_send(
+        self.room_name,
+        {
+            "type": "enemy.move",
+            "username": data["username"],
+            "direction": data["direction"],
+        },
+      )
+
 
 
   async def disconnect(self, code):
@@ -145,9 +153,18 @@ class RemoteGame(AsyncWebsocketConsumer):
   def getGame(self, game_id):
     game = Game.objects.get(pk=game_id)#protection
     game.state = 'S'
-    self.enemy = game.player2
+    self.enemy = game.player2 if self.user != game.player2 else game.player1
     return game
 
+
+  async def enemy_move(self, event):
+    print(event)
+    if event['username'] != self.user.username:
+      await self.send(json.dumps({
+          "event": "MOVE",
+          "username": event["username"],
+          "direction": event["direction"],
+      }))
 
   async def player_disconnected(self, event):
     """

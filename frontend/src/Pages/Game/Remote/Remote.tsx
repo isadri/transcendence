@@ -30,9 +30,32 @@ interface ResultContext {
   user: userDataType,
   socket: WebSocket,
   enemy: userDataType
+  handlers:any
 }
 const resultsContext = createContext<ResultContext | null>(null)
 
+const throttledSend = (socket:any, direction:any, username:any) => {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(
+      JSON.stringify({
+        event: "MOVE",
+        username: username,
+        direction: direction,
+      })
+    );
+  }
+}
+
+const onMessage = (func:any) => {
+  const context = useContext(resultsContext)
+  if (context)
+  {
+    const {handlers, socket} = context
+    socket.onmessage = (event:any) => {
+      handlers.forEach((handler:any) => handler(event));
+    };
+  }
+}
 
 function Ball() {
   const res = useContext(resultsContext);
@@ -46,8 +69,8 @@ function Ball() {
     position: [0, 0.2, 0],
     args: [0.12],
     velocity: [randomX, 0, 5],
-    ccdIterations: 20,
-    ccdSpeedThreshold: 1e-4,
+    ccdIterations: 10,
+    ccdSpeedThreshold: 1e-2,
     material:material,
     onCollide: (event) => {
       const {body} = event
@@ -129,6 +152,7 @@ function Paddle({position, mine=false}: Paddlerops){
   }));
   const speed = 2.5
   const [direction, setDirection] = useState<[number, number, number]>([0, 0, 0]);
+  const [oldDirection, setOldDirection] = useState<[number, number, number]>([-1337, -1337, -1337]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -171,17 +195,23 @@ function Paddle({position, mine=false}: Paddlerops){
 
   useEffect(() => {
     api.velocity.set(...direction);
-    // if (context)
-    // {
-    //   const {socket} = context
-    //   socket.send(
-    //     JSON.stringify({
-    //       "event" : "MOVE",
-    //       "direction" : direction
-    //     })
-    //   )
-    // }
-  }, [direction, api, mine]);
+    if (context)
+    {
+      const {socket, user} = context
+      
+      if (socket.readyState && direction != oldDirection)
+      {
+        throttledSend(socket, direction, user.username)
+        setOldDirection(direction)
+      }
+      socket.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+        console.log("event",data);
+        if (data.event == 'MOVE' && !mine)
+          setDirection(data.direction)
+      }
+    }
+  }, [direction, api, mine, context, context?.socket]);
 
   return (
     <mesh ref={ref} position={position}  name="paddle">
@@ -280,13 +310,13 @@ const Play = () => {
   return (
     <>
       <div className="PlayScreen">
-        <Canvas camera={{ position: [0, 5, 8] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
+        <Canvas frameloop="always" camera={{ position: [0, 5, 8] }}  onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
           <OrbitControls  maxPolarAngle={MathUtils.degToRad(100)}/>
           <directionalLight position={[-50, 9, 5]} intensity={1} />
           <directionalLight position={[-50, -9, -5]} intensity={1} />
           <pointLight position={[5, 9, -5]} intensity={1} />
           <directionalLight position={[3, 9, 5]} intensity={2} />
-          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120} isPaused={false}>
+          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 240} isPaused={false}>
             {/* <Debug> */}
               <mesh rotation={[Math.PI/2, 0, 0]} position={[0, -5,0]}>
                 <planeGeometry args={[300, 300]}/>
@@ -356,14 +386,17 @@ const Provider = ({socket} : {socket:WebSocket}) => {
 
   socket.onmessage = (e) => {
     const data = JSON.parse(e.data)
+    console.log('start', data);
     if (data.event == "START")
       setEnemy(data.enemy)
   }
-  return (
-    <resultsContext.Provider value={{result, setResult, user, socket, enemy}}>
-      <Play/>
-    </resultsContext.Provider>
-  )
+  if (enemy.id != -1)
+    return (
+      <resultsContext.Provider value={{result, setResult, user, socket, enemy}}>
+        <Play/>
+      </resultsContext.Provider>
+    )
+  return (<></>)
 }
 
 
@@ -371,7 +404,8 @@ const Provider = ({socket} : {socket:WebSocket}) => {
 const Remote = () => {
   const { id } = useParams();
   const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
-  const socket = new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`))
+  const [socket] = useState<WebSocket>(new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`)))
+  console.log(socket.readyState)
   return (<Provider socket={socket}/>)
 }
 
