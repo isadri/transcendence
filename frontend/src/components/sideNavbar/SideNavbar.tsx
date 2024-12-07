@@ -27,7 +27,7 @@ const SideNavbar = () => {
 	};
 
 	const handleLogoutClick = () => {
-		axios.get(getendpoint('/api/accounts/logout/'), {withCredentials:true})
+		axios.get(getendpoint("http", '/api/accounts/logout/'), {withCredentials:true})
       		.then(() =>{
 				authContext?.setIsLogged(false)
 				navigate('/')

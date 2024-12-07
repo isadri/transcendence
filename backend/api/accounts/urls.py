@@ -45,7 +45,10 @@ router.register(r'login/google-2fa', views.GoogleLoginViewSet,
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
+    path('updateuserData/', views.UpdateUserDataView.as_view(), name='update-user'),
+    path('updateuserPass/', views.UpdateUserPasswordView.as_view(), name='update-user'),
+    path('deleteUser/', views.DeleteUserAccountView.as_view(), name='update-user'),
+    # path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json'])

@@ -16,6 +16,8 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
+from django.contrib.auth.hashers import check_password
+from rest_framework.permissions import IsAuthenticated
 from .utils import (
     get_access_token_from_api,
     get_tokens_for_user,
@@ -362,11 +364,85 @@ class LogoutViewSet(viewsets.ViewSet):
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
 
+class UpdateUserDataView(APIView):
+    """
+        update the user data:
+          username
+          email
+          avatar
+    """
+    permission_classes = [IsAuthenticated]
 
-class UpdateView(generics.UpdateAPIView):
+    def put(self, request):
+        user = request.user
+        data = request.data.copy()
+        data['avatar'] = None
+        if 'isRemove' in data:
+            if  data['isRemove'] == 'yes': del data['avatar']
+            if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
+                data['avatar'] = request.FILES['avatar']
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateUserPasswordView(APIView):
     """
-    Update user information.
+        update the password
     """
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-    lookup_field = 'username'
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        required_fields = ['CurrentPassword', 'password', 'confirmPassword']
+        data = request.data.copy()
+
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        if missing_fields:
+            return Response(
+                {field: "This field may not be blank." for field in missing_fields},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not check_password(data['CurrentPassword'], user.password):
+            return Response(
+                {"CurrentPassword": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if data['password'] != data['confirmPassword']:
+            return Response(
+                {"confirmPassword": "Passwords do not match."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DeleteUserAccountView(APIView):
+    """
+        delete user
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        print(request.data)
+        user = request.user
+        if 'confirm' in request.data and request.data['confirm'] != 'yes':
+            return Response(
+                {"detail": "Account deletion not confirmed."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        logout(request)
+        user.delete()
+        response = Response({"detail": "User account deleted successfully."},status=status.HTTP_200_OK)
+        response.delete_cookie(settings.AUTH_COOKIE)
+        return response

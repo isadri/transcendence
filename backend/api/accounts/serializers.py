@@ -1,6 +1,7 @@
 import string
 from rest_framework import serializers
 
+from django.contrib.auth.hashers import make_password
 from .models import User
 
 
@@ -11,13 +12,16 @@ class UserSerializer(serializers.ModelSerializer):
     Raises:
         serializers.ValidationError: If any of user fields are not valid.
     """
-    avatar = serializers.ImageField(default='default.jpeg')
+    avatar = serializers.ImageField(default='default.jpeg', allow_null=True)
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'password', 'avatar'
             ]
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
 
     def validate_username(self, value: str) -> str:
         """
@@ -26,7 +30,15 @@ class UserSerializer(serializers.ModelSerializer):
         Raises:
             serializers.ValidationError: If the username is not valid.
         """
-        if User.objects.filter(username__iexact=value).exists():
+        # to check if the username passed is mine or note/ exclude mine from protecting the username field
+        current_user = self.instance
+        check_user = None
+        if current_user: # to exclude my username if i am already logged in
+            check_user = User.objects.filter(username__iexact=value).exclude(pk=current_user.id)
+        else: # for creation valdation
+            check_user = User.objects.filter(username__iexact=value)
+
+        if check_user and check_user.exists():
             raise serializers.ValidationError('A user with this username '
                                              'already exists.')
         if not value[0] in string.ascii_lowercase and value[0] != '_':
@@ -86,3 +98,25 @@ class UserSerializer(serializers.ModelSerializer):
             avatar=validated_data['avatar']
         )
         return user
+    
+
+
+    def update(self, instance, validated_data):
+        """
+        Override update to rehash the password if provided.
+        """
+        self.fields['avatar'].required = False
+        self.fields['password'].required = False
+
+        password = validated_data.pop('password', None)
+        if password:
+            instance.password = make_password(password)
+        if not 'avatar' in validated_data:
+            validated_data['avatar'] = 'default.jpeg'
+
+        for attr, value in validated_data.items():
+            if value:
+                setattr(instance, attr, value)
+        instance.save()
+
+        return instance

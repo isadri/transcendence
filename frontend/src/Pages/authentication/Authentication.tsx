@@ -40,14 +40,14 @@ function Authentication() {
       password
   }
   // const hostname = window.location.hostname
-  const url_login = getendpoint('/api/accounts/login/')
+  const url_login = getendpoint("http", '/api/accounts/login/')
   
   const data_reg = {
     username,
     password,
     email
   }
-  const url_reg = getendpoint('/api/accounts/register/')
+  const url_reg = getendpoint("http", '/api/accounts/register/')
   
   const handelIntraLogin = (e: any) => {
     axios.get('http://localhost:8000/api/accounts/login/intra/')
@@ -59,7 +59,7 @@ function Authentication() {
       })
   }
   const handelgGoogleLogin = (e: any) => {
-    axios.get('http://localhost:8000/api/accounts/login/google/')
+    axios.get(getendpoint("http", '/api/accounts/login/google/'))
       .then(() =>{
         // console.log("saccess")
       })
@@ -68,7 +68,7 @@ function Authentication() {
       })
   }
   const GetUserInfo = () =>{
-    axios.get(getendpoint(''),  {withCredentials:true})
+    axios.get(getendpoint("http", '/'),  {withCredentials:true})
     .then((response) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
@@ -95,6 +95,12 @@ function Authentication() {
                 setUsername('')
                 setEmail('')
                 setPassword('')
+                SetErrors({
+                username: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+              });
             })
             .catch((error) => {
               setError(true)
@@ -180,7 +186,7 @@ function Authentication() {
       {
         SetErrors(prevState => ({
           ...prevState,
-          confirmPassword:"password do not match!!"}))
+          confirmPassword:"Password do not match!!"}))
         }
       else{
         SetErrors(prevState => ({
