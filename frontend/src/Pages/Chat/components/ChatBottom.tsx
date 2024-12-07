@@ -6,11 +6,12 @@ import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 // import { getUser, getendpoint } from "../../../context/getContextData";
 import { GetChats, useChatContext } from "./context/ChatUseContext";
 import { getUser } from "../../../context/getContextData";
+import { BlockedFriend } from "./ChatBody";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
 	// setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-	block: boolean;
+	block: BlockedFriend | null;
 }
 
 const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
@@ -76,7 +77,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 
 		return (
 			<div className="bottom">
-				{!block ? (
+				{!block?.blocked ? (
 					<>
 						<div className="emoji" ref={buttonRef}>
 							<i
@@ -92,7 +93,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 							<input
 								type="text"
 								placeholder="Type a message..."
-								disabled={block}
+								// disabled={block}
 								value={text}
 								onChange={(event) => setText(event.target.value)}
 								onKeyDown={handleKeyDown}

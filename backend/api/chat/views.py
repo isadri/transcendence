@@ -9,7 +9,7 @@ from .serializers import ChatSerializer, MessageSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from api.friends.models import FriendList
+from api.friends.models import FriendList, FriendRequest
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
@@ -116,7 +116,7 @@ class ChatView(viewsets.ModelViewSet):
             user2 = User.objects.get(id=user2_id)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        
         try:
             friend_list1 = FriendList.objects.get(user=user1)
         except FriendList.DoesNotExist:
@@ -148,17 +148,6 @@ class ChatView(viewsets.ModelViewSet):
            print(f"Error creating chat: {e}")
            return Response({"error": "An error occurred while creating the chat."},
                               status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# class ChatListView(ListAPIView):
-#     serializer_class = ChatSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         # Retrieve only the chats that involve the authenticated user
-#         user = self.request.user
-#         return Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
-
 
 class MessageView(viewsets.ModelViewSet):
     serializer_class = MessageSerializer

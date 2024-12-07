@@ -4,12 +4,14 @@ import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
 // import moment from "moment";
-// import { GetFriends } from "../Chat";
-// import { GetChats } from "./ChatList";
-// import { GetChats, ChatMessage } from "./ChatList";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
+
+export interface BlockedFriend {
+	blocked: boolean;
+	blocked_by_id?: number;
+}
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -18,22 +20,19 @@ interface ChatBodyProps {
 
 const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
-	const [block, setBlock] = useState(false);
+	const [block, setBlock] = useState<BlockedFriend | null>(null);
 	const { setMessages } = useChatContext();
-	// const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const user = getUser();
 
 	useEffect(() => {
 		const fetchMessages = async (chatId: number) => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", `/api/chat/chatuser/${chatId}`),
-					// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
 					{
 						withCredentials: true,
 					}
 				);
-				// console.log("data[0] ", response.data[0]);
-				// console.log(chatId, response.data.messages);
 				setMessages(response.data.messages);
 			} catch (err) {
 				console.log("Error in fetching chats", err);
@@ -44,6 +43,28 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 			const chatId = selectedFriend.id;
 			fetchMessages(chatId);
 		}
+
+		const fetchBlockedFriend = async () => {
+			let friend_id;
+			if (user?.id === selectedFriend.user1.id) {
+				friend_id = selectedFriend.user2.id;
+			} else {
+				friend_id = selectedFriend.user1.id;
+			}
+			try {
+				const response = await axios.get(
+					getendpoint("http", `/api/friends/blockedfriend/${friend_id}`),
+					{
+						withCredentials: true,
+					}
+				);
+				setBlock(response.data);
+			} catch (err) {
+				console.log("Error in fetching chats", err);
+			}
+		};
+
+		fetchBlockedFriend();
 	}, [selectedFriend]);
 
 	return (
@@ -55,10 +76,8 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 				block={block}
 			/>
 			<ChatCenter selectedFriend={selectedFriend} />
-			{/* <ChatCenter messages={messages} selectedFriend={selectedFriend} /> */}
 			<ChatBottom
 				selectedFriend={selectedFriend}
-				// setMessages={setMessages}
 				ref={ref}
 				block={block}
 			/>

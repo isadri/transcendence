@@ -52,7 +52,7 @@ const ChatList = ({
 			}
 		};
 
-		fetchChats();
+		fetchChats()
 	}, []);
 
 	const handleAddConversationRequests = async (id: number) => {
@@ -118,6 +118,9 @@ const ChatList = ({
 			new Date(b.last_timestamp || "").getTime() -
 			new Date(a.last_timestamp || "").getTime()
 	);
+	if (!sortedChats) {
+		return null
+	} 
 
 	return (
 		<div className="ChatList">
@@ -148,7 +151,7 @@ const ChatList = ({
 							</div>
 						</div>
 				  ))
-				: sortedChats.map((chat) => {
+				: sortedChats && sortedChats.map((chat) => {
 						const friend_user =
 							user?.id === chat.user2.id ? chat.user1 : chat.user2;
 						const lastMessageContent = getLastMessage(chat);

@@ -1,16 +1,15 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
-// import { ChatMessage } from "./ChatList";
-// import { GetChats } from "./ChatList";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
+import { BlockedFriend } from "./ChatBody";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
-	setBlock: React.Dispatch<React.SetStateAction<boolean>>;
-	block: boolean;
+	setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
+	block: BlockedFriend | null;
 }
 
 const ChatTop = ({
@@ -53,7 +52,9 @@ const ChatTop = ({
 					withCredentials: true,
 				}
 			);
-			setChats((prevChats) => prevChats.filter((chat) => chat.id !== selectedFriend.id));
+			setChats((prevChats) =>
+				prevChats.filter((chat) => chat.id !== selectedFriend.id)
+			);
 		} catch (err) {
 			console.log("Error in fetching chats", err);
 		}
@@ -62,9 +63,37 @@ const ChatTop = ({
 		setOpenMenu(false);
 	};
 
-	const handleBlock = () => {
-		setBlock(!block);
-		setOpenMenu(false);
+	const handleBlock = async () => {
+		let friend_id;
+		if (user?.id === selectedFriend.user1.id) {
+			friend_id = selectedFriend.user2.id;
+		} else {
+			friend_id = selectedFriend.user1.id;
+		}
+		try {
+			if (block?.blocked) {
+				await axios.post(
+					getendpoint("http", `/api/friends/unblock/${friend_id}`),
+					null,
+					{
+						withCredentials: true,
+					}
+				);
+				setBlock({ blocked: false });
+			} else {
+				await axios.post(
+					getendpoint("http", `/api/friends/block/${friend_id}`),
+					null,
+					{
+						withCredentials: true,
+					}
+				);
+				setBlock({ blocked: true, blocked_by_id: user?.id });
+			}
+			setOpenMenu(false);
+		} catch (err) {
+			console.log("Error in handling block/unblock: ", err);
+		}
 	};
 
 	const friend_user =
@@ -97,7 +126,11 @@ const ChatTop = ({
 						<li>Invite to play</li>
 						<li onClick={handleDeleteChat}>Delete chat</li>
 						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
-						<li onClick={handleBlock}>{!block ? "Block" : "Unblock"}</li>
+						{block?.blocked_by_id == user?.id ? (
+							<li onClick={handleBlock}>Unblock</li>
+						) : (
+							!block?.blocked && <li onClick={handleBlock}>Block</li>
+						)}
 					</ul>
 				)}
 			</div>

@@ -93,17 +93,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					},
 				}));
 				setChats((prevChats) => {
-					const existingChat = prevChats.findIndex(
+					const existingChatIndex = prevChats.findIndex(
 						(chat) => chat.id === data.chat_id
 					);
 		
-					if (existingChat !== -1) {
+					if (existingChatIndex !== -1) {
 						// Update existing chat
 						const updatedChats = [...prevChats];
-						updatedChats[existingChat] = {
-							...updatedChats[existingChat],
+						updatedChats[existingChatIndex] = {
+							...updatedChats[existingChatIndex],
 							last_message: data.message,
-							messages: [...updatedChats[existingChat].messages, newMessage],
+							messages: [...updatedChats[existingChatIndex].messages, newMessage],
 						};
 						return updatedChats;
 					} else {

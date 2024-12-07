@@ -1,5 +1,4 @@
 import json
-
 from django.db.models.query_utils import Q
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
@@ -17,16 +16,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not self.user.is_authenticated:
             await self.close()
             return
-
-        # Verify if the user is part of the chat (either as user1 or user2)
-        # try:
-        #     self.chat = await self.get_chat()
-        #     if not self.is_in_chat():
-        #         await self.close()
-        #         return
-        # except Chat.DoesNotExist:
-        #     await self.close()
-        #     return
 
         # Join the chat room group
         await self.channel_layer.group_add( # Adds the WebSocket connection to a group named chat_<user_id>.
