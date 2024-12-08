@@ -3,6 +3,12 @@ from django.db import models
 from django.db.models import UniqueConstraint
 from django.utils.timesince import timesince
 
+STATUS_CHOICES = (
+    ('none', 'none'),
+    ('blocker', 'blocker'),
+    ('blocked', 'blocked'),
+)
+
 class Chat(models.Model):
     user1 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='chats_as_user1',
                               on_delete=models.CASCADE)
@@ -10,11 +16,12 @@ class Chat(models.Model):
                               on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     last_message = models.TextField(null=True, blank=True)
+    blocke_state_user1 = models.CharField(max_length=8, choices=STATUS_CHOICES, default="none")
+    blocke_state_user2 = models.CharField(max_length=8, choices=STATUS_CHOICES, default="none")
 
     class Meta:
         constraints = [
             UniqueConstraint(fields=['user1', 'user2'], name='unique_chat'),
-            # UniqueConstraint(fields=['user2', 'user1'], name='unique_chat_reverse')
         ]
 
     def __str__(self):

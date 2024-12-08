@@ -4,7 +4,7 @@ import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 // import { GetChats } from "./ChatList";
 // import axios from "axios";
 // import { getUser, getendpoint } from "../../../context/getContextData";
-import { GetChats, useChatContext } from "./context/ChatUseContext";
+import { GetChats, MessageType, useChatContext } from "./context/ChatUseContext";
 import { getUser } from "../../../context/getContextData";
 import { BlockedFriend } from "./ChatBody";
 
@@ -53,6 +53,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 				sendMessage({
 					message: text.trim(),
 					receiver: receiver_id,
+					message_type: MessageType.SendMessage,
 				})
 				setText("");
 				setOpen(false);

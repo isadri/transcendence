@@ -150,7 +150,7 @@ class ChatView(viewsets.ModelViewSet):
                               status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class MessageView(viewsets.ModelViewSet):
-    serializer_class = MessageSerializer
+    serializer_class = MessageSerializer 
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

@@ -5,15 +5,6 @@ import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { useChatContext, GetFriends, GetChats } from "./context/ChatUseContext";
 
-// export interface GetChats {
-// 	id: number;
-// 	user1: GetFriends;
-// 	user2: GetFriends;
-// 	created_at: string;
-// 	last_message: string | null;
-// 	messages: ChatMessage[];
-// }
-
 interface ChatListProps {
 	friends: GetFriends[];
 	onSelectFriend: (friend: GetChats) => void;
@@ -52,8 +43,8 @@ const ChatList = ({
 			}
 		};
 
-		fetchChats()
-	}, []);
+		fetchChats();
+	}, [chats.length]);
 
 	const handleAddConversationRequests = async (id: number) => {
 		const existingChat = chats.find(
@@ -62,14 +53,12 @@ const ChatList = ({
 
 		if (existingChat) {
 			console.log("existing");
-			
 			onSelectFriend(existingChat);
 			return;
 		}
 		try {
 			const response = await axios.post(
 				getendpoint("http", "/api/chat/chats/"),
-				// "http://0.0.0.0:8000/api/chat/chats/",
 				{ user2: id },
 				{ withCredentials: true }
 			);
@@ -104,23 +93,23 @@ const ChatList = ({
 
 	// Sort chats by the most recent message timestamp
 	const sortedChats = chats
-	.map((chat) => {
-		const lastMsg = lastMessage[chat.id];
-		return {
-			...chat,
-			last_message: lastMsg?.content || chat.last_message,
-			last_timestamp: lastMsg?.timestamp || chat.created_at,
-		};
-	})
-	.filter(chat => chat.messages.length > 0)
-	.sort(
-		(a, b) =>
-			new Date(b.last_timestamp || "").getTime() -
-			new Date(a.last_timestamp || "").getTime()
-	);
+		.map((chat) => {
+			const lastMsg = lastMessage[chat.id];
+			return {
+				...chat,
+				last_message: lastMsg?.content || chat.last_message,
+				last_timestamp: lastMsg?.timestamp || chat.created_at,
+			};
+		})
+		.filter((chat) => chat.messages.length > 0)
+		.sort(
+			(a, b) =>
+				new Date(b.last_timestamp || "").getTime() -
+				new Date(a.last_timestamp || "").getTime()
+		);
 	if (!sortedChats) {
-		return null
-	} 
+		return null;
+	}
 
 	return (
 		<div className="ChatList">
@@ -151,9 +140,11 @@ const ChatList = ({
 							</div>
 						</div>
 				  ))
-				: sortedChats && sortedChats.map((chat) => {
+				: sortedChats &&
+				  sortedChats.map((chat) => {
 						const friend_user =
 							user?.id === chat.user2.id ? chat.user1 : chat.user2;
+						if (!friend_user) return null;
 						const lastMessageContent = getLastMessage(chat);
 						const lastMessageTime = getLastMessageTime(chat);
 						return (

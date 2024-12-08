@@ -35,30 +35,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message = data.get('message')
         receiver_id = data.get('receiver')
+        # chat_id = data.get('')
+        message_type = data.get('message_type')
+
+        if not message_type:
+            await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
+            return
 
         # Check if the user is exist
-        # receiver = None
-        try:
-            receiver = await User.objects.aget(id=receiver_id)
-        except User.DoesNotExist:
-            await self.send(text_data=json.dumps({
-                'error': 'This user does not exist.'
-            }))
-
-        # Get or create the chat instance
-        # chat, _ = await Chat.objects.aget_or_create(
-        #     Q(user1=self.user, user2=receiver) |
-        #     Q(user1=receiver, user2=self.user)
-        # )
-
-        # try:
-        #     chat = await Chat.objects.aget(
-        #         Q(user1=self.user, user2=receiver) |
-        #         Q(user1=receiver, user2=self.user)
-        #     )
-        # except Chat.DoesNotExist:
-        #     chat = await Chat.objects.acreate(user1=self.user, user2=receiver)
-
+        if (message_type == "send_message") :
+            try:
+                receiver = await User.objects.aget(id=receiver_id)
+            except User.DoesNotExist:
+                await self.send(text_data=json.dumps({
+                    'error': 'This user does not exist.'
+                }))
+                return
 
         chat = await Chat.objects.filter(
             Q(user1=self.user, user2=receiver) |
@@ -70,8 +62,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user1=self.user,
                 user2=receiver
             )
+        if (message_type == "send_message") :
+            await self.handle_send_message(chat, receiver, message)
+        # elif (message_type == "delete_chat") :
+        #     print("-----hellloo")
+        #     if chat.id:
+        #         await self.handle_delete_chat(chat.id)
 
+    # async def handle_delete_chat(self, chat_id):
+    #     # Delete the chat from the database
+    #     try:
+    #         chat = Chat.objects.get(id=chat_id)
+    #         chat.delete()
+    #         # Broadcast to all connected clients
+    #         await self.channel_layer.group_send(
+    #             self.group_name,
+    #             {
+    #                 "type": "delete_chat",
+    #                 "chat_id": chat_id,
+    #             },
+    #         )
+    #     except Chat.DoesNotExist:
+    #         pass
 
+    # async def chat_deleted(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         "type": "delete_chat",
+    #         "chat_id": event["chat_id"]
+    #     }))
+
+    async def handle_send_message(self, chat, receiver, message):
         new_message = await Message.objects.acreate(
             chat=chat,
             sender=self.user,
@@ -102,11 +122,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
         chat.last_message = message
-        await database_sync_to_async(chat.save)()
+        await chat.asave()
 
     async def chat_message(self, event):
         # Send message to websocket
         await self.send(text_data=json.dumps({
+            'type': 'send_message',
             'message': event['message'],
             'chat_id': event['chat_id'],
             'sender_id': event['sender_id'],

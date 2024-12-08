@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
-import { GetChats } from "./ChatList";
-import { useChatContext } from "./context/ChatUseContext";
+import { GetChats, useChatContext } from "./context/ChatUseContext";
 // import { loginContext } from "../../../App";
 import { getUser } from "../../../context/getContextData";
 

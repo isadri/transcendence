@@ -36,13 +36,14 @@ export interface GetChats {
 
 interface ChatContextType {
 	socket: WebSocket | null;
-	sendMessage: (data: { message: string; receiver: number }) => void;
+	sendMessage: (data: { message: string; receiver: number; message_type: MessageType }) => void;
 	messages: ChatMessage[];
 	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	lastMessage: LastMessage;
 	setLastMessage: React.Dispatch<React.SetStateAction<LastMessage>>;
 	chats: GetChats[];
 	setChats: React.Dispatch<React.SetStateAction<GetChats[]>>;
+	// deleteChat: (data: {chatId: number, message_type: MessageType}) => void;
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -54,7 +55,13 @@ const ChatContext = createContext<ChatContextType>({
 	setLastMessage: () => {},
 	chats: [],
 	setChats: () => {},
+	// deleteChat: () => {},
 });
+
+export enum MessageType {
+	SendMessage = "send_message",
+	DeleteChat = "delete_chat",
+}
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
@@ -73,52 +80,79 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		};
 		ws.onmessage = (event) => {
 			try {
+				console.log(event);
+				
 				const data = JSON.parse(event.data);
-				const newMessage: ChatMessage = {
-					id: Date.now(),
-					chat: data.chat_id,
-					sender: data.sender_id,
-					receiver: data.receiver_id,
-					content: data.message,
-					timestamp: new Date().toISOString(),
-					file: null,
-					image: null,
-				};
-				setMessages((prev) => [...prev, newMessage]);
-				setLastMessage((prev) => ({
-					...prev,
-					[data.chat_id]: {
-						content: data.message,
-						timestamp: newMessage.timestamp,
-					},
-				}));
-				setChats((prevChats) => {
-					const existingChatIndex = prevChats.findIndex(
-						(chat) => chat.id === data.chat_id
-					);
+
+				// if (data.type === MessageType.DeleteChat) {
+				// 	const chat_id  = data.chat_id;
+				// 	if (chat_id) {
+				// 		// Remove the chat from state
+				// 		setChats((prevChats) => prevChats.filter((chat) => chat.id !== chat_id));
+				// 		setMessages((prevMessages) => prevMessages.filter((msg) => msg.chat !== chat_id));
+				// 		console.log("********************");
+						
+				// 		// setLastMessage((prevLastMessage) => {
+				// 		// 	const updatedLastMessage = { ...prevLastMessage };
+				// 		// 	delete updatedLastMessage[chat_id];
+				// 		// 	return updatedLastMessage;
+				// 		// });
+				// 	}
+				// }
 		
-					if (existingChatIndex !== -1) {
-						// Update existing chat
-						const updatedChats = [...prevChats];
-						updatedChats[existingChatIndex] = {
-							...updatedChats[existingChatIndex],
-							last_message: data.message,
-							messages: [...updatedChats[existingChatIndex].messages, newMessage],
-						};
-						return updatedChats;
-					} else {
-						// Add new chat
-						const newChat: GetChats = {
-							id: data.chat_id,
-							user1: data.sender,
-							user2: data.receiver,
-							created_at: newMessage.timestamp,
-							last_message: data.message,
-							messages: [newMessage],
-						};
-						return [...prevChats, newChat];
+
+				if (data.type === MessageType.SendMessage) {
+					if (!data.chat_id || !data.message) {
+						console.error("Invalid WebSocket message: ", data)
+						return
 					}
-				});
+					const newMessage: ChatMessage = {
+						id: Date.now(),
+						chat: data.chat_id,
+						sender: data.sender_id,
+						receiver: data.receiver_id,
+						content: data.message,
+						timestamp: new Date().toISOString(),
+						file: null,
+						image: null,
+					};
+					
+					newMessage.chat === data.chat_id && setMessages((prev) => [...prev, newMessage]);
+					setLastMessage((prev) => ({
+						...prev,
+						[data.chat_id]: {
+							content: data.message,
+							timestamp: newMessage.timestamp,
+						},
+					}));
+					setChats((prevChats) => {
+						const existingChatIndex = prevChats.findIndex(
+							(chat) => chat.id === data.chat_id
+						);
+			
+						if (existingChatIndex !== -1) {
+							// Update existing chat
+							const updatedChats = [...prevChats];
+							updatedChats[existingChatIndex] = {
+								...updatedChats[existingChatIndex],
+								last_message: data.message,
+								messages: [...updatedChats[existingChatIndex].messages, newMessage],
+							};
+							return updatedChats;
+						} else {
+							// Add new chat
+							const newChat: GetChats = {
+								id: data.chat_id,
+								user1: data.sender_id,
+								user2: data.receiver_id,
+								created_at: newMessage.timestamp,
+								last_message: data.message,
+								messages: [newMessage],
+							};
+							return [...prevChats, newChat];
+						}
+					});
+				}
 			} catch (err) {
 				console.error("Error parsing WebSocket message: ", err);
 			}
@@ -129,13 +163,26 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		return () => ws.close(); // Clean up the WebSocket on component unmont
 	}, []);
 
-	const sendMessage = (data: { message: string; receiver: number }) => {
+	const sendMessage = (data: { message: string; receiver: number; message_type: MessageType }) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(JSON.stringify(data));
 		} else {
 			console.error("WebSocket is not open.");
 		}
 	};
+	
+	// const deleteChat = (data: {chatId: number; message_type: MessageType }) => {
+	// 	if (socket && socket.readyState === WebSocket.OPEN) {
+	// 		console.log(socket);
+	// 		socket.send(JSON.stringify(data));
+	// 		// socket.send(JSON.stringify({
+	// 		// 	type: MessageType.DeleteChat,
+	// 		// 	chat_id: chatId,
+	// 		// }));
+	// 	} else {
+	// 		console.error("WebSocket is not open.");
+	// 	}
+	// };
 
 	return (
 		<ChatContext.Provider
@@ -148,6 +195,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				setLastMessage,
 				chats,
 				setChats,
+				// deleteChat,
 			}}
 		>
 			{children}

@@ -2,22 +2,15 @@ import { useState, useEffect } from "react";
 import "./Chat.css";
 import ChatBody from "./components/ChatBody";
 import ListChat from "./components/List";
-import moment from "moment";
+// import moment from "moment";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import axios from "axios";
-// import { GetChats } from "./components/ChatList";
 import { getendpoint } from "../../context/getContextData";
 import {
 	ChatProvider,
 	GetFriends,
 	GetChats,
 } from "./components/context/ChatUseContext";
-
-// export interface GetFriends {
-// 	id: number;
-// 	username: string;
-// 	avatar: string;
-// }
 
 const Chat = () => {
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");

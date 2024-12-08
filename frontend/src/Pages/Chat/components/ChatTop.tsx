@@ -1,6 +1,6 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
-import { useChatContext, GetChats } from "./context/ChatUseContext";
+import { useChatContext, GetChats, MessageType } from "./context/ChatUseContext";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
 import { BlockedFriend } from "./ChatBody";
@@ -21,7 +21,7 @@ const ChatTop = ({
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const { setMessages, setChats } = useChatContext();
+	// const { setMessages, setChats, deleteChat } = useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
@@ -43,25 +43,26 @@ const ChatTop = ({
 		};
 	}, []);
 
-	const handleDeleteChat = async () => {
-		try {
-			await axios.delete(
-				getendpoint("http", `/api/chat/chatuser/${selectedFriend.id}`),
-				// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
-				{
-					withCredentials: true,
-				}
-			);
-			setChats((prevChats) =>
-				prevChats.filter((chat) => chat.id !== selectedFriend.id)
-			);
-		} catch (err) {
-			console.log("Error in fetching chats", err);
-		}
-		setMessages([]);
-		setSelectedFriend(null);
-		setOpenMenu(false);
-	};
+	// const handleDeleteChat = async () => {
+	// 	try {
+	// 		await axios.delete(
+	// 			getendpoint("http", `/api/chat/chatuser/${selectedFriend.id}`),
+	// 			// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
+	// 			{
+	// 				withCredentials: true,
+	// 			}
+	// 		);
+	// 		setChats((prevChats) =>
+	// 			prevChats.filter((chat) => chat.id !== selectedFriend.id)
+	// 		);
+	// 		deleteChat({ chatId: selectedFriend.id, message_type: MessageType.DeleteChat})
+	// 		setMessages((prevMessages) => prevMessages.filter((msg) => msg.chat !== selectedFriend.id));
+	// 		setSelectedFriend(null);
+	// 		setOpenMenu(false);
+	// 	} catch (err) {
+	// 		console.log("Error in fetching chats", err);
+	// 	}
+	// };
 
 	const handleBlock = async () => {
 		let friend_id;
@@ -124,7 +125,7 @@ const ChatTop = ({
 				{openMenu && (
 					<ul className="menu-list">
 						<li>Invite to play</li>
-						<li onClick={handleDeleteChat}>Delete chat</li>
+						{/* <li onClick={handleDeleteChat}>Delete chat</li> */}
 						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
 						{block?.blocked_by_id == user?.id ? (
 							<li onClick={handleBlock}>Unblock</li>
