@@ -38,7 +38,6 @@ class RandomGame(AsyncWebsocketConsumer):
       self.qeuee[self.user.username] = self
       print("qeuee", self.qeuee)
       if len(self.qeuee) >= 2:
-        print("aaaaaa")
         iterator = iter(iter(self.qeuee.items()))
         key1 , player1 = next(iterator)
         key2 , player2 = next(iterator)
@@ -158,12 +157,12 @@ class RemoteGame(AsyncWebsocketConsumer):
 
 
   async def enemy_move(self, event):
-    print(event)
     if event['username'] != self.user.username:
       await self.send(json.dumps({
           "event": "MOVE",
           "username": event["username"],
           "direction": event["direction"],
+          # "timestamp": event["timestamp"],
       }))
 
   async def player_disconnected(self, event):

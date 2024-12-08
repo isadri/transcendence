@@ -30,24 +30,15 @@ interface ResultContext {
   user: userDataType,
   socket: WebSocket,
   enemy: userDataType
-  handlers:any
+  handlers: any
 }
 const resultsContext = createContext<ResultContext | null>(null)
 
-const throttledSend = (socket:any, direction:any, username:any) => {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    socket.send(
-      JSON.stringify({
-        event: "MOVE",
-        username: username,
-        direction: direction,
-      })
-    );
-  }
+const addToOnmessage = (context:ResultContext, func: any) => {
+  context.handlers.push(func)
 }
 
-const onMessage = (func:any) => {
-  const context = useContext(resultsContext)
+const onMessage = (context:ResultContext) => {
   if (context)
   {
     const {handlers, socket} = context
@@ -62,7 +53,7 @@ function Ball() {
   const material = new Material("ball_mat");
   const [canScore, setCanScore] = useState(true);
 
-  var randomX = (Math.random() * 2 - 1) * 3
+  var randomX = 0//(Math.random() * 2 - 1) * 3
   
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
@@ -140,7 +131,21 @@ interface Paddlerops {
   mine?:boolean
 }
 
-function Paddle({position, mine=false}: Paddlerops){
+const move = (socket:WebSocket, username:string, direction:[number, number, number]) => {
+
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(
+      JSON.stringify({
+        event: "MOVE",
+        username: username,
+        direction: direction,
+      })
+    );
+  }
+}
+
+
+function Paddle1({position}: Paddlerops){ // my Paddle
   const context =  useContext(resultsContext)
   const material = new Material();
   material.name = "paddle_mat"
@@ -150,69 +155,47 @@ function Paddle({position, mine=false}: Paddlerops){
     args: [1.5, 0.5, 0.5],
     material: material
   }));
-  const speed = 2.5
-  const [direction, setDirection] = useState<[number, number, number]>([0, 0, 0]);
-  const [oldDirection, setOldDirection] = useState<[number, number, number]>([-1337, -1337, -1337]);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      api.position.subscribe(([x, y, z]) =>{
-        if (mine){
-          if  ((event.key == "ArrowRight" && x < (3.07345 - 0.5)) || (event.key == "ArrowUp" && x < (3.07345 - 0.5)))
-            setDirection([speed, 0, 0])
-          if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.5)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.5)))
-            setDirection([-speed, 0,0])
-        }
-        if (!mine) {
-            if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w")  && x < (3.07345 - 0.5))
-              setDirection([speed, 0, 0])
-            if  ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -(3.07345 - 0.5))
-              setDirection([-speed, 0, 0])
-        }
-      })
-    }
-
-    const onKeyUp = (event: KeyboardEvent) => {
-      api.velocity.subscribe(() => {
-        const {key} = event
-        if (mine && (key == "ArrowRight" || key == "ArrowLeft" || key == "ArrowUp" || key == "ArrowDown"))
-          setDirection([0, 0, 0])
-        if (!mine && (key == "A" || key == "a" || key == "d" || key == "D"
-            || key == "S" || key == "s" || key == "W" || key == "w"))
-          setDirection([0, 0, 0])
-      })
-    }
-
-    window.addEventListener("keydown", onKeyDown)
-    window.addEventListener("keyup", onKeyUp)
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
-    };
-  }, [mine, direction])
 
 
   useEffect(() => {
-    api.velocity.set(...direction);
     if (context)
-    {
-      const {socket, user} = context
-      
-      if (socket.readyState && direction != oldDirection)
       {
-        throttledSend(socket, direction, user.username)
-        setOldDirection(direction)
+        const {socket, user} = context
+        let unsubscribe: (() => void) | null = null
+        const onKeyDown = (event: KeyboardEvent) => {
+          if (unsubscribe) return
+          unsubscribe = api.position.subscribe(([x, y, z]) =>{
+            if  ((event.key == "ArrowRight" && x < (3.07345 - 0.75)) || (event.key == "ArrowUp" && x < (3.07345 - 0.75)))
+            {
+              move(socket, user.username,[x - 0.05, y, -z])
+              api.position.set(x + 0.05, y, z)
+            }
+            else if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.75)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.75)))
+            {
+              move(socket, user.username, [x + 0.05, y, -z])
+              api.position.set(x - 0.05, y, z)
+            }
+          })
+        }
+        
+        const onKeyUp = (event: KeyboardEvent) => {
+          if (unsubscribe) {
+            unsubscribe();
+            unsubscribe = null;
+          }
+        }
+    
+        window.addEventListener("keydown", onKeyDown)
+        window.addEventListener("keyup", onKeyUp)
+        return (() => {
+          window.removeEventListener("keydown", onKeyDown)
+          window.removeEventListener("keyup", onKeyUp)
+        }
+        )
       }
-      socket.onmessage = (e) => {
-        const data = JSON.parse(e.data)
-        console.log("event",data);
-        if (data.event == 'MOVE' && !mine)
-          setDirection(data.direction)
-      }
-    }
-  }, [direction, api, mine, context, context?.socket]);
-
+    }, [context])
+  
   return (
     <mesh ref={ref} position={position}  name="paddle">
       <boxGeometry args={[1.5, 0.5, 0.5]} />
@@ -221,9 +204,43 @@ function Paddle({position, mine=false}: Paddlerops){
   )
 }
 
+function Paddle2({position}: Paddlerops){
+  const context =  useContext(resultsContext)
+  const material = new Material();
+  material.name = "paddle_mat"
+  const [ref, api] = useBox(() => ({
+    type: "Kinematic",
+    position: position,
+    args: [1.5, 0.5, 0.5],
+    material: material
+  }));
+
+  useEffect(() => {
+    if (context){
+      const {socket, enemy} = context
+      socket.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+        if (data.event == 'MOVE')
+        {
+          let dirct :[number, number, number] = data.direction
+          api.position.set(...dirct)
+        }
+      }
+    }
+  }, [context, api])
+  return (
+    <mesh ref={ref} position={position}  name="paddle">
+      <boxGeometry args={[1.5, 0.5, 0.5]} />
+      <meshStandardMaterial />
+    </mesh>
+  )
+}
+
+
 interface SideWallProps {
   position: any
 }
+
 function SideWall({position} : SideWallProps) {
   const material = new Material("side_mat");
   const [ref, api] = useBox(() => ({
@@ -269,7 +286,7 @@ function GameTable() {
   });
   // contact  beetween the racket and the table 
   useContactMaterial("paddle_mat", "table_mat", {
-    friction:0.9,
+    friction:0.5,
     restitution: 0,
   });
 
@@ -288,10 +305,10 @@ function GameTable() {
 
   return (
     <>
-      <Ball />
+      {/* <Ball /> */}
       <Table />
-      <Paddle position={[0, 0.09, +(8.65640 -1)/ 2]} mine/>
-      <Paddle position={[0, 0.09, -(8.65640 -1)/ 2]}/>
+      <Paddle1 position={[0, 0.09, +(8.65640 -1)/ 2]}/>
+      <Paddle2 position={[0, 0.09, -(8.65640 -1)/ 2]}/>
       {/* <primitive object={new AxesHelper(5)} /> */}
       <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
       <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
