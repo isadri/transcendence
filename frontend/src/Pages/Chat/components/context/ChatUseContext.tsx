@@ -96,20 +96,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				const data = JSON.parse(event.data);
 
 				if (data.type === "block_status_update") {
-					// setChats((prevChats) =>
-					// 	prevChats.map((chat) =>
-					// 		chat.id === chat_id
-					// 			? {
-					// 					...chat,
-					// 					block_status: status
-					// 						? blocker === chat.user1.id
-					// 							? "blocker"
-					// 							: "blocked"
-					// 						: "none",
-					// 			  }
-					// 			: chat
-					// 	)
-					// );
 					setBlock({
 						chatid: data.chat_id,
 						status: data.status,
@@ -227,19 +213,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 	};
 
-	// const blockChat = (chatId: number) => {
-	// 	if (socket && socket.readyState === WebSocket.OPEN) {
-	// 		const blockData = {
-	// 			message_type: MessageType.BlockChat,
-	// 			chat_id: chatId,
-	// 		};
-	// 		socket.send(JSON.stringify(blockData));
-	// 	} else {
-	// 		console.error("WebSocket is not open.");
-	// 	}
-	// };
-
-	
 	// const deleteChat = (data: {chatId: number; message_type: MessageType }) => {
 	// 	if (socket && socket.readyState === WebSocket.OPEN) {
 	// 		console.log(socket);

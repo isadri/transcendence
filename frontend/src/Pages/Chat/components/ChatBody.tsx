@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./ChatBody.css";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
@@ -16,7 +16,6 @@ interface ChatBodyProps {
 
 const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
-	// const [block, setBlock] = useState<BlockedFriend | null>(null);
 	const { setMessages, setBlock } = useChatContext();
 	const user = getUser();
 
@@ -67,14 +66,11 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 			<ChatTop
 				selectedFriend={selectedFriend}
 				setSelectedFriend={setSelectedFriend}
-				// setBlock={setBlock}
-				// block={block}
 			/>
 			<ChatCenter selectedFriend={selectedFriend} />
 			<ChatBottom
 				selectedFriend={selectedFriend}
 				ref={ref}
-				// block={block}
 			/>
 		</div>
 	);

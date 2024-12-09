@@ -1,17 +1,11 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-// import { GetChats } from "./ChatList";
-// import axios from "axios";
-// import { getUser, getendpoint } from "../../../context/getContextData";
 import { GetChats, MessageType, useChatContext } from "./context/ChatUseContext";
 import { getUser } from "../../../context/getContextData";
-// import { BlockedFriend } from "./ChatBody";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
-	// setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-	// block: BlockedFriend | null;
 }
 
 const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
@@ -71,8 +65,6 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			if (event.key === "Enter") {
 				event.preventDefault();
 				handleSendMessage();
-				// setText("");
-				// setOpen(false);
 			}
 		};
 
@@ -94,7 +86,6 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 							<input
 								type="text"
 								placeholder="Type a message..."
-								// disabled={block}
 								value={text}
 								onChange={(event) => setText(event.target.value)}
 								onKeyDown={handleKeyDown}

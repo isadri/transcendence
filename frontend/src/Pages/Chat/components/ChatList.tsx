@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-// import { GetFriends } from "../Chat";
 import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
@@ -76,12 +75,6 @@ const ChatList = ({
 		return lastMsg.content;
 	};
 
-	const getLastMessageTime = (chat: GetChats): string | null => {
-		const lastMsg = lastMessage[chat.id];
-		if (!lastMsg) return "";
-		return lastMsg.timestamp;
-	};
-
 	const formatTimes = (time: string | null): string => {
 		if (!time) return "";
 		return Intl.DateTimeFormat("en-US", {
@@ -89,6 +82,37 @@ const ChatList = ({
 			minute: "2-digit",
 			hour12: true,
 		}).format(new Date(time));
+	};
+
+	const getLastMessageTime = (chat: GetChats): string | null => {
+		const lastMsg = lastMessage[chat.id];
+		const lastMessag = lastMsg || chat.messages[chat.messages.length - 1];
+	
+		if (!lastMessag || !lastMessag.timestamp) {
+			console.warn("Invalid or missing timestamp for chat:", chat.id);
+			return null;
+		}
+	
+		const lastMessageTime = new Date(lastMessag.timestamp).getTime();
+	
+		if (isNaN(lastMessageTime)) {
+			console.error("Invalid timestamp value:", lastMessag.timestamp);
+			return null;
+		}
+	
+		const now = Date.now();
+		const diffInSeconds = Math.floor((now - lastMessageTime) / 1000);
+		const diffInDays = Math.floor(diffInSeconds / 86400);
+	
+		if (diffInDays < 1)
+			return formatTimes(lastMessag.timestamp)
+		if (diffInDays == 1)
+			return "Yesterday"
+		return Intl.DateTimeFormat("en-US", {
+			year: "2-digit",
+			month: "2-digit",
+			day: "2-digit",
+		}).format(new Date(lastMessag.timestamp))
 	};
 
 	// Sort chats by the most recent message timestamp
@@ -171,7 +195,7 @@ const ChatList = ({
 								</div>
 								{!listAllFriends && (
 									<div className="ChatStatus">
-										<div>{formatTimes(lastMessageTime)}</div>
+										<div>{lastMessageTime}</div>
 										{/* {friend.status} */}
 									</div>
 								)}

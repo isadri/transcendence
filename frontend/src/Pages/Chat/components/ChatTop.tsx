@@ -1,27 +1,22 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
-import { useChatContext, GetChats, MessageType } from "./context/ChatUseContext";
+import { useChatContext, GetChats } from "./context/ChatUseContext";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
-// import { BlockedFriend } from "./ChatBody";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
-	// setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
-	// block: BlockedFriend | null;
 }
 
 const ChatTop = ({
 	selectedFriend,
 	setSelectedFriend,
-	// setBlock,
-	// block,
 }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const { block, setBlock, blockUnblockFriend } = useChatContext();
+	const { block, blockUnblockFriend } = useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
@@ -87,7 +82,6 @@ const ChatTop = ({
 					blocked: friend_id,
 					status: false,
 				});
-				// setBlock({ chatid: selectedFriend.id, blocked: friend_id, blocker: user?.id, status: false });
 			} else {
 				await axios.post(
 					getendpoint("http", `/api/friends/block/${friend_id}`),
@@ -102,8 +96,6 @@ const ChatTop = ({
 					blocked: friend_id,
 					status: true,
 				});
-				// setBlock({ status: true, blocked: friend_id, blocker: user?.id });
-				// setBlock({ chatid: selectedFriend.id, blocked: friend_id, blocker: user?.id, status: true });
 			}
 			setOpenMenu(false);
 		} catch (err) {
@@ -139,6 +131,7 @@ const ChatTop = ({
 				{openMenu && (
 					<ul className="menu-list">
 						<li>Invite to play</li>
+						<li >Friend profile</li>
 						{/* <li onClick={handleDeleteChat}>Delete chat</li> */}
 						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
 						{block?.status && block.blocker === user?.id ? (
