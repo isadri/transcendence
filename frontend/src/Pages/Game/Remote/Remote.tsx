@@ -168,12 +168,12 @@ function Paddle1({position}: Paddlerops){ // my Paddle
           unsubscribe = api.position.subscribe(([x, y, z]) =>{
             if  ((event.key == "ArrowRight" && x < (3.07345 - 0.75)) || (event.key == "ArrowUp" && x < (3.07345 - 0.75)))
             {
-              move(socket, user.username,[x - 0.05, y, -z])
+              move(socket, user.username,[-(x + 0.05), y, -z])
               api.position.set(x + 0.05, y, z)
             }
             else if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.75)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.75)))
             {
-              move(socket, user.username, [x + 0.05, y, -z])
+              move(socket, user.username, [-(x - 0.05), y, -z])
               api.position.set(x - 0.05, y, z)
             }
           })
