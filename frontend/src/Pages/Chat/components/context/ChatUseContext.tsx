@@ -34,33 +34,47 @@ export interface GetChats {
 	messages: ChatMessage[];
 }
 
+export interface BlockedFriend {
+	chatid?: number;
+	status: boolean;
+	blocked: number;
+	blocker: number;
+}
+
 interface ChatContextType {
 	socket: WebSocket | null;
 	sendMessage: (data: { message: string; receiver: number; message_type: MessageType }) => void;
+	blockUnblockFriend: (data: { chatid: number; blocker: number; blocked: number; status: true | false }) => void;
 	messages: ChatMessage[];
 	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	lastMessage: LastMessage;
 	setLastMessage: React.Dispatch<React.SetStateAction<LastMessage>>;
 	chats: GetChats[];
 	setChats: React.Dispatch<React.SetStateAction<GetChats[]>>;
+	block: BlockedFriend | null;
+	setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
 	// deleteChat: (data: {chatId: number, message_type: MessageType}) => void;
 }
 
 const ChatContext = createContext<ChatContextType>({
 	socket: null,
 	sendMessage: () => {},
+	blockUnblockFriend: () => {},
 	messages: [],
 	setMessages: () => {},
 	lastMessage: {},
 	setLastMessage: () => {},
 	chats: [],
 	setChats: () => {},
+	block: null,
+	setBlock: () => {},
 	// deleteChat: () => {},
 });
 
 export enum MessageType {
 	SendMessage = "send_message",
-	DeleteChat = "delete_chat",
+	BlockFriend = "block_friend",
+	// DeleteChat = "delete_chat",
 }
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -70,6 +84,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [lastMessage, setLastMessage] = useState<LastMessage>({});
 	const [chats, setChats] = useState<GetChats[]>([]);
+	const [block, setBlock] = useState<BlockedFriend | null>(null);
 
 	useEffect(() => {
 		const ws = new WebSocket(getendpoint("ws", `/ws/chat/`));
@@ -80,9 +95,30 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		};
 		ws.onmessage = (event) => {
 			try {
-				console.log(event);
-				
 				const data = JSON.parse(event.data);
+
+				if (data.type === "block_status_update") {
+					// setChats((prevChats) =>
+					// 	prevChats.map((chat) =>
+					// 		chat.id === chat_id
+					// 			? {
+					// 					...chat,
+					// 					block_status: status
+					// 						? blocker === chat.user1.id
+					// 							? "blocker"
+					// 							: "blocked"
+					// 						: "none",
+					// 			  }
+					// 			: chat
+					// 	)
+					// );
+					setBlock({
+						chatid: data.chat_id,
+						status: data.status,
+						blocker: data.blocker,
+						blocked: data.blocked,
+					});
+				}
 
 				// if (data.type === MessageType.DeleteChat) {
 				// 	const chat_id  = data.chat_id;
@@ -98,6 +134,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				// 		// 	return updatedLastMessage;
 				// 		// });
 				// 	}
+				// }
+		
+				// if (data.type === MessageType.BlockChat) {
+				// 	setBlock({
+				// 		chatid: data.chat_id,
+				// 		blocked: true,
+				// 		blocked_by_id: data.blocked_by_id,
+				// 	})
 				// }
 		
 
@@ -117,7 +161,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 						image: null,
 					};
 					
-					newMessage.chat === data.chat_id && setMessages((prev) => [...prev, newMessage]);
+					setMessages((prev) => [...prev, newMessage]);
 					setLastMessage((prev) => ({
 						...prev,
 						[data.chat_id]: {
@@ -170,6 +214,35 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 			console.error("WebSocket is not open.");
 		}
 	};
+
+	const blockUnblockFriend = (data: { chatid: number; blocker: number; blocked: number; status: true | false }) => {
+		if (socket && socket.readyState === WebSocket.OPEN) {
+			socket.send(
+				JSON.stringify({
+					message_type: MessageType.BlockFriend,
+					chat_id: data.chatid,
+					blocker: data.blocker,
+					blocked: data.blocked,
+					status: data.status,
+				})
+			);
+		} else {
+			console.error("WebSocket is not open.");
+		}
+	};
+
+	// const blockChat = (chatId: number) => {
+	// 	if (socket && socket.readyState === WebSocket.OPEN) {
+	// 		const blockData = {
+	// 			message_type: MessageType.BlockChat,
+	// 			chat_id: chatId,
+	// 		};
+	// 		socket.send(JSON.stringify(blockData));
+	// 	} else {
+	// 		console.error("WebSocket is not open.");
+	// 	}
+	// };
+
 	
 	// const deleteChat = (data: {chatId: number; message_type: MessageType }) => {
 	// 	if (socket && socket.readyState === WebSocket.OPEN) {
@@ -195,6 +268,9 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				setLastMessage,
 				chats,
 				setChats,
+				block,
+				setBlock,
+				blockUnblockFriend
 				// deleteChat,
 			}}
 		>

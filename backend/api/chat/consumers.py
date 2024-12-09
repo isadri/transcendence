@@ -20,7 +20,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Join the chat room group
         await self.channel_layer.group_add( # Adds the WebSocket connection to a group named chat_<user_id>.
             self.room_group_name,
-            self.channel_name
+            self.channel_name 
         )
         await self.accept()
 
@@ -33,37 +33,84 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data.get('message')
-        receiver_id = data.get('receiver')
-        # chat_id = data.get('')
         message_type = data.get('message_type')
 
         if not message_type:
             await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
             return
 
-        # Check if the user is exist
-        if (message_type == "send_message") :
-            try:
-                receiver = await User.objects.aget(id=receiver_id)
-            except User.DoesNotExist:
-                await self.send(text_data=json.dumps({
-                    'error': 'This user does not exist.'
-                }))
-                return
+        if (message_type == "send_message"):
+            message = data.get('message')
+            receiver_id = data.get('receiver')
+            await self.handle_send_message(receiver_id, message)
 
-        chat = await Chat.objects.filter(
-            Q(user1=self.user, user2=receiver) |
-            Q(user1=receiver, user2=self.user)
-        ).afirst()  # Fetch the first match asynchronously
+        elif (message_type == "block_friend"):
+            chat_id = data.get('chat_id')
+            blocker = data.get('blocker')
+            blocked = data.get('blocked')
+            status = data.get('status')
+            await self.handle_block_friend(chat_id, blocker, blocked, status)
 
-        if not chat:
-            chat = await Chat.objects.acreate(
-                user1=self.user,
-                user2=receiver
-            )
-        if (message_type == "send_message") :
-            await self.handle_send_message(chat, receiver, message)
+    async def handle_block_friend(self, chat_id, blocker, blocked, status):
+        try:
+            chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
+
+            user1, user2 = await self.get_users_from_chat(chat)
+
+            if status == True:
+                if (user1.id == blocked):
+                    chat.blocke_state_user1 = "blocked"
+                    chat.blocke_state_user2 = "blocker"
+                else:
+                    chat.blocke_state_user1 = "blocker"
+                    chat.blocke_state_user2 = "blocked"
+            elif status == False:
+                chat.blocke_state_user1 = "none"
+                chat.blocke_state_user2 = "none"
+
+            await chat.asave()
+
+            blocker_room = f"chat_room_of_{blocker}"
+            blocked_room = f"chat_room_of_{blocked}"
+            relation_status = self.is_blocked(chat)
+
+            payload = {
+                'type': 'block_status_update',
+                'chat_id': chat_id,
+                'blocker': blocker,
+                'blocked': blocked,
+                'status': relation_status
+            }
+
+            await self.channel_layer.group_send(blocker_room, payload)
+            await self.channel_layer.group_send(blocked_room, payload)
+
+        except Chat.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat does not exist.'
+            }))
+
+    async def get_users_from_chat(self, chat):
+        # Wrap user access in async-safe method
+        user1 = await database_sync_to_async(lambda: chat.user1)()
+        user2 = await database_sync_to_async(lambda: chat.user2)()
+        return user1, user2
+
+    async def block_status_update(self, event):
+        """
+        Sends block/unblock updates to the client.
+        """
+        await self.send(text_data=json.dumps({
+            'type': 'block_status_update',
+            'chat_id': event['chat_id'],
+            'blocker': event['blocker'],
+            'blocked': event['blocked'],
+            'status': event['status']  # true if blocked, false otherwise
+        }))
+
+
+
+
         # elif (message_type == "delete_chat") :
         #     print("-----hellloo")
         #     if chat.id:
@@ -91,7 +138,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         "chat_id": event["chat_id"]
     #     }))
 
-    async def handle_send_message(self, chat, receiver, message):
+    async def handle_send_message(self, receiver_id, message):
+        try:
+            receiver = await User.objects.aget(id=receiver_id)
+        except User.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'This user does not exist.'
+            }))
+            return
+
+        chat = await Chat.objects.filter(
+            Q(user1=self.user, user2=receiver) |
+            Q(user1=receiver, user2=self.user)
+        ).afirst()  # Fetch the first match asynchronously
+
+        if not chat:
+            chat = await Chat.objects.acreate(
+                user1=self.user,
+                user2=receiver
+            )
+
+        if self.is_blocked(chat):
+            await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
+            return
+
         new_message = await Message.objects.acreate(
             chat=chat,
             sender=self.user,
@@ -133,3 +203,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_id': event['sender_id'],
             'receiver_id': event['receiver_id']
         }))
+
+    def is_blocked(self, chat):
+        """
+        Checks if the current user or the other user is blocked.
+        """
+        return (
+            chat.blocke_state_user1 == 'blocked' or 
+            chat.blocke_state_user2 == 'blocked'
+        )

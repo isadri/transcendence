@@ -3,25 +3,25 @@ import { useEffect, useRef, useState } from "react";
 import { useChatContext, GetChats, MessageType } from "./context/ChatUseContext";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
-import { BlockedFriend } from "./ChatBody";
+// import { BlockedFriend } from "./ChatBody";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
-	setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
-	block: BlockedFriend | null;
+	// setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
+	// block: BlockedFriend | null;
 }
 
 const ChatTop = ({
 	selectedFriend,
 	setSelectedFriend,
-	setBlock,
-	block,
+	// setBlock,
+	// block,
 }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	// const { setMessages, setChats, deleteChat } = useChatContext();
+	const { block, setBlock, blockUnblockFriend } = useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
@@ -65,6 +65,7 @@ const ChatTop = ({
 	// };
 
 	const handleBlock = async () => {
+		if (!user) return;
 		let friend_id;
 		if (user?.id === selectedFriend.user1.id) {
 			friend_id = selectedFriend.user2.id;
@@ -72,7 +73,7 @@ const ChatTop = ({
 			friend_id = selectedFriend.user1.id;
 		}
 		try {
-			if (block?.blocked) {
+			if (block?.status) {
 				await axios.post(
 					getendpoint("http", `/api/friends/unblock/${friend_id}`),
 					null,
@@ -80,7 +81,13 @@ const ChatTop = ({
 						withCredentials: true,
 					}
 				);
-				setBlock({ blocked: false });
+				blockUnblockFriend({
+					chatid: selectedFriend.id,
+					blocker: user?.id,
+					blocked: friend_id,
+					status: false,
+				});
+				// setBlock({ chatid: selectedFriend.id, blocked: friend_id, blocker: user?.id, status: false });
 			} else {
 				await axios.post(
 					getendpoint("http", `/api/friends/block/${friend_id}`),
@@ -89,7 +96,14 @@ const ChatTop = ({
 						withCredentials: true,
 					}
 				);
-				setBlock({ blocked: true, blocked_by_id: user?.id });
+				blockUnblockFriend({
+					chatid: selectedFriend.id,
+					blocker: user?.id,
+					blocked: friend_id,
+					status: true,
+				});
+				// setBlock({ status: true, blocked: friend_id, blocker: user?.id });
+				// setBlock({ chatid: selectedFriend.id, blocked: friend_id, blocker: user?.id, status: true });
 			}
 			setOpenMenu(false);
 		} catch (err) {
@@ -127,11 +141,12 @@ const ChatTop = ({
 						<li>Invite to play</li>
 						{/* <li onClick={handleDeleteChat}>Delete chat</li> */}
 						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
-						{block?.blocked_by_id == user?.id ? (
+						{block?.status && block.blocker === user?.id ? (
 							<li onClick={handleBlock}>Unblock</li>
 						) : (
-							!block?.blocked && <li onClick={handleBlock}>Block</li>
+							!block?.status && <li onClick={handleBlock}>Block</li>
 						)}
+
 					</ul>
 				)}
 			</div>

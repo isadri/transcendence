@@ -16,6 +16,42 @@ from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
+# class UserChatView(APIView):
+#     """
+#     API view to fetch the chat details between the authenticated user and the specified user2.
+#     """
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, user2_id: int):
+#         user1 = request.user  # The authenticated user
+
+#         # Validate user2_id
+#         if user1.id == user2_id:
+#             return Response({'error': 'You cannot start a chat with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         try:
+#             user2 = User.objects.get(id=user2_id)
+#         except User.DoesNotExist:
+#             return Response({'error': 'The specified user does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+#         # Fetch the chat between the two users
+#         chat = Chat.objects.filter(
+#             (Q(user1=user1) & Q(user2=user2)) | (Q(user1=user2) & Q(user2=user1))
+#         ).first()
+
+#         if not chat:
+#             return Response({'error': 'No chat found between the two users.'}, status=status.HTTP_404_NOT_FOUND)
+
+#         # Fetch all messages in the chat
+#         messages = Message.objects.filter(chat=chat).order_by('timestamp')
+
+#         # Serialize chat and messages
+#         chat_data = ChatSerializer(chat).data
+
+#         return Response({
+#             'chat': chat_data,
+#         }, status=status.HTTP_200_OK)
+
 class ChatConversationView(APIView):
     """
     API view to fetch the chat details and all messages for a specific chat by its ID.
@@ -61,41 +97,6 @@ class ChatConversationView(APIView):
         return Response({'message': 'Chat and messages have been deleted succesfully for that user.'},
                          status=status.HTTP_200_OK)
 
-class UserChatView(APIView):
-    """
-    API view to fetch the chat details between the authenticated user and the specified user2.
-    """
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, user2_id: int):
-        user1 = request.user  # The authenticated user
-
-        # Validate user2_id
-        if user1.id == user2_id:
-            return Response({'error': 'You cannot start a chat with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            user2 = User.objects.get(id=user2_id)
-        except User.DoesNotExist:
-            return Response({'error': 'The specified user does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Fetch the chat between the two users
-        chat = Chat.objects.filter(
-            (Q(user1=user1) & Q(user2=user2)) | (Q(user1=user2) & Q(user2=user1))
-        ).first()
-
-        if not chat:
-            return Response({'error': 'No chat found between the two users.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Fetch all messages in the chat
-        messages = Message.objects.filter(chat=chat).order_by('timestamp')
-
-        # Serialize chat and messages
-        chat_data = ChatSerializer(chat).data
-
-        return Response({
-            'chat': chat_data,
-        }, status=status.HTTP_200_OK)
 
 class ChatView(viewsets.ModelViewSet):
     serializer_class = ChatSerializer
@@ -171,6 +172,10 @@ class MessageView(viewsets.ModelViewSet):
         user = request.user
         if chat.user1 != user and chat.user2 != user:
             raise PermissionDenied("You are not a participant in this chat.")
+
+        if (chat.blocke_state_user1 == "blocked" and chat.user1 == user) or\
+            (chat.blocke_state_user2 == 'blocked' and chat.user2 == user):
+            return Response({'error': "You have been blocked from this chat."}, status=status.HTTP_403_FORBIDDEN)
 
         try:
             receiver = User.objects.get(id=receiver_id)

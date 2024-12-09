@@ -8,10 +8,11 @@ import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
 
-export interface BlockedFriend {
-	blocked: boolean;
-	blocked_by_id?: number;
-}
+// export interface BlockedFriend {
+// 	status: boolean;
+// 	blocked?: number;
+// 	blocker?: number;
+// }
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -20,15 +21,15 @@ interface ChatBodyProps {
 
 const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
-	const [block, setBlock] = useState<BlockedFriend | null>(null);
-	const { setMessages } = useChatContext();
+	// const [block, setBlock] = useState<BlockedFriend | null>(null);
+	const { setMessages, setBlock } = useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
-		const fetchMessages = async (chatId: number) => {
+		const fetchMessages = async () => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", `/api/chat/chatuser/${chatId}`),
+					getendpoint("http", `/api/chat/chatuser/${selectedFriend.id}`),
 					{
 						withCredentials: true,
 					}
@@ -40,8 +41,7 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 		};
 
 		if (selectedFriend) {
-			const chatId = selectedFriend.id;
-			fetchMessages(chatId);
+			fetchMessages();
 		}
 
 		const fetchBlockedFriend = async () => {
@@ -72,14 +72,14 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 			<ChatTop
 				selectedFriend={selectedFriend}
 				setSelectedFriend={setSelectedFriend}
-				setBlock={setBlock}
-				block={block}
+				// setBlock={setBlock}
+				// block={block}
 			/>
 			<ChatCenter selectedFriend={selectedFriend} />
 			<ChatBottom
 				selectedFriend={selectedFriend}
 				ref={ref}
-				block={block}
+				// block={block}
 			/>
 		</div>
 	);

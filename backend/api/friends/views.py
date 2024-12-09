@@ -211,9 +211,9 @@ class BlockedFriendRequestsView(APIView):
                 return Response({'blocked': False}, status=status.HTTP_200_OK)
 
             return Response({
-                'blocked': True,
-                # 'blocked_by': blocked_request.blocked_by.username,
-                'blocked_by_id': blocked_request.blocked_by.id
+                'status': True,
+                'blocked': pk,
+                'blocker': blocked_request.blocked_by.id
             }, status=status.HTTP_200_OK)
 
         except Exception as e:

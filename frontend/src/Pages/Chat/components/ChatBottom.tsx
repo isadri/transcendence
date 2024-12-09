@@ -6,21 +6,21 @@ import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 // import { getUser, getendpoint } from "../../../context/getContextData";
 import { GetChats, MessageType, useChatContext } from "./context/ChatUseContext";
 import { getUser } from "../../../context/getContextData";
-import { BlockedFriend } from "./ChatBody";
+// import { BlockedFriend } from "./ChatBody";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
 	// setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-	block: BlockedFriend | null;
+	// block: BlockedFriend | null;
 }
 
 const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
-	({ block, selectedFriend }, ref) => {
+	({ selectedFriend }, ref) => {
 		const [open, setOpen] = useState(false);
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
 		const [text, setText] = useState("");
-		const { sendMessage } = useChatContext()
+		const { block,sendMessage } = useChatContext()
 		const user = getUser()
 
 		useEffect(() => {
@@ -78,7 +78,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 
 		return (
 			<div className="bottom">
-				{!block?.blocked ? (
+				{!block?.status ? (
 					<>
 						<div className="emoji" ref={buttonRef}>
 							<i
