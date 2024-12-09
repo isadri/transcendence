@@ -33,8 +33,6 @@ class Message(models.Model):
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='received_messages',
                                 on_delete=models.CASCADE, null=True, blank=True)
     content = models.TextField()
-    file = models.FileField(upload_to='chat_files/%y/%m/%d', null=True, blank=True)
-    image = models.ImageField(upload_to='chat_files/%y/%m/%d', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def formatted_close_time(self):

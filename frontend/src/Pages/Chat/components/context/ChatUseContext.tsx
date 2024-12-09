@@ -8,8 +8,6 @@ export interface ChatMessage {
 	receiver: number;
 	content: string;
 	timestamp: string;
-	file?: string | null;
-	image?: string | null;
 }
 
 interface LastMessage {
@@ -157,8 +155,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 						receiver: data.receiver_id,
 						content: data.message,
 						timestamp: new Date().toISOString(),
-						file: null,
-						image: null,
 					};
 					
 					setMessages((prev) => [...prev, newMessage]);

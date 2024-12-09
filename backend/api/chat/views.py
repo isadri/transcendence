@@ -162,7 +162,6 @@ class MessageView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         chat_id = self.request.data.get("chat")
         receiver_id = request.data.get('receiver')
-        # content = request.data.get('content')
 
         try:
             chat = Chat.objects.get(id=chat_id)

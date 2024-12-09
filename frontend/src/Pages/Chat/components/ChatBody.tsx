@@ -8,11 +8,6 @@ import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
 
-// export interface BlockedFriend {
-// 	status: boolean;
-// 	blocked?: number;
-// 	blocker?: number;
-// }
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;

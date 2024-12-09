@@ -43,13 +43,6 @@ const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 							<img src={friend_user.avatar} alt="profile" className="profile" />
 						)}
 						<div className="textMessage">
-							{/* {value.image && (
-								<img
-									src={value.image}
-									alt="imgPartage"
-									className="imgPartage"
-								/>
-							)} */}
 							<p>{value.content}</p>
 							<span>{formatTimes(value.timestamp)}</span>
 						</div>
