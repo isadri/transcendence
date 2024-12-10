@@ -23,16 +23,20 @@
     align-items: center;
     margin-top: -1%;
 }
+.Home-ProfileUser .Home-Btn .proBtn{
+    display: flex;
+    margin-right: 5%;
+    width: 12%;
+    height: 2.5vh;
+}
 
-.Home-ProfileUser .Home-Btn button{
+.Home-ProfileUser .Home-Btn .proBtn button{
     background-color: var(--primary);
     color: white;
     border: 1px solid var(--primary);
     border-radius: 20px;
-    width: 12%;
-    height: 2.5vh;
-    margin-right: 5%;
     font-size: 1vh;
+    width: 100%;
 }
 
 .Home-ProfileUser h2{
@@ -50,21 +54,30 @@
 }
 
 .Home-imgUser{
-    width: 30%;
+    width: 24%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 8%;
+    justify-content: center;
+    margin-left: 4%;
     /* margin-top: 2%; */
 }
 
+.Home-imgUser .Home-img{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
 .Home-img img{
-    width: 8vh;
+    width: 100%;
+    object-fit: cover;
 }
 .Home-UserName{
     display: flex;
     flex-direction: column;
-    margin-left: 20%;
+    margin-left: 10%;
     font-family: var(--sans);
 }
 

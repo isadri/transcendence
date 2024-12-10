@@ -18,6 +18,9 @@ from .models import User
 from .serializers import UserSerializer
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
+
+from django.shortcuts import get_object_or_404
+
 from .utils import (
     get_access_token_from_api,
     get_tokens_for_user,
@@ -446,3 +449,18 @@ class DeleteUserAccountView(APIView):
         response = Response({"detail": "User account deleted successfully."},status=status.HTTP_200_OK)
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
+
+class UserDetailView(APIView):
+    """
+    View to retrieve user details based on the provided username.
+    """
+    def get(self, request, username, format=None):
+        """
+        Retrieve user data by username.
+        """
+        user = get_object_or_404(User, username=username)
+        serializer = UserSerializer(user)
+        data = serializer.data
+        data.pop("password", None)
+        print(data)
+        return Response(data, status=status.HTTP_200_OK)

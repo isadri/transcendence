@@ -48,6 +48,8 @@ urlpatterns = [
     path('updateuserData/', views.UpdateUserDataView.as_view(), name='update-user'),
     path('updateuserPass/', views.UpdateUserPasswordView.as_view(), name='update-user'),
     path('deleteUser/', views.DeleteUserAccountView.as_view(), name='update-user'),
+    path('user/<str:username>/', views.UserDetailView.as_view(), name='get_user_by_username'),
+
     # path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
 ]
 

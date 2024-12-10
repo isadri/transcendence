@@ -12,6 +12,7 @@ import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 import Tictactoe from '../Pages/TicTacToe/Tictactoe';
+import { Children } from 'react';
 
 
 // isLogged  routing table and layout
@@ -30,7 +31,16 @@ const mainRoutingTable = [
   },
   {
     path: "/profile",
-    element: <Profile />
+    children: [
+    {
+      path: "",
+      element: <Profile />
+    },
+    {
+      path: ":username",
+      element: <Profile />
+    }
+]
   },
   {
     path: "/friends",

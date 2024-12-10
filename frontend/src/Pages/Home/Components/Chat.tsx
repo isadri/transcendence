@@ -2,6 +2,7 @@ import '../styles/Chat.css'
 import axios from 'axios'
 import { getendpoint } from '../../../context/getContextData'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 interface FriendData{
   id : number,
@@ -10,6 +11,7 @@ interface FriendData{
 }
 
 function Chat() {
+  const navigate = useNavigate(); 
   const [friendsList, setFriendsList] = useState<FriendData[]>([]);
   const GetFriendsList = () =>{
     axios.get(getendpoint("http", "/api/friends/friends"),{withCredentials:true})
@@ -32,7 +34,8 @@ function Chat() {
       <div className="Home-friends">
         {friendsList.map((friend) => (
           <div key={friend.id} className="Home-friends-item">
-              <img src={friend.avatar} alt={`${friend.username}'s avatar`} />
+              <img src={friend.avatar} alt={`${friend.username}'s avatar`}
+              onClick={() => navigate(`/profile/${friend.username}`)}/>
           </div>
         ))}
       </div>

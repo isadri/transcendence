@@ -10,6 +10,7 @@ from django.db.models import Q
 from .models import FriendList, FriendRequest
 from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
 
+
 User = get_user_model()
 
 class FriendRequestSendView(generics.CreateAPIView):
@@ -222,3 +223,28 @@ class UserListView(APIView):
         # Serialize and return the data
         serializer = FriendSerializer(non_friends, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FriendshipStatusView(APIView):
+    """
+    View to check the friendship status between the authenticated user and another user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk: int):
+        """
+        Return the status between the authenticated user and the user with the given ID (pk).
+        """
+        try:
+            friend_request = FriendRequest.objects.filter(
+                (Q(sender=request.user, receiver_id=pk) | Q(sender_id=pk, receiver=request.user))
+            ).first()
+
+            if not friend_request:
+                return Response({'status': 'no_request'}, status=status.HTTP_200_OK)
+
+            return Response({'status': friend_request.status}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Error retrieving friendship status: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
