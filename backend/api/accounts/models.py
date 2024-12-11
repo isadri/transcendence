@@ -6,11 +6,10 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.core.mail import send_mail
 from django.db import models
-from django.utils import timezone
+from django.utils import timezone, tree
 from django.utils.translation import gettext_lazy as _
 
-from .validators import lowercase_username_validator
-from ..friends.models import Friend
+# from ..friends.models import Friend
 
 
 class UserManager(BaseUserManager):
@@ -43,8 +42,8 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         user.save()
-        new_list = Friend(user=user)
-        new_list.save()
+        # new_list = Friend(user=user)
+        # new_list.save()
         return user
 
     def create_superuser(self, username: str, email: str,
@@ -71,9 +70,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     Custom user model.
     """
 
-    username_validators = [
-        ASCIIUsernameValidator(), lowercase_username_validator
-    ]
+    username_validators = [ASCIIUsernameValidator()]
 
     username = models.CharField(
         max_length=150,
@@ -94,7 +91,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     avatar = models.ImageField(
         help_text=_('The profile picture'),
         upload_to='avatars',
-        default='default.jpg'
+        default='default.jpeg'
     )
     is_staff = models.BooleanField(
         default=False,
@@ -114,6 +111,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
+    # Add friends field
+    # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
@@ -132,3 +132,6 @@ class User(PermissionsMixin, AbstractBaseUser):
         Send an email to this user.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def __str__(self):
+        return self.username

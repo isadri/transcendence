@@ -1,28 +1,39 @@
 import { useEffect, useRef } from "react";
 import "./ChatCenter.css";
-import { Message } from "./types";
-// import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
+import { GetChats } from "./ChatList";
+import { useChatContext } from "./context/ChatUseContext";
+import { loginContext } from "../../../App";
+import { getUser } from "../../../context/getContextData";
 
 interface ChatCenterProps {
-	messages: Message[];
+	selectedFriend: GetChats;
+	// messages: ChatMessage[];
 }
 
-const ChatCenter = ({ messages }: ChatCenterProps) => {
-	// const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
+const ChatCenter = ({ selectedFriend }: ChatCenterProps) => {
 	const endRef = useRef<HTMLDivElement>(null);
+	const { messages } = useChatContext();
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: "instant" });
 	}, [messages]);
 
+	const user = getUser();
+	const filteredMessages =
+		messages?.filter((msg) => msg.chat === selectedFriend.id) || [];
 	return (
 		<div className="center">
-			{messages.map((value, index) => {
-				const isOwnMessage = value.senderId === 2;
+			{filteredMessages.map((value, index) => {
+				const isOwnMessage = value.sender === user?.id;
+				// const friendMessage = value.sender === user?.id;
 				return (
 					<div key={index} className={isOwnMessage ? "message-own" : "message"}>
 						{!isOwnMessage && (
-							<img src={value.profile} alt="profile" className="profile" />
+							<img
+								src={selectedFriend.user2.avatar}
+								alt="profile"
+								className="profile"
+							/>
 						)}
 						<div className="textMessage">
 							{value.image && (
@@ -32,8 +43,8 @@ const ChatCenter = ({ messages }: ChatCenterProps) => {
 									className="imgPartage"
 								/>
 							)}
-							<p>{value.message}</p>
-							<span>{value.time}</span>
+							<p>{value.content}</p>
+							<span>{value.timestamp}</span>
 						</div>
 					</div>
 				);

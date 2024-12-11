@@ -1,57 +1,63 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./ChatBody.css";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
 import moment from "moment";
-import { Friend, Message } from "./types";
+import { GetFriends } from "../Chat";
+import { GetChats } from "./ChatList";
+// import { GetChats, ChatMessage } from "./ChatList";
+import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
+import { useChatContext } from "./context/ChatUseContext";
 
 interface ChatBodyProps {
-	selectedFriend: Friend;
-	messages: Message[];
-	onSendMessage: (message: Message) => void;
-	setSelectedFriend: React.Dispatch<React.SetStateAction<Friend | null>>;
-	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+	selectedFriend: GetChats;
+	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
 }
 
-const ChatBody = ({
-	selectedFriend,
-	messages,
-	onSendMessage,
-	setSelectedFriend,
-	setMessages,
-}: ChatBodyProps) => {
-	const [text, setText] = useState("");
+const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
 	const [block, setBlock] = useState(false);
+	const { setMessages } = useChatContext();
+	// const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-	const handleSend = () => {
-		if (text.trim()) {
-			const newMessage: Message = {
-				message: text,
-				senderId: 2,
-				receiverId: selectedFriend.id,
-				time: moment().format("LT"),
-			};
-			onSendMessage(newMessage);
-			setText("");
+	useEffect(() => {
+		const fetchMessages = async (chatId: number) => {
+			try {
+				const response = await axios.get(
+					getendpoint("http", `/api/chat/chats/?id=${chatId}`),
+					// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
+					{
+						withCredentials: true,
+					}
+				);
+				setMessages(response.data.messages);
+			} catch (err) {
+				console.log("Error in fetching chats", err);
+			}
+		};
+
+		if (selectedFriend) {
+			const chatId = selectedFriend.id;
+			fetchMessages(chatId);
 		}
-	};
+	}, [selectedFriend]);
 
 	return (
 		<div className="chatContent">
 			<ChatTop
 				selectedFriend={selectedFriend}
 				setSelectedFriend={setSelectedFriend}
-				setMessages={setMessages}
+				// setMessages={setMessages}
 				setBlock={setBlock}
 				block={block}
 			/>
-			<ChatCenter messages={messages} />
+			<ChatCenter selectedFriend={selectedFriend} />
+			{/* <ChatCenter messages={messages} selectedFriend={selectedFriend} /> */}
 			<ChatBottom
-				text={text}
-				setText={setText}
-				handleSend={handleSend}
+				selectedFriend={selectedFriend}
+				// setMessages={setMessages}
 				ref={ref}
 				block={block}
 			/>

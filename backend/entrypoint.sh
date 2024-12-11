@@ -1,8 +1,7 @@
 #!/bin/sh
 
 echo "Running database migrations"
-python manage.py makemigrations accounts
-python manage.py makemigrations friends
+python manage.py makemigrations --noinput accounts chat friends
 python manage.py migrate
 
 if [ -z "$DJANGO_SUPERUSER_USERNAME" ]; then

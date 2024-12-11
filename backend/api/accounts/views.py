@@ -30,12 +30,8 @@ from .utils import (
     create_user,
     get_user,
     get_user_info,
-    state_match,
     send_otp_email,
 )
-
-
-logger = logging.getLogger(__name__)
 
 
 class HomeView(APIView):
@@ -48,13 +44,10 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        logger.info('access home page',
-                    extra={
-                        'index_name': 'access-home-page',
-                        'user': request.user,
-                    })
+        serializer =  UserSerializer(request.user)
+
         if request.user.is_authenticated:
-            return Response(status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -76,9 +69,7 @@ class LoginViewSet(viewsets.ViewSet):
         does not exist, otherwise, this method authenticates the user and
         login the user.
         """
-        logger.debug('access login page',
-                     extra={'index_name': 'access-login-page'})
-        username = request.data.get('username')
+        username = request.data.get('username').lower()
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
@@ -130,7 +121,7 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             A Response object indicating if a user is successfully
             authenticated or the user does not exist.
         """
-        username = request.data['username']
+        username = request.data['username'].lower()
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
@@ -157,7 +148,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
 
     def create(self, request: Request) -> Response:
         otp = request.data['key']
-        username = request.data['username']
+        username = request.data['username'].lower()
         user = User.objects.get(username=username)
         total_difference = timezone.now() - user.otp_created_at
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
@@ -184,12 +175,13 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     fetches user information (such as username, first name, and last name).
     If the user does not exist, it creates a new one.
     """
+    permission_classes = [AllowAny]
 
     def get_user(self, user_info: dict[str, str]) -> User:
         """
         Extract a username from the email of the user and get the user.
         """
-        username = user_info['email'].split('@')[0].replace('.', '_')
+        username = user_info['email'].split('@')[0].replace('.', '_').lower()
         return get_user(username, user_info['email'])
 
     def list(self, request: Request) -> Response:
@@ -230,7 +222,6 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
     If the user does not exist, it creates a new one.
     """
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def get_access_token(self, authorization_code: str) -> str:
         """
@@ -260,7 +251,7 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
 
         This function use the create_user function from utils.py.
         """
-        username = user_info['email'].split('@')[0].replace('.', '_')
+        username = user_info['email'].split('@')[0].replace('.', '_').lower()
         return create_user(username, user_info['email'])
 
     def list(self, request: Request) -> Response:
@@ -290,6 +281,8 @@ class IntraLoginViewSet(viewsets.ViewSet):
     fetches user information (such as username, first name, last name,
     and email).
     """
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
     def list(self, request: Request) -> Response:
         """
@@ -375,9 +368,9 @@ class RegisterViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
-        logger.debug('access register page',
-                     extra={'index_name': 'access-register-page'})
-        serializer = UserSerializer(data=request.data)
+        data = request.data.copy()
+        data['username'] = data['username'].lower()
+        serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
             logger.info(f"new user: {request.data['username']}",

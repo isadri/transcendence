@@ -7,9 +7,10 @@ import Setting from '../Pages/Setting/Setting';
 
 import BackGround from '../components/background/BackGround'
 import SideNavbar from '../components/sideNavbar/SideNavbar';
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
+import Play from '../Pages/Game/Play/Play';
 
 
 // isLogged  routing table and layout
@@ -42,18 +43,14 @@ const mainRoutingTable = [
         element: <Game />,
       },
       {
-        path: "/game/1v1/",
-        element: <Friends />,
+        path: "/game/play",
+        element: <Play />,
       },
       {
         path: "/game/1v1/:gameId",
         element: <Friends />,
       },
     ]
-  },
-  {
-    path: "/setting",
-    element: <Setting />
   },
   {
     path: "/setting",
@@ -75,7 +72,7 @@ const mainRouter = createBrowserRouter([
     path: '/',
     element: <MainLayout/>,
     children: mainRoutingTable,
-    errorElement : <NoPage/>
+    errorElement : <Navigate to={"/"}/>
   }
 ])
 

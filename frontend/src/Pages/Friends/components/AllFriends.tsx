@@ -1,23 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import DataFriends from "../../Chat/components/DataFriends.tsx";
-import { Friend } from "../../Chat/components/types.ts";
 import "./AllFriends.css";
+import axios from "axios";
+import { getendpoint } from "../../../context/getContextData";
 
-interface AllFriendsProps {
-	displayAllFriends: boolean;
-	results: Friend[];
-	setResults: React.Dispatch<React.SetStateAction<Friend[]>>;
+interface GetFriends {
+	id: number;
+	username: string;
+	avatar: string;
 }
 
-const AllFriends = ({
-	displayAllFriends,
-	results,
-	setResults,
-}: AllFriendsProps) => {
+const AllFriends = () => {
+	const [results, setResults] = useState<GetFriends[]>([]);
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
+	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -34,8 +32,27 @@ const AllFriends = ({
 
 		document.addEventListener("mousedown", handleClickOutside);
 
+		const fetchFriend = async () => {
+			try {
+				const response = await axios.get(
+					getendpoint("http", "/api/friends/friends"),
+					// "http://0.0.0.0:8000/api/friends/friends",
+					{
+						withCredentials: true, // Include cookies in the request
+					}
+				);
+				setGetFriends(response.data.friends);
+			} catch (err) {
+				console.log("Error to fetch friends.",err); // Set the response data to state
+			}
+		};
+
+		fetchFriend();
+		// const intervalId = setInterval(fetchFriend, 5000);
+
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
+			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -43,8 +60,8 @@ const AllFriends = ({
 		const value = event.target.value;
 
 		setSearchFriend(value);
-		const filterResults = DataFriends.filter((user) =>
-			user.name.toLowerCase().includes(value.toLowerCase())
+		const filterResults = getFriends.filter((user) =>
+			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
 	};
@@ -54,48 +71,46 @@ const AllFriends = ({
 		setSearchFriend("");
 	};
 
-	const friendsList = searchFriend ? results : DataFriends;
+	const friendsList = searchFriend ? results : getFriends;
 	return (
 		<div>
-			{displayAllFriends && (
-				<>
-					<div className="searchFriend">
-						<div className="searchfrienContainer">
-							{focusOnSearch ? (
-								<i
-									className="fa-solid fa-arrow-left arrow-icon"
-									onClick={handleReturnToList}
-									ref={ChangeSearchRef}
-								></i>
-							) : (
-								<i className="fa-solid fa-magnifying-glass search-icon"></i>
-							)}
-							<input
-								type="text"
-								placeholder="search..."
-								value={searchFriend}
-								onChange={handleSearchFriend}
-								onFocus={() => setFocusOnSearch(true)}
-								ref={Ref}
-							/>
-						</div>
+			<>
+				<div className="searchFriend">
+					<div className="searchfrienContainer">
+						{focusOnSearch ? (
+							<i
+								className="fa-solid fa-arrow-left arrow-icon"
+								onClick={handleReturnToList}
+								ref={ChangeSearchRef}
+							></i>
+						) : (
+							<i className="fa-solid fa-magnifying-glass search-icon"></i>
+						)}
+						<input
+							type="text"
+							placeholder="search..."
+							value={searchFriend}
+							onChange={handleSearchFriend}
+							onFocus={() => setFocusOnSearch(true)}
+							ref={Ref}
+						/>
 					</div>
-					{friendsList.map((friend) => {
-						return (
-							<div className="friendProfile" key={friend.id}>
-								<div className="imageNameFriend">
-									<img src={friend.profile} alt="" className="friendImage" />
-									<span>{friend.name}</span>
-								</div>
-								<div className="iconFriend">
-									<i className="fa-solid fa-user user"></i>
-									<i className="fa-solid fa-comment-dots chat"></i>
-								</div>
+				</div>
+				{friendsList.map((friend) => {
+					return (
+						<div className="friendProfile" key={friend.id}>
+							<div className="imageNameFriend">
+								<img src={friend.avatar} alt="" className="friendImage" />
+								<span>{friend.username}</span>
 							</div>
-						);
-					})}
-				</>
-			)}
+							<div className="iconFriend">
+								<i className="fa-solid fa-user user"></i>
+								<i className="fa-solid fa-comment-dots chat"></i>
+							</div>
+						</div>
+					);
+				})}
+			</>
 		</div>
 	);
 };

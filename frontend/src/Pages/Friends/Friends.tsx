@@ -1,62 +1,50 @@
 import { useState } from "react";
 import "./Friends.css";
-import { Friend } from "../Chat/components/types.ts";
 import AllFriends from "./components/AllFriends.tsx";
 import FriendRequests from "./components/FriendRequests.tsx";
 import AddFriends from "./components/AddFriends.tsx";
-import BlockedFriend from "./components/BlockedFriend.tsx";
+import BlockedFriends from "./components/BlockedFriends.tsx";
+
 
 const Friends = () => {
-	const [results, setResults] = useState<Friend[]>([]);
-	const [displayAllFriends, setDisplayAllFriends] = useState(false);
-	const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
-	const [displayAddFriends, setDisplayAddFriends] = useState(false);
-	const [displayBlockedFriend, setDisplayBlockedFriend] = useState(false);
+	const [activeSection, setActiveSection] = useState("allFriends");
 
 	return (
-		<div className="FriendContainer">
-			<div className="menuFriends">
+		<div className="Friend-Container">
+			<div className="friendsMenuFriends">
 				<ul>
 					<li
 						onClick={() => {
-							setDisplayAllFriends((prev) => !prev);
-							setDisplayFriendRequests(false);
-							setDisplayAddFriends(false);
-							setDisplayBlockedFriend(false);
+							setActiveSection("allFriends");
 						}}
-						className={`all ${displayAllFriends ? "selectedItem" : ""}`}
+						className={`${activeSection == "allFriends" ? "selectedItem" : ""}`}
 					>
-						All Friends
+						Friends
 					</li>
 					<li
-						className={`${displayFriendRequests ? "selectedItem" : ""}`}
+						className={`${
+							activeSection == "friendRequests" ? "selectedItem" : ""
+						}`}
 						onClick={() => {
-							setDisplayFriendRequests((prev) => !prev);
-							setDisplayAllFriends(false);
-							setDisplayAddFriends(false);
-							setDisplayBlockedFriend(false);
+							setActiveSection("friendRequests");
 						}}
 					>
 						Friend Requests
 					</li>
 					<li
-						className={`${displayAddFriends ? "selectedItem" : ""}`}
+						className={`${activeSection == "addFriends" ? "selectedItem" : ""}`}
 						onClick={() => {
-							setDisplayAddFriends((prev) => !prev);
-							setDisplayFriendRequests(false);
-							setDisplayAllFriends(false);
-							setDisplayBlockedFriend(false);
+							setActiveSection("addFriends");
 						}}
-						>
+					>
 						Add Friend
 					</li>
 					<li
-						className={`${displayBlockedFriend ? "selectedItem" : ""}`}
+						className={`${
+							activeSection == "blockedFriends" ? "selectedItem" : ""
+						}`}
 						onClick={() => {
-							setDisplayBlockedFriend((prev) => !prev);
-							setDisplayFriendRequests(false);
-							setDisplayAllFriends(false);
-							setDisplayAddFriends(false);
+							setActiveSection("blockedFriends");
 						}}
 					>
 						Blocked Friend
@@ -64,24 +52,10 @@ const Friends = () => {
 				</ul>
 			</div>
 			<div className="bodyFriends">
-				<AllFriends
-					displayAllFriends={displayAllFriends}
-					results={results}
-					setResults={setResults}
-				/>
-				<FriendRequests
-					displayFriendRequests={displayFriendRequests}
-					setResults={setResults}
-				/>
-				<AddFriends
-					displayAddFriends={displayAddFriends}
-					results={results}
-					setResults={setResults}
-				/>
-				<BlockedFriend
-					displayBlockedFriend={displayBlockedFriend}
-					setResults={setResults}
-				/>
+				{activeSection === "allFriends" && <AllFriends/>}
+				{activeSection === "friendRequests" && <FriendRequests/>}
+				{activeSection === "addFriends" && <AddFriends/>}
+				{activeSection === "blockedFriends" && <BlockedFriends/>}
 			</div>
 		</div>
 	);

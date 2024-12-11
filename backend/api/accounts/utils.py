@@ -8,6 +8,48 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.backends import TokenBackend
+from rest_framework_simplejwt.views import TokenVerifyView
+
+def get_user_token_data(request) -> dict:
+    """
+    Gets current user data stored on access token
+    Args:
+        request: the request to get the cookies
+    Return:
+        returns a dict of user data, example :
+        {
+            "token_type": string,
+            "exp": number,
+            "iat": number,
+            "jti": string,
+            "user_id": number
+        }
+    """
+    try:
+        token = request.COOKIES.get(settings.AUTH_COOKIE)
+        if not token:
+            raise AuthenticationFailed("Authentication credentials were not provided.")
+        token_decoder = TokenBackend(
+            algorithm=settings.SIMPLE_JWT['ALGORITHM'],
+            signing_key=settings.SIMPLE_JWT['SIGNING_KEY']
+        )
+        return (token_decoder.decode(token, verify=True))
+    except Exception as e:
+        raise AuthenticationFailed(e)
+
+def get_current_user_id(request) -> int:
+    """
+    Gets current user id from access token
+    Args:
+        request: the request to get the cookies
+    """
+    data = get_user_token_data(request)
+    if not data or not data['user_id']:
+        raise AuthenticationFailed("Something went wrong.")
+    return data['user_id']
 
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import AuthenticationFailed
@@ -161,13 +203,6 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     return response.json(), response.status_code
 
 
-def state_match(state: str) -> bool:
-    """
-    Check if the given state is valid.
-    """
-    return state == settings.OAUTH2_STATE_PARAMETER
-
-
 def get_access_token_google(authorization_code: str) -> str:
     """
     Get the access token from Google API.
@@ -201,7 +236,7 @@ def get_access_token_42(authorization_code: str) -> str:
     Returns:
         The access token.
     """
-    token_endpoint = 'https://api.intra.42.fr/token'
+    token_endpoint = 'https://api.intra.42.fr/oauth/token/'
     payload = {
         'code': authorization_code,
         'client_id': os.getenv('INTRA_ID'),

@@ -1,5 +1,5 @@
-.FriendContainer {
-	width: 100%;
+.Friend-Container {
+	width: 100vw; /* % */
 	height: 96dvh;
 	position: relative;
 	display: flex;
@@ -10,9 +10,9 @@
 	gap: 3%;
 }
 
-.menuFriends {
+.friendsMenuFriends {
 	width: 30%;
-	margin: 4% 0 4% 4%;
+	margin: 4% 0 0 4%;
 	border-radius: 30px;
 	background-color: #d9d9d91C;
 	display: flex;
@@ -20,13 +20,13 @@
 	font-size: 18px;
 }
 
-.menuFriends ul {
+.friendsMenuFriends ul {
 	list-style: none;
 	text-align: center;
 	margin: 4vh 6%;
 }
 
-.menuFriends ul li {
+.friendsMenuFriends ul li {
 	background-color: var(--fade);
 	margin-bottom: 4.5vh;
 	padding: 10%;
@@ -34,23 +34,62 @@
 	cursor: pointer;
 }
 
-.menuFriends ul .selectedItem {
+.friendsMenuFriends ul .selectedItem {
 	background-color: var(--primary);
 }
 
-.menuFriends ul .selectedItem:hover {
+.friendsMenuFriends ul .selectedItem:hover {
 	background-color: var(--primary);
 }
 
-.menuFriends ul li:hover {
+.friendsMenuFriends ul li:hover {
 	background-color: #8f4854;
 }
 
 .bodyFriends {
 	width: 70%;
-	margin: 4% 4% 4% 0;
+	margin: 4% 4% 0 0;
 	border-radius: 30px;
 	background-color: #d9d9d91C;
 	display: flex;
 	flex-direction: column;
+}
+
+@media (max-width: 478px) {
+	.Friend-Container {
+		/* width: 100vw; */
+		border-radius: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	
+	.friendsMenuFriends {
+		padding: 0;
+		margin: 0;
+		width: 100%;
+		border-radius: 0;
+		font-size: 10px;
+	}
+	
+	.friendsMenuFriends ul {
+		padding: 0;
+		margin: 2vh 3vw;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		/* gap: 1%; */
+	}
+	
+	.friendsMenuFriends ul li {
+		padding: 3.5%;
+		margin: 0;
+	}
+
+	.bodyFriends {
+		width: 100vw;
+		height: 96vh;
+		margin: 0;
+		border-radius: 0;
+	}
 }

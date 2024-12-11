@@ -23,6 +23,7 @@ SITE_ID = 2
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +47,9 @@ INSTALLED_APPS = [
 	'api.friends',
 
     'oauth2_provider',
+
+    'api.chat',
+    'channels',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
@@ -96,8 +100,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -109,10 +111,21 @@ DATABASES = {
     }
 }
 
+# CORS_ALLOW_ALL_ORIGINS = True
+
+APPEND_SLASH = True
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:5000",
+    "http://e2r10p14:5000",
+    "http://0.0.0.0:5000",
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:8000",
 ]
+
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_PRIVATE_NETWORK = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -164,8 +177,8 @@ REST_FRAMEWORK = {
 
 # JWT settings
 SIMPLE_JWT = {
-	'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-	'REFRESH_TOKEN_LIFETIME': timedelta(hours=20),
+	'ACCESS_TOKEN_LIFETIME': timedelta(hours=2400),
+	'REFRESH_TOKEN_LIFETIME': timedelta(hours=2400),
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
@@ -195,6 +208,17 @@ EMAIL_PORT = '587'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
 
 LOGGING = {
     'version': 1,
