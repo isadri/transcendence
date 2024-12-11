@@ -30,11 +30,17 @@ if [ ! -f config/certs/certs.zip ]; then
 	echo "Generating certs"
 	echo -e \
 	"instances:\n"\
-	"  - name: elasticsearch\n"\
+	"  - name: es01\n"\
 	"    ip:\n"\
 	"      - 127.0.0.1\n"\
 	"    dns:\n"\
-	"      - elasticsearch\n"\
+	"      - es01\n"\
+	"      - localhost\n"\
+	"  - name: es02\n"\
+	"    ip:\n"\
+	"      - 127.0.0.1\n"\
+	"    dns:\n"\
+	"      - es02\n"\
 	"      - localhost\n"\
 	"  - name: kibana\n"\
 	"    ip:\n"\
@@ -65,6 +71,11 @@ if [ ! -f config/certs/certs.zip ]; then
 	#-nocrypt -outform PEM -out config/certs/logstash/logstash.pkcs8.key
 fi
 
+if [ ! -f config/jdbc/postgresql-42.7.4.jar ]; then
+	apt update && apt install -y wget;
+	wget https://jdbc.postgresql.org/download/postgresql-42.7.4.jar -O config/jdbc/postgresql-42.7.4.jar
+fi;
+
 #echo "Setting file permissions"
 #chmod 664 config/certs/logstash/logstash.pkcs8.key
 #chown -R root:root config/certs
@@ -72,23 +83,23 @@ fi
 #find . -type f -exec chmod 640 \{\} \;
 
 echo "Waiting for Elasticsearch availability"
-until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | \
+until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | \
 grep -q "missing authentication credentials"; do sleep 10; done
 
 echo "Setting kibana_system password"
 until curl -s -X POST --cacert config/certs/ca/ca.crt \
 -u elastic:$ELASTIC_PASSWORD -H "Content-Type: application/json" \
-https://elasticsearch:9200/_security/user/kibana_system/_password \
+https://es01:9200/_security/user/kibana_system/_password \
 -d "{\"password\": \"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done
 
 echo "Creating logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
--H "Content-Type: application/json" https://elasticsearch:9200/_security/role/logstash_writer \
+-H "Content-Type: application/json" https://es01:9200/_security/role/logstash_writer \
 -d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["*"], "privileges": ["write", "create", "create_index"]}]}'
 
 echo -e "\nCreating $LOGSTASH_USER user and assign it the logstash_writer role"
 curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
--H "Content-Type: application/json" https://elasticsearch:9200/_security/user/$LOGSTASH_USER \
+-H "Content-Type: application/json" https://es01:9200/_security/user/$LOGSTASH_USER \
 -d "{\"password\": \"${LOGSTASH_PASSWORD}\", \"roles\": [\"logstash_writer\"], \"full_name\": \"null\"}"
 
 echo -e "\nAll done"

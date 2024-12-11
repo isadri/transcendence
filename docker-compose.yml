@@ -4,10 +4,13 @@ networks:
 volumes:
   postgres_data:
   modules_files:
-  esdata:
+  es01data:
+  es02data:
   certs:
   kibanadata:
   kibconfig:
+  pg_jdbc:
+  backend_logs:
 
 services:
   back-end:
@@ -19,7 +22,8 @@ services:
       - 8000:8000
     volumes:
       - ./backend/:/code
-      - certs:/code/certs
+      - certs:/certs
+      - backend_logs:/logs
     networks:
       - app-network
     env_file:
@@ -48,8 +52,6 @@ services:
     image: postgres:17beta1
     volumes:
       - postgres_data:/var/lib/posgresql/data
-    ports:
-      - 5432:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     env_file:
@@ -61,8 +63,8 @@ services:
   redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
+    #ports:
+    #  - "6379:6379"
     env_file:
       - .env
     networks:
@@ -77,6 +79,7 @@ services:
     container_name: setup
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
+      - pg_jdbc:/usr/share/elasticsearch/config/jdbc
     env_file:
       - .env
     user: "0"
@@ -84,27 +87,58 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.key ]" ]
+      test: [ "CMD-SHELL", "[ -f config/certs/es01/es01.key ]" ]
       interval: 1s
       timeout: 5s
       retries: 120
 
-  elasticsearch:
+  es01:
     depends_on:
       setup:
         condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    container_name: elasticsearch
+    container_name: es01
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - esdata:/usr/share/elasticsearch/data
-      - ./elk/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - es01data:/usr/share/elasticsearch/data
+      - ./elk/es01/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     env_file:
       - .env
     networks:
       - app-network
-    ports:
-      - ${ES_PORT}:9200
+    #ports:
+    #  - ${ES_PORT}:9200
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials' "
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 90
+
+  es02:
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es02
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - es02data:/usr/share/elasticsearch/data
+      - ./elk/es02/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    env_file:
+      - .env
+    networks:
+      - app-network
+    #ports:
+    #  - ${ES_PORT}:9200
     mem_limit: ${MEM_LIMIT}
     ulimits:
       memlock:
@@ -122,7 +156,9 @@ services:
 
   kibana:
     depends_on:
-      elasticsearch:
+      es01:
+        condition: service_healthy
+      es02:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     container_name: kibana
@@ -139,15 +175,19 @@ services:
 
   logstash:
     depends_on:
-      elasticsearch:
+      es01:
+        condition: service_healthy
+      es02:
         condition: service_healthy
     image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     container_name: logstash
     command: bin/logstash -f pipeline/logstash.conf --config.reload.automatic
-    ports:
-      - 5044:5044
+    #ports:
+    #  - 5044:5044
     volumes:
       - certs:/usr/share/logstash/config/certs
+      - pg_jdbc:/usr/share/logstash/jdbc
+      - backend_logs:/usr/share/logstash/logs
       - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
       - ./elk/logstash/settings/logstash.yml:/usr/share/logstash/config/logstash.yml
     env_file:

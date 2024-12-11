@@ -73,8 +73,6 @@ class LoginViewSet(viewsets.ViewSet):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            logger.info(f'{username} is logged in',
-                        extra={'index_name': 'login', 'user': user })
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
             response = Response({
@@ -84,12 +82,9 @@ class LoginViewSet(viewsets.ViewSet):
             store_token_in_cookies(response, access_token)
             return response
         if not User.objects.filter(username=username).exists():
-            logger.error('Invalid username',
-                         extra={'index_name': 'errors', 'username': username})
             return Response({
                 'error': 'A user with that username does not exist.'
             }, status=status.HTTP_404_NOT_FOUND)
-        logger.error('Invalid password', extra={'index_name': 'errors'})
         return Response({
             'error': 'A user with that password does not exist.'
         }, status=status.HTTP_404_NOT_FOUND)
@@ -130,12 +125,9 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             user.otp_created_at = timezone.now()
             user.save()
             send_otp_email(user)
-            logger.info(f'send email to {username}',
-                        extra={'index_name': 'emails', 'user': user})
             return Response({
                 'detail': 'The verification code sent successfully',
             }, status=status.HTTP_200_OK)
-        logger.error('Invalid credentials', extra={'index_name': 'errors'})
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -152,12 +144,9 @@ class VerifyOTPViewSet(viewsets.ViewSet):
         user = User.objects.get(username=username)
         total_difference = timezone.now() - user.otp_created_at
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
-            logger.error('Incorrect OTP key', extra={'index_name': 'errors'})
             return Response({'error': 'Key is incorrect'},
                             status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
-        logger.info(f'{username} is logged in',
-                    extra={'extra': 'login','user': user})
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -194,16 +183,9 @@ class GoogleLoginViewSet(viewsets.ViewSet):
                              '?scope=openid profile email')
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
-            logger.error(user_info, extra={'index_name': 'errors'})
             return Response(user_info, status=status_code)
         user = self.get_user(user_info)
         login(request, user)
-        logger.info(f'{username} is logged in through Google',
-                    extra={
-                        'index_name': 'remote-auth',
-                        'remote_server': 'Google',
-                        'user': user,
-                    })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -265,8 +247,6 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
         user_info, _ = get_user_info(userinfo_endpoint, access_token)
         user = self.create_user(user_info)
         send_otp_email(user)
-        logger.info(f'send email to {user_info['username']}',
-                    extra={'index_name': 'emails', 'receiver': user})
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
@@ -293,16 +273,9 @@ class IntraLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
                                                access_token)
         if status_code != 200:
-            logger.error(user_info, extra={'index_name': 'errors'})
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
         login(request, user)
-        logger.info(f'{username} is logged in through 42',
-                    extra={
-                        'index_name': 'remote-auth',
-                        'remote_server': '42',
-                        'user': user,
-                    })
         refresh_token, access_token = get_tokens_for_user(user)
         response = Response({
             'refresh_token': refresh_token,
@@ -349,12 +322,9 @@ class IntraLoginWith2FAViewSet(viewsets.ViewSet):
         userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
-            logger.error(user_info, extra={'index_name': 'errors'})
             return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
         user = create_user(user_info['login'], user_info['email'])
         send_otp_email(user)
-        logger.info(f'send email to {user.username}',
-                    extra={'index_name': 'emails', 'receiver': user})
         return Response({
             'detail': 'The verification code sent successfully',
         }, status=status.HTTP_200_OK)
@@ -373,10 +343,7 @@ class RegisterViewSet(viewsets.ViewSet):
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
-            logger.info(f"new user: {request.data['username']}",
-                        extra={'index_name': 'register', 'user': user,})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        logger.error(serializer.errors, extra={'index_name': 'errors'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -390,8 +357,6 @@ class LogoutViewSet(viewsets.ViewSet):
         """
         Logout the user.
         """
-        logger.info(f'{request.user.username} is logged out',
-                    extra={'index_name': 'logout', 'user': request.user,})
         logout(request)
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)

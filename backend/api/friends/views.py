@@ -60,8 +60,8 @@ class FriendRequestAcceptView(APIView):
         try:
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
-           return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Friend request not found or already processed.'},
+            status=status.HTTP_404_NOT_FOUND)
         friend_request.accept()
         return Response({'message': 'Friend request accepted.'}, status=status.HTTP_200_OK)
 
@@ -76,8 +76,8 @@ class FriendRequestDeclineView(APIView):
         try:
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
-           return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Friend request not found or already processed.'},
+            status=status.HTTP_404_NOT_FOUND)
         friend_request.delete()
         return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
@@ -91,8 +91,8 @@ class FriendRequestCancelView(APIView):
         try:
             friend_request = FriendRequest.objects.get(sender=request.user, receiver=pk, status='pending')
         except FriendRequest.DoesNotExist:
-           return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Friend request not found or already processed.'},
+            status=status.HTTP_404_NOT_FOUND)
         friend_request.delete()
         return Response({'message': 'Friend request cancel.'}, status=status.HTTP_200_OK)
 
