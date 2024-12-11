@@ -1,9 +1,13 @@
 import json
+import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Game
 from ..accounts.serializers import UserSerializer
+from channels.layers import get_channel_layer
+channel_layer = get_channel_layer()
 
+TABLE_HEIGHT = 8.65640
 
 class RandomGame(AsyncWebsocketConsumer):
 
@@ -49,7 +53,7 @@ class RandomGame(AsyncWebsocketConsumer):
         await self.handshaking(key1, key2)
         await self.joinRoom(player1)
         await self.joinRoom(player2)
-  
+
 
   @database_sync_to_async
   def create_game(self, player1, player2):
@@ -95,15 +99,57 @@ class RandomGame(AsyncWebsocketConsumer):
     del self.qeuee[key2]
 
   async def player_disconnected(self, event):
-        """
-        Notify the remaining player that their opponent disconnected.
-        """
-        await self.send(json.dumps({
-            "event": "ABORT",
-            "username": event["username"],
-        }))
+    """
+    Notify the remaining player that their opponent disconnected.
+    """
+    await self.send(json.dumps({
+        "event": "ABORT",
+        "username": event["username"],
+    }))
 
 
+class GameData:
+
+  def __init__(self, p1, p2, game, channel, name):
+    self.game = game
+    self.room_name = name
+    self.channel = channel
+    self.ball = [0, 0.2, 0]
+    self.score = {p1.username : 0, p2.username : 0}
+    self.players = {p1.username : p1, p2.username : p2}
+    self.players_pos = {
+      p1.username : [0, 0.09, +(TABLE_HEIGHT - 1)/ 2],
+      p2.username : [0, 0.09, -(TABLE_HEIGHT - 1)/ 2]
+    }
+
+  async def update(self):
+    await channel_layer.group_send(self.room_name, {
+      'type': 'ball.update',
+      'event': 'BALL_UPDATE',
+      'ball': self.getBall()
+    })
+    self.update_ball()
+
+  def update_player1(self, pos):
+    self.player1_pos = pos
+
+  def update_player2(self, pos):
+    self.player1_pos = pos
+
+  def update_ball(self):
+    self.ball[2] += 0.1
+
+  def getBall(self):
+    return self.ball
+  def setBall(self, pos):
+    self.ball = pos
+
+  def getPlayer(self, username):
+    return self.players[username]
+  def getPlayerPos(self, username):
+    return self.players_pos[username]
+  def setPlayerPos(self, username, pos):
+    self.players_pos[username] = pos
 
 
 
@@ -111,18 +157,31 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   connected = {}
   async def connect(self):
-    await self.accept()
     self.user = self.scope["user"]
+    self.username = self.user.username
+
     self.game_id = self.scope["url_route"]["kwargs"]['game_id']
     self.room_name = f"game_{self.game_id}"
     self.game = await self.getGame(self.game_id)
-    print("enemy=>", self.enemy)
-    await self.channel_layer.group_add(self.room_name, self.channel_name)
-    await self.send(json.dumps({
-      "event": "START",
-      "enemy": UserSerializer(self.enemy).data
-    }))
+    if await self.isPartOfTheGame(self.game):
+      if self.game_id not in self.connected:
+        self.connected[self.game_id] = {self.username: self}
+      else:
+        self.connected[self.game_id][self.username] = self
+      await self.accept()
+      await self.channel_layer.group_add(self.room_name, self.channel_name)
+      if len(self.connected[self.game_id]) == 2:
+        await self.channel_layer.group_send(self.room_name, {
+          'type': 'game.start',
+          'event': 'START'
+        })
+        asyncio.create_task(self.game_loop())
 
+  @database_sync_to_async
+  def isPartOfTheGame(self, game):
+    if self.username in [game.player1.username, game.player2.username]:
+      return True
+    return False
 
   async def receive(self, text_data):
     data = json.loads(text_data)
@@ -135,8 +194,7 @@ class RemoteGame(AsyncWebsocketConsumer):
             "direction": data["direction"],
         },
       )
-
-
+      self.game_data.setPlayerPos
 
   async def disconnect(self, code):
    await self.channel_layer.group_send(
@@ -150,10 +208,29 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   @database_sync_to_async
   def getGame(self, game_id):
-    game = Game.objects.get(pk=game_id)#protection
+    game = Game.objects.get(pk=game_id)#need protection
     game.state = 'S'
     self.enemy = game.player2 if self.user != game.player2 else game.player1
     return game
+
+
+  async def game_start(self, event):
+    await self.send(json.dumps({
+      "event": "START",
+      "enemy": UserSerializer(self.enemy).data
+    }))
+
+
+  async def game_loop(self):
+    iterator = iter(iter(self.connected[self.game_id].items()))
+    _ , player1 = next(iterator)
+    _ , player2 = next(iterator)
+    self.game_data = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
+    self.connected[self.game_id]['game'] = self.game_data
+    print(self.connected)
+    while True:
+      await asyncio.sleep(1/60)
+      await self.game_data.update()
 
 
   async def enemy_move(self, event):
@@ -164,6 +241,17 @@ class RemoteGame(AsyncWebsocketConsumer):
           "direction": event["direction"],
           # "timestamp": event["timestamp"],
       }))
+
+  async def ball_update(self, event):
+    # data = json.loads(event)
+    await self.send(json.dumps({
+      'event': 'BALL_UPDATE',
+      'ball': event['ball']
+    }))
+
+
+  def getUsername(self):
+    return self.username
 
   async def player_disconnected(self, event):
     """

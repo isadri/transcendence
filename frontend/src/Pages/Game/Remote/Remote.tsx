@@ -30,36 +30,21 @@ interface ResultContext {
   user: userDataType,
   socket: WebSocket,
   enemy: userDataType
-  handlers: any
+  paddle1:any,
+  paddle2:any,
+  ball:any
 }
 const resultsContext = createContext<ResultContext | null>(null)
-
-const addToOnmessage = (context:ResultContext, func: any) => {
-  context.handlers.push(func)
-}
-
-const onMessage = (context:ResultContext) => {
-  if (context)
-  {
-    const {handlers, socket} = context
-    socket.onmessage = (event:any) => {
-      handlers.forEach((handler:any) => handler(event));
-    };
-  }
-}
 
 function Ball() {
   const res = useContext(resultsContext);
   const material = new Material("ball_mat");
   const [canScore, setCanScore] = useState(true);
-
-  var randomX = 0//(Math.random() * 2 - 1) * 3
   
   const [ref, api] = useSphere(() => ({
     mass: 0.1,
     position: [0, 0.2, 0],
     args: [0.12],
-    velocity: [randomX, 0, 5],
     ccdIterations: 10,
     ccdSpeedThreshold: 1e-2,
     material:material,
@@ -69,29 +54,6 @@ function Ball() {
         setCanScore(false)
     },
   }));
-  
-
-  useEffect(() => {
-    const reposition = api.position.subscribe(([x, y, z]) => {
-      if (!canScore)
-      {
-        
-        const randomX = (Math.random() * 2 - 1) * 3
-        api.position.set(0, 0.2, 0)
-        api.velocity.set(0, 0, 0)
-        setTimeout(() => api.velocity.set(randomX, 0, z < 0 ?-7 :7), 500);
-        if (res) {
-          const {result, setResult} = res
-          setResult((z > 0) ? [result[0], result[1]+1]: [result[0]+1, result[1]]) 
-        }
-        setCanScore(true)
-      }
-    })
-
-    return () => {
-      reposition()
-    }
-  }, [api, res, canScore, setCanScore])
 
   return (
     <>
@@ -219,7 +181,9 @@ function Paddle2({position}: Paddlerops){
     if (context){
       const {socket, enemy} = context
       socket.onmessage = (e) => {
+        
         const data = JSON.parse(e.data)
+        console.log(data);
         if (data.event == 'MOVE')
         {
           let dirct :[number, number, number] = data.direction
@@ -305,7 +269,7 @@ function GameTable() {
 
   return (
     <>
-      {/* <Ball /> */}
+      <Ball />
       <Table />
       <Paddle1 position={[0, 0.09, +(8.65640 -1)/ 2]}/>
       <Paddle2 position={[0, 0.09, -(8.65640 -1)/ 2]}/>
