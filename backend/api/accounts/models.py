@@ -9,7 +9,7 @@ from django.db import models
 from django.utils import timezone, tree
 from django.utils.translation import gettext_lazy as _
 
-# from ..friends.models import Friend
+from ..friends.models import FriendList
 
 
 class UserManager(BaseUserManager):
@@ -42,8 +42,8 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         user.save()
-        # new_list = Friend(user=user)
-        # new_list.save()
+        new_list = FriendList(user=user)
+        new_list.save()
         return user
 
     def create_superuser(self, username: str, email: str,

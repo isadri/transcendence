@@ -63,6 +63,7 @@ class ChatView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         user1 = request.user # the user current signed user
+        print('---->', request.data.get('user2'))
         user2_id = request.data.get("user2") # the other user
 
         try:

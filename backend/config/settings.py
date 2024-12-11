@@ -227,27 +227,37 @@ LOGGING = {
         'json': {
             '()': 'config.formatters.CustomizedJSONFormatter',
         },
-    },
-    'handlers': {
-        'logstash': {
-            'level': 'DEBUG',
-            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
-            'transport': 'logstash_async.transport.TcpTransport',
-            'host': 'logstash',
-            'formatter': 'json',
-            'port': int(os.getenv('TCP_PORT', '5959')),
-            'version': 1,
-            'database_path': None, # use in-memory cache instead of a SQLite database
-            'ssl_enable': True,
-            'ssl_verify': True,
-            'ca_certs': '/code/certs/ca/ca.crt',
-            'certfile': '/code/certs/app/app.crt',
-            'keyfile': '/code/certs/app/app.key',
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
         },
     },
+    'handlers': {
+        'file': {
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'class': 'logging.FileHandler',
+            'filename': '/code/app.log',
+            'formatter': 'verbose',
+        },
+        #'logstash': {
+        #    'level': 'DEBUG',
+        #    'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+        #    'transport': 'logstash_async.transport.TcpTransport',
+        #    'host': 'logstash',
+        #    'formatter': 'json',
+        #    'port': int(os.getenv('TCP_PORT', '5959')),
+        #    'version': 1,
+        #    'database_path': None, # use in-memory cache instead of a SQLite database
+        #    'ssl_enable': True,
+        #    'ssl_verify': True,
+        #    'ca_certs': '/code/certs/ca/ca.crt',
+        #    'certfile': '/code/certs/app/app.crt',
+        #    'keyfile': '/code/certs/app/app.key',
+        #},
+    },
     'loggers': {
-        'api.accounts': {
-            'handlers': ['logstash'],
+        'django': {
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': False,
         },
