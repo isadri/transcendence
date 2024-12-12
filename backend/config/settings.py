@@ -192,13 +192,10 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-# Now client-side JavaScript will not be able to access the CSRF cookie.
 CSRF_COOKIE_HTTPONLY = True
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
-#LOGIN_URL = 'two_factor:login'
 
 OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
 
@@ -220,63 +217,46 @@ CHANNEL_LAYERS = {
     },
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
+#LOGGING = {
+#    'version': 1,
+#    'disable_existing_loggers': False,
+    #'formatters': {
         #'json': {
         #    '()': 'config.formatters.CustomizedJSONFormatter',
         #},
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-            'class': 'logging.FileHandler',
-            'filename': '/logs/app.log',
-            'formatter': 'verbose',
-        },
-        'logstash': {
-            'level': 'DEBUG',
-            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
-            'transport': 'logstash_async.transport.TcpTransport',
-            'host': 'logstash',
-            'formatter': 'verbose',
-            'port': int(os.getenv('TCP_PORT', '5959')),
-            'version': 1,
-            'database_path': None, # use in-memory cache instead of a SQLite database
-            'ssl_enable': True,
-            'ssl_verify': True,
-            'ca_certs': '/certs/ca/ca.crt',
-            'certfile': '/certs/app/app.crt',
-            'keyfile': '/certs/app/app.key',
-            'filename': '/code/app.log',
-            'formatter': 'verbose',
-        },
+    #    "verbose": {
+    #        "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+    #        "style": "{",
+    #    },
+    #},
+    #'handlers': {
+    #    'file': {
+    #        'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+    #        'class': 'logging.FileHandler',
+    #        'filename': '/logs/app.log',
+    #        'formatter': 'verbose',
+    #    },
         #'logstash': {
         #    'level': 'DEBUG',
         #    'class': 'logstash_async.handler.AsynchronousLogstashHandler',
         #    'transport': 'logstash_async.transport.TcpTransport',
         #    'host': 'logstash',
-        #    'formatter': 'json',
+        #    #'formatter': 'verbose',
         #    'port': int(os.getenv('TCP_PORT', '5959')),
         #    'version': 1,
         #    'database_path': None, # use in-memory cache instead of a SQLite database
         #    'ssl_enable': True,
         #    'ssl_verify': True,
-        #    'ca_certs': '/code/certs/ca/ca.crt',
-        #    'certfile': '/code/certs/app/app.crt',
-        #    'keyfile': '/code/certs/app/app.key',
+        #    'ca_certs': '/certs/ca/ca.crt',
+        #    'certfile': '/certs/app/app.crt',
+        #    'keyfile': '/certs/app/app.key',
         #},
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
+#    },
+#    'loggers': {
+#        'django.request': {
+#            'handlers': ['logstash'],
+#            'level': 'DEBUG',
+#            'propagate': False,
+#        },
+#    },
+#}
