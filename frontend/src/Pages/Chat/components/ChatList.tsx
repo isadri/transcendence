@@ -24,7 +24,8 @@ const ChatList = ({
 	setListAllFriends,
 }: ChatListProps) => {
 	const user = getUser();
-	const { lastMessage, setChats, chats } = useChatContext();
+	// const { lastMessage, setChats, chats, activeChat } = useChatContext();
+	const { lastMessage, setChats, chats, activeChat, unseenMessage, unseen } = useChatContext();
 
 	useEffect(() => {
 		const fetchChats = async () => {
@@ -43,7 +44,8 @@ const ChatList = ({
 		};
 
 		fetchChats();
-	}, [chats.length]);
+		console.log("heelllo")
+	}, [unseen]);
 
 	const handleAddConversationRequests = async (id: number) => {
 		const existingChat = chats.find(
@@ -51,8 +53,9 @@ const ChatList = ({
 		);
 
 		if (existingChat) {
-			console.log("existing");
 			onSelectFriend(existingChat);
+			activeChat({chatid: existingChat.id})
+			unseenMessage({chatid: existingChat.id})
 			return;
 		}
 		try {
@@ -61,9 +64,11 @@ const ChatList = ({
 				{ user2: id },
 				{ withCredentials: true }
 			);
-
+			
 			setChats((prevChats) => [...prevChats, response.data]);
 			onSelectFriend(response.data);
+			activeChat({chatid: response.data.id})
+			unseenMessage({chatid: response.data.id})
 		} catch (error) {
 			console.error("Error creating conversation:", error);
 		}
@@ -151,6 +156,8 @@ const ChatList = ({
 									);
 									if (newChat) {
 										onSelectFriend(newChat);
+										activeChat({chatid: newChat.id})
+										unseenMessage({chatid: newChat.id})
 									}
 								});
 								setSearchFriend("");
@@ -164,13 +171,15 @@ const ChatList = ({
 							</div>
 						</div>
 				  ))
-				: sortedChats &&
+				  : sortedChats &&
 				  sortedChats.map((chat) => {
 						const friend_user =
 							user?.id === chat.user2.id ? chat.user1 : chat.user2;
-						if (!friend_user) return null;
-						const lastMessageContent = getLastMessage(chat);
-						const lastMessageTime = getLastMessageTime(chat);
+							if (!friend_user) return null;
+							const lastMessageContent = getLastMessage(chat);
+							const lastMessageTime = getLastMessageTime(chat);
+						const notificate =
+							user?.id === chat.user2.id ? chat.nbr_of_unseen_msg_user2 : chat.nbr_of_unseen_msg_user1;
 						return (
 							<div
 								className={`item ${
@@ -179,6 +188,8 @@ const ChatList = ({
 								key={chat.id}
 								onClick={() => {
 									onSelectFriend(chat);
+									activeChat({chatid: chat.id})
+									unseenMessage({chatid: chat.id})
 									setSearchFriend("");
 									setFocusOnSearch(false);
 									setListAllFriends(false);
@@ -196,6 +207,7 @@ const ChatList = ({
 								{!listAllFriends && (
 									<div className="ChatStatus">
 										<div>{lastMessageTime}</div>
+										{notificate && <div className="notificationMessage">{notificate}</div>}
 										{/* {friend.status} */}
 									</div>
 								)}

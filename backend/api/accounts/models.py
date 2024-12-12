@@ -111,6 +111,8 @@ class User(PermissionsMixin, AbstractBaseUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
+    active_chat = models.IntegerField(default=-1)
+
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 

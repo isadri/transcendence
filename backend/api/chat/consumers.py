@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
 from django.contrib.auth import get_user_model
 from channels.db import database_sync_to_async
+from django.db import transaction
 
 User = get_user_model()
 
@@ -26,10 +27,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave the chat room group
+        await self.handle_reset_active_chat()
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+    async def handle_reset_active_chat(self):
+        try:
+            self.user.active_chat = -1
+            await database_sync_to_async(self.user.save)()
+            print("reset user: ", self.user.active_chat)
+            # await self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         'type': 'update_active_chat',
+            #         'chat_id': self.user.active_chat,
+            #     }
+            # )
+        except Exception as e:
+            await self.send(text_data=json.dumps({
+                'error': 'resetting active chat:'
+            }))
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -50,6 +68,74 @@ class ChatConsumer(AsyncWebsocketConsumer):
             blocked = data.get('blocked')
             status = data.get('status')
             await self.handle_block_friend(chat_id, blocker, blocked, status)
+        elif (message_type == "active_chat"):
+            chat_id = data.get('chat_id')
+            if chat_id == -1:
+                await self.handle_reset_active_chat()
+            else:
+                await self.handle_active_chat(chat_id)
+        elif (message_type == "mark_is_read"):
+            chat_id = data.get('chat_id')
+            await self.handle_mark_is_read(chat_id)
+    
+    # async def handle_mark_is_read(self, chat_id):
+    #     try:
+    #         chat = await Chat.objects.get(id=chat_id)
+    #         # if chat_id == self.user.active_chat:
+    #         user1 = await database_sync_to_async(lambda: chat.user1)()
+    #         if self.user.id == user1.id:
+    #             chat.nbr_of_unseen_msg_user1 = 0
+    #         else:
+    #             chat.nbr_of_unseen_msg_user2 = 0
+    #         await chat.asave()
+    #     except Chat.DoesNotExist:
+    #         await self.send(text_data=json.dumps({
+    #             'error': 'Chat does not exist.'
+    #         }))
+
+    async def handle_mark_is_read(self, chat_id):
+        try:
+            # Use database_sync_to_async to run the synchronous operation in an async context
+            chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
+
+            # Check if the current user is user1 or user2
+            user1 = await database_sync_to_async(lambda: chat.user1)()
+            if self.user.id == user1.id:
+                chat.nbr_of_unseen_msg_user1 = 0
+            else:
+                chat.nbr_of_unseen_msg_user2 = 0
+            await chat.asave()
+
+            # Send a response back to the client
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'update_unseen_message',
+                'status': True,
+            })
+
+        except Chat.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                # 'type': 'mark_is_read',
+                # 'chat_id': chat_id,
+                'error': 'Chat does not exist.'
+            }))
+
+    async def update_unseen_message(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'update_unseen_message',
+            'status': event['status'],
+        }))
+
+    async def handle_active_chat(self, chat_id):
+        try:
+            self.user.active_chat = chat_id
+            await database_sync_to_async(self.user.save)()
+
+        except Chat.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat does not exist.'
+            }))
 
     async def handle_block_friend(self, chat_id, blocker, blocked, status):
         try:
@@ -169,6 +255,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             content=message
         )
 
+        await self.update_unseen_messages(chat, receiver)
+
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -193,6 +281,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         chat.last_message = message
         await chat.asave()
+
+    async def update_unseen_messages(self, chat, receiver):
+        if chat.id != receiver.active_chat:
+            user1 = await database_sync_to_async(lambda: chat.user1)()
+            if receiver.id == user1.id:
+                chat.nbr_of_unseen_msg_user1 += 1
+            else:
+                chat.nbr_of_unseen_msg_user2 += 1
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'update_unseen_message',
+                'status': True,
+            })
+        await chat.asave()
+
+    # async def update_unseen_message(self, chat, receiver):
+    #     if chat.id == receiver.active_chat:
+
 
     async def chat_message(self, event):
         # Send message to websocket

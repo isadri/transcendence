@@ -16,7 +16,7 @@ const ChatTop = ({
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const { block, blockUnblockFriend } = useChatContext();
+	const { block, blockUnblockFriend, activeChat } = useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
@@ -112,7 +112,10 @@ const ChatTop = ({
 			<div className="profileInfo">
 				<i
 					className="fa-solid fa-arrow-left arrowClose"
-					onClick={() => setSelectedFriend(null)}
+					onClick={() => {
+						setSelectedFriend(null)
+						activeChat({chatid: -1})
+					}}
 				></i>
 				<img src={friend_user.avatar} alt="profile" className="image" />
 				<div className="textInfo">
@@ -133,7 +136,10 @@ const ChatTop = ({
 						<li>Invite to play</li>
 						<li >Friend profile</li>
 						{/* <li onClick={handleDeleteChat}>Delete chat</li> */}
-						<li onClick={() => setSelectedFriend(null)}>Close chat</li>
+						<li onClick={() => {
+							setSelectedFriend(null)
+							activeChat({chatid: -1})
+							}}>Close chat</li>
 						{block?.status && block.blocker === user?.id ? (
 							<li onClick={handleBlock}>Unblock</li>
 						) : (

@@ -18,6 +18,8 @@ class Chat(models.Model):
     last_message = models.TextField(null=True, blank=True)
     blocke_state_user1 = models.CharField(max_length=8, choices=STATUS_CHOICES, default="none")
     blocke_state_user2 = models.CharField(max_length=8, choices=STATUS_CHOICES, default="none")
+    nbr_of_unseen_msg_user1 = models.IntegerField(default=0)
+    nbr_of_unseen_msg_user2 = models.IntegerField(default=0)
 
     class Meta:
         constraints = [

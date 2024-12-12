@@ -10,6 +10,7 @@ import {
 	ChatProvider,
 	GetFriends,
 	GetChats,
+	useChatContext,
 } from "./components/context/ChatUseContext";
 
 const Chat = () => {
@@ -17,6 +18,7 @@ const Chat = () => {
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
+	const {activeChat} = useChatContext()
 
 	useEffect(() => {
 		const fetchFriend = async () => {
@@ -38,6 +40,7 @@ const Chat = () => {
 
 	const handleSelectFriend = (friend: GetChats) => {
 		setSelectedFriend(friend);
+		activeChat({chatid: friend.id})
 	};
 
 	return (

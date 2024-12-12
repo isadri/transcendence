@@ -191,6 +191,10 @@ class MessageView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         message = serializer.save(sender=user, receiver=receiver, chat=chat)
 
+        if receiver == chat.user1:
+            chat.unseen_message_count_user1 += 1
+        else:
+            chat.unseen_message_count_user2 += 1
         chat.last_message = message.content
         chat.save()
 
