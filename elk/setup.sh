@@ -55,10 +55,6 @@ if [ ! -f config/certs/certs.zip ]; then
 	--in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt \
 	--ca-key config/certs/ca/ca.key
 	unzip config/certs/certs.zip -d config/certs
-
-	#echo "Convert the Logstash key to the PKCS8 format and PEM encoded"
-	#openssl pkcs8 -inform PEM -in config/certs/logstash/logstash.key -topk8 \
-	#-nocrypt -outform PEM -out config/certs/logstash/logstash.pkcs8.key
 fi
 
 if [ ! -f config/jdbc/postgresql-42.7.4.jar ]; then
