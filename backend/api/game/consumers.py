@@ -115,6 +115,9 @@ class GameData:
     self.room_name = name
     self.channel = channel
     self.ball = [0, 0.2, 0]
+    self.direction = 1
+    self.player1 = p1.username
+    self.player2 = p2.username
     self.score = {p1.username : 0, p2.username : 0}
     self.players = {p1.username : p1, p2.username : p2}
     self.players_pos = {
@@ -124,9 +127,13 @@ class GameData:
 
   async def update(self):
     await channel_layer.group_send(self.room_name, {
-      'type': 'ball.update',
-      'event': 'BALL_UPDATE',
-      'ball': self.getBall()
+      'type': 'game.update',
+      'event': 'GAME_UPDATE',
+      'ball': self.getBall(),
+      'player1_score': self.score[self.player1],
+      'player2_score': self.score[self.player2],
+      self.player1: self.players_pos[self.player1],
+      self.player2: self.players_pos[self.player2]
     })
     self.update_ball()
 
@@ -137,7 +144,10 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
-    self.ball[2] += 0.1
+    self.ball[2] += 0.1 * self.direction
+    z = self.ball[2]
+    if abs(self.players_pos[self.player1][2] - z) <= 0.25 or abs(self.players_pos[self.player2][2] - z) <= 0.25:
+      self.direction *= -1
 
   def getBall(self):
     return self.ball
@@ -171,11 +181,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       await self.accept()
       await self.channel_layer.group_add(self.room_name, self.channel_name)
       if len(self.connected[self.game_id]) == 2:
-        await self.channel_layer.group_send(self.room_name, {
-          'type': 'game.start',
-          'event': 'START'
-        })
-        asyncio.create_task(self.game_loop())
+        self.task = asyncio.create_task(self.game_loop())
 
   @database_sync_to_async
   def isPartOfTheGame(self, game):
@@ -194,7 +200,7 @@ class RemoteGame(AsyncWebsocketConsumer):
             "direction": data["direction"],
         },
       )
-      self.game_data.setPlayerPos
+      self.game_data.setPlayerPos(data["username"], data["direction"])
 
   async def disconnect(self, code):
    await self.channel_layer.group_send(
@@ -213,8 +219,11 @@ class RemoteGame(AsyncWebsocketConsumer):
     self.enemy = game.player2 if self.user != game.player2 else game.player1
     return game
 
+  async def game_update(self, event):
+    await self.send(json.dumps(event))
 
   async def game_start(self, event):
+    print(event)
     await self.send(json.dumps({
       "event": "START",
       "enemy": UserSerializer(self.enemy).data
@@ -225,9 +234,15 @@ class RemoteGame(AsyncWebsocketConsumer):
     iterator = iter(iter(self.connected[self.game_id].items()))
     _ , player1 = next(iterator)
     _ , player2 = next(iterator)
-    self.game_data = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
+    player1.task = self.task
+    player2.task = self.task
+    player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
     self.connected[self.game_id]['game'] = self.game_data
-    print(self.connected)
+    player1.connected[self.game_id] = player2.connected[self.game_id] =  self.connected[self.game_id]
+    await self.channel_layer.group_send(self.room_name, {
+      'type': 'game.start',
+      'event': 'START'
+    })
     while True:
       await asyncio.sleep(1/60)
       await self.game_data.update()
@@ -243,7 +258,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       }))
 
   async def ball_update(self, event):
-    # data = json.loads(event)
+    print(self.connected)
     await self.send(json.dumps({
       'event': 'BALL_UPDATE',
       'ball': event['ball']
@@ -261,3 +276,6 @@ class RemoteGame(AsyncWebsocketConsumer):
         "event": "ABORT",
         "username": event["username"],
     }))
+    print("quit", self.username)
+    # self.task.cancel()
+    del self.connected[self.game_id]
