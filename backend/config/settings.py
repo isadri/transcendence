@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
 
     'api.chat',
+	'api.notifications',
     'channels',
 ]
 

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./AllFriends.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
+import { useNavigate } from "react-router-dom";
 
 interface GetFriends {
 	id: number;
@@ -10,6 +11,7 @@ interface GetFriends {
 }
 
 const AllFriends = () => {
+	const navigate = useNavigate()
 	const [results, setResults] = useState<GetFriends[]>([]);
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
@@ -100,7 +102,7 @@ const AllFriends = () => {
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.avatar} alt="" className="friendImage" />
+								<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
 								<span>{friend.username}</span>
 							</div>
 							<div className="iconFriend">

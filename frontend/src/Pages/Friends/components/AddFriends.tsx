@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./AddFriends.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
+import { useNavigate } from "react-router-dom";
 
 interface AllUsers {
 	id: number;
@@ -10,6 +11,7 @@ interface AllUsers {
 }
 
 const AddFriends = () => {
+	const navigate = useNavigate()
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
@@ -46,7 +48,6 @@ const AddFriends = () => {
 		};
 
 		fetchUsers();
-		// const intervalId = setInterval(fetchUsers, 5000);
 		
 		document.addEventListener("mousedown", handleClickOutside);
 		
@@ -75,7 +76,6 @@ const AddFriends = () => {
 		try {
 			await axios.post(
 				getendpoint("http", "/api/friends/send/"),
-				// "http://0.0.0.0:8000/api/friends/send/",
 				{ receiver: id },
 				{
 					withCredentials: true,
@@ -116,7 +116,7 @@ const AddFriends = () => {
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.avatar} alt="" className="friendImage" />
+								<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
 								<span>{friend.username}</span>
 							</div>
 							<button

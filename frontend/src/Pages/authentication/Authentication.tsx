@@ -3,11 +3,12 @@ import './Authenthication.css'
 import intra from './Images/intra.svg'
 import Google from './Images/Google.svg'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
 import axios from 'axios'
 // import {loginContext} from './../../App'
 import { getContext, getendpoint } from '../../context/getContextData'
+import { code } from 'three/webgpu'
 
 
 interface errorDataTypes{
@@ -17,6 +18,9 @@ interface errorDataTypes{
   confirmPassword : string
 }
 
+const INTRA_ID="u-s4t2ud-f5b33261e83769225657f200626e6bf0a11bf09dbc0fce6fc286b963f6409bd2"
+const INTRA_REDIRECT_URI="http://127.0.0.1:5000/"
+
 function Authentication() {
   const authContext = getContext()
   const navigate = useNavigate();
@@ -25,6 +29,7 @@ function Authentication() {
   const [email, setEmail] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [val, setVal] = useState(true)
+  const params = new URLSearchParams(window.location.search)
 
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([])
@@ -50,21 +55,28 @@ function Authentication() {
   const url_reg = getendpoint("http", '/api/accounts/register/')
   
   const handelIntraLogin = (e: any) => {
-    axios.get('http://localhost:8000/api/accounts/login/intra/')
-      .then(() =>{
-        // console.log("saccess")
-      })
-      .catch(() => {
-        // console.log("failer")
-      })
+    console.log('----------hhh----------');
+    const link = `https://api.intra.42.fr/oauth/authorize?client_id=${INTRA_ID}&redirect_uri=${INTRA_REDIRECT_URI}&response_type=code`
+    window.location.href = link;
+    const code = params.get('code')
+    if (code)
+      console.log('---code==', code);
+    
+    // axios.get(, {withCredentials:true})
+    //   .then(() =>{
+    //     console.log("saccess")
+    //   })
+    //   .catch(() => {
+    //     console.log("failer")
+    //   })
   }
   const handelgGoogleLogin = (e: any) => {
     axios.get(getendpoint("http", '/api/accounts/login/google/'))
       .then(() =>{
-        // console.log("saccess")
+        console.log("saccess")
       })
       .catch(() => {
-        // console.log("failer")
+        console.log("failer")
       })
   }
   const GetUserInfo = () =>{
@@ -209,6 +221,19 @@ function Authentication() {
         zIndex: 5
       }
     ):{transform: "translateX(-100%)"};
+    // const [searchParams] = useSearchParams();
+    // if (searchParams)
+    // {
+    //   axios.get('http://127.0.0.1:8000/api/accounts/login/intra/?'+searchParams, {withCredentials:true})
+    //     .then(response => {
+    //       console.log(response.data)
+    //     })
+    //     .catch(error => {
+    //       console.log(error.response.data)
+    //     }
+    //     )
+    //   console.log('http://127.0.0.1:8000/api/accounts/login/intra/?'+searchParams);
+    // }
     return (
     <>
       <div className="SingIn" style={{...(!val ? { transform: "translateX(200%)", opacity: 0 } : {}),
@@ -244,8 +269,10 @@ function Authentication() {
               </div>
             </div>
             <div className='IntraConx'>
-              <div onClick={handelIntraLogin}>
-                <img src={intra} alt="" />
+              <div >
+                {/* <a href='https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-f5b33261e83769225657f200626e6bf0a11bf09dbc0fce6fc286b963f6409bd2&redirect_uri=http%3A%2F%2F127.0.0.1%3A5000%2FAuth&response_type=code'> */}
+                  <img src={intra} alt="" onClick={handelIntraLogin}/>
+                {/* </a> */}
               </div>
             </div>
           </div>
@@ -287,9 +314,9 @@ function Authentication() {
         </div>
         <div className='DirectConx'>
           <div className='GoogleConx'>
-            <button>
-              <img src={Google} alt="" />
-            </button>
+            <div>
+              <img src={Google} alt="" onClick={handelgGoogleLogin}/>
+            </div>
           </div>
           <div className='IntraConx'>
             <div>

@@ -19,7 +19,7 @@ from .serializers import UserSerializer
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,redirect
 
 from .utils import (
     get_access_token_from_api,
@@ -273,7 +273,9 @@ class IntraLoginViewSet(viewsets.ViewSet):
         Authenticate with the authorization server and obtain user information.
         """
         authorization_code = request.GET.get('code')
+        print(1, authorization_code)
         access_token = get_access_token_42(authorization_code)
+        print(2, access_token)
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
                                                access_token)
         if status_code != 200:
@@ -281,12 +283,12 @@ class IntraLoginViewSet(viewsets.ViewSet):
         user = get_user(user_info.get('login'), user_info.get('email'))
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        response = Response({
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-        }, status=status.HTTP_200_OK)
-        store_token_in_cookies(response, access_token)
-        return response
+        # response = Response({
+        #     'refresh_token': refresh_token,
+        #     'access_token': access_token,
+        # }, status=status.HTTP_200_OK)
+        # store_token_in_cookies(response, access_token)
+        return redirect(request.get_host())
 
 
 class IntraLoginWith2FAViewSet(viewsets.ViewSet):
@@ -437,7 +439,6 @@ class DeleteUserAccountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request):
-        print(request.data)
         user = request.user
         if 'confirm' in request.data and request.data['confirm'] != 'yes':
             return Response(
@@ -462,5 +463,4 @@ class UserDetailView(APIView):
         serializer = UserSerializer(user)
         data = serializer.data
         data.pop("password", None)
-        print(data)
         return Response(data, status=status.HTTP_200_OK)

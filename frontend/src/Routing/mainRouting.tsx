@@ -4,16 +4,16 @@ import Chat from '../Pages/Chat/Chat';
 import Profile from '../Pages/Profile/Profile';
 import Game from '../Pages/Game/Game';
 import Setting from '../Pages/Setting/Setting';
+import Test from '../Pages/Test/Test';
 
-import BackGround from '../components/background/BackGround'
+// import BackGround from '../components/background/BackGround'
 import SideNavbar from '../components/sideNavbar/SideNavbar';
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
-import NoPage from "../Pages/NoPage/NoPage";
+// import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
-import Tictactoe from '../Pages/TicTacToe/Tictactoe';
-import { Children } from 'react';
-
+// import Tictactoe from '../Pages/TicTacToe/Tictactoe';
+// import { Children } from 'react';
 
 // isLogged  routing table and layout
 const mainRoutingTable = [
@@ -66,6 +66,10 @@ const mainRoutingTable = [
   {
     path: "/setting",
     element: <Setting />
+  },
+  {
+    path: "/test",
+    element: <Test/>
   },
 ]
 

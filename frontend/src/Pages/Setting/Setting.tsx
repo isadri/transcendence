@@ -57,7 +57,6 @@ const Setting = () => {
       withCredentials: true,
     })
     .then((response) =>{
-      console.log("response => ", response.data.detail)
       authContext?.setCreatedAlert(response.data.detail);
       authContext?.setIsLogged(false)
       navigate('/')
@@ -65,7 +64,6 @@ const Setting = () => {
     .catch((error) => {
         SetMyAlert(false)
         setcreatedAlert(error.response.data.detail)
-        console.log("error => ", error.response.data.detail);
     })
   }
 
@@ -109,7 +107,6 @@ const Setting = () => {
         SetErrors({ ...errors, username: "", email: "", avatar: "" });
       })
       .catch((error) => {
-        console.log(error.response.data);
         SetErrors(error.response.data);
       });
   };
@@ -137,7 +134,6 @@ const Setting = () => {
         });
       })
       .catch((error) => {
-        console.log(error.response.data);
         SetErrors(error.response.data);
       });
   };

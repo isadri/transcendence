@@ -18,14 +18,12 @@ function Alert({ setMyAlert, myAlert }: Props) {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data.detail);
         authContext?.setIsLogged(false);
         navigate("/");
       })
       .catch((error) => {
-        etMyAlert(false);
+        setMyAlert(false);
         console.log(error.response.data.detail);
-        console.log( "===>",myAlert)
       });
   };
   return (
