@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
@@ -44,7 +44,6 @@ const ChatList = ({
 		};
 
 		fetchChats();
-		console.log("heelllo")
 	}, [unseen]);
 
 	const handleAddConversationRequests = async (id: number) => {
@@ -121,21 +120,23 @@ const ChatList = ({
 	};
 
 	// Sort chats by the most recent message timestamp
-	const sortedChats = chats
-		.map((chat) => {
-			const lastMsg = lastMessage[chat.id];
-			return {
-				...chat,
-				last_message: lastMsg?.content || chat.last_message,
-				last_timestamp: lastMsg?.timestamp || chat.created_at,
-			};
-		})
-		.filter((chat) => chat.messages.length > 0)
-		.sort(
-			(a, b) =>
-				new Date(b.last_timestamp || "").getTime() -
-				new Date(a.last_timestamp || "").getTime()
-		);
+	const sortedChats = useMemo(() => {
+		return chats
+			.map((chat) => {
+				const lastMsg = lastMessage[chat.id];
+				return {
+					...chat,
+					last_message: lastMsg?.content || chat.last_message,
+					last_timestamp: lastMsg?.timestamp || chat.created_at,
+				};
+			})
+			.filter((chat) => chat.messages.length > 0)
+			.sort(
+				(a, b) =>
+					new Date(b.last_timestamp || "").getTime() -
+					new Date(a.last_timestamp || "").getTime()
+			);
+	}, [chats, lastMessage]);
 	if (!sortedChats) {
 		return null;
 	}

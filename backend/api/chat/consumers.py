@@ -36,14 +36,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             self.user.active_chat = -1
             await database_sync_to_async(self.user.save)()
-            print("reset user: ", self.user.active_chat)
-            # await self.channel_layer.group_send(
-            #     self.room_group_name,
-            #     {
-            #         'type': 'update_active_chat',
-            #         'chat_id': self.user.active_chat,
-            #     }
-            # )
         except Exception as e:
             await self.send(text_data=json.dumps({
                 'error': 'resetting active chat:'
@@ -77,21 +69,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         elif (message_type == "mark_is_read"):
             chat_id = data.get('chat_id')
             await self.handle_mark_is_read(chat_id)
-    
-    # async def handle_mark_is_read(self, chat_id):
-    #     try:
-    #         chat = await Chat.objects.get(id=chat_id)
-    #         # if chat_id == self.user.active_chat:
-    #         user1 = await database_sync_to_async(lambda: chat.user1)()
-    #         if self.user.id == user1.id:
-    #             chat.nbr_of_unseen_msg_user1 = 0
-    #         else:
-    #             chat.nbr_of_unseen_msg_user2 = 0
-    #         await chat.asave()
-    #     except Chat.DoesNotExist:
-    #         await self.send(text_data=json.dumps({
-    #             'error': 'Chat does not exist.'
-    #         }))
 
     async def handle_mark_is_read(self, chat_id):
         try:
@@ -116,8 +93,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         except Chat.DoesNotExist:
             await self.send(text_data=json.dumps({
-                # 'type': 'mark_is_read',
-                # 'chat_id': chat_id,
                 'error': 'Chat does not exist.'
             }))
 
@@ -289,12 +264,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 chat.nbr_of_unseen_msg_user1 += 1
             else:
                 chat.nbr_of_unseen_msg_user2 += 1
+            receiver_room = f"chat_room_of_{receiver.id}"
             await self.channel_layer.group_send(
-            self.room_group_name,
+            receiver_room,
             {
                 'type': 'update_unseen_message',
                 'status': True,
             })
+            # await self.channel_layer.group_send(
+            # self.room_group_name,
+            # {
+            #     'type': 'update_unseen_message',
+            #     'status': True,
+            # })
         await chat.asave()
 
     # async def update_unseen_message(self, chat, receiver):
