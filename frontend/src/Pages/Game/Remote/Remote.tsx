@@ -1,4 +1,4 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, context } from "@react-three/fiber";
 import "../Play/Play.css";
 import winner from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
@@ -7,6 +7,7 @@ import "../../Home/styles/LastGame.css"
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import {
+  Api,
   Debug,
   Physics,
   useBox,
@@ -15,8 +16,8 @@ import {
 } from "@react-three/cannon";
 import { Material } from 'cannon-es';
 import { createContext, useContext, useEffect, useState } from "react";
-import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
-import { Link, useParams } from "react-router-dom";
+import { AxesHelper, DoubleSide, Fog, MathUtils, Object3D, Object3DEventMap } from "three";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { userDataType } from "../../../context/context";
 
@@ -27,6 +28,7 @@ useGLTF.preload(tableUrl);
 interface ResultContext {
   result: [number, number];
   setResult: React.Dispatch<React.SetStateAction<[number, number]>>;
+  setEnemy: React.Dispatch<React.SetStateAction<userDataType>>;
   user: userDataType,
   socket: WebSocket,
   enemy: userDataType
@@ -36,25 +38,20 @@ interface ResultContext {
 }
 const resultsContext = createContext<ResultContext | null>(null)
 
-function Ball() {
-  const res = useContext(resultsContext);
-  const material = new Material("ball_mat");
-  const [canScore, setCanScore] = useState(true);
-  
+function Ball({ball}:{ball:[number, number, number]}) {
   const [ref, api] = useSphere(() => ({
-    mass: 0.1,
+    mass: 0,
     position: [0, 0.2, 0],
     args: [0.12],
     ccdIterations: 10,
     ccdSpeedThreshold: 1e-2,
-    material:material,
-    onCollide: (event) => {
-      const {body} = event
-      if (body.name === "goal_wall" && canScore)
-        setCanScore(false)
-    },
+    material:new Material("ball_mat")
   }));
 
+  useEffect(() => {
+    if (api && api.position)
+      api.position.set(ball[0], ball[1], ball[2])
+  }, [ball, api])
   return (
     <>
       <mesh ref={ref} name="ball">
@@ -90,7 +87,7 @@ function Table() {
 
 interface Paddlerops {
   position: any, // can be  Vector3 or Triplet,
-  mine?:boolean
+  box : Api<Object3D<Object3DEventMap>>
 }
 
 const move = (socket:WebSocket, username:string, direction:[number, number, number]) => {
@@ -107,18 +104,12 @@ const move = (socket:WebSocket, username:string, direction:[number, number, numb
 }
 
 
-function Paddle1({position}: Paddlerops){ // my Paddle
+function Paddle1({position, box}: Paddlerops){ // my Paddle
   const context =  useContext(resultsContext)
   const material = new Material();
   material.name = "paddle_mat"
-  const [ref, api] = useBox(() => ({
-    type: "Kinematic",
-    position: position,
-    args: [1.5, 0.5, 0.5],
-    material: material
-  }));
 
-
+  const [ref, api] = box
 
   useEffect(() => {
     if (context)
@@ -131,12 +122,12 @@ function Paddle1({position}: Paddlerops){ // my Paddle
             if  ((event.key == "ArrowRight" && x < (3.07345 - 0.75)) || (event.key == "ArrowUp" && x < (3.07345 - 0.75)))
             {
               move(socket, user.username,[-(x + 0.05), y, -z])
-              api.position.set(x + 0.05, y, z)
+              // api.position.set(x + 0.05, y, z)
             }
             else if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.75)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.75)))
             {
               move(socket, user.username, [-(x - 0.05), y, -z])
-              api.position.set(x - 0.05, y, z)
+              // api.position.set(x - 0.05, y, z)
             }
           })
         }
@@ -166,32 +157,10 @@ function Paddle1({position}: Paddlerops){ // my Paddle
   )
 }
 
-function Paddle2({position}: Paddlerops){
+function Paddle2({position, box}: Paddlerops){
   const context =  useContext(resultsContext)
-  const material = new Material();
-  material.name = "paddle_mat"
-  const [ref, api] = useBox(() => ({
-    type: "Kinematic",
-    position: position,
-    args: [1.5, 0.5, 0.5],
-    material: material
-  }));
 
-  useEffect(() => {
-    if (context){
-      const {socket, enemy} = context
-      socket.onmessage = (e) => {
-        
-        const data = JSON.parse(e.data)
-        console.log(data);
-        if (data.event == 'MOVE')
-        {
-          let dirct :[number, number, number] = data.direction
-          api.position.set(...dirct)
-        }
-      }
-    }
-  }, [context, api])
+  const [ref, api] = box
   return (
     <mesh ref={ref} position={position}  name="paddle">
       <boxGeometry args={[1.5, 0.5, 0.5]} />
@@ -243,6 +212,8 @@ function GoalWall({position} : GoalWallProps) {
 
 
 function GameTable() {
+  const [loading, setLoading] = useState(true)
+  const context = useContext(resultsContext)
   // contact  beetween the ball and the table 
   useContactMaterial("ball_mat", "table_mat", {
     friction:0,
@@ -267,19 +238,69 @@ function GameTable() {
     restitution: 1,
   });
 
-  return (
-    <>
-      <Ball />
-      <Table />
-      <Paddle1 position={[0, 0.09, +(8.65640 -1)/ 2]}/>
-      <Paddle2 position={[0, 0.09, -(8.65640 -1)/ 2]}/>
-      {/* <primitive object={new AxesHelper(5)} /> */}
-      <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
-      <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
-      <GoalWall position={[0, 0, (8.65640+ 0.5)/2]}/>
-      <GoalWall position={[0, 0, -(8.65640+ 0.4)/2]}/>
-    </>
-  );
+  const paddle1 = useBox(() => ({
+    type: "Kinematic",
+    position: [0, 0.09, +(8.65640 -1)/ 2],
+    args: [1.5, 0.5, 0.5],
+    material: new Material("paddle_mat")
+  }));
+  const paddle2 = useBox(() => ({
+    type: "Kinematic",
+    position: [0, 0.09, -(8.65640 -1)/ 2],
+    args: [1.5, 0.5, 0.5],
+    material: new Material("paddle_mat")
+  })); 
+  const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
+
+  const navigator = useNavigate()
+  if (context)
+  {
+    useEffect(() => {
+      const {socket, setEnemy, enemy, user} = context
+      socket.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+        if (data.event == "ABORT")
+          navigator("..")
+        if (data.event == "START")
+        {
+          setEnemy(data.enemy)
+          setLoading(false)
+        }
+        if (data.event == "GAME_UPDATE")
+        {
+          if (data.ball){
+            const xyz:[number, number, number] = data.ball
+            setball(xyz)
+          }
+          // if (data[user.username]){
+          //   const xyz = data[user.username]
+          //   const [ref, api] = paddle1
+          //   api.position.set(xyz[0], xyz[1], xyz[2])
+          // }
+          // if (data[enemy.username]){
+          //   const xyz = data[enemy.username]
+          //   const [ref, api] = paddle2
+          //   api.position.set(xyz[0], xyz[1], xyz[2])
+          // }
+        }
+      }
+    }, [ball, paddle1, paddle2])
+    if (!loading)
+      return (
+        <>
+          <Table />
+          <Ball ball={ball}/>
+          <Paddle1 position={[0, 0.09, +(8.65640 -1)/ 2]} box={paddle1}/>
+          <Paddle2 position={[0, 0.09, -(8.65640 -1)/ 2]} box={paddle2}/>
+          {/* <primitive object={new AxesHelper(5)} /> */}
+          <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
+          <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
+          <GoalWall position={[0, 0, (8.65640+ 0.5)/2]}/>
+          <GoalWall position={[0, 0, -(8.65640+ 0.4)/2]}/>
+        </>
+      );
+  return <></>
+}
 }
 
 
@@ -365,19 +386,11 @@ const Provider = ({socket} : {socket:WebSocket}) => {
   const [enemy, setEnemy] = useState<userDataType>(emptyUser)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
-  socket.onmessage = (e) => {
-    const data = JSON.parse(e.data)
-    console.log('start', data);
-    if (data.event == "START")
-      setEnemy(data.enemy)
-  }
-  if (enemy.id != -1)
-    return (
-      <resultsContext.Provider value={{result, setResult, user, socket, enemy}}>
-        <Play/>
-      </resultsContext.Provider>
-    )
-  return (<></>)
+  return (
+    <resultsContext.Provider value={{result, setResult, user, socket, enemy, setEnemy}}>
+      <Play/>
+    </resultsContext.Provider>
+  )
 }
 
 
