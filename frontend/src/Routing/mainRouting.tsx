@@ -4,7 +4,6 @@ import Chat from '../Pages/Chat/Chat';
 import Profile from '../Pages/Profile/Profile';
 import Game from '../Pages/Game/Game';
 import Setting from '../Pages/Setting/Setting';
-import Test from '../Pages/Test/Test';
 
 // import BackGround from '../components/background/BackGround'
 import SideNavbar from '../components/sideNavbar/SideNavbar';
@@ -67,10 +66,7 @@ const mainRoutingTable = [
     path: "/setting",
     element: <Setting />
   },
-  {
-    path: "/test",
-    element: <Test/>
-  },
+
 ]
 
 function MainLayout() {

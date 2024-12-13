@@ -98,8 +98,6 @@ class UserSerializer(serializers.ModelSerializer):
             avatar=validated_data['avatar']
         )
         return user
-    
-
 
     def update(self, instance, validated_data):
         """
@@ -118,5 +116,4 @@ class UserSerializer(serializers.ModelSerializer):
             if value:
                 setattr(instance, attr, value)
         instance.save()
-
         return instance

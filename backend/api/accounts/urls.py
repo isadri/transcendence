@@ -33,6 +33,7 @@ router.register(r'logout', views.LogoutViewSet, basename='logout')
 #                   '&state={settings.OAUTH2_STATE_PARAMETER}'
 #                   '&scope=openid profile email&response_type=code'
 #                   '&display=popup'
+
 router.register(r'login/intra', views.IntraLoginViewSet,
                 basename='intra-login')
 router.register(r'login/intra-2fa', views.IntraLoginWith2FAViewSet,
@@ -49,7 +50,8 @@ urlpatterns = [
     path('updateuserPass/', views.UpdateUserPasswordView.as_view(), name='update-user'),
     path('deleteUser/', views.DeleteUserAccountView.as_view(), name='update-user'),
     path('user/<str:username>/', views.UserDetailView.as_view(), name='get_user_by_username'),
-
+    path('GetIntraLink/', views.GetIntraLink.as_view(), name='Get_Intra_Link'),
+    path('GetGoogleLink/', views.GetGoogleLink.as_view(), name='Get_Google_Link')
     # path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
 ]
 
