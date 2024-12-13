@@ -76,11 +76,12 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 	const [messagesUpdate, setMessagesUpdate] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
-		endRef.current?.scrollIntoView({ behavior: "instant" });
 		// setMessagesUser(messages)
-	}, [messages]);
+		endRef.current?.scrollIntoView({ behavior: "instant" });
+	}, [messagesUpdate]);
 
 	useEffect(() => {
+		const lastMessag = messages[messages.length - 1];
 		if (lastMessag?.chat == selectedFriend.id)
 			setMessagesUpdate([...messagesUser, ...messages]);
 		else setMessagesUpdate([...messagesUser]);
@@ -94,10 +95,6 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 			hour12: true,
 		}).format(date);
 	};
-
-	const lastMessag = messages[messages.length - 1];
-	console.log("lastMsg: ", lastMessag);
-
 	return (
 		<div className="center">
 			{messagesUpdate.map((value, index) => {
