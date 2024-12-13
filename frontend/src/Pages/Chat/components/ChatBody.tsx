@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./ChatBody.css";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
@@ -6,7 +6,7 @@ import ChatBottom from "./ChatBottom";
 // import moment from "moment";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
-import { useChatContext, GetChats } from "./context/ChatUseContext";
+import { useChatContext, GetChats, ChatMessage } from "./context/ChatUseContext";
 
 
 interface ChatBodyProps {
@@ -18,7 +18,7 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
 	const { setMessages, setBlock } = useChatContext();
 	const user = getUser();
-
+	const [messagesUser, setMessagesUser] = useState<ChatMessage[]>([]);
 	useEffect(() => {
 		const fetchMessages = async () => {
 			try {
@@ -28,7 +28,7 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 						withCredentials: true,
 					}
 				);
-				setMessages(response.data.messages);
+				setMessagesUser(response.data.messages);
 			} catch (err) {
 				console.log("Error in fetching chats", err);
 			}
@@ -67,7 +67,7 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 				selectedFriend={selectedFriend}
 				setSelectedFriend={setSelectedFriend}
 			/>
-			<ChatCenter selectedFriend={selectedFriend} />
+			<ChatCenter selectedFriend={selectedFriend} messagesUser={messagesUser} />
 			<ChatBottom
 				selectedFriend={selectedFriend}
 				ref={ref}

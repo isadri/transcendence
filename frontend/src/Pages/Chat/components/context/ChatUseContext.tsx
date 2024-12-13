@@ -31,7 +31,7 @@ export interface GetChats {
 	last_message: string | null;
 	messages: ChatMessage[];
 	nbr_of_unseen_msg_user1?: number | 0;
-    nbr_of_unseen_msg_user2?: number | 0;
+	nbr_of_unseen_msg_user2?: number | 0;
 }
 
 export interface BlockedFriend {
@@ -43,8 +43,17 @@ export interface BlockedFriend {
 
 interface ChatContextType {
 	socket: WebSocket | null;
-	sendMessage: (data: { message: string; receiver: number; message_type: MessageType }) => void;
-	blockUnblockFriend: (data: { chatid: number; blocker: number; blocked: number; status: true | false }) => void;
+	sendMessage: (data: {
+		message: string;
+		receiver: number;
+		message_type: MessageType;
+	}) => void;
+	blockUnblockFriend: (data: {
+		chatid: number;
+		blocker: number;
+		blocked: number;
+		status: true | false;
+	}) => void;
 	messages: ChatMessage[];
 	setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 	lastMessage: LastMessage;
@@ -55,8 +64,10 @@ interface ChatContextType {
 	setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
 	unseen: boolean;
 	setUnseen: React.Dispatch<React.SetStateAction<boolean>>;
-	activeChat: (data: { chatid: number;}) => void;
-	unseenMessage: (data: { chatid: number;}) => void;
+	activeChatId: number | null;
+	setActiveChatId: React.Dispatch<React.SetStateAction<number | null>>;
+	activeChat: (data: { chatid: number }) => void;
+	unseenMessage: (data: { chatid: number }) => void;
 	// deleteChat: (data: {chatId: number, message_type: MessageType}) => void;
 }
 
@@ -74,6 +85,8 @@ const ChatContext = createContext<ChatContextType>({
 	setBlock: () => {},
 	unseen: false,
 	setUnseen: () => {},
+	activeChatId: null,
+	setActiveChatId: () => {},
 	activeChat: () => {},
 	unseenMessage: () => {},
 	// deleteChat: () => {},
@@ -96,6 +109,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 	const [chats, setChats] = useState<GetChats[]>([]);
 	const [block, setBlock] = useState<BlockedFriend | null>(null);
 	const [unseen, setUnseen] = useState<boolean>(false);
+	const [activeChatId, setActiveChatId] = useState<number | null>(null);
 
 	useEffect(() => {
 		const ws = new WebSocket(getendpoint("ws", `/ws/chat/`));
@@ -117,7 +131,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					});
 				}
 				if (data.type === "update_unseen_message") {
-					setUnseen(data.state);
+					setChats((prevChats) =>
+						prevChats.map((chat) =>
+							chat.id === data.chat_id
+								? {
+										...chat,
+										nbr_of_unseen_msg_user1: data.nbr_of_unseen_msg_user1,
+										nbr_of_unseen_msg_user2: data.nbr_of_unseen_msg_user2,
+								  }
+								: chat
+						)
+					);
+
+					// Update unseen state if necessary
+					setUnseen(data.status);
 				}
 
 				// if (data.type === MessageType.DeleteChat) {
@@ -127,7 +154,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				// 		setChats((prevChats) => prevChats.filter((chat) => chat.id !== chat_id));
 				// 		setMessages((prevMessages) => prevMessages.filter((msg) => msg.chat !== chat_id));
 				// 		console.log("********************");
-						
+
 				// 		// setLastMessage((prevLastMessage) => {
 				// 		// 	const updatedLastMessage = { ...prevLastMessage };
 				// 		// 	delete updatedLastMessage[chat_id];
@@ -135,7 +162,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				// 		// });
 				// 	}
 				// }
-		
+
 				// if (data.type === MessageType.BlockChat) {
 				// 	setBlock({
 				// 		chatid: data.chat_id,
@@ -143,12 +170,11 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				// 		blocked_by_id: data.blocked_by_id,
 				// 	})
 				// }
-		
 
 				if (data.type === MessageType.SendMessage) {
 					if (!data.chat_id || !data.message) {
-						console.error("Invalid WebSocket message: ", data)
-						return
+						console.error("Invalid WebSocket message: ", data);
+						return;
 					}
 					const newMessage: ChatMessage = {
 						id: Date.now(),
@@ -158,7 +184,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 						content: data.message,
 						timestamp: new Date().toISOString(),
 					};
-					
+
 					setMessages((prev) => [...prev, newMessage]);
 					setLastMessage((prev) => ({
 						...prev,
@@ -167,18 +193,32 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 							timestamp: newMessage.timestamp,
 						},
 					}));
+					// setChats((prevChats) =>
+					// 	prevChats.map((chat) =>
+					// 		chat.id === data.chat_id
+					// 			? {
+					// 					...chat,
+					// 					nbr_of_unseen_msg_user1: data.nbr_of_unseen_msg_user1,
+					// 					nbr_of_unseen_msg_user2: data.nbr_of_unseen_msg_user2,
+					// 			  }
+					// 			: chat
+					// 	)
+					// );
 					setChats((prevChats) => {
 						const existingChatIndex = prevChats.findIndex(
 							(chat) => chat.id === data.chat_id
 						);
-			
+
 						if (existingChatIndex !== -1) {
 							// Update existing chat
 							const updatedChats = [...prevChats];
 							updatedChats[existingChatIndex] = {
 								...updatedChats[existingChatIndex],
 								last_message: data.message,
-								messages: [...updatedChats[existingChatIndex].messages, newMessage],
+								messages: [
+									...updatedChats[existingChatIndex].messages,
+									newMessage,
+								],
 							};
 							return updatedChats;
 						} else {
@@ -190,6 +230,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 								created_at: newMessage.timestamp,
 								last_message: data.message,
 								messages: [newMessage],
+								nbr_of_unseen_msg_user1: data.nbr_of_unseen_msg_user1,
+								nbr_of_unseen_msg_user2: data.nbr_of_unseen_msg_user2,
 							};
 							return [...prevChats, newChat];
 						}
@@ -203,9 +245,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		setSocket(ws);
 
 		return () => ws.close(); // Clean up the WebSocket on component unmont
-	}, []);
-
-	const sendMessage = (data: { message: string; receiver: number; message_type: MessageType }) => {
+	}, [setChats]);
+	const sendMessage = (data: {
+		message: string;
+		receiver: number;
+		message_type: MessageType;
+	}) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(JSON.stringify(data));
 		} else {
@@ -213,7 +258,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 	};
 
-	const blockUnblockFriend = (data: { chatid: number; blocker: number; blocked: number; status: true | false }) => {
+	const blockUnblockFriend = (data: {
+		chatid: number;
+		blocker: number;
+		blocked: number;
+		status: true | false;
+	}) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(
 				JSON.stringify({
@@ -229,6 +279,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 	};
 	const activeChat = (data: { chatid: number }) => {
+		setActiveChatId(data.chatid);
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(
 				JSON.stringify({
@@ -248,6 +299,18 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					message_type: MessageType.MarkRead,
 					chat_id: data.chatid,
 				})
+			);
+
+			setChats((prevChats) =>
+				prevChats.map((chat) =>
+					chat.id === data.chatid
+						? {
+								...chat,
+								nbr_of_unseen_msg_user1: 0,
+								nbr_of_unseen_msg_user2: 0,
+						  }
+						: chat
+				)
 			);
 		} else {
 			console.error("WebSocket is not open.");
@@ -285,6 +348,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				unseenMessage,
 				unseen,
 				setUnseen,
+				activeChatId,
+				setActiveChatId,
 				// deleteChat,
 			}}
 		>

@@ -9,14 +9,12 @@ interface ChatTopProps {
 	setSelectedFriend: React.Dispatch<React.SetStateAction<GetChats | null>>;
 }
 
-const ChatTop = ({
-	selectedFriend,
-	setSelectedFriend,
-}: ChatTopProps) => {
+const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 	const [openMenu, setOpenMenu] = useState(false);
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const { block, blockUnblockFriend, activeChat } = useChatContext();
+	const { block, blockUnblockFriend, activeChat, setActiveChatId } =
+		useChatContext();
 	const user = getUser();
 
 	useEffect(() => {
@@ -113,8 +111,9 @@ const ChatTop = ({
 				<i
 					className="fa-solid fa-arrow-left arrowClose"
 					onClick={() => {
-						setSelectedFriend(null)
-						activeChat({chatid: -1})
+						setSelectedFriend(null);
+						activeChat({ chatid: -1 });
+						setActiveChatId(null);
 					}}
 				></i>
 				<img src={friend_user.avatar} alt="profile" className="image" />
@@ -134,18 +133,22 @@ const ChatTop = ({
 				{openMenu && (
 					<ul className="menu-list">
 						<li>Invite to play</li>
-						<li >Friend profile</li>
+						<li>Friend profile</li>
 						{/* <li onClick={handleDeleteChat}>Delete chat</li> */}
-						<li onClick={() => {
-							setSelectedFriend(null)
-							activeChat({chatid: -1})
-							}}>Close chat</li>
+						<li
+							onClick={() => {
+								setSelectedFriend(null);
+								activeChat({ chatid: -1 });
+								setActiveChatId(null);
+							}}
+						>
+							Close chat
+						</li>
 						{block?.status && block.blocker === user?.id ? (
 							<li onClick={handleBlock}>Unblock</li>
 						) : (
 							!block?.status && <li onClick={handleBlock}>Block</li>
 						)}
-
 					</ul>
 				)}
 			</div>

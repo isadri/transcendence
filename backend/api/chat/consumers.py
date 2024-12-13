@@ -50,16 +50,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         if (message_type == "send_message"):
-            message = data.get('message')
-            receiver_id = data.get('receiver')
-            await self.handle_send_message(receiver_id, message)
+            await self.handle_send_message(data)
 
         elif (message_type == "block_friend"):
-            chat_id = data.get('chat_id')
-            blocker = data.get('blocker')
-            blocked = data.get('blocked')
-            status = data.get('status')
-            await self.handle_block_friend(chat_id, blocker, blocked, status)
+            await self.handle_block_friend(data)
         elif (message_type == "active_chat"):
             chat_id = data.get('chat_id')
             if chat_id == -1:
@@ -85,11 +79,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             # Send a response back to the client
             await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'update_unseen_message',
-                'status': True,
-            })
+                self.room_group_name,
+                {
+                    'type': 'update_unseen_message',
+                    'status': False,
+                    'chat_id': chat.id,
+                    'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                    'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
+                }
+            )
 
         except Chat.DoesNotExist:
             await self.send(text_data=json.dumps({
@@ -97,9 +95,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
 
     async def update_unseen_message(self, event):
+        state = event.get('status', False)  # Determine if there are unseen messages
         await self.send(text_data=json.dumps({
             'type': 'update_unseen_message',
-            'status': event['status'],
+            'chat_id': event['chat_id'],
+            'nbr_of_unseen_msg_user1': event.get('nbr_of_unseen_msg_user1', 0),
+            'nbr_of_unseen_msg_user2': event.get('nbr_of_unseen_msg_user2', 0),
+            'status': state,
         }))
 
     async def handle_active_chat(self, chat_id):
@@ -112,7 +114,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'error': 'Chat does not exist.'
             }))
 
-    async def handle_block_friend(self, chat_id, blocker, blocked, status):
+    async def handle_block_friend(self, data):
+        chat_id = data.get('chat_id')
+        blocker = data.get('blocker')
+        blocked = data.get('blocked')
+        status = data.get('status')
         try:
             chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
 
@@ -199,7 +205,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         "chat_id": event["chat_id"]
     #     }))
 
-    async def handle_send_message(self, receiver_id, message):
+    async def handle_send_message(self, data):
+        message = data.get('message')
+        receiver_id = data.get('receiver')
         try:
             receiver = await User.objects.aget(id=receiver_id)
         except User.DoesNotExist:
@@ -239,7 +247,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'chat_id': chat.id,
                 'sender_id': self.user.id,
-                'receiver_id': receiver.id
+                'receiver_id': receiver.id,
+                'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             }
         )
 
@@ -251,7 +261,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'chat_id': chat.id,
                 'sender_id': self.user.id,
-                'receiver_id': receiver.id
+                'receiver_id': receiver.id,
+                'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             }
         )
         chat.last_message = message
@@ -270,6 +282,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'update_unseen_message',
                 'status': True,
+                'chat_id': chat.id,
+                'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             })
             # await self.channel_layer.group_send(
             # self.room_group_name,
@@ -290,7 +305,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': event['message'],
             'chat_id': event['chat_id'],
             'sender_id': event['sender_id'],
-            'receiver_id': event['receiver_id']
+            'receiver_id': event['receiver_id'],
+            'nbr_of_unseen_msg_user1': event['nbr_of_unseen_msg_user1'],
+            'nbr_of_unseen_msg_user2': event['nbr_of_unseen_msg_user2'],
         }))
 
     def is_blocked(self, chat):
