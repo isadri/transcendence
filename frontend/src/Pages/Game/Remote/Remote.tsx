@@ -87,10 +87,10 @@ function Table() {
 
 interface Paddlerops {
   position: any, // can be  Vector3 or Triplet,
-  box : Api<Object3D<Object3DEventMap>>
+  box : number
 }
 
-const move = (socket:WebSocket, username:string, direction:[number, number, number]) => {
+const move = (socket:WebSocket, username:string, direction:string) => {
 
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(
@@ -106,11 +106,18 @@ const move = (socket:WebSocket, username:string, direction:[number, number, numb
 
 function Paddle1({position, box}: Paddlerops){ // my Paddle
   const context =  useContext(resultsContext)
-  const material = new Material();
-  material.name = "paddle_mat"
 
-  const [ref, api] = box
+  const [ref, api] = useBox(() => ({
+    type: "Kinematic",
+    position: position,
+    args: [1.5, 0.5, 0.5],
+    material: new Material("paddle_mat")
+  }));
 
+  useEffect(() => {
+    if (api && api.position)
+      api.position.set(box, 0.09, +(8.65640 -1)/ 2)
+  }, [box, api])
   useEffect(() => {
     if (context)
       {
@@ -118,18 +125,19 @@ function Paddle1({position, box}: Paddlerops){ // my Paddle
         let unsubscribe: (() => void) | null = null
         const onKeyDown = (event: KeyboardEvent) => {
           if (unsubscribe) return
-          unsubscribe = api.position.subscribe(([x, y, z]) =>{
-            if  ((event.key == "ArrowRight" && x < (3.07345 - 0.75)) || (event.key == "ArrowUp" && x < (3.07345 - 0.75)))
+          // unsubscribe = api.position.subscribe(([x, y, z]) =>{
+            // if  ((event.key == "ArrowRight" && x < (3.07345 - 0.75)) || (event.key == "ArrowUp" && x < (3.07345 - 0.75)))
+            if  (event.key == "ArrowRight"  || event.key == "ArrowUp" )
             {
-              move(socket, user.username,[-(x + 0.05), y, -z])
+              move(socket, user.username, "+")
               // api.position.set(x + 0.05, y, z)
             }
-            else if  ((event.key == "ArrowLeft" && x > -(3.07345 - 0.75)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.75)))
+            else if  (event.key == "ArrowLeft" || event.key == "ArrowDown")
             {
-              move(socket, user.username, [-(x - 0.05), y, -z])
+              move(socket, user.username, "-")
               // api.position.set(x - 0.05, y, z)
             }
-          })
+          // })
         }
         
         const onKeyUp = (event: KeyboardEvent) => {
@@ -158,9 +166,18 @@ function Paddle1({position, box}: Paddlerops){ // my Paddle
 }
 
 function Paddle2({position, box}: Paddlerops){
-  const context =  useContext(resultsContext)
 
-  const [ref, api] = box
+  const [ref, api] = useBox(() => ({
+    type: "Kinematic",
+    position: position,
+    args: [1.5, 0.5, 0.5],
+    material: new Material("paddle_mat")
+  }));
+
+  useEffect(() => {
+    if (api && api.position)
+      api.position.set(box, 0.09, -(8.65640 -1)/ 2)
+  }, [box, api])
   return (
     <mesh ref={ref} position={position}  name="paddle">
       <boxGeometry args={[1.5, 0.5, 0.5]} />
@@ -237,19 +254,8 @@ function GameTable() {
     friction:0,
     restitution: 1,
   });
-
-  const paddle1 = useBox(() => ({
-    type: "Kinematic",
-    position: [0, 0.09, +(8.65640 -1)/ 2],
-    args: [1.5, 0.5, 0.5],
-    material: new Material("paddle_mat")
-  }));
-  const paddle2 = useBox(() => ({
-    type: "Kinematic",
-    position: [0, 0.09, -(8.65640 -1)/ 2],
-    args: [1.5, 0.5, 0.5],
-    material: new Material("paddle_mat")
-  })); 
+  const [paddle1, setpaddle1] = useState<number>(0)
+  const [paddle2, setpaddle2] = useState<number>(0)
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
   const navigator = useNavigate()
@@ -259,6 +265,7 @@ function GameTable() {
       const {socket, setEnemy, enemy, user} = context
       socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
+        
         if (data.event == "ABORT")
           navigator("..")
         if (data.event == "START")
@@ -272,16 +279,20 @@ function GameTable() {
             const xyz:[number, number, number] = data.ball
             setball(xyz)
           }
-          // if (data[user.username]){
-          //   const xyz = data[user.username]
-          //   const [ref, api] = paddle1
-          //   api.position.set(xyz[0], xyz[1], xyz[2])
-          // }
-          // if (data[enemy.username]){
-          //   const xyz = data[enemy.username]
-          //   const [ref, api] = paddle2
-          //   api.position.set(xyz[0], xyz[1], xyz[2])
-          // }
+          if (data[user.username]){
+            let x = data[data[user.username]]
+            if (data[user.username] == 'player2')
+              setpaddle1(-x)
+            else 
+              setpaddle1(x)
+          }
+          if (data[enemy.username]){
+            let x = data[data[enemy.username]]
+            if (data[enemy.username] == 'player1')
+              setpaddle2(-x)
+            else
+              setpaddle2(x)
+          }
         }
       }
     }, [ball, paddle1, paddle2])
