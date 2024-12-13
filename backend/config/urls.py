@@ -12,7 +12,7 @@ urlpatterns = [
     path('api/friends/', include('api.friends.urls')),
     path('', views.HomeView.as_view()),
     path('api/chat/', include('api.chat.urls')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

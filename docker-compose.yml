@@ -10,7 +10,8 @@ volumes:
   kibanadata:
   kibconfig:
   pg_jdbc:
-  backend_logs:
+  nginx_logs:
+  static_volumes:
 
 services:
   back-end:
@@ -18,18 +19,19 @@ services:
     image: backend
     build:
       context: backend
-    ports:
-      - 8000:8000
     volumes:
       - ./backend/:/code
       - certs:/certs
-      - backend_logs:/logs
+      - static_volumes:/code/static
     networks:
       - app-network
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
     env_file:
       - .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: on-failure
 
   #front-end:
@@ -58,18 +60,37 @@ services:
       - .env
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: on-failure
 
   redis:
     image: redis:latest
     container_name: redis
-    #ports:
-    #  - "6379:6379"
     env_file:
       - .env
     networks:
       - app-network
     restart: on-failure
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    build:
+      context: nginx
+    ports:
+      - 8000:8000
+    networks:
+      - app-network
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_volumes:/var/www/static/
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - back-end
 
   setup:
     build:
@@ -106,8 +127,6 @@ services:
       - .env
     networks:
       - app-network
-    #ports:
-    #  - ${ES_PORT}:9200
     mem_limit: ${MEM_LIMIT}
     ulimits:
       memlock:
@@ -137,8 +156,6 @@ services:
       - .env
     networks:
       - app-network
-    #ports:
-    #  - ${ES_PORT}:9200
     mem_limit: ${MEM_LIMIT}
     ulimits:
       memlock:
@@ -182,12 +199,10 @@ services:
     image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     container_name: logstash
     command: bin/logstash -f pipeline/logstash.conf --config.reload.automatic
-    #ports:
-    #  - 5044:5044
     volumes:
       - certs:/usr/share/logstash/config/certs
       - pg_jdbc:/usr/share/logstash/jdbc
-      - backend_logs:/usr/share/logstash/logs
+      - nginx_logs:/usr/share/logstash/logs
       - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
       - ./elk/logstash/settings/logstash.yml:/usr/share/logstash/config/logstash.yml
     env_file:

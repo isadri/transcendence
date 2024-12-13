@@ -19,7 +19,6 @@ INITIAL_TIME = time.time()
 ALLOWED_HOSTS = ['*']
 
 SITE_ID = 2
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -78,10 +77,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-#STATIC_URL = '/static/'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 TEMPLATES = [
