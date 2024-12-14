@@ -23,7 +23,21 @@ SITE_ID = 2
 # Application definition
 
 INSTALLED_APPS = [
+    'api.game',
+    'api.chat',
+	'api.friends',
+	'api.accounts',
+
     'daphne',
+    'channels',
+    'corsheaders',
+
+	'allauth',
+    'oauth2_provider',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,22 +48,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
-
-	'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-
 	'rest_framework_simplejwt.token_blacklist',
-
-	'api.accounts',
-	'api.friends',
-
-    'oauth2_provider',
-
-    'api.chat',
-    'channels',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
@@ -115,15 +114,13 @@ DATABASES = {
 
 APPEND_SLASH = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5000",
-    "http://e2r10p14:5000",
-    "http://0.0.0.0:5000",
-    "http://127.0.0.1:5000",
-    "http://127.0.0.1:8000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://0.0.0.0:5000",
+#     "http://localhost:5000",
+#     "http://127.0.0.1:5000",
+# ]
 
-
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_PRIVATE_NETWORK = True
 
