@@ -26,10 +26,12 @@ useGLTF.preload(tableUrl);
 
 // the context of the game result
 interface ResultContext {
+  error:string|null,
+  user: userDataType,
   result: [number, number];
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
   setResult: React.Dispatch<React.SetStateAction<[number, number]>>;
   setEnemy: React.Dispatch<React.SetStateAction<userDataType>>;
-  user: userDataType,
   socket: WebSocket,
   enemy: userDataType
   paddle1:any,
@@ -262,14 +264,19 @@ function GameTable() {
   if (context)
   {
     useEffect(() => {
-      const {socket, setEnemy, enemy, user, setResult, result} = context
+      const {socket, setEnemy, enemy, user, setResult, setError} = context
       socket.onmessage = (e) => {
+
         const data = JSON.parse(e.data)
-        
         if (data.event == "ABORT")
-          navigator("..")
-        if (data.event == "START")
         {
+          console.log(data.message);
+          
+          setError(data.message)
+        }
+        if (data.event == "START")
+          {
+          console.log(data);
           setEnemy(data.enemy)
           setLoading(false)
         }
@@ -311,7 +318,6 @@ function GameTable() {
           <Ball ball={ball}/>
           <Paddle1 position={[0, 0.09, +(8.65640 -1)/ 2]} box={paddle1}/>
           <Paddle2 position={[0, 0.09, -(8.65640 -1)/ 2]} box={paddle2}/>
-          {/* <primitive object={new AxesHelper(5)} /> */}
           <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
           <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
           <GoalWall position={[0, 0, (8.65640+ 0.5)/2]}/>
@@ -327,7 +333,7 @@ const Play = () => {
   const context = useContext(resultsContext)
   if (context)
   {
-  const {result, user, enemy} = context
+  const {result, user, enemy, error} = context
   return (
     <>
       <div className="PlayScreen">
@@ -366,6 +372,22 @@ const Play = () => {
             </div>
           </div>
         </div>
+        {
+          error ?
+          
+          <div className="winnerPopUp">
+            <h2>Abort</h2>
+            <span>
+              {error}
+            </span>
+            <div className="winnerBtns">
+              <Link to={"/"}><i className="fa-solid fa-house"></i></Link>
+              <Link to={"../"}><i className="fa-solid fa-arrow-left"></i></Link>
+            </div>
+          </div>
+          :
+          <></>
+        }
         {/* {
            result[0] === 7 || result[1] === 7 
           ?
@@ -402,11 +424,12 @@ const emptyUser = {
 
 const Provider = ({socket} : {socket:WebSocket}) => {
   const user = getUser()
+  const [error, setError] = useState<string | null>(null)
   const [enemy, setEnemy] = useState<userDataType>(emptyUser)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
   return (
-    <resultsContext.Provider value={{result, setResult, user, socket, enemy, setEnemy}}>
+    <resultsContext.Provider value={{result, setResult, user, socket, enemy, setEnemy, error, setError}}>
       <Play/>
     </resultsContext.Provider>
   )

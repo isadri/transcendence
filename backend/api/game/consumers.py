@@ -201,25 +201,33 @@ class GameData:
     if newpos < (3.07345 - 0.75) and newpos > -(3.07345 - 0.75):
       self.players_pos[username][0] += direct
 
+  def abort_game(self, username=None):
+    self.done = True
+
 class RemoteGame(AsyncWebsocketConsumer):
 
   connected = {}
   async def connect(self):
     self.user = self.scope["user"]
     self.username = self.user.username
-
     self.game_id = self.scope["url_route"]["kwargs"]['game_id']
     self.room_name = f"game_{self.game_id}"
+    self.game_data = None
+    await self.accept()
     self.game = await self.getGame(self.game_id)
+    if not self.game:
+      await self.abort("No game found with this ID")
+      return
     if await self.isPartOfTheGame(self.game):
       if self.game_id not in self.connected:
         self.connected[self.game_id] = {self.username: self}
       else:
         self.connected[self.game_id][self.username] = self
-      await self.accept()
       await self.channel_layer.group_add(self.room_name, self.channel_name)
       if len(self.connected[self.game_id]) == 2:
         self.task = asyncio.create_task(self.game_loop())
+    else:
+      await self.abort("You are not allowed to join this game")
 
   @database_sync_to_async
   def isPartOfTheGame(self, game):
@@ -227,27 +235,36 @@ class RemoteGame(AsyncWebsocketConsumer):
       return True
     return False
 
+
+  async def abort(self, message):
+    print("aaaaaaaa", self.user, message)
+    await self.send(text_data=json.dumps({
+      'event': 'ABORT',
+      'message': message
+    }))
+    self.close()
+
   async def receive(self, text_data):
     data = json.loads(text_data)
+    print(data)
     if  data["event"] == 'MOVE':
       self.game_data.setPlayerPos(data["username"], data["direction"])
 
   async def disconnect(self, code):
-   await self.channel_layer.group_send(
-     self.room_name,
-     {
-        "type": "player.disconnected",
-        "username": self.user.username,
-     },
-   )
+    self.channel_layer.group_discard(self.room_name, self.channel_name)
+    del self.connected[self.game_id][self.username]
 
 
   @database_sync_to_async
   def getGame(self, game_id):
-    game = Game.objects.get(pk=game_id)#need protection
-    game.state = 'S'
-    self.enemy = game.player2 if self.user != game.player2 else game.player1
-    return game
+    try:
+      game = Game.objects.get(pk=game_id)#need protection
+      # if 
+      game.state = 'S'
+      self.enemy = game.player2 if self.user != game.player2 else game.player1
+      return game
+    except Game.DoesNotExist:
+      return None
 
   async def game_update(self, event):
     await self.send(json.dumps(event))
@@ -264,9 +281,9 @@ class RemoteGame(AsyncWebsocketConsumer):
     _ , player2 = next(iterator)
     player1.task = self.task
     player2.task = self.task
-    player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
-    self.connected[self.game_id]['game'] = self.game_data
-    player1.connected[self.game_id] = player2.connected[self.game_id] =  self.connected[self.game_id]
+    if not player1.game_data and not player2.game_data:
+      player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
+    player2.game_data = player1.game_data
     await self.channel_layer.group_send(self.room_name, {
       'type': 'game.start',
       'event': 'START'
@@ -274,19 +291,10 @@ class RemoteGame(AsyncWebsocketConsumer):
     while not self.game_data.isDone():
       await self.game_data.update()
       await asyncio.sleep(GAME_SPEED)
+      if len(self.connected[self.game_id]) != 2:
+        self.abort("The game end")
+        break
 
 
   def getUsername(self):
     return self.username
-
-  async def player_disconnected(self, event):
-    """
-    Notify the remaining player that their opponent disconnected.
-    """
-    await self.send(json.dumps({
-        "event": "ABORT",
-        "username": event["username"],
-    }))
-    # print("quit", self.username)
-    # # self.task.cancel()
-    # del self.connected[self.game_id]
