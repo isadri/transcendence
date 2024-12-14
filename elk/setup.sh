@@ -78,19 +78,51 @@ until curl -s -X POST --cacert config/certs/ca/ca.crt \
 https://es01:9200/_security/user/kibana_system/_password \
 -d "{\"password\": \"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done
 
-#echo "Creating logstash_writer role"
-#curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
-#-H "Content-Type: application/json" https://es01:9200/_security/role/logstash_writer \
-#-d '{"cluster":["manage_index_templates", "monitor"], "indices": [{"names": ["*"], "privileges": ["write", "create", "create_index"]}]}'
-
-#echo -e "\nCreating $LOGSTASH_USER user and assign it the logstash_writer role"
-#curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:$ELASTIC_PASSWORD \
-#-H "Content-Type: application/json" https://es01:9200/_security/user/$LOGSTASH_USER \
-#-d "{\"password\": \"${LOGSTASH_PASSWORD}\", \"roles\": [\"logstash_writer\"], \"full_name\": \"null\"}"
-
-echo "Creating lifecycle policy"
+echo -e "\nCreating index lifecycle policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_ilm/policy/dev-policy -H "Content-Type: application/json" \
--d '{"policy":{"phases":{"hot":{"min_age":"1m","actions":{"set_priority":{"priority":250}}},"delete":{"actions":{"delete":{}}}}}}'
+https://es01:9200/_ilm/policy/dev-policy -H "Content-Type: application/json" -d '
+{
+	"policy": {
+		"phases": {
+			"hot": {
+				"min_age": "3m",
+				"actions": {
+					"rollover": {
+						"max_age": "1m",
+						"max_docs": 2
+					}
+				}
+			},
+			"delete": {
+				"actions": {
+					"delete": {}
+				}
+			}
+		}
+	}
+}'
+
+echo -e "\nCreating component template"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_component_template/dev-settings -H "Content-Type: application/json" \
+-d '
+{
+	"template": {
+		"settings": {
+			"index.lifecycle.name": "dev-policy"
+		}
+	}
+}'
+
+echo -e "\nCreating index template"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_index_template/dev-template -H "Content-Type: application/json" \
+-d '
+{
+	"index_patterns": [ "server-logs*" ],
+	"data_stream": { },
+	"composed_of": [ "dev-settings" ],
+	"priority": 500
+}'
 
 echo -e "\nAll done"
