@@ -122,9 +122,11 @@ class GameData:
     self.room_name = name
     self.channel = channel
     self.ball = [0, 0.2, 0]
+    self.done = False
     self.direction = 1
     self.player1 = p1.username
     self.player2 = p2.username
+    self.winneer = None
     self.score = {p1.username : 0, p2.username : 0}
     self.players = {p1.username : p1, p2.username : p2}
     self.players_pos = {
@@ -144,7 +146,9 @@ class GameData:
       'player1': self.players_pos[self.player1][0],
       'player2': self.players_pos[self.player2][0]
     })
+    self.checkWinner()
     self.update_ball()
+    self.checkScore()
 
   def update_player1(self, pos):
     self.player1_pos = pos
@@ -156,7 +160,6 @@ class GameData:
     self.ball[2] += 0.1 * self.direction
     if self.hitPaddle(self.players_pos[self.player1]) or self.hitPaddle(self.players_pos[self.player2]):
         self.direction *= -1
-    self.checkScore()
 
   def checkScore(self):
     if abs(SIDE_Z - self.ball[2]) <= BALL_R * 2:
@@ -165,6 +168,12 @@ class GameData:
     if abs(-SIDE_Z - self.ball[2]) <= BALL_R * 2:
       self.score[self.player2] += 1
       self.ball = [0, 0.2, 0]
+
+  def checkWinner(self):
+    if self.score[self.player1] == 7 or self.score[self.player2] == 7:
+      self.done = True
+      return True
+    return False
 
 
   def hitPaddle(self, pos):
@@ -179,13 +188,18 @@ class GameData:
   def setBall(self, pos):
     self.ball = pos
 
+  def isDone(self):
+    return self.done
+
   def getPlayer(self, username):
     return self.players[username]
   def getPlayerPos(self, username):
     return self.players_pos[username]
   def setPlayerPos(self, username, pos):
     direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
-    self.players_pos[username][0] += direct
+    newpos = self.players_pos[username][0] + direct
+    if newpos < (3.07345 - 0.75) and newpos > -(3.07345 - 0.75):
+      self.players_pos[username][0] += direct
 
 class RemoteGame(AsyncWebsocketConsumer):
 
@@ -257,7 +271,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       'type': 'game.start',
       'event': 'START'
     })
-    while True:
+    while not self.game_data.isDone():
       await self.game_data.update()
       await asyncio.sleep(GAME_SPEED)
 
