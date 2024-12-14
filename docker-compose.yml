@@ -40,7 +40,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:17beta1
+    image: postgres:17
     volumes:
       - postgres_data:/var/lib/posgresql/data
     ports:

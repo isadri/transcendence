@@ -68,8 +68,8 @@ function Authentication() {
       })
   }
   const GetUserInfo = () =>{
-    axios.get(getendpoint("http", '/'),  {withCredentials:true})
-    .then((response) => {
+    axios.get(getendpoint('http', '/'),  {withCredentials:true})
+    .then((response:any) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
     })
@@ -96,7 +96,7 @@ function Authentication() {
                 setEmail('')
                 setPassword('')
             })
-            .catch((error) => {
+            .catch((error:any) => {
               setError(true)
               if (error.response && error.response.data){
                 const list = []
