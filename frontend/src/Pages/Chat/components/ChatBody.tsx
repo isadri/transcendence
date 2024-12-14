@@ -16,7 +16,7 @@ interface ChatBodyProps {
 
 const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLInputElement>(null);
-	const { setMessages, setBlock } = useChatContext();
+	const { setBlock } = useChatContext();
 	const user = getUser();
 	const [messagesUser, setMessagesUser] = useState<ChatMessage[]>([]);
 	useEffect(() => {

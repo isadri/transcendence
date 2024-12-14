@@ -85,7 +85,7 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 		if (lastMessag?.chat == selectedFriend.id)
 			setMessagesUpdate([...messagesUser, ...messages]);
 		else setMessagesUpdate([...messagesUser]);
-	}, [messages, messagesUser]);
+	}, [messages, messagesUser, selectedFriend]);
 
 	const formatTimes = (time: string) => {
 		const date = new Date(time);

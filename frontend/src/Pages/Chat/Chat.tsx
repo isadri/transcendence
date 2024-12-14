@@ -18,7 +18,7 @@ const Chat = () => {
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
-	const {activeChat} = useChatContext()
+	const { activeChat } = useChatContext()
 
 	useEffect(() => {
 		const fetchFriend = async () => {
