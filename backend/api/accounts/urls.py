@@ -51,8 +51,8 @@ urlpatterns = [
     path('deleteUser/', views.DeleteUserAccountView.as_view(), name='update-user'),
     path('user/<str:username>/', views.UserDetailView.as_view(), name='get_user_by_username'),
     path('GetIntraLink/', views.GetIntraLink.as_view(), name='Get_Intra_Link'),
-    path('GetGoogleLink/', views.GetGoogleLink.as_view(), name='Get_Google_Link')
-    # path('<str:username>/update/', views.UpdateView.as_view(), name='update'),
+    path('GetGoogleLink/', views.GetGoogleLink.as_view(), name='Get_Google_Link'),
+    path('SendOTPEmailView/', views.SendOTPEmailView.as_view(), name='Send_OTP_Email')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json'])

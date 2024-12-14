@@ -20,6 +20,7 @@ const Setting = () => {
   const navigate = useNavigate();
   const [myAlert, SetMyAlert] = useState(false)
   const [showAlert, setShowAlert] = useState(false);
+  const [showOtpAlert, SetshowOtpAlert] = useState(false)
   const [createdAlert, setcreatedAlert] = useState<string>("")
 
   const [confirm, SetConfirm] = useState(1)
@@ -78,7 +79,7 @@ const Setting = () => {
       SetIsRemove(false);
       const previewUrl = URL.createObjectURL(file);
       SetDataUpdated((prevData) => {
-        const updatedData = { ...prevData, avatar: previewUrl };
+        const updatedData = {...prevData, avatar: previewUrl};
         return updatedData;
       });
     }
@@ -152,6 +153,21 @@ const Setting = () => {
     });
   };
   
+  const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      console.log("OTP Enabled");
+      SetshowOtpAlert(true);
+      sendOtpRequest();
+    } else {
+      console.log("OTP Disabled");
+      SetshowOtpAlert(false);
+    }
+  };
+
+  const sendOtpRequest = () => {
+      axios.post(getendpoint())
+  };
+
   useEffect(() => {
     if (showAlert) {
       setTimeout(() => {
@@ -278,6 +294,15 @@ const Setting = () => {
                 </button>
               </div>
             </div>
+            <div className="EnableOtp">
+              <div className="check">
+                <label htmlFor="otpToggle">Enable Two-Factor Authentication (2FA)</label>
+                <input id="otpToggle" type="checkbox" onChange={handleOtpToggle}/>
+              </div>
+              <div className="content">
+                <span className="description">Secure your account by enabling 2FA. You will be required to enter a one-time password during login.</span>
+              </div>
+            </div>
             <div className="Setting-action">
               <span onClick={() => {SetMyAlert(true)}}>
                 <i className="fa-solid fa-trash-can"></i>
@@ -309,6 +334,27 @@ const Setting = () => {
                     </div>
                   </div>
                 </div>
+            </div>
+          }
+          {
+            showOtpAlert && 
+            <div className="GameModePopUpBlur">
+              <div className="alertDeleteUser alertOTP">
+                <div className="contentOtp">
+                  <div className="iconEmail">
+                  <i className="fa-solid fa-envelope-open-text"></i>
+                  <span></span>
+                  </div>
+                  <div className="content-text">
+                    <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
+                    <span>A verification code has been sent to your email. Please check your inbox.</span>
+                    <input type="text" placeholder="Enter Code"/>
+                  </div>
+                  <div className="Codefiled">
+                    <button>Verify</button>
+                  </div>
+                </div>
+              </div>
             </div>
           }
         </div>

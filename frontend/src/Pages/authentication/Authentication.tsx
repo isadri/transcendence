@@ -37,7 +37,6 @@ function Authentication() {
   const [email, setEmail] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [val, setVal] = useState(true)
-  // const params = new URLSearchParams(window.location.search);
 
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([])

@@ -159,7 +159,6 @@ class VerifyOTPViewSet(viewsets.ViewSet):
         store_token_in_cookies(response, access_token)
         return response
 
-
 class GoogleLoginViewSet(viewsets.ViewSet):
     """
     Login a user using Google
@@ -481,3 +480,39 @@ class GetGoogleLink(APIView):
     def get(self, request):
         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
         return Response(data, status=status.HTTP_200_OK)
+
+# class CheckOTPEnabledViewSet(viewsets.ViewSet):
+#     """
+#     A ViewSet to check if OTP is enabled for a user.
+#     """
+#     permission_classes = [AllowAny]
+#     def 
+    
+
+class SendOTPEmailView(APIView):
+    """
+    A view to send an OTP code to the user's email and return the code.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        user = request.user
+        try:
+            user = get_user_model().objects.get(username=username)
+        except get_user_model().DoesNotExist:
+            return Response({
+                'detail': 'User not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        user.seed = pyotp.random_base32()
+        user.otp = pyotp.TOTP(user.seed).now()
+        user.otp_created_at = timezone.now()
+        user.save()
+
+        send_otp_email(user)
+
+        return Response({
+            'detail': 'The verification code was sent successfully.',
+            'otp': user.otp,
+        }, status=status.HTTP_200_OK)
