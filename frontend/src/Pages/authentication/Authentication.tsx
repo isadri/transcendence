@@ -60,10 +60,32 @@ function Authentication() {
     email
   }
   const url_reg = getendpoint("http", '/api/accounts/register/')
-
+//<<<<<<< dashboard
+//
+// =======
+//   
+//   const handelIntraLogin = (e: any) => {
+//     axios.get(getendpoint('http', '/api/accounts/login/intra/'))
+//       .then(() =>{
+//         // console.log("saccess")
+//       })
+//       .catch(() => {
+//         // console.log("failer")
+//       })
+//   }
+//   const handelgGoogleLogin = (e: any) => {
+//     axios.get(getendpoint("http", '/api/accounts/login/google/'))
+//       .then(() =>{
+//         // console.log("saccess")
+//       })
+//       .catch(() => {
+//         // console.log("failer")
+//       })
+//   }
+// >>>>>>> main
   const GetUserInfo = () =>{
-    axios.get(getendpoint("http", '/'),  {withCredentials:true})
-    .then((response) => {
+    axios.get(getendpoint('http', '/'),  {withCredentials:true})
+    .then((response:any) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
     })
@@ -106,7 +128,7 @@ function Authentication() {
                 confirmPassword: ''
               });
             })
-            .catch((error) => {
+            .catch((error:any) => {
               setError(true)
               if (error.response && error.response.data){
                 const list = []

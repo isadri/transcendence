@@ -13,6 +13,13 @@ import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 // import Tictactoe from '../Pages/TicTacToe/Tictactoe';
 // import { Children } from 'react';
+import SideNavbar from '../components/sideNavbar/SideNavbar';
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import Friends from '../Pages/Friends/Friends';
+import Play from '../Pages/Game/Play/Play';
+import WarmUp from '../Pages/Game/WarmUp/WarmUp';
+import Remote from '../Pages/Game/Remote/Remote';
+
 
 // isLogged  routing table and layout
 const mainRoutingTable = [
@@ -53,12 +60,16 @@ const mainRoutingTable = [
         element: <Game />,
       },
       {
-        path: "/game/play",
+        path: "/game/local",
         element: <Play />,
       },
       {
-        path: "/game/1v1/:gameId",
-        element: <Friends />,
+        path: "/game/remote/:id",
+        element: <Remote />,
+      },
+      {
+        path: "/game/warmup/",
+        element: <WarmUp />,
       },
     ]
   },

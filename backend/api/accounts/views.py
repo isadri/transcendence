@@ -45,11 +45,9 @@ class HomeView(APIView):
         HTTP_402_UNAUTHORIZED response otherwise.
         """
         serializer =  UserSerializer(request.user)
-        data = serializer.data
-        data.pop("password", None)
 
         if request.user.is_authenticated:
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -344,7 +342,7 @@ class RegisterViewSet(viewsets.ViewSet):
 
     def create(self, request: Request) -> Response:
         data = request.data.copy()
-        data['username'] = data['username'].lower()
+        data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

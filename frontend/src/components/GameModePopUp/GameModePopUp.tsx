@@ -1,6 +1,7 @@
 import "./GameModePopUp.css"
 import TImage from "../../assets/cup.png"
 import SImage from "../../Pages/Home/images/randomMode.svg"
+import { useNavigate } from "react-router-dom";
 
 
 interface GameModePopUpProps {
@@ -9,6 +10,7 @@ interface GameModePopUpProps {
 }
 
 function GameModePopUp({mode, setter}:GameModePopUpProps) {
+  const navigator = useNavigate()
   return (
     <>
     <div className="GameModePopUpBlur">
@@ -25,7 +27,7 @@ function GameModePopUp({mode, setter}:GameModePopUpProps) {
           <img src={TImage} />
           <h3>Tournament</h3>
         </div>
-        <div className="GameModePopUp1vs1">
+        <div className="GameModePopUp1vs1" onClick={() => navigator("/game/warmup")}>
           <img src={SImage} />
           <h3>1v1</h3>
         </div>

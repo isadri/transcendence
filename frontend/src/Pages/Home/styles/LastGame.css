@@ -58,6 +58,8 @@
 }
 
 .Home-LastGame .Home-Row3 img, .Home-LastGame .Home-Row1 img{
+    aspect-ratio: 1;
+    border-radius: 50%;
     width: 45px;
 }
 

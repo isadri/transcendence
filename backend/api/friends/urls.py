@@ -18,7 +18,8 @@ urlpatterns = [
     path('pending', views.PendingFriendRequestsView.as_view(), name='pending-friend-requests'),
     path('accepted', views.AcceptedFriendRequestsView.as_view(), name='accepted-friend-requests'),
     path('friends', views.FriendListView.as_view(), name='list-friend-requests'),
-    path('blocked', views.BlockedFriendRequestsView.as_view(), name='blocked-friend-requests'),
+    path('blocked', views.BlockedFriendsRequestsView.as_view(), name='blocked-friends-requests'),
+    path('blockedfriend/<int:pk>', views.BlockedFriendRequestsView.as_view(), name='blocked-friend-requests'),
     path('users', views.UserListView.as_view(), name='users-requests'),
     path('MutualFriendsView/<str:username>', views.MutualFriendsView.as_view(), name='user-friends')
 ]

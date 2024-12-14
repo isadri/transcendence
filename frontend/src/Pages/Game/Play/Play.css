@@ -15,6 +15,13 @@
   position: fixed;
 }
 
+.winnerPopUp h2 {
+  -webkit-text-stroke: 0.5px white;
+}
+.winnerPopUp span {
+  text-align: center;
+}
+
 .PlayScreen .winnerPopUp {
   padding: 1%;
   border-radius: 15px;

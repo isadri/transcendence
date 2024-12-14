@@ -1,28 +1,9 @@
-import { useEffect, useState } from "react";
-import { GetFriends } from "../Chat";
+import { useEffect, useMemo, useState } from "react";
 import "./ChatList.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
-import { ChatMessage } from "./context/ChatUseContext";
-import { useNavigate } from "react-router-dom";
-
-// export interface ChatMessage {
-// 	id: number;
-// 	chat: number;
-// 	sender: number;
-// 	content: string;
-// 	timestamp: string;
-// 	file: string | null;
-// 	image: string | null;
-// }
-
-export interface GetChats {
-	id: number;
-	user1: GetFriends;
-	user2: GetFriends;
-	created_at: string;
-	messages: ChatMessage[];
-}
+import { getUser, getendpoint } from "../../../context/getContextData";
+import { useChatContext, GetFriends, GetChats } from "./context/ChatUseContext";
+import { div } from "three/webgpu";
 
 interface ChatListProps {
 	friends: GetFriends[];
@@ -43,8 +24,10 @@ const ChatList = ({
 	listAllFriends,
 	setListAllFriends,
 }: ChatListProps) => {
-	const [chats, setChats] = useState<GetChats[]>([]);
-	const navigate = useNavigate(); 
+	const user = getUser();
+	// const [notificate, setNotificate] = useState<number | undefined>(0);
+	const { lastMessage, setChats, chats, activeChat, unseenMessage, unseen } =
+		useChatContext();
 	useEffect(() => {
 		const fetchChats = async () => {
 			try {
@@ -62,29 +45,163 @@ const ChatList = ({
 		};
 
 		fetchChats();
-	}, []);
+	}, [unseen]);
+
+	// console.log("user1: ", chats)
 
 	const handleAddConversationRequests = async (id: number) => {
-		const existingChat = chats.find((chat) => chat.user2.id === id);
+		const existingChat = chats.find(
+			(chat) => chat.user1.id === id || chat.user2.id === id
+		);
 
 		if (existingChat) {
 			onSelectFriend(existingChat);
+			activeChat({ chatid: existingChat.id });
+			unseenMessage({ chatid: existingChat.id });
 			return;
 		}
 		try {
 			const response = await axios.post(
 				getendpoint("http", "/api/chat/chats/"),
-				// "http://0.0.0.0:8000/api/chat/chats/",
 				{ user2: id },
 				{ withCredentials: true }
 			);
 
 			setChats((prevChats) => [...prevChats, response.data]);
-			// console.log(response.data);
+			onSelectFriend(response.data);
+			activeChat({ chatid: response.data.id });
+			unseenMessage({ chatid: response.data.id });
 		} catch (error) {
 			console.error("Error creating conversation:", error);
 		}
 	};
+
+	const getLastMessage = (chat: GetChats): string | null => {
+		const lastMsg = lastMessage[chat.id];
+		if (!lastMsg) return chat.last_message;
+		return lastMsg.content;
+	};
+
+	const formatTimes = (time: string | null): string => {
+		if (!time) return "";
+		return Intl.DateTimeFormat("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true,
+		}).format(new Date(time));
+	};
+
+	const getLastMessageTime = (chat: GetChats): string | null => {
+		const lastMsg = lastMessage[chat.id];
+		const lastMessag = lastMsg || chat.messages[chat.messages.length - 1];
+
+		if (!lastMessag || !lastMessag.timestamp) {
+			console.warn("Invalid or missing timestamp for chat:", chat.id);
+			return null;
+		}
+
+		const lastMessageTime = new Date(lastMessag.timestamp).getTime();
+
+		if (isNaN(lastMessageTime)) {
+			console.error("Invalid timestamp value:", lastMessag.timestamp);
+			return null;
+		}
+
+		const now = Date.now();
+		const diffInSeconds = Math.floor((now - lastMessageTime) / 1000);
+		const diffInDays = Math.floor(diffInSeconds / 86400);
+
+		if (diffInDays < 1) return formatTimes(lastMessag.timestamp);
+		if (diffInDays == 1) return "Yesterday";
+		return Intl.DateTimeFormat("en-US", {
+			year: "2-digit",
+			month: "2-digit",
+			day: "2-digit",
+		}).format(new Date(lastMessag.timestamp));
+	};
+
+	// Sort chats by the most recent message timestamp
+	// const sortedChats = useMemo(() => {
+	// 	return chats
+	// 		.map((chat) => {
+	// 			const lastMsg = lastMessage[chat.id];
+	// 			return {
+	// 				...chat,
+	// 				last_message: lastMsg?.content || chat.last_message,
+	// 				last_timestamp: lastMsg?.timestamp || chat.created_at,
+	// 			};
+	// 		})
+	// 		.filter((chat) => chat.messages.length > 0)
+	// 		.sort(
+	// 			(a, b) =>
+	// 				new Date(b.last_timestamp || "").getTime() -
+	// 				new Date(a.last_timestamp || "").getTime()
+	// 		);
+	// }, [chats, lastMessage]);
+	// if (!sortedChats) {
+	// 	return null;
+	// }
+
+	// const sortedChats = chats
+	// 	.map((chat) => {
+	// 		const lastMsg = lastMessage[chat.id];
+	// 		return {
+	// 			...chat,
+	// 			last_message: lastMsg?.content || chat.last_message,
+	// 			last_timestamp: lastMsg?.timestamp || chat.created_at,
+	// 		};
+	// 	})
+	// 	.filter((chat) => chat.messages.length > 0)
+	// 	.sort(
+	// 		(a, b) =>
+	// 			new Date(b.last_timestamp || "").getTime() -
+	// 			new Date(a.last_timestamp || "").getTime()
+	// 	);
+
+	const sortedChats = chats
+        .map((chat) => ({
+            ...chat,
+            last_message: getLastMessage(chat),
+            last_timestamp:
+                lastMessage[chat.id]?.timestamp ||
+                chat.messages.at(-1)?.timestamp ||
+                chat.created_at,
+        }))
+		.filter((chat) => chat.messages.length > 0)
+        .sort(
+            (a, b) =>
+                new Date(b.last_timestamp || "").getTime() -
+                new Date(a.last_timestamp || "").getTime()
+        );
+
+	// const sortedChats = chats
+	// 	.map((chat) => {
+	// 		const lastMsg = lastMessage[chat.id];
+	// 		const lastMessageTime = getLastMessageTime(chat); // Get the formatted time
+
+	// 		// Ensure valid timestamp is generated
+	// 		let lastMessageTimestamp = 0;
+	// 		if (lastMessageTime) {
+	// 			// Prepend the current date (e.g., "1970-01-01T") for valid date parsing
+	// 			lastMessageTimestamp = new Date(
+	// 				`1970-01-01T${lastMessageTime}`
+	// 			).getTime();
+	// 		}
+
+	// 		// In case the timestamp is invalid, fallback to the chat's created_at or another timestamp field
+	// 		if (isNaN(lastMessageTimestamp)) {
+	// 			lastMessageTimestamp = new Date(chat.created_at).getTime();
+	// 		}
+
+	// 		return {
+	// 			...chat,
+	// 			last_message: lastMsg?.content || chat.last_message,
+	// 			last_message_time: lastMessageTime,
+	// 			last_message_timestamp: lastMessageTimestamp, // Store the raw timestamp for sorting
+	// 		};
+	// 	})
+	// 	.filter((chat) => chat.messages.length > 0) // Filter out chats with no messages
+	// 	.sort((a, b) => b.last_message_timestamp - a.last_message_timestamp); // Sort by the timestamp in descending order
 
 	return (
 		<div className="ChatList">
@@ -102,6 +219,8 @@ const ChatList = ({
 									);
 									if (newChat) {
 										onSelectFriend(newChat);
+										activeChat({ chatid: newChat.id });
+										unseenMessage({ chatid: newChat.id });
 									}
 								});
 								setSearchFriend("");
@@ -115,33 +234,55 @@ const ChatList = ({
 							</div>
 						</div>
 				  ))
-				: chats.map((chat) => (
-						<div
-							className={`item ${
-								selectedFriend?.id === chat.id ? "selected" : ""
-							}`}
-							key={chat.user2.id}
-							onClick={() => {
-								onSelectFriend(chat);
-								setSearchFriend("");
-								setFocusOnSearch(false);
-								setListAllFriends(false);
-							}}
-						>
-							<img src={chat.user2.avatar} alt="profile" className="profile" />
-							<div className="text">
-								<span>{chat.user2.username}</span>
-								{/* {!listAllFriends && <p>{chat.message}</p>} */}
+				: sortedChats &&
+				  sortedChats.map((chat) => {
+						const friend_user =
+							user?.id === chat.user2.id ? chat.user1 : chat.user2;
+						if (!friend_user) return null;
+						const lastMessageContent = getLastMessage(chat);
+						const lastMessageTime = getLastMessageTime(chat);
+						const notificate =
+							user?.id === chat.user2.id
+								? chat.nbr_of_unseen_msg_user2
+								: chat.nbr_of_unseen_msg_user1;
+						return (
+							<div
+								className={`item ${
+									selectedFriend?.id === chat.id ? "selected" : ""
+								}`}
+								key={chat.id}
+								onClick={() => {
+									onSelectFriend(chat);
+									activeChat({ chatid: chat.id });
+									unseenMessage({ chatid: chat.id });
+									setSearchFriend("");
+									setFocusOnSearch(false);
+									setListAllFriends(false);
+								}}
+							>
+								<img
+									src={friend_user.avatar}
+									alt="profile"
+									className="profile"
+								/>
+								<div className="text">
+									<span>{friend_user.username}</span>
+									{!listAllFriends && <p>{lastMessageContent || ""}</p>}
+								</div>
+								{!listAllFriends && (
+									<div className="ChatStatus">
+										<div>{lastMessageTime}</div>
+										{notificate && notificate != 0 ? (
+											<div className="notificationMessage">{notificate}</div>
+										) : (
+											<div></div>
+										)}
+										{/* {friend.status} */}
+									</div>
+								)}
 							</div>
-							{chat.messages.length > 0 && (
-								<p>{chat.messages[chat.messages.length - 1].content}</p>
-							)}
-							{/* {!listAllFriends && <div className="ChatStatus">
-								<div>{friend.time}</div>
-								{friend.status}
-							</div>} */}
-						</div>
-				  ))}
+						);
+				  })}
 		</div>
 	);
 };

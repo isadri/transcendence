@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import DataFriends from "../../Chat/components/DataFriends.tsx";
-import { Friend } from "../../Chat/components/types.ts";
 import "./BlockedFriends.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData.tsx";
