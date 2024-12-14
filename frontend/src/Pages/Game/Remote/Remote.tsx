@@ -262,7 +262,7 @@ function GameTable() {
   if (context)
   {
     useEffect(() => {
-      const {socket, setEnemy, enemy, user} = context
+      const {socket, setEnemy, enemy, user, setResult, result} = context
       socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
         
@@ -276,7 +276,9 @@ function GameTable() {
         if (data.event == "GAME_UPDATE")
         {
           if (data.ball){
-            const xyz:[number, number, number] = data.ball
+            let xyz:[number, number, number] = data.ball
+            if (data[user.username] && data[user.username] == 'player2')
+              xyz[2] *= -1 // to reverse the ball for one of them
             setball(xyz)
           }
           if (data[user.username]){
@@ -293,9 +295,15 @@ function GameTable() {
             else
               setpaddle2(x)
           }
+          if (data[enemy.username] && data[user.username])
+          {
+            let s1 = data[data[user.username]+'_score']
+            let s2 = data[data[enemy.username]+'_score']
+            setResult([s1, s2])
+          }
         }
       }
-    }, [ball, paddle1, paddle2])
+    }, [context])
     if (!loading)
       return (
         <>

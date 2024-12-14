@@ -7,7 +7,14 @@ from ..accounts.serializers import UserSerializer
 from channels.layers import get_channel_layer
 channel_layer = get_channel_layer()
 
-TABLE_HEIGHT = 8.65640
+TABLE_Z = 8.65640
+PADDLE_Z = 0.5
+PADDLE_X = 1.5
+BALL_R = 0.12
+SIDE_Z = (8.65640+ 0.5)/2
+GAME_SPEED = 1/60
+PADDLE_SPEED = 0.1
+
 
 class RandomGame(AsyncWebsocketConsumer):
 
@@ -121,8 +128,8 @@ class GameData:
     self.score = {p1.username : 0, p2.username : 0}
     self.players = {p1.username : p1, p2.username : p2}
     self.players_pos = {
-      self.player1 : [0, 0.09, (TABLE_HEIGHT - 1)/ 2],
-      self.player2 : [0, 0.09, -(TABLE_HEIGHT - 1)/ 2]
+      self.player1 : [0, 0.09, (TABLE_Z - 1)/ 2],
+      self.player2 : [0, 0.09, -(TABLE_Z - 1)/ 2]
     }
 
   async def update(self):
@@ -147,12 +154,25 @@ class GameData:
 
   def update_ball(self):
     self.ball[2] += 0.1 * self.direction
+    if self.hitPaddle(self.players_pos[self.player1]) or self.hitPaddle(self.players_pos[self.player2]):
+        self.direction *= -1
+    self.checkScore()
+
+  def checkScore(self):
+    if abs(SIDE_Z - self.ball[2]) <= BALL_R * 2:
+      self.score[self.player1] += 1
+      self.ball = [0, 0.2, 0]
+    if abs(-SIDE_Z - self.ball[2]) <= BALL_R * 2:
+      self.score[self.player2] += 1
+      self.ball = [0, 0.2, 0]
+
+
+  def hitPaddle(self, pos):
     x = self.ball[0]
     z = self.ball[2]
-    if abs(self.players_pos[self.player1][2] - z) <= 0.37 and abs(self.players_pos[self.player1][0] - x) <= 0.75:
-        self.direction *= -1
-    if abs(self.players_pos[self.player2][0] - x) <= 0.75 and abs(self.players_pos[self.player2][2] - z) <= 0.37:
-        self.direction *= -1
+    if abs(pos[2] - z) <= ((PADDLE_Z/2) + BALL_R) and abs(pos[0] - x) <= PADDLE_X/2:
+      return True
+    return False
 
   def getBall(self):
     return self.ball
@@ -164,7 +184,7 @@ class GameData:
   def getPlayerPos(self, username):
     return self.players_pos[username]
   def setPlayerPos(self, username, pos):
-    direct = 0.05 if pos == '+' else -0.05
+    direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
     self.players_pos[username][0] += direct
 
 class RemoteGame(AsyncWebsocketConsumer):
@@ -202,8 +222,8 @@ class RemoteGame(AsyncWebsocketConsumer):
    await self.channel_layer.group_send(
      self.room_name,
      {
-         "type": "player.disconnected",
-         "username": self.user.username,
+        "type": "player.disconnected",
+        "username": self.user.username,
      },
    )
 
@@ -239,7 +259,7 @@ class RemoteGame(AsyncWebsocketConsumer):
     })
     while True:
       await self.game_data.update()
-      await asyncio.sleep(1/60)
+      await asyncio.sleep(GAME_SPEED)
 
 
   def getUsername(self):
