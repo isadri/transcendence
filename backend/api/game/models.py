@@ -41,7 +41,7 @@ class Game(models.Model):
     self.setScore(score)
     self.progress = 'E'
 
-  def setWinner(self, score):
+  def setWinnerByScore(self, score):
     self.setAsEnded(score)
     self.setWinner()
 

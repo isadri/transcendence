@@ -260,7 +260,6 @@ function GameTable() {
   const [paddle2, setpaddle2] = useState<number>(0)
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
-  const navigator = useNavigate()
   if (context)
   {
     useEffect(() => {
@@ -374,7 +373,6 @@ const Play = () => {
         </div>
         {
           error ?
-          
           <div className="winnerPopUp">
             <h2>Abort</h2>
             <span>

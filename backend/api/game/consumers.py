@@ -175,6 +175,8 @@ class GameData:
       return True
     return False
 
+  def getScore(self):
+    return self.score
 
   def hitPaddle(self, pos):
     x = self.ball[0]
@@ -203,18 +205,27 @@ class GameData:
 
   def abort_game(self, username=None):
     self.done = True
+    if username:
+      self.winneer = username
 
 class RemoteGame(AsyncWebsocketConsumer):
 
   connected = {}
   async def connect(self):
+    self.game: Game = None
     self.user = self.scope["user"]
     self.username = self.user.username
     self.game_id = self.scope["url_route"]["kwargs"]['game_id']
     self.room_name = f"game_{self.game_id}"
-    self.game_data = None
+    self.game_data : GameData = None
     await self.accept()
-    self.game = await self.getGame(self.game_id)
+
+    try:
+      self.game = await self.getGame(self.game_id)
+    except ValueError as e:
+      await self.abort(e.args[0])
+      return
+
     if not self.game:
       await self.abort("No game found with this ID")
       return
@@ -237,7 +248,7 @@ class RemoteGame(AsyncWebsocketConsumer):
 
 
   async def abort(self, message):
-    print("aaaaaaaa", self.user, message)
+    print('message  > ' ,message)
     await self.send(text_data=json.dumps({
       'event': 'ABORT',
       'message': message
@@ -251,16 +262,26 @@ class RemoteGame(AsyncWebsocketConsumer):
       self.game_data.setPlayerPos(data["username"], data["direction"])
 
   async def disconnect(self, code):
+    await self.channel_layer.group_send(self.room_name, {
+      'type': 'player_disconnected',
+    })
     self.channel_layer.group_discard(self.room_name, self.channel_name)
-    del self.connected[self.game_id][self.username]
+    try:
+      del self.connected[self.game_id][self.username]
+    except Exception:
+      pass # pass when its not part of the connected yet
 
+
+  @database_sync_to_async
+  def end_game(self, username):
+    if self.game_data :
+      self.game.setAsEnded(self.game_data.score)
 
   @database_sync_to_async
   def getGame(self, game_id):
     try:
-      game = Game.objects.get(pk=game_id)#need protection
-      # if 
-      game.state = 'S'
+      game = Game.objects.get(pk=game_id)
+      game.setAsStarted()
       self.enemy = game.player2 if self.user != game.player2 else game.player1
       return game
     except Game.DoesNotExist:
@@ -292,9 +313,18 @@ class RemoteGame(AsyncWebsocketConsumer):
       await self.game_data.update()
       await asyncio.sleep(GAME_SPEED)
       if len(self.connected[self.game_id]) != 2:
-        self.abort("The game end")
+        await self.end_game()
         break
 
+  @database_sync_to_async
+  def end_game(self):
+    self.game_data.abort_game(self.username)
+    self.game.abortGame(self.username, self.game_data.getScore())
+    
+
+
+  async def player_disconnected(self, event):
+    await self.abort("The enemy disconnected, you won!")
 
   def getUsername(self):
     return self.username
