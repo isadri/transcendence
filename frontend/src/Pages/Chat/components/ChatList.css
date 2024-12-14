@@ -96,3 +96,13 @@
 	position: absolute; /* have problem in position absolute */
 	right: 10%;
 }
+.ChatStatus .notificationMessage {
+	height: 20px;
+	width: 20px;
+	background-color: red;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+}

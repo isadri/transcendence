@@ -1,24 +1,21 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { GetChats } from "./ChatList";
-// import axios from "axios";
-// import { getUser, getendpoint } from "../../../context/getContextData";
-import { ChatMessage, useChatContext } from "./context/ChatUseContext";
+import { GetChats, MessageType, useChatContext } from "./context/ChatUseContext";
+import { getUser } from "../../../context/getContextData";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
-	// setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-	block: boolean;
 }
 
 const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
-	({ block, selectedFriend }, ref) => {
+	({ selectedFriend }, ref) => {
 		const [open, setOpen] = useState(false);
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
 		const [text, setText] = useState("");
-		const { setMessages, sendMessage } = useChatContext()
+		const { block,sendMessage } = useChatContext()
+		const user = getUser()
 
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
@@ -41,50 +38,19 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 
 		const handleSendMessage = async () => {
 			if (selectedFriend && text.trim()) {
-				sendMessage({
-					// message: text,
-					message: text.trim(),
-					sender: selectedFriend.user1.id,
-					receiver: selectedFriend.user2.id,
-				})
-				console.log(text);
-				
-				const newMessage: ChatMessage = {
-					id: Date.now(),
-					chat: selectedFriend.id,
-					sender: selectedFriend.user1.id,
-					receiver: selectedFriend.user2.id,
-					content: text.trim(),
-					timestamp: new Date().toISOString(),
-					file: null,
-					image: null,
-
+				let receiver_id
+				if (user?.id === selectedFriend.user1.id) {
+					receiver_id = selectedFriend.user2.id
+				} else {
+					receiver_id = selectedFriend.user1.id
 				}
-				console.log("newMessages:", newMessage);
-				setMessages((prev) => {
-					console.log("Previous Messages:", prev);
-					return [...prev, newMessage];
-				});
-				// setMessages((prev) => [...prev, newMessage])
+				sendMessage({
+					message: text.trim(),
+					receiver: receiver_id,
+					message_type: MessageType.SendMessage,
+				})
 				setText("");
 				setOpen(false);
-				// try {
-				// 	const response = await axios.post(
-				// 		getendpoint("http", "/api/chat/messages/"),
-				// 		// "http://0.0.0.0:8000/api/chat/messages/",
-				// 		{ chat: chatId, content: newMessage },
-				// 		{
-				// 			withCredentials: true,
-				// 		}
-				// 	);
-				// 	setMessages((prevMessages) => [
-				// 		...(prevMessages || []),
-				// 		response.data,
-				// 	]);
-				// 	setText("");
-				// } catch (err) {
-				// 	console.error("Error sending message:", err);
-				// }
 			}
 		};
 
@@ -99,14 +65,12 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			if (event.key === "Enter") {
 				event.preventDefault();
 				handleSendMessage();
-				// setText("");
-				// setOpen(false);
 			}
 		};
 
 		return (
 			<div className="bottom">
-				{!block ? (
+				{!block?.status ? (
 					<>
 						<div className="emoji" ref={buttonRef}>
 							<i
@@ -122,7 +86,6 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 							<input
 								type="text"
 								placeholder="Type a message..."
-								disabled={block}
 								value={text}
 								onChange={(event) => setText(event.target.value)}
 								onKeyDown={handleKeyDown}
