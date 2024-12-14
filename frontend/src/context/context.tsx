@@ -6,6 +6,17 @@ interface userDataType {
     email : string,
     avatar : string
 }
+interface loginContextData {
+    isLogged:boolean |null,
+    setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
+    user: userDataType | undefined
+    setUser: React.Dispatch<React.SetStateAction<userDataType | undefined>>;
+    createdAlert: string
+    Displayed: number
+    setCreatedAlert:  React.Dispatch<React.SetStateAction<string>>
+    setDisplayed: React.Dispatch<React.SetStateAction<number>>
+ }
+
 
 interface loginContextData {
     isLogged:boolean | null,

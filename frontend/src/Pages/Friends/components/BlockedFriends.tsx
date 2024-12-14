@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./BlockedFriends.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData.tsx";
+import { useNavigate } from "react-router-dom";
 
 interface BlockedFriend {
 	id: number;
@@ -10,6 +11,7 @@ interface BlockedFriend {
 }
 
 const BlockedFriends = () => {
+	const navigate = useNavigate()
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
 
 	useEffect(() => {
@@ -61,7 +63,7 @@ const BlockedFriends = () => {
 				return (
 					<div className="friendProfile BlockedFriend" key={friend.id}>
 						<div className="imageNameFriend">
-							<img src={friend.avatar} alt="" className="friendImage" />
+							<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
 							<span>{friend.username}</span>
 						</div>
 						<button

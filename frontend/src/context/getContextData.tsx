@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { loginContext } from "./../App";
+import { context } from "@react-three/fiber";
 // import axios from "axios";
 
 export const getContext = () => {
@@ -9,6 +10,24 @@ export const getContext = () => {
 export const getUser = () => {
 	return getContext()?.user;
 };
+
+export const setUser = (username: string, email: string,
+	avatar: string) => {
+	const user = getUser();
+	if (user) {
+		user.username = username;
+		user.email = email;
+		user.avatar = avatar;
+	}
+};
+
+// export const setCreatedAlertDel = (createdAlert: string, Displayed: number) =>{
+// 	const account = getContext()
+// 	if (account){
+// 		account.createdAlert = createdAlert;
+// 		account.Displayed = Displayed
+// 	}
+// } 
 
 export const getendpoint = (pro: string, path: string) => {
 	return pro + "://" + `${window.location.hostname}` + ":8000" + path;
