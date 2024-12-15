@@ -199,7 +199,7 @@ const ChatList = ({
 								</div>
 								{!listAllFriends && (
 									<div className="ChatStatus">
-										<div>{lastMessageTime}</div>
+										<div className="lastmessage">{lastMessageTime}</div>
 										{notificate && notificate != 0 ? (
 											<div className="notificationMessage">{notificate}</div>
 										) : (

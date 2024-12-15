@@ -37,6 +37,11 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		}, []);
 
 		const handleSendMessage = async () => {
+			const maxLength = 300; // Set your max length
+			if (text.trim().length > maxLength) {
+				alert(`Message cannot exceed ${maxLength} characters.`);
+				return;
+			}
 			if (selectedFriend && text.trim()) {
 				let receiver_id
 				if (user?.id === selectedFriend.user1.id) {
