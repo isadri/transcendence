@@ -1,7 +1,12 @@
 import json
+from django.db.models.query_utils import Q
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from channels.db import database_sync_to_async
+from django.db import transaction
+
+User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -13,63 +18,238 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        # Verify if the user is part of the chat (either as user1 or user2)
-        # try:
-        #     self.chat = await self.get_chat()
-        #     if not self.is_in_chat():
-        #         await self.close()
-        #         return
-        # except Chat.DoesNotExist:
-        #     await self.close()
-        #     return
-
         # Join the chat room group
         await self.channel_layer.group_add( # Adds the WebSocket connection to a group named chat_<user_id>.
             self.room_group_name,
-            self.channel_name
+            self.channel_name 
         )
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave the chat room group
+        await self.handle_reset_active_chat()
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+    async def handle_reset_active_chat(self):
+        try:
+            self.user.active_chat = -1
+            await database_sync_to_async(self.user.save)()
+        except Exception as e:
+            await self.send(text_data=json.dumps({
+                'error': 'resetting active chat:'
+            }))
 
     async def receive(self, text_data):
         data = json.loads(text_data)
+        message_type = data.get('message_type')
+
+        if not message_type:
+            await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
+            return
+
+        if (message_type == "send_message"):
+            await self.handle_send_message(data)
+
+        elif (message_type == "block_friend"):
+            await self.handle_block_friend(data)
+        elif (message_type == "active_chat"):
+            chat_id = data.get('chat_id')
+            if chat_id == -1:
+                await self.handle_reset_active_chat()
+            else:
+                await self.handle_active_chat(chat_id)
+        elif (message_type == "mark_is_read"):
+            chat_id = data.get('chat_id')
+            await self.handle_mark_is_read(chat_id)
+
+    async def handle_mark_is_read(self, chat_id):
+        try:
+            # Use database_sync_to_async to run the synchronous operation in an async context
+            chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
+
+            # Check if the current user is user1 or user2
+            user1 = await database_sync_to_async(lambda: chat.user1)()
+            if self.user.id == user1.id:
+                chat.nbr_of_unseen_msg_user1 = 0
+            else:
+                chat.nbr_of_unseen_msg_user2 = 0
+            await chat.asave()
+
+            # Send a response back to the client
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'update_unseen_message',
+                    'status': False,
+                    'chat_id': chat.id,
+                    'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                    'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
+                }
+            )
+
+        except Chat.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat does not exist.'
+            }))
+
+    async def update_unseen_message(self, event):
+        state = event.get('status', False)  # Determine if there are unseen messages
+        await self.send(text_data=json.dumps({
+            'type': 'update_unseen_message',
+            'chat_id': event['chat_id'],
+            'nbr_of_unseen_msg_user1': event.get('nbr_of_unseen_msg_user1', 0),
+            'nbr_of_unseen_msg_user2': event.get('nbr_of_unseen_msg_user2', 0),
+            'status': state,
+        }))
+
+    async def handle_active_chat(self, chat_id):
+        try:
+            self.user.active_chat = chat_id
+            await database_sync_to_async(self.user.save)()
+
+        except Chat.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat does not exist.'
+            }))
+
+    async def handle_block_friend(self, data):
+        chat_id = data.get('chat_id')
+        blocker = data.get('blocker')
+        blocked = data.get('blocked')
+        status = data.get('status')
+        try:
+            chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
+
+            user1, user2 = await self.get_users_from_chat(chat)
+
+            if status == True:
+                if (user1.id == blocked):
+                    chat.blocke_state_user1 = "blocked"
+                    chat.blocke_state_user2 = "blocker"
+                else:
+                    chat.blocke_state_user1 = "blocker"
+                    chat.blocke_state_user2 = "blocked"
+            elif status == False:
+                chat.blocke_state_user1 = "none"
+                chat.blocke_state_user2 = "none"
+
+            await chat.asave()
+
+            blocker_room = f"chat_room_of_{blocker}"
+            blocked_room = f"chat_room_of_{blocked}"
+            relation_status = self.is_blocked(chat)
+
+            payload = {
+                'type': 'block_status_update',
+                'chat_id': chat_id,
+                'blocker': blocker,
+                'blocked': blocked,
+                'status': relation_status
+            }
+
+            await self.channel_layer.group_send(blocker_room, payload)
+            await self.channel_layer.group_send(blocked_room, payload)
+
+        except Chat.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat does not exist.'
+            }))
+
+    async def get_users_from_chat(self, chat):
+        # Wrap user access in async-safe method
+        user1 = await database_sync_to_async(lambda: chat.user1)()
+        user2 = await database_sync_to_async(lambda: chat.user2)()
+        return user1, user2
+
+    async def block_status_update(self, event):
+        """
+        Sends block/unblock updates to the client.
+        """
+        await self.send(text_data=json.dumps({
+            'type': 'block_status_update',
+            'chat_id': event['chat_id'],
+            'blocker': event['blocker'],
+            'blocked': event['blocked'],
+            'status': event['status']  # true if blocked, false otherwise
+        }))
+
+
+
+
+        # elif (message_type == "delete_chat") :
+        #     print("-----hellloo")
+        #     if chat.id:
+        #         await self.handle_delete_chat(chat.id)
+
+    # async def handle_delete_chat(self, chat_id):
+    #     # Delete the chat from the database
+    #     try:
+    #         chat = Chat.objects.get(id=chat_id)
+    #         chat.delete()
+    #         # Broadcast to all connected clients
+    #         await self.channel_layer.group_send(
+    #             self.group_name,
+    #             {
+    #                 "type": "delete_chat",
+    #                 "chat_id": chat_id,
+    #             },
+    #         )
+    #     except Chat.DoesNotExist:
+    #         pass
+
+    # async def chat_deleted(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         "type": "delete_chat",
+    #         "chat_id": event["chat_id"]
+    #     }))
+
+    async def handle_send_message(self, data):
         message = data.get('message')
         receiver_id = data.get('receiver')
-
-        # Check if the user is exist
-        receiver = None
         try:
             receiver = await User.objects.aget(id=receiver_id)
         except User.DoesNotExist:
             await self.send(text_data=json.dumps({
                 'error': 'This user does not exist.'
             }))
+            return
 
-        # Get or create the chat instance
-        chat, _ = await Chat.objects.aget_or_create(
-            user1=self.user,
-            user2=receiver
-        )
+        chat = await Chat.objects.filter(
+            Q(user1=self.user, user2=receiver) |
+            Q(user1=receiver, user2=self.user)
+        ).afirst()  # Fetch the first match asynchronously
+
+        if not chat:
+            chat = await Chat.objects.acreate(
+                user1=self.user,
+                user2=receiver
+            )
+
+        if self.is_blocked(chat):
+            await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
+            return
 
         new_message = await Message.objects.acreate(
             chat=chat,
             sender=self.user,
+            receiver=receiver,
             content=message
         )
+
+        await self.update_unseen_messages(chat, receiver)
 
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
                 'message': message,
+                'chat_id': chat.id,
                 'sender_id': self.user.id,
-                'receiver_id': receiver.id
+                'receiver_id': receiver.id,
+                'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             }
         )
 
@@ -79,54 +259,62 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
+                'chat_id': chat.id,
                 'sender_id': self.user.id,
-                'receiver_id': receiver.id
+                'receiver_id': receiver.id,
+                'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             }
         )
+        chat.last_message = message
+        await chat.asave()
+
+    async def update_unseen_messages(self, chat, receiver):
+        if chat.id != receiver.active_chat:
+            user1 = await database_sync_to_async(lambda: chat.user1)()
+            if receiver.id == user1.id:
+                chat.nbr_of_unseen_msg_user1 += 1
+            else:
+                chat.nbr_of_unseen_msg_user2 += 1
+            receiver_room = f"chat_room_of_{receiver.id}"
+            await self.channel_layer.group_send(
+            receiver_room,
+            {
+                'type': 'update_unseen_message',
+                'status': True,
+                'chat_id': chat.id,
+                'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
+                'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
+            })
+            # await self.channel_layer.group_send(
+            # self.room_group_name,
+            # {
+            #     'type': 'update_unseen_message',
+            #     'status': True,
+            # })
+        await chat.asave()
+
+    # async def update_unseen_message(self, chat, receiver):
+    #     if chat.id == receiver.active_chat:
+
 
     async def chat_message(self, event):
         # Send message to websocket
         await self.send(text_data=json.dumps({
+            'type': 'send_message',
             'message': event['message'],
+            'chat_id': event['chat_id'],
             'sender_id': event['sender_id'],
-            'receiver_id': event['receiver_id']
+            'receiver_id': event['receiver_id'],
+            'nbr_of_unseen_msg_user1': event['nbr_of_unseen_msg_user1'],
+            'nbr_of_unseen_msg_user2': event['nbr_of_unseen_msg_user2'],
         }))
 
-
-    #     # Check if the user is still a part of the chat
-    #     if not self.is_in_chat():
-    #         await self.send(text_data=json.dumps({
-    #             'error': 'You are not a participant in this chat.'
-    #         }))
-    #         return
-
-    #     # Save the message to the database
-    #     Message.objects.create(chat=self.chat, sender=self.user, content=message)
-
-    #     # Send the message to the group
-    #     await self.channel_layer.group_send(
-    #         self.room_group_name,
-    #         {
-    #             'type': 'chat_message',
-    #             'message': message,
-    #             'sender_id': self.user.id,
-    #         }
-    #     )
-
-    # async def chat_message(self, event):
-    #     message = event['message']
-    #     sender_id = event['sender_id']
-
-    #     # Send message to WebSocket
-    #     await self.send(text_data=json.dumps({
-    #         'message': message,
-    #         'sender_id': sender_id,
-    #     }))
-
-    # async def get_chat(self):
-    #     """Fetch the chat instance asynchronously."""
-    #     return await Chat.objects.aget(id=self.chat_id)
-
-    # def is_in_chat(self):
-    #     """Check if the user is either user1 or user2 in the chat."""
-    #     return self.chat.user1 == self.user or self.chat.user2 == self.user
+    def is_blocked(self, chat):
+        """
+        Checks if the current user or the other user is blocked.
+        """
+        return (
+            chat.blocke_state_user1 == 'blocked' or 
+            chat.blocke_state_user2 == 'blocked'
+        )

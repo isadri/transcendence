@@ -11,7 +11,8 @@
   backdrop-filter: blur(5px);
 }
 
-.GameModePopUpBlur i {
+/* changed by naima (to avoid class name conflect)*/
+.GameModePopUpBox i { 
   position: absolute;
   right: -2%;
   top: 1%;

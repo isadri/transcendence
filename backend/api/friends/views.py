@@ -9,6 +9,7 @@ from django.db.models import Q
 
 from .models import FriendList, FriendRequest
 from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -81,6 +82,7 @@ class FriendRequestDeclineView(APIView):
         friend_request.delete()
         return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
+
 class FriendRequestCancelView(APIView):
     """
     This view is used to cancel friend request
@@ -95,6 +97,7 @@ class FriendRequestCancelView(APIView):
             status=status.HTTP_404_NOT_FOUND)
         friend_request.delete()
         return Response({'message': 'Friend request cancel.'}, status=status.HTTP_200_OK)
+
 
 class FriendRequestBlockView(APIView):
     """
@@ -123,6 +126,7 @@ class FriendRequestBlockView(APIView):
             return Response({'error': f'Failed to block the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class FriendRequestUnblockView(APIView):
     """
     This view is used to unblock a friend request.
@@ -150,6 +154,7 @@ class FriendRequestUnblockView(APIView):
             return Response({'error': f'Failed to unblock the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class PendingFriendRequestsView(generics.ListAPIView):
     """
     View to list all pending friend requests.
@@ -171,7 +176,8 @@ class AcceptedFriendRequestsView(generics.ListAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
 
-class BlockedFriendRequestsView(generics.ListAPIView):
+
+class BlockedFriendsRequestsView(generics.ListAPIView):
     """
     View to list all blocked friend requests.
     """
@@ -180,9 +186,45 @@ class BlockedFriendRequestsView(generics.ListAPIView):
 
     def get_queryset(self):
         return FriendRequest.objects.filter(
-            Q(receiver=self.request.user) | Q(sender=self.request.user),
-            status="blocked"
+            # Q(receiver=self.request.user) | Q(sender=self.request.user),
+            status="blocked",
+            blocked_by=self.request.user
         )
+
+
+class BlockedFriendRequestsView(APIView):
+    """
+    This view checks if the given user is blocked by the current user
+    or has blocked the current user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            # Ensure the specified user exists
+            try:
+                target_user = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Check blocked status
+            blocked_request = FriendRequest.objects.filter(
+                Q(sender=request.user, receiver=target_user, status='blocked') |  # User blocked target
+                Q(sender=target_user, receiver=request.user, status='blocked')   # Target blocked user
+            ).first()
+
+            if not blocked_request:
+                return Response({'blocked': False}, status=status.HTTP_200_OK)
+
+            return Response({
+                'status': True,
+                'blocked': pk,
+                'blocker': blocked_request.blocked_by.id
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Failed to check blocked status: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class FriendListView(generics.ListAPIView):
@@ -222,3 +264,50 @@ class UserListView(APIView):
         # Serialize and return the data
         serializer = FriendSerializer(non_friends, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FriendshipStatusView(APIView):
+    """
+    View to check the friendship status between the authenticated user and another user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk: int):
+        """
+        Return the status between the authenticated user and the user with the given ID (pk).
+        """
+        try:
+            friend_request = FriendRequest.objects.filter(
+                (Q(sender=request.user, receiver_id=pk) | Q(sender_id=pk, receiver=request.user))
+            ).first()
+
+            if not friend_request:
+                return Response({'status': 'no_request'}, status=status.HTTP_200_OK)
+
+            return Response({'status': friend_request.status}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Error retrieving friendship status: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MutualFriendsView(generics.ListAPIView):
+    """
+    View to get mutual friends between the authenticated user and a specific user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username):
+        authenticated_user = request.user
+        specific_user = get_object_or_404(User, username=username)
+
+        try:
+            authenticated_user_friends = FriendList.objects.get(user=authenticated_user).friends.all()
+            specific_user_friends = FriendList.objects.get(user=specific_user).friends.all()
+
+            mutual_friends = authenticated_user_friends.filter(id__in=specific_user_friends)
+            serializer = FriendSerializer(mutual_friends, many=True)
+
+            return Response(serializer.data, status=200)
+        except FriendList.DoesNotExist:
+            return Response([], status=200)

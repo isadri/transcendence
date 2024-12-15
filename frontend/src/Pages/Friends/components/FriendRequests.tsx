@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./FriendRequests.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
+import { useNavigate } from "react-router-dom";
 
 interface FriendRequests {
 	id: number;
@@ -10,6 +11,7 @@ interface FriendRequests {
 }
 
 const FriendRequests = () => {
+	const navigate = useNavigate()
 	const [friendRequests, setFriendRequests] = useState<FriendRequests[]>([]);
 
 	useEffect(() => {
@@ -71,7 +73,7 @@ const FriendRequests = () => {
 				return (
 					<div className="friendProfile friendRequests" key={friend.id}>
 						<div className="imageNameFriend">
-							<img src={friend.avatar} alt="" className="friendImage" />
+							<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
 							<span>{friend.username}</span>
 						</div>
 						<div className="buttonFriend">

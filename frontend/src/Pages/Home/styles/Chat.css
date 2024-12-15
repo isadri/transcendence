@@ -1,5 +1,5 @@
 .Home-ChatRev{
-    width: 4%;
+    width: 80px;
     display: flex;
     text-align: center;
     border-radius: 20px;
@@ -34,19 +34,23 @@
 
 .Home-friends-item{
     cursor: pointer;
+
 }
 
-.Home-friends-item:not(:nth-child(1)) {
+.Home-friends-item {
     margin-top: 12.5px;
     
 }
-.Home-ChatRev .Home-friends img {
-    width: 60%;
+.Home-ChatRev .Home-friends-item img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
 }
+
 
 @media only screen and (max-width: 1073px){
     .Home-ChatRev{
         max-height: 55vh;
-        width: 10%;
+        width: 80px;
     }
 }

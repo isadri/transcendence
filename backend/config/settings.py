@@ -23,6 +23,22 @@ SITE_ID = 2
 
 INSTALLED_APPS = [
     #'daphne',
+    'api.game',
+    'api.chat',
+	'api.friends',
+	'api.accounts',
+	'api.notifications',
+
+    #'daphne',
+    'channels',
+    'corsheaders',
+
+	'allauth',
+    'oauth2_provider',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,22 +49,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
-
-	'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-
 	'rest_framework_simplejwt.token_blacklist',
-
-	'api.accounts',
-	'api.friends',
-
-    'oauth2_provider',
-
-    'api.chat',
-    'channels',
 ]
 
 #SOCIALACCOUNT_PROVIDERS = {
@@ -110,19 +111,11 @@ DATABASES = {
     }
 }
 
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 APPEND_SLASH = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5000",
-    "http://e2r10p14:5000",
-    "http://0.0.0.0:5000",
-    "http://127.0.0.1:5000",
-    "http://127.0.0.1:8000",
-]
-
-
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_PRIVATE_NETWORK = True
 
@@ -204,6 +197,14 @@ EMAIL_PORT = '587'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+#Intra 42
+INTRA_ID = os.getenv('INTRA_ID')
+INTRA_REDIRECT_URI = os.getenv('INTRA_REDIRECT_URI')
+
+#Google
+GOOGLE_ID = os.getenv('GOOGLE_ID')
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
 
 ASGI_APPLICATION = "config.asgi.application"
 

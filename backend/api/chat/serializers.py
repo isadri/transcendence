@@ -13,15 +13,15 @@ class MessageSerializer(serializers.ModelSerializer):
     # sender = UserSerializer()
     class Meta:
         model = Message
-        fields = ['id', 'chat', 'sender', 'receiver', 'content', 'timestamp', 'file', 'image']
+        fields = ['id', 'chat', 'sender', 'receiver', 'content', 'timestamp']
         read_only_fields = ['sender'] 
 
 class ChatSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True, read_only=True)
-    user2 = UserSerializer() ######### add this after end of chat modification #########
-    # user1 = UserSerializer() ######### add this after end of chat modification #########
+    user2 = UserSerializer()
+    user1 = UserSerializer()
 
     class Meta:
         model = Chat
-        fields = ['id', 'user1', 'user2', 'created_at', 'last_message', 'messages']
+        fields = ['id', 'user1', 'user2', 'created_at', 'last_message', 'messages', 'nbr_of_unseen_msg_user1', 'nbr_of_unseen_msg_user2']
         read_only_fields = ['user1', 'last_message'] 

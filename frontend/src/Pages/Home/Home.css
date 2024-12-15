@@ -1,89 +1,87 @@
 .Home-homePage {
-    width: 100%;
-    height: 96vh;
-    position: relative;
-    overflow: auto;
-    -ms-overflow-style: none;  /* Hide scrollbars in IE and Edge */
-    scrollbar-width: none;     /* Hide scrollbars in Firefox */
+	width: 100%;
+	height: 96vh;
+	position: relative;
+	overflow: auto;
+	-ms-overflow-style: none; /* Hide scrollbars in IE and Edge */
+	scrollbar-width: none; /* Hide scrollbars in Firefox */
 }
 
 .Home-homePage::-webkit-scrollbar {
-    display: none;  
+	display: none;
 }
 
 .Home-searchAndIcons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .Home-welcome {
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    width: 100%;
-    margin-top: 25px;
+	display: flex;
+	flex-direction: row;
+	position: relative;
+	width: 100%;
+	margin-top: 25px;
 }
 
-.Home-userInfo{
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    margin-top: 2%;
-    width: 100%;
+.Home-userInfo {
+	display: flex;
+	justify-content: space-between;
+	flex-direction: row;
+	margin-top: 2%;
+	width: 100%;
 }
 
-.Home-game{
-    display: flex;
-    flex-direction: column;
-    width: 90%;
+.Home-game {
+	display: flex;
+	flex-direction: column;
+	width: 90%;
 }
 
-
-.Home-gameStatis{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+.Home-gameStatis {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
-.Home-modeChat .Home-ChatRev{
-    display: none;
-}
-
-@media only screen and (max-width: 1073px){
-
-    .Home-modeChat .Home-ChatRev{
-        display: flex;
-    }
-    .Home-ChatRev{
-        display: none;
-    }
-    .Home-modeChat{
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-    }
-    .Home-gameStatis{
-        display: flex;
-        flex-direction: column;
-    }
-    .Home-game{
-        width: 100%;
-    }
+.Home-modeChat .Home-ChatRev {
+	display: none;
 }
 
-@media only screen and (max-width: 750px){
-    .Home-welcome {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+@media only screen and (max-width: 1073px) {
+	.Home-modeChat .Home-ChatRev {
+		display: flex;
+	}
+	.Home-ChatRev {
+		display: none;
+	}
+	.Home-modeChat {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+	}
+	.Home-gameStatis {
+		display: flex;
+		flex-direction: column;
+	}
+	.Home-game {
+		width: 100%;
+	}
 }
 
-@media only screen and (max-width: 600px){
-    .Home-modeChat .Home-ChatRev{
-        display: none;
-    }
+@media only screen and (max-width: 750px) {
+	.Home-welcome {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	.Home-modeChat .Home-ChatRev {
+		display: none;
+	}
 }
 
 /* @media only screen and (min-height: 1030px){

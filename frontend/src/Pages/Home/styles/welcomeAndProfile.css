@@ -14,7 +14,7 @@
     padding-right: 97px;
     font-size: 15px;
     font-weight: 100;
-    line-height: 1.Home-5;
+    line-height: 1.5;
 }
 
 .Home-content h3 {
@@ -97,28 +97,35 @@
 }
 
 .Home-ProfImg{
-     display: flex;
+    display: flex;
     flex-direction: row;
     align-items: center;
     margin-left: 14px;
-    width: 90%;
+    margin-top: 14px;
+    width: 100%;
+}
+
+.Home-ProfImg .img{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .Home-ProfImg img{
-    border-radius: 50%;
-    position: relative;
-    top: 12px;
-    width: 58px;
+    width: 100%;
+    object-fit: cover;
 }
 
 .Home-ProfImg a span{
     position: relative;
-    top: 12px;
+    left: 15px;
     cursor: pointer;
     font-family: var(--mono);
     color: white;
     font-size: 14px;
-    margin-left: 19%;
+
+    width: 80%;
 }
 
 .Home-user{

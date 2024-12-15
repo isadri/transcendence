@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/friends/', include('api.friends.urls')),
     path('', views.HomeView.as_view()),
     path('api/chat/', include('api.chat.urls')),
+    path('api/notifications/', include('api.notifications.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

@@ -2,11 +2,10 @@
 import './Authenthication.css'
 import intra from './Images/intra.svg'
 import Google from './Images/Google.svg'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate} from 'react-router-dom'
 import { useMediaQuery } from "@uidotdev/usehooks";
 import axios from 'axios'
-// import {loginContext} from './../../App'
 import { getContext, getendpoint } from '../../context/getContextData'
 
 
@@ -18,6 +17,19 @@ interface errorDataTypes{
 }
 
 function Authentication() {
+  const [url, setUrl] = useState("")
+  const [urlGoogle, setUrlGoogle] = useState("")
+  useEffect(() => {
+    axios.get(getendpoint("http", "/api/accounts/GetIntraLink/"))
+      .then(response => {
+          setUrl(response.data)
+        })
+    axios.get(getendpoint("http", "/api/accounts/GetGoogleLink/"))
+        .then(response => {
+            setUrlGoogle(response.data)
+        })
+  }, [url, urlGoogle])
+  // console.log("---->", url)
   const authContext = getContext()
   const navigate = useNavigate();
   const [username, setUsername] = useState('')
@@ -39,7 +51,7 @@ function Authentication() {
       username,
       password
   }
-  // const hostname = window.location.hostname
+
   const url_login = getendpoint("http", '/api/accounts/login/')
   
   const data_reg = {
@@ -48,28 +60,32 @@ function Authentication() {
     email
   }
   const url_reg = getendpoint("http", '/api/accounts/register/')
-  
-  const handelIntraLogin = (e: any) => {
-    axios.get('http://localhost:8000/api/accounts/login/intra/')
-      .then(() =>{
-        // console.log("saccess")
-      })
-      .catch(() => {
-        // console.log("failer")
-      })
-  }
-  const handelgGoogleLogin = (e: any) => {
-    axios.get(getendpoint("http", '/api/accounts/login/google/'))
-      .then(() =>{
-        // console.log("saccess")
-      })
-      .catch(() => {
-        // console.log("failer")
-      })
-  }
+//<<<<<<< dashboard
+//
+// =======
+//   
+//   const handelIntraLogin = (e: any) => {
+//     axios.get(getendpoint('http', '/api/accounts/login/intra/'))
+//       .then(() =>{
+//         // console.log("saccess")
+//       })
+//       .catch(() => {
+//         // console.log("failer")
+//       })
+//   }
+//   const handelgGoogleLogin = (e: any) => {
+//     axios.get(getendpoint("http", '/api/accounts/login/google/'))
+//       .then(() =>{
+//         // console.log("saccess")
+//       })
+//       .catch(() => {
+//         // console.log("failer")
+//       })
+//   }
+// >>>>>>> main
   const GetUserInfo = () =>{
-    axios.get(getendpoint("http", '/'),  {withCredentials:true})
-    .then((response) => {
+    axios.get(getendpoint('http', '/'),  {withCredentials:true})
+    .then((response:any) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
     })
@@ -78,6 +94,16 @@ function Authentication() {
       authContext?.setUser(undefined)
     })
   }
+
+  // const handelgGoogleLogin = () => {
+  //   axios.get(getendpoint("http", '/api/accounts/login/google/'))
+  //     .then(() =>{
+  //       console.log("saccess")
+  //     })
+  //     .catch(() => {
+  //       console.log("failer")
+  //     })
+  // }
   const handelSubmit = (e: any, str: string) => {
     if (str === "signin" || (str === "signup" && confirmPassword === password))
     {
@@ -88,15 +114,21 @@ function Authentication() {
             .then(() => {
                 !val ? setVal(true) :
                 (
-                  navigate('/'),
                   authContext?.setIsLogged(true),
+                  navigate('/'),
                   GetUserInfo()
                 );
                 setUsername('')
                 setEmail('')
                 setPassword('')
+                SetErrors({
+                username: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+              });
             })
-            .catch((error) => {
+            .catch((error:any) => {
               setError(true)
               if (error.response && error.response.data){
                 const list = []
@@ -180,7 +212,7 @@ function Authentication() {
       {
         SetErrors(prevState => ({
           ...prevState,
-          confirmPassword:"password do not match!!"}))
+          confirmPassword:"Password do not match!!"}))
         }
       else{
         SetErrors(prevState => ({
@@ -203,6 +235,7 @@ function Authentication() {
         zIndex: 5
       }
     ):{transform: "translateX(-100%)"};
+
     return (
     <>
       <div className="SingIn" style={{...(!val ? { transform: "translateX(200%)", opacity: 0 } : {}),
@@ -233,13 +266,15 @@ function Authentication() {
           </div>
           <div className='DirectConx'>
             <div className='GoogleConx'>
-              <div onClick={handelgGoogleLogin}>
-                <img src={Google} alt="" />
-              </div>
+              <Link to={urlGoogle}>
+                <img src={Google} alt="google"/>
+              </Link>
             </div>
             <div className='IntraConx'>
-              <div onClick={handelIntraLogin}>
-                <img src={intra} alt="" />
+              <div >
+                <Link to={url}>
+                  <img src={intra} alt="intra"/>
+                </Link>
               </div>
             </div>
           </div>
@@ -281,14 +316,16 @@ function Authentication() {
         </div>
         <div className='DirectConx'>
           <div className='GoogleConx'>
-            <button>
-              <img src={Google} alt="" />
-            </button>
+            <Link to={urlGoogle}>
+              <img src={Google} alt="google"/>
+            </Link>
           </div>
           <div className='IntraConx'>
-            <div>
-              <img src={intra} alt="" />
-            </div>
+              <div >
+                <Link to={url}>
+                  <img src={intra} alt="intra"/>
+                </Link>
+              </div>
           </div>
         </div>
       </div>

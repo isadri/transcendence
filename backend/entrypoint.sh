@@ -6,7 +6,7 @@ if [ ! -d /code/static ]; then
 fi;
 
 echo "Running database migrations"
-python manage.py makemigrations --noinput accounts chat friends
+python manage.py makemigrations --noinput accounts chat friends game #notifications
 python manage.py migrate
 
 if [ -z "$DJANGO_SUPERUSER_USERNAME" ]; then

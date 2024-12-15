@@ -5,12 +5,20 @@ import Profile from '../Pages/Profile/Profile';
 import Game from '../Pages/Game/Game';
 import Setting from '../Pages/Setting/Setting';
 
-import BackGround from '../components/background/BackGround'
+// import BackGround from '../components/background/BackGround'
 import SideNavbar from '../components/sideNavbar/SideNavbar';
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
-import NoPage from "../Pages/NoPage/NoPage";
+// import NoPage from "../Pages/NoPage/NoPage";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
+// import Tictactoe from '../Pages/TicTacToe/Tictactoe';
+// import { Children } from 'react';
+import SideNavbar from '../components/sideNavbar/SideNavbar';
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import Friends from '../Pages/Friends/Friends';
+import Play from '../Pages/Game/Play/Play';
+import WarmUp from '../Pages/Game/WarmUp/WarmUp';
+import Remote from '../Pages/Game/Remote/Remote';
 
 
 // isLogged  routing table and layout
@@ -29,7 +37,16 @@ const mainRoutingTable = [
   },
   {
     path: "/profile",
-    element: <Profile />
+    children: [
+    {
+      path: "",
+      element: <Profile />
+    },
+    {
+      path: ":username",
+      element: <Profile />
+    }
+]
   },
   {
     path: "/friends",
@@ -43,12 +60,16 @@ const mainRoutingTable = [
         element: <Game />,
       },
       {
-        path: "/game/play",
+        path: "/game/local",
         element: <Play />,
       },
       {
-        path: "/game/1v1/:gameId",
-        element: <Friends />,
+        path: "/game/remote/:id",
+        element: <Remote />,
+      },
+      {
+        path: "/game/warmup/",
+        element: <WarmUp />,
       },
     ]
   },
@@ -56,6 +77,7 @@ const mainRoutingTable = [
     path: "/setting",
     element: <Setting />
   },
+
 ]
 
 function MainLayout() {

@@ -10,6 +10,8 @@
 	scrollbar-width: thin;
 	scrollbar-color: #888 transparent;
 	position: relative;
+	-ms-overflow-style: none;  /* Hide scrollbars in IE and Edge */
+    scrollbar-width: none;     /* Hide scrollbars in Firefox */
 }
 
 /* check if this work or not */
@@ -95,4 +97,14 @@
 	gap: 5px;
 	position: absolute; /* have problem in position absolute */
 	right: 10%;
+}
+.ChatStatus .notificationMessage {
+	height: 20px;
+	width: 20px;
+	background-color: red;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
 }

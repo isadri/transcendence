@@ -4,12 +4,16 @@ upd:
 	@docker-compose up -d
 
 build:
-	@docker-compose up --build -d
+	@docker-compose up --build
+buildd:
+	@docker-compose up -d --build
 
 down:
 	@docker-compose down
 
 re: down build
+
+re-d: down buildd
 
 exec:
 	@docker-compose exec -it back-end $(CMD)

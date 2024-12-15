@@ -155,7 +155,7 @@ dmypy.json
 cython_debug/
 
 app.log
-media/
+media/avatars
 google-api.json
 migrations/
 development.py

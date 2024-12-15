@@ -248,7 +248,7 @@ function GameTable() {
       <Table />
       <Paddle position={[0, 0.09, +(8.65640 -1)/ 2]} mine/>
       <Paddle position={[0, 0.09, -(8.65640 -1)/ 2]}/>
-      <primitive object={new AxesHelper(5)} />
+      {/* <primitive object={new AxesHelper(5)} /> */}
       <SideWall position={[(6.1469 + 0.5)/2, 0, 0]}/>
       <SideWall position={[-(6.1469 + 0.5)/2, 0, 0]}/>
       <GoalWall position={[0, 0, (8.65640+ 0.5)/2]}/>

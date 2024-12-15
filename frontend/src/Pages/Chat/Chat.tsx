@@ -2,24 +2,23 @@ import { useState, useEffect } from "react";
 import "./Chat.css";
 import ChatBody from "./components/ChatBody";
 import ListChat from "./components/List";
-import moment from "moment";
+// import moment from "moment";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import axios from "axios";
-import { GetChats } from "./components/ChatList";
 import { getendpoint } from "../../context/getContextData";
-import { ChatProvider } from "./components/context/ChatUseContext";
-
-export interface GetFriends {
-	id: number;
-	username: string;
-	avatar: string;
-}
+import {
+	ChatProvider,
+	GetFriends,
+	GetChats,
+	useChatContext,
+} from "./components/context/ChatUseContext";
 
 const Chat = () => {
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
+	const { activeChat } = useChatContext()
 
 	useEffect(() => {
 		const fetchFriend = async () => {
@@ -41,6 +40,7 @@ const Chat = () => {
 
 	const handleSelectFriend = (friend: GetChats) => {
 		setSelectedFriend(friend);
+		activeChat({chatid: friend.id})
 	};
 
 	return (

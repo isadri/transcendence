@@ -2,9 +2,9 @@ import './landing.css'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useGLTF } from '@react-three/drei'
 import { Group, PerspectiveCamera, WebGLRenderer } from 'three';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import Alert from '../../components/Alert/Alert';
 
 // TODO: change the color of floating
 const modelUrl = new URL('../../assets/glb/sceen_without_balls.glb', import.meta.url).href;
@@ -78,28 +78,31 @@ function LandingSceen() {
   )
 }
 
-
 function Landing() {
-  return (
-    <>
-      <div className='landing'>
-        <div className='landing3d'>
-          <Canvas camera={{ position: [0, 3, 7] }}>
-            <LandingSceen />
-          </Canvas>
+    return (
+      <>
+        <Alert primaryColor='#00ff115a' secondaryColor='#90f18b'>
+          <i className="fa-solid fa-circle-check"></i>
+        </Alert>
+        <div className='landing'>
+          <div className='landing3d'>
+            <Canvas camera={{ position: [0, 3, 7] }}>
+              <LandingSceen />
+            </Canvas>
+          </div>
+          {/* <div className='landingCon'>
+            <h1>welcome to our game </h1>
+            <div className='paragraph'>
+              <p>Are you ready to show off your ping pong skills? Play now and experience the ultimate table tennis game with realistic physics, thrilling gameplay, and endless competition!</p>
+            </div>
+            <div className="buttons">
+              <button className="btn" id="loginBtn">Join Us</button>
+            </div>
+          </div> */}
         </div>
-        {/* <div className='landingCon'>
-          <h1>welcome to our game </h1>
-          <div className='paragraph'>
-            <p>Are you ready to show off your ping pong skills? Play now and experience the ultimate table tennis game with realistic physics, thrilling gameplay, and endless competition!</p>
-          </div>
-          <div className="buttons">
-            <button className="btn" id="loginBtn">Join Us</button>
-          </div>
-        </div> */}
-      </div>
-    </>
-  )
+      </>
+    )
+  // }
 }
 
 export default Landing
