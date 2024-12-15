@@ -87,15 +87,6 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 							</div>
 						</div>
 						<div className="messageContent">
-							{/* <i className="fa-solid fa-paperclip partage-icon"></i> */}
-							{/* <input
-								type="text"
-								placeholder="Type a message..."
-								value={text}
-								onChange={(event) => setText(event.target.value)}
-								onKeyDown={handleKeyDown}
-								ref={ref}
-							/> */}
 							<textarea
 								placeholder="Type a message..."
 								value={text}
