@@ -47,7 +47,6 @@ class RandomGame(AsyncWebsocketConsumer):
     data = json.loads(text_data)
     if data["event"] == "READY":
       self.qeuee[self.user.username] = self
-      print("qeuee", self.qeuee)
       if len(self.qeuee) >= 2:
         iterator = iter(iter(self.qeuee.items()))
         key1 , player1 = next(iterator)
@@ -163,15 +162,16 @@ class GameData:
 
   def checkScore(self):
     if abs(SIDE_Z - self.ball[2]) <= BALL_R * 2:
-      self.score[self.player1] += 1
+      self.score[self.player2] += 1
       self.ball = [0, 0.2, 0]
     if abs(-SIDE_Z - self.ball[2]) <= BALL_R * 2:
-      self.score[self.player2] += 1
+      self.score[self.player1] += 1
       self.ball = [0, 0.2, 0]
 
   def checkWinner(self):
     if self.score[self.player1] == 7 or self.score[self.player2] == 7:
       self.done = True
+      self.winneer = self.player1 if self.score[self.player1] == 7 else self.player2
       return True
     return False
 
@@ -187,6 +187,7 @@ class GameData:
 
   def getBall(self):
     return self.ball
+
   def setBall(self, pos):
     self.ball = pos
 
@@ -207,6 +208,9 @@ class GameData:
     self.done = True
     if username:
       self.winneer = username
+
+  def getWinner(self):
+    return self.winneer
 
 class RemoteGame(AsyncWebsocketConsumer):
 
@@ -246,9 +250,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       return True
     return False
 
-
   async def abort(self, message):
-    print('message  > ' ,message)
     await self.send(text_data=json.dumps({
       'event': 'ABORT',
       'message': message
@@ -257,7 +259,6 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   async def receive(self, text_data):
     data = json.loads(text_data)
-    print(data)
     if  data["event"] == 'MOVE':
       self.game_data.setPlayerPos(data["username"], data["direction"])
 
@@ -273,15 +274,14 @@ class RemoteGame(AsyncWebsocketConsumer):
 
 
   @database_sync_to_async
-  def end_game(self, username):
+  def end_game(self):
     if self.game_data :
-      self.game.setAsEnded(self.game_data.score)
+      self.game.setWinnerByScore(self.game_data.score)
 
   @database_sync_to_async
   def getGame(self, game_id):
     try:
       game = Game.objects.get(pk=game_id)
-      game.setAsStarted()
       self.enemy = game.player2 if self.user != game.player2 else game.player1
       return game
     except Game.DoesNotExist:
@@ -296,12 +296,22 @@ class RemoteGame(AsyncWebsocketConsumer):
       "enemy": UserSerializer(self.enemy).data
     }))
 
+
+  @database_sync_to_async
+  def setGameAsStarted(self):
+    self.game.setAsStarted()
+
   async def game_loop(self):
     iterator = iter(iter(self.connected[self.game_id].items()))
     _ , player1 = next(iterator)
     _ , player2 = next(iterator)
     player1.task = self.task
     player2.task = self.task
+    try:
+      await self.setGameAsStarted()
+    except Exception as e:
+      await self.abort(e.args[0])
+      return
     if not player1.game_data and not player2.game_data:
       player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
     player2.game_data = player1.game_data
@@ -309,15 +319,31 @@ class RemoteGame(AsyncWebsocketConsumer):
       'type': 'game.start',
       'event': 'START'
     })
-    while not self.game_data.isDone():
+    while True:
       await self.game_data.update()
       await asyncio.sleep(GAME_SPEED)
       if len(self.connected[self.game_id]) != 2:
-        await self.end_game()
+        await self.abort_game()
+        return
+      if self.game_data.isDone():
         break
+    await self.end_game()
+    await self.channel_layer.group_send(self.room_name, {
+      'type': 'got_winner',
+      'winner': self.game_data.getWinner()
+    })
+    print(self.user, self.game_data.getWinner())
+
+  async def got_winner(self, event):
+    # if self.game_data.isDone():
+    print(event)
+    await self.send(json.dumps({
+      "event": "WINNER",
+      "winner": event['winner']
+    }))
 
   @database_sync_to_async
-  def end_game(self):
+  def abort_game(self):
     self.game_data.abort_game(self.username)
     self.game.abortGame(self.username, self.game_data.getScore())
     

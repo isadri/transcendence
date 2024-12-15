@@ -30,20 +30,24 @@ class Game(models.Model):
     if self.progress != 'P':
       raise ValueError("Cannot start the game unless it's is pending.")
     self.progress = 'S'
+    self.save()
 
   def setScore(self, score):
     self.p1_score = score[self.player1.username]
     self.p2_score = score[self.player2.username]
+    self.save()
 
   def setAsEnded(self, score):
     if self.progress != 'S':
       raise ValueError("Cannot end the game unless it's has started.")
     self.setScore(score)
     self.progress = 'E'
+    self.save()
 
   def setWinnerByScore(self, score):
     self.setAsEnded(score)
     self.setWinner()
+    self.save()
 
   def setWinner(self):
     if self.progress != 'E':
@@ -57,3 +61,4 @@ class Game(models.Model):
   def abortGame(self, winner, score):
     self.winner = self.player1 if self.player1.username == winner else self.player2
     self.setScore(score)
+    self.save()
