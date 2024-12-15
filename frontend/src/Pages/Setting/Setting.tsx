@@ -4,6 +4,7 @@ import ava from "./images/default.jpeg"
 import { useEffect, useState } from "react";
 import { getContext, getUser, getendpoint } from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
+import { verify } from "crypto";
 
 interface Data {
   username: string | undefined;
@@ -22,6 +23,9 @@ const Setting = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [showOtpAlert, SetshowOtpAlert] = useState(false)
   const [createdAlert, setcreatedAlert] = useState<string>("")
+  const [otpcode, setOtpCode] = useState('')
+  const [isOtpActive, setIsOtpActive] = useState(false)
+  const [Verified, setVerified] = useState(0)
 
   const [confirm, SetConfirm] = useState(1)
   const [errors, SetErrors] = useState<Data>({
@@ -68,6 +72,7 @@ const Setting = () => {
     })
   }
 
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     SetDataUpdated({ ...dataUpdated, [name]: value });
@@ -165,16 +170,60 @@ const Setting = () => {
   };
 
   const sendOtpRequest = () => {
-      axios.post(getendpoint())
+    axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),{}, {withCredentials: true})
+    .then(response => {
+      // setOtpCodeVerify(response.data.otp)
+      console.log(response.data.message)
+    })
   };
+  
+  const handelVerifyCode = () => {
+    axios.post(getendpoint("http", "/api/accounts/checkValidOtp/"), {key : otpcode}, {withCredentials: true})
+      .then(response => {
+        setVerified(2)
+        console.log(response.data.message)
+      })
+      .catch(error => {
+        setVerified(1)
+        console.log(error.response.error)
+      })
+    // console.log("code send on email => ", otpcodeVerify)
+    // console.log("code entred by user => ", otpcode)
+      // if (otpcodeVerify === otpcode)
+      // else
+      //   setVerified(1)
+  }
+  
+  const handelActiveOTP = () => {
+    const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
+    checkbox.checked = true;
+    SetshowOtpAlert(false)
+    setVerified(0)
+  }
 
   useEffect(() => {
+    axios.get(getendpoint("http", "/api/accounts/SendOTPView/"), {withCredentials: true})
+    .then((response) => {
+      console.log("is otp active => ", response.data)
+      if (response.data === true)
+      {
+        const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
+        checkbox.checked = true;
+        setIsOtpActive(true)
+      }
+      else{
+        const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
+        checkbox.checked = false;
+        setIsOtpActive(false)
+      }
+    })
     if (showAlert) {
       setTimeout(() => {
         SetConfirm(1);
       }, 900);
     }
-  }, [showAlert]);
+  }, [showAlert, Verified]);
+  
 
   return (
     <>
@@ -339,22 +388,50 @@ const Setting = () => {
           {
             showOtpAlert && 
             <div className="GameModePopUpBlur">
-              <div className="alertDeleteUser alertOTP">
-                <div className="contentOtp">
-                  <div className="iconEmail">
-                  <i className="fa-solid fa-envelope-open-text"></i>
-                  <span></span>
-                  </div>
-                  <div className="content-text">
-                    <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
-                    <span>A verification code has been sent to your email. Please check your inbox.</span>
-                    <input type="text" placeholder="Enter Code"/>
-                  </div>
-                  <div className="Codefiled">
-                    <button>Verify</button>
+              {
+                Verified === 0 ?
+                <div className="alertDeleteUser alertOTP">
+                  <div className="contentOtp">
+                    <div className="iconEmail">
+                    <i className="fa-solid fa-envelope-open-text"></i>
+                    <span></span>
+                    </div>
+                    <div className="content-text">
+                      <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
+                      <span>A verification code has been sent to your email. Please check your inbox.</span>
+                      <input type="text" placeholder="Enter Code" value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
+                    </div>
+                    <div className="Codefiled">
+                      <button type="submit" onClick={handelVerifyCode}>Verify</button>
+                    </div>
                   </div>
                 </div>
-              </div>
+               : ( Verified === 1 ? (
+                <div className="alertDeleteUser alertOTP">
+                  <div className="contentvalidate">
+                    <i className="fa-solid fa-circle-xmark"></i>
+                    <h2 className="fail">Oops!</h2>
+                    <h3>Two-factor authentication failed!</h3>
+                    <span>The code you entered is invalid. Please try again.</span>
+                    <div className="Codefiled">
+                      <button type="submit" className="failbutton" >TRY AGAIN</button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="alertDeleteUser alertOTP">
+                  <div className="contentvalidate">
+                      <i className="fa-solid fa-circle-check"></i>
+                      <h2>SUCCESS!</h2>
+                      <h3>Two-factor authentication successfully activated!</h3>
+                      <span>Your account is now more secure.</span>
+                      <div className="Codefiled">
+                        <button type="submit" onClick={handelActiveOTP}>Done</button>
+                      </div>
+                  </div>
+                </div>
+              ))
+              }
             </div>
           }
         </div>

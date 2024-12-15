@@ -367,6 +367,11 @@ class LogoutViewSet(viewsets.ViewSet):
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
 
+
+
+#################################  UPDATE & DELETE & TOWFac_Send_email VIEWS   ##############################
+
+
 class UpdateUserDataView(APIView):
     """
         update the user data:
@@ -481,38 +486,45 @@ class GetGoogleLink(APIView):
         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
         return Response(data, status=status.HTTP_200_OK)
 
-# class CheckOTPEnabledViewSet(viewsets.ViewSet):
-#     """
-#     A ViewSet to check if OTP is enabled for a user.
-#     """
-#     permission_classes = [AllowAny]
-#     def 
-    
 
-class SendOTPEmailView(APIView):
+class SendOTPView(APIView):
     """
-    A view to send an OTP code to the user's email and return the code.
+         This view handles the generation and sending of OTP
+         to the authenticated user (in setting)
+        to activate the otp in user account
     """
-    permission_classes = [AllowAny]
-    authentication_classes = []
-
+    permission_classes = [IsAuthenticated]
+    val = False
     def post(self, request):
         user = request.user
-        try:
-            user = get_user_model().objects.get(username=username)
-        except get_user_model().DoesNotExist:
-            return Response({
-                'detail': 'User not found.'
-            }, status=status.HTTP_404_NOT_FOUND)
-
         user.seed = pyotp.random_base32()
         user.otp = pyotp.TOTP(user.seed).now()
         user.otp_created_at = timezone.now()
         user.save()
-
+        print(user.otp)
         send_otp_email(user)
+        return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
-        return Response({
-            'detail': 'The verification code was sent successfully.',
-            'otp': user.otp,
-        }, status=status.HTTP_200_OK)
+    def get(self, request):
+        user = request.user
+        val = user.otp is not None
+        print(val)
+        return Response(val, status=status.HTTP_200_OK)
+
+
+
+class checkValidOtp(APIView):
+    """
+     This view checks if the OTP eentered by th user is valid(in setting)
+     to activate the otp in user account
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        otp = request.data['key']
+        total_difference = timezone.now() - user.otp_created_at
+        if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            return Response({'error': 'Key is invalid'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)

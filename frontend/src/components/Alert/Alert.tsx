@@ -25,7 +25,6 @@ function Alert({primaryColor, secondaryColor, children}: Props) {
          ${account.Displayed === 2 ? "show" : "hide"}`}
          >
         {children}
-        <span>{account.createdAlert}</span>
     </div>
     )
   }
