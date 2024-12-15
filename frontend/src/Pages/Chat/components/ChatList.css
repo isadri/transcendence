@@ -76,6 +76,7 @@
 }
 
 .text span {
+	/* max-width: 60%; */
 	font-weight: 500;
 	white-space: nowrap;
 	overflow: hidden;
@@ -91,10 +92,26 @@
 }
 
 .ChatStatus {
+	/* font-size: 14px; */
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
+	justify-content: center;
 	gap: 5px;
 	position: absolute; /* have problem in position absolute */
 	right: 10%;
+}
+
+/* .lastmessage {
+} */
+
+.ChatStatus .notificationMessage {
+	height: 20px;
+	width: 20px;
+	background-color: red;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
 }

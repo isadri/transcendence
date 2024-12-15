@@ -166,3 +166,5 @@ checker.sh
 .vscode/
 
 .idea/
+
+node_modules

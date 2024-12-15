@@ -172,7 +172,7 @@ class AcceptedFriendRequestsView(generics.ListAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
 
-class BlockedFriendRequestsView(generics.ListAPIView):
+class BlockedFriendsRequestsView(generics.ListAPIView):
     """
     View to list all blocked friend requests.
     """
@@ -181,10 +181,45 @@ class BlockedFriendRequestsView(generics.ListAPIView):
 
     def get_queryset(self):
         return FriendRequest.objects.filter(
-            Q(receiver=self.request.user) | Q(sender=self.request.user),
-            status="blocked"
+            # Q(receiver=self.request.user) | Q(sender=self.request.user),
+            status="blocked",
+            blocked_by=self.request.user
         )
 
+
+class BlockedFriendRequestsView(APIView):
+    """
+    This view checks if the given user is blocked by the current user
+    or has blocked the current user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            # Ensure the specified user exists
+            try:
+                target_user = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Check blocked status
+            blocked_request = FriendRequest.objects.filter(
+                Q(sender=request.user, receiver=target_user, status='blocked') |  # User blocked target
+                Q(sender=target_user, receiver=request.user, status='blocked')   # Target blocked user
+            ).first()
+
+            if not blocked_request:
+                return Response({'blocked': False}, status=status.HTTP_200_OK)
+
+            return Response({
+                'status': True,
+                'blocked': pk,
+                'blocker': blocked_request.blocked_by.id
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Failed to check blocked status: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FriendListView(generics.ListAPIView):
     """

@@ -342,7 +342,7 @@ class RegisterViewSet(viewsets.ViewSet):
 
     def create(self, request: Request) -> Response:
         data = request.data.copy()
-        data['username'] = data['username'].lower()
+        data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
