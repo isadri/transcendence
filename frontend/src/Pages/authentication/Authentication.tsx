@@ -60,10 +60,9 @@ function Authentication() {
     email
   }
   const url_reg = getendpoint("http", '/api/accounts/register/')
-
   const GetUserInfo = () =>{
-    axios.get(getendpoint("http", '/'),  {withCredentials:true})
-    .then((response) => {
+    axios.get(getendpoint('http', '/'),  {withCredentials:true})
+    .then((response:any) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
     })
@@ -106,7 +105,7 @@ function Authentication() {
                 confirmPassword: ''
               });
             })
-            .catch((error) => {
+            .catch((error:any) => {
               setError(true)
               if (error.response && error.response.data){
                 const list = []
