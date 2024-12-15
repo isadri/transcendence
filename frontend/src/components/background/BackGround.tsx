@@ -21,7 +21,7 @@ const BackGround = ({ children, isLogged }: Props) => {
         <div className="mainPage" style={
           isLogged ?
             {
-              padding: "0 20px",
+              // padding: "0 20px", possible to make problem
               flexDirection: win_width ? "column" : "row",
             } : {
               backgroundColor: "transparent",

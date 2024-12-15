@@ -71,7 +71,7 @@ interface ChatCenterProps {
 
 const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 	const endRef = useRef<HTMLDivElement>(null);
-	const { messages, clearMessages } = useChatContext();
+	const { messages } = useChatContext();
 	const user = getUser();
 	const [messagesUpdate, setMessagesUpdate] = useState<ChatMessage[]>([]);
 

@@ -20,25 +20,29 @@
 	width: 85%;
 }
 
-.messageContent .partage-icon {
+/* .messageContent .partage-icon {
 	color: white;
 	font-size: 17px;
 	margin-right: 10px;
 	cursor: pointer;
+} */
+
+.messageContent textarea {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    font-size: 15px;
+    flex: 1;
+    min-height: 25px; /* Set the minimum height */
+    max-height: 200px; /* Set the maximum height */
+    resize: vertical; /* Allow resizing vertically */
+    overflow-y: auto; /* Scroll if content exceeds max height */
 }
 
-.messageContent input {
-	border: none;
-	outline: none;
-	background-color: transparent;
-	color: white;
-	font-size: 16px;
-	flex: 1;
-}
-
-.messageContent input::placeholder {
-	color: white;
-	font-size: 14px;
+.messageContent textarea::placeholder {
+    color: white;
+    font-size: 14px;
 }
 
 .subButton {

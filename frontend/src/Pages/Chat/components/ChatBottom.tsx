@@ -8,7 +8,7 @@ interface ChatBottomProps {
 	selectedFriend: GetChats;
 }
 
-const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
+const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 	({ selectedFriend }, ref) => {
 		const [open, setOpen] = useState(false);
 		const closeEmoji = useRef<HTMLDivElement>(null);
@@ -61,7 +61,7 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 			}
 		};
 
-		const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 			if (event.key === "Enter") {
 				event.preventDefault();
 				handleSendMessage();
@@ -82,15 +82,23 @@ const ChatBottom = forwardRef<HTMLInputElement, ChatBottomProps>(
 							</div>
 						</div>
 						<div className="messageContent">
-							<i className="fa-solid fa-paperclip partage-icon"></i>
-							<input
+							{/* <i className="fa-solid fa-paperclip partage-icon"></i> */}
+							{/* <input
 								type="text"
 								placeholder="Type a message..."
 								value={text}
 								onChange={(event) => setText(event.target.value)}
 								onKeyDown={handleKeyDown}
 								ref={ref}
-							/>
+							/> */}
+							<textarea
+								placeholder="Type a message..."
+								value={text}
+								onChange={(event) => setText(event.target.value)}
+								onKeyDown={handleKeyDown}
+								ref={ref}
+								// rows={3}
+							></textarea>
 						</div>
 						<button
 							className="subButton"

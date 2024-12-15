@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { useChatContext, GetFriends, GetChats } from "./context/ChatUseContext";
-import { div } from "three/webgpu";
-
 interface ChatListProps {
 	friends: GetFriends[];
 	onSelectFriend: (friend: GetChats) => void;
@@ -25,7 +23,6 @@ const ChatList = ({
 	setListAllFriends,
 }: ChatListProps) => {
 	const user = getUser();
-	// const [notificate, setNotificate] = useState<number | undefined>(0);
 	const { lastMessage, setChats, chats, activeChat, unseenMessage, unseen } =
 		useChatContext();
 
@@ -34,7 +31,6 @@ const ChatList = ({
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/chat/chats/"),
-					// "http://0.0.0.0:8000/api/chat/chats/",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -47,8 +43,6 @@ const ChatList = ({
 
 		fetchChats();
 	}, [unseen, lastMessage]);
-
-	// console.log("user1: ", chats)
 
 	const handleAddConversationRequests = async (id: number) => {
 		const existingChat = chats.find(
@@ -121,44 +115,6 @@ const ChatList = ({
 		}).format(new Date(lastMessag.timestamp));
 	};
 
-	// Sort chats by the most recent message timestamp
-	// const sortedChats = useMemo(() => {
-	// 	return chats
-	// 		.map((chat) => {
-	// 			const lastMsg = lastMessage[chat.id];
-	// 			return {
-	// 				...chat,
-	// 				last_message: lastMsg?.content || chat.last_message,
-	// 				last_timestamp: lastMsg?.timestamp || chat.created_at,
-	// 			};
-	// 		})
-	// 		.filter((chat) => chat.messages.length > 0)
-	// 		.sort(
-	// 			(a, b) =>
-	// 				new Date(b.last_timestamp || "").getTime() -
-	// 				new Date(a.last_timestamp || "").getTime()
-	// 		);
-	// }, [chats, lastMessage]);
-	// if (!sortedChats) {
-	// 	return null;
-	// }
-
-	// const sortedChats = chats
-	// 	.map((chat) => {
-	// 		const lastMsg = lastMessage[chat.id];
-	// 		return {
-	// 			...chat,
-	// 			last_message: lastMsg?.content || chat.last_message,
-	// 			last_timestamp: lastMsg?.timestamp || chat.created_at,
-	// 		};
-	// 	})
-	// 	.filter((chat) => chat.messages.length > 0)
-	// 	.sort(
-	// 		(a, b) =>
-	// 			new Date(b.last_timestamp || "").getTime() -
-	// 			new Date(a.last_timestamp || "").getTime()
-	// 	);
-
 	const sortedChats = chats
 		.map((chat) => ({
 			...chat,
@@ -174,35 +130,6 @@ const ChatList = ({
 				new Date(b.last_timestamp || "").getTime() -
 				new Date(a.last_timestamp || "").getTime()
 		);
-
-	// const sortedChats = chats
-	// 	.map((chat) => {
-	// 		const lastMsg = lastMessage[chat.id];
-	// 		const lastMessageTime = getLastMessageTime(chat); // Get the formatted time
-
-	// 		// Ensure valid timestamp is generated
-	// 		let lastMessageTimestamp = 0;
-	// 		if (lastMessageTime) {
-	// 			// Prepend the current date (e.g., "1970-01-01T") for valid date parsing
-	// 			lastMessageTimestamp = new Date(
-	// 				`1970-01-01T${lastMessageTime}`
-	// 			).getTime();
-	// 		}
-
-	// 		// In case the timestamp is invalid, fallback to the chat's created_at or another timestamp field
-	// 		if (isNaN(lastMessageTimestamp)) {
-	// 			lastMessageTimestamp = new Date(chat.created_at).getTime();
-	// 		}
-
-	// 		return {
-	// 			...chat,
-	// 			last_message: lastMsg?.content || chat.last_message,
-	// 			last_message_time: lastMessageTime,
-	// 			last_message_timestamp: lastMessageTimestamp, // Store the raw timestamp for sorting
-	// 		};
-	// 	})
-	// 	.filter((chat) => chat.messages.length > 0) // Filter out chats with no messages
-	// 	.sort((a, b) => b.last_message_timestamp - a.last_message_timestamp); // Sort by the timestamp in descending order
 
 	return (
 		<div className="ChatList">
@@ -278,7 +205,6 @@ const ChatList = ({
 										) : (
 											<div></div>
 										)}
-										{/* {friend.status} */}
 									</div>
 								)}
 							</div>
