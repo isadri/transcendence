@@ -21,11 +21,15 @@
 .winnerPopUp span {
   text-align: center;
 }
+.winnerPopUp .winnerAvatar {
+  width: 60%;
+  border-radius: 50%;
+}
 
 .PlayScreen .winnerPopUp {
   padding: 1%;
   border-radius: 15px;
-  background-color: var(--fade);
+  background-color: #d9d9d96c;
   position: absolute;
   flex-direction: column;
   align-items: center;

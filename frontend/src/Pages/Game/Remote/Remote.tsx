@@ -1,6 +1,6 @@
 import { Canvas, context } from "@react-three/fiber";
 import "../Play/Play.css";
-import winner from "../../../assets/winner.png"
+import winnerImg from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
 import pic from "../../Home/images/profile.svg"
 import "../../Home/styles/LastGame.css"
@@ -28,12 +28,14 @@ useGLTF.preload(tableUrl);
 interface ResultContext {
   error:string|null,
   user: userDataType,
-  result: [number, number];
-  setError: React.Dispatch<React.SetStateAction<string | null>>;
-  setResult: React.Dispatch<React.SetStateAction<[number, number]>>;
-  setEnemy: React.Dispatch<React.SetStateAction<userDataType>>;
+  enemy: userDataType,
+  result: [number, number],
+  winner: userDataType|null,
+  setError: React.Dispatch<React.SetStateAction<string | null>>,
+  setResult: React.Dispatch<React.SetStateAction<[number, number]>>,
+  setEnemy: React.Dispatch<React.SetStateAction<userDataType>>,
+  setWinner: React.Dispatch<React.SetStateAction<userDataType | null>>,
   socket: WebSocket,
-  enemy: userDataType
   paddle1:any,
   paddle2:any,
   ball:any
@@ -124,29 +126,18 @@ function Paddle1({position, box}: Paddlerops){ // my Paddle
     if (context)
       {
         const {socket, user} = context
-        let unsubscribe: (() => void) | null = null
         const onKeyDown = (event: KeyboardEvent) => {
-          if (unsubscribe) return
-          // unsubscribe = api.position.subscribe(([x, y, z]) =>{
-            // if  ((event.key == "ArrowRight" && x < (3.07345 - 0.75)) || (event.key == "ArrowUp" && x < (3.07345 - 0.75)))
-            if  (event.key == "ArrowRight"  || event.key == "ArrowUp" )
-            {
-              move(socket, user.username, "+")
-              // api.position.set(x + 0.05, y, z)
-            }
-            else if  (event.key == "ArrowLeft" || event.key == "ArrowDown")
-            {
-              move(socket, user.username, "-")
-              // api.position.set(x - 0.05, y, z)
-            }
-          // })
+        if  (event.key == "ArrowRight"  || event.key == "ArrowUp" )
+          move(socket, user.username, "+")
+        else if  (event.key == "ArrowLeft" || event.key == "ArrowDown")
+          move(socket, user.username, "-")
         }
         
         const onKeyUp = (event: KeyboardEvent) => {
-          if (unsubscribe) {
-            unsubscribe();
-            unsubscribe = null;
-          }
+          // if (unsubscribe) {
+          //   unsubscribe();
+          //   unsubscribe = null;
+          // }
         }
     
         window.addEventListener("keydown", onKeyDown)
@@ -263,7 +254,7 @@ function GameTable() {
   if (context)
   {
     useEffect(() => {
-      const {socket, setEnemy, enemy, user, setResult, setError} = context
+      const {socket, setEnemy, enemy, user, setResult, setError, setWinner} = context
       socket.onmessage = (e) => {
 
         const data = JSON.parse(e.data)
@@ -308,6 +299,13 @@ function GameTable() {
             setResult([s1, s2])
           }
         }
+        if (data.event == 'WINNER')
+        {
+          if (data.winner == user.username)
+            setWinner(user)
+          else
+            setWinner(enemy)
+        }
       }
     }, [context])
     if (!loading)
@@ -332,7 +330,7 @@ const Play = () => {
   const context = useContext(resultsContext)
   if (context)
   {
-  const {result, user, enemy, error} = context
+  const {result, user, enemy, error, winner} = context
   return (
     <>
       <div className="PlayScreen">
@@ -386,14 +384,14 @@ const Play = () => {
           :
           <></>
         }
-        {/* {
-           result[0] === 7 || result[1] === 7 
+        {
+          winner
           ?
           <div className="winnerPopUp">
             <h2>The Winner</h2>
-            <img src={winner} alt="" className="winnerPic"/>
-            <img src={pic} alt="" />
-            <h3>{result[0] === 7 ? "Player 1" : "Player 2"}</h3>
+            <img src={winnerImg} alt="" className="winnerPic"/>
+            <img src={getendpoint('http', winner.avatar)} className="winnerAvatar" />
+            <h3>{winner.username}</h3>
             <div className="winnerBtns">
               <Link to={"/"}><i className="fa-solid fa-house"></i></Link>
               <Link to={"../"}><i className="fa-solid fa-arrow-left"></i></Link>
@@ -401,7 +399,7 @@ const Play = () => {
           </div>
           :
           <></>
-        } */}
+        }
       </div>
     </>
   );
@@ -424,10 +422,11 @@ const Provider = ({socket} : {socket:WebSocket}) => {
   const user = getUser()
   const [error, setError] = useState<string | null>(null)
   const [enemy, setEnemy] = useState<userDataType>(emptyUser)
+  const [winner, setWinner] = useState<userDataType | null>(null)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
   return (
-    <resultsContext.Provider value={{result, setResult, user, socket, enemy, setEnemy, error, setError}}>
+    <resultsContext.Provider value={{result, setResult, user, socket, enemy, setEnemy, error, setError, winner, setWinner}}>
       <Play/>
     </resultsContext.Provider>
   )
