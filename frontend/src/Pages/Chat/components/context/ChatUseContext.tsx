@@ -68,6 +68,7 @@ interface ChatContextType {
 	setActiveChatId: React.Dispatch<React.SetStateAction<number | null>>;
 	activeChat: (data: { chatid: number }) => void;
 	unseenMessage: (data: { chatid: number }) => void;
+	clearMessages: () => void;
 	// deleteChat: (data: {chatId: number, message_type: MessageType}) => void;
 }
 
@@ -89,6 +90,7 @@ const ChatContext = createContext<ChatContextType>({
 	setActiveChatId: () => {},
 	activeChat: () => {},
 	unseenMessage: () => {},
+	clearMessages: () => {},
 	// deleteChat: () => {},
 });
 
@@ -291,6 +293,9 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 			console.error("WebSocket is not open.");
 		}
 	};
+	const clearMessages = () => {
+		setMessages([])
+	};
 
 	const unseenMessage = (data: { chatid: number }) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
@@ -350,6 +355,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				setUnseen,
 				activeChatId,
 				setActiveChatId,
+				clearMessages,
 				// deleteChat,
 			}}
 		>
