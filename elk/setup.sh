@@ -44,11 +44,11 @@ if [ ! -f config/certs/certs.zip ]; then
 	"    dns:\n"\
 	"      - logstash\n"\
 	"      - localhost\n"\
-	"  - name: app\n"\
+	"  - name: backend-server\n"\
 	"    ip:\n"\
 	"      - 127.0.0.1\n"\
 	"    dns:\n"\
-	"      - app\n"\
+	"      - backend-server\n"\
 	"      - localhost\n"\
 	> config/certs/instances.yml
 	bin/elasticsearch-certutil cert --silent --pem --out config/certs/certs.zip \
@@ -88,8 +88,8 @@ https://es01:9200/_ilm/policy/dev-policy -H "Content-Type: application/json" -d 
 				"min_age": "3m",
 				"actions": {
 					"rollover": {
-						"max_age": "1m",
-						"max_docs": 2
+						"max_age": "1h",
+						"max_docs": 200
 					}
 				}
 			},
