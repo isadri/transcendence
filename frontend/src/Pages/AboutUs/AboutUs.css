@@ -25,7 +25,6 @@
     overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-
 }
 
 .AboutUs-comp::-webkit-scrollbar {

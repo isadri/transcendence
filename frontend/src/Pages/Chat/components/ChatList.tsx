@@ -25,7 +25,6 @@ const ChatList = ({
 	const user = getUser();
 	const { lastMessage, setChats, chats, activeChat, unseenMessage, unseen } =
 		useChatContext();
-
 	useEffect(() => {
 		const fetchChats = async () => {
 			try {
@@ -156,7 +155,7 @@ const ChatList = ({
 								setListAllFriends(false);
 							}}
 						>
-							<img src={friend.avatar} alt="profile" className="profile" />
+							<img src={friend.avatar} alt="profile" className="profile"  onClick={() => navigate(`/profile/${friend.username}`)}/>
 							<div className="text">
 								<span>{friend.username}</span>
 							</div>

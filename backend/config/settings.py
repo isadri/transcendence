@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'api.chat',
 	'api.friends',
 	'api.accounts',
+	'api.notifications',
 
     'daphne',
     'channels',
@@ -200,6 +201,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 
+
+#Intra 42
+INTRA_ID = os.getenv('INTRA_ID')
+INTRA_REDIRECT_URI = os.getenv('INTRA_REDIRECT_URI')
+
+#Google
+GOOGLE_ID = os.getenv('GOOGLE_ID')
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
 
 ASGI_APPLICATION = "config.asgi.application"
 

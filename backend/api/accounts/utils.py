@@ -184,6 +184,7 @@ def get_user(username: str, email: str) -> User:
             username=username,
             email=email
         )
+    # print("----------------------> ", user, "<-----------------")
     return user
 
 

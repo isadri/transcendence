@@ -30,7 +30,7 @@
 
 .settingContent {
     width: 90%;
-    height: 780px;
+    height: 880px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -42,44 +42,55 @@
 }
 
 .ChangeAvatar{
-    width: 60%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding-top: 2.5%;
+    padding-bottom: 3%;
 }
 
-.ChangeAvatar img{
-    width: 98px;
-    height: 98px;
+.ChangeAvatar .img{
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
+    overflow: hidden;
 }
 
-.ChangeAvatar .btns{
+.ChangeAvatar .img img{
+    width: 100%;
+    object-fit: cover;
+}
+
+.ChangeAvatar .btns, .alertDeleteUser .btns{
     width: 220px;
     display: flex;
     justify-content: space-between;
     padding-top: 4%;
 }
 
-.ChangeAvatar .btns button{
+.ChangeAvatar .btns button, .alertDeleteUser .btns button{
     width: 92px;
     height: 40px;
     font-family: var(--mono);
     border-radius: 15px;
     color: white;
+    cursor: pointer;
     /* font-size: 1.5%; */
 }
 
-.ChangeAvatar .btns *:first-child{
+.ChangeAvatar .btns *:first-child, .alertDeleteUser .btns *:first-child{
     border: 1px solid white;
     background-color: transparent;
 }
 
-.ChangeAvatar .btns *:nth-child(2){
+.ChangeAvatar .btns *:nth-child(2), .alertDeleteUser .btns *:nth-child(2){
     border: 1px solid var(--primary);
     background-color: var(--primary);
+}
+
+.ProfileEdit{
+    padding-top: 2.5%;
 }
 
 .ProfileEdit, .ChangePass{
@@ -89,7 +100,7 @@
     flex-direction: column;
 }
 
-.ProfileEdit h2, .ChangePass h2{
+.ChangePass h2{
     margin-bottom: 3%;
     /* font-size: 2.4%; */
 }
@@ -107,6 +118,7 @@
     width: 48%;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
 }
 
 .ProfileEdit-C1, .ChangePass-C1{
@@ -140,28 +152,332 @@
 
 .Setting-action{
     display: flex;
-    width: 80%;
+    width: 90%;
     padding-bottom: 5%;
     justify-content: space-between;
     text-align: center;
     align-items: center;
 }
 
-.Setting-action button{
+.saveProfileEdit{
+    display: flex;
+    width: 100%;
+    justify-content: end;
+    margin-top: 4%;
+}
+
+.saveProfileEdit button{
     background-color: var(--primary);
     border: 1px solid var(--primary);
     color: white;
     border-radius: 15px;
     width: 12vh;
     height: 40px;
+    cursor: pointer;
     /* font-size: 1.5vw; */
 }
 
-.Setting-action *:nth-child(1){
+.Setting-action span{
     color: #ff0000;
     cursor: pointer;
     margin-right: 5px;
-    /* font-size: 1.5vh; */
+    font-family: var(--sans);
+}
+.Setting-action span i{
+    margin-right: 5px;
+}
+
+.SettingError{
+    font-size:1.4vw;
+    margin-top: 4%;
+    margin-left: 4%;
+    color: #ff0000;
+    font-family: var(--sans);
+}
+
+/*        Alert confime deleting account         */
+
+.alertDeleteUser{
+    position: absolute;
+    background-color: var(--fade);
+    width: 60%;
+    height: 20%;
+    min-height: 250px;
+    min-width: 300px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.alertDeleteUser .content{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: var(--sans);
+}
+.alertDeleteUser .content .content-text{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.alertDeleteUser .content h3{
+    margin-bottom: 4%;
+}
+.alertDeleteUser .content span{
+    font-weight: 300;
+}
+
+.alertDeleteUser .alert-btns{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.alertDeleteUser .alert-btns button{
+    width: 30%;
+}
+
+.alertDeleteUser  .iconborder{
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--primary);
+    border-radius: 50%;
+    background-color: var(--primary);
+}
+
+.alertDeleteUser .iconborder i{
+    font-size: 30px;
+}
+
+.alertDeleteUser .alert-text{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 2%;
+}
+
+/*         Account Not Deleted          */
+
+.alert-acountNotDeleted{
+    display: none;
+    position: absolute;
+    z-index: 10;
+    top: 20px;
+    right: 10px;
+    width: 420px;
+    height: 60px;
+    background-color: #ff00005a;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding-left: 2%;
+    color:#f18b8b;
+    border: 1px solid #f18b8b;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, display 0s 0.5s;
+}
+
+.alert-acountNotDeleted.show {
+    display: flex;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.alert-acountNotDeleted.hide {
+    opacity: 0;
+    transition: opacity 1s ease-in-out, display 0s 1s;
+}
+
+.alert-acountNotDeleted i{
+    margin-right: 1.3%;
+}
+
+/*         enable otp          */
+
+.EnableOtp {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 4%;
+    border-radius: 10px;
+    border: 1px solid var(--fade);
+    background-color: var(--fade);
+    /* align-items: center;
+    justify-content: flex-start; */
+  }
+  
+.EnableOtp .check{
+  display: flex;
+  flex-direction: row;
+   align-items: center;
+  justify-content: space-between;
+  width: 90%;
+  margin: 2% 2% 1% 2%;
+}
+
+.EnableOtp .content{
+    width: 90%;
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+}
+.EnableOtp .content span{
+    font-weight: 100;
+    color: #b0b0b0;
+}
+
+.EnableOtp .check input {
+  width: 65px;
+  height: 20px;
+  min-height: 28px;
+  border-radius: 20px;
+  background-color: var(--fade);
+  position: relative;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.EnableOtp input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.EnableOtp input::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fff;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  transition: left 0.3s ease;
+}
+
+.EnableOtp input:checked::before {
+  left: calc(100% - 25px);
+}
+
+.EnableOtp label {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: #fbfbfb;
+}
+
+.EnableOtp .description {
+  font-size: 0.9rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+
+.alertOTP{
+    width: 40%;
+    height: 35%;
+    min-height: 450px;
+    max-height: 550px;
+    min-width: 300px;
+    max-width: 450px;
+}
+
+.alertOTP .contentOtp{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 85%;
+    height: 85%;
+    text-align: center;
+    font-family: var(--sans);
+}
+
+.alertOTP .contentOtp .iconEmail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* height: 30%; */
+}
+
+.alertOTP .contentOtp .iconEmail i{
+    color: var(--primary);
+    font-size: 65px;
+    
+}
+.alertOTP .contentOtp .iconEmail span{
+    height: 2px;
+    width: 65%;
+    background-color: #cccccc;
+    background: linear-gradient(to right, var(--primary), #cccccc);
+    border-radius: 10px; 
+}
+
+.alertOTP .contentOtp .content-text{
+    display: flex;
+    flex-direction: column;
+    height: 40%;
+    align-items:start;
+    align-items: center;
+    /* margin-top: -8%; */
+    justify-content: space-around;
+}
+
+.alertOTP .contentOtp .content-text span{
+    font-weight: 200;
+}
+
+.alertOTP .contentOtp .Codefiled{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    height: 20%;
+}
+
+.alertOTP .contentOtp .content-text input {
+    font-size: 16px;
+    border: 1px solid white;
+    border-radius: 10px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s;
+    text-align: center;
+}
+.alertOTP .contentOtp .content-text input::placeholder {
+    font-weight: 100;
+    font-size: 15px;
+    color: rgb(161, 154, 154);
+    text-align: center;
+}
+  
+.alertOTP .contentOtp .content-text input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px var(--primary);
+  }
+
+.alertOTP .contentOtp .Codefiled button{
+    width: 50%;
+    height: 50%;
+    border-radius: 10px;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    color: white;
 }
 
 
@@ -180,11 +496,20 @@
     .ProfileEdit h2, .ChangePass h2{
         font-size: 4vw;
     }
+    .settingContent{
+        height: 950px;
+    }
+    .EnableOtp input::before {
+        width: 15px;
+        height: 15px;
+    }
 }
 
 @media only screen and (min-width: 1200px) {
     .settingContent{
         width: 1000px;
     }
-    
+    .alertDeleteUser{
+        width: 700px;
+    }
 }

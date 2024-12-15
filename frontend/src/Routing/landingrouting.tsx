@@ -1,12 +1,11 @@
-import BackGround from '../components/background/BackGround'
 import FirstNavBar from '../components/FirstNavBar/navBar';
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 
 import Landing from "../Pages/landing/landing";
 import SignIn from '../Pages/authentication/SignIn/SignIn';
-import NoPage from "../Pages/NoPage/NoPage";
 import License from '../Pages/License/License';
 import AboutUs from '../Pages/AboutUs/AboutUs';
+import CallBack from '../Pages/CallBack/CallBack';
 
 // not Logged  routing table and layout
 
@@ -31,6 +30,10 @@ const landingRoutingTable = [
   {
     path: "/license",
     element: <License />
+  },
+  {
+    path: "/callBack/:from",
+    element: <CallBack />
   }
 ]
 
