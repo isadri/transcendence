@@ -46,7 +46,7 @@ const ChatList = ({
 		};
 
 		fetchChats();
-	}, [unseen]);
+	}, [unseen, lastMessage]);
 
 	// console.log("user1: ", chats)
 
@@ -160,20 +160,20 @@ const ChatList = ({
 	// 	);
 
 	const sortedChats = chats
-        .map((chat) => ({
-            ...chat,
-            last_message: getLastMessage(chat),
-            last_timestamp:
-                lastMessage[chat.id]?.timestamp ||
-                chat.messages.at(-1)?.timestamp ||
-                chat.created_at,
-        }))
+		.map((chat) => ({
+			...chat,
+			last_message: getLastMessage(chat),
+			last_timestamp:
+				lastMessage[chat.id]?.timestamp ||
+				chat.messages[chat.messages.length - 1]?.timestamp ||
+				chat.created_at,
+		}))
 		.filter((chat) => chat.messages.length > 0)
-        .sort(
-            (a, b) =>
-                new Date(b.last_timestamp || "").getTime() -
-                new Date(a.last_timestamp || "").getTime()
-        );
+		.sort(
+			(a, b) =>
+				new Date(b.last_timestamp || "").getTime() -
+				new Date(a.last_timestamp || "").getTime()
+		);
 
 	// const sortedChats = chats
 	// 	.map((chat) => {

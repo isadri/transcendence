@@ -71,7 +71,7 @@ interface ChatCenterProps {
 
 const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 	const endRef = useRef<HTMLDivElement>(null);
-	const { messages } = useChatContext();
+	const { messages, clearMessages } = useChatContext();
 	const user = getUser();
 	const [messagesUpdate, setMessagesUpdate] = useState<ChatMessage[]>([]);
 
@@ -121,3 +121,4 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 };
 
 export default ChatCenter;
+
