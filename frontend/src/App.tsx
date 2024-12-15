@@ -40,7 +40,6 @@ function App() {
   return (
     <loginContext.Provider value={{user, setUser, isLogged, setIsLogged,
     createdAlert, setCreatedAlert, Displayed, setDisplayed}}>
-
       <BackGround isLogged={isLogged}>
         <RouterProvider router={ isLogged ? mainRouter : landingRouter} />
       </BackGround>

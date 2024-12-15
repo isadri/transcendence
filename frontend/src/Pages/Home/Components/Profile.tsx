@@ -9,9 +9,8 @@ function Profile() {
     return (
       <div className="Home-profile">
         <div className="Home-ProfImg">
-
-          <a href="profile">
-            <img src={getendpoint('http', user.avatar)} alt="" />
+          <a href="profile" className="img">
+            <img src={getendpoint("http", user?.avatar)} alt="" />
           </a>
           <a href="profile">
             <span>{user?.username}</span>
