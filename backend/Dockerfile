@@ -16,4 +16,4 @@ RUN pip install -r requirements.txt
 
 ENTRYPOINT [ "bash", "entrypoint.sh" ]
 
-CMD [ "gunicorn", "config.asgi:application", "--bind", "0.0.0.0:8000", "-k", "uvicorn_worker.UvicornWorker", "--reload" ]
+CMD [ "daphne", "-p", "8000", "-b", "0.0.0.0", "config.asgi:application" ]

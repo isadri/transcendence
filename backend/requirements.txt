@@ -31,7 +31,3 @@ JSON-log-formatter==1.1
 channels[daphne]==4.0.0
 channels_redis==4.1.0
 pytest-django==4.5.2
-
-gunicorn==23.0.0
-uvicorn==0.32.1
-uvicorn-worker==0.2.0
