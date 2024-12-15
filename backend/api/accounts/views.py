@@ -16,6 +16,11 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
+from django.contrib.auth.hashers import check_password
+from rest_framework.permissions import IsAuthenticated
+
+from django.shortcuts import get_object_or_404,redirect
+
 from .utils import (
     get_access_token_from_api,
     get_tokens_for_user,
@@ -152,7 +157,6 @@ class VerifyOTPViewSet(viewsets.ViewSet):
         store_token_in_cookies(response, access_token)
         return response
 
-
 class GoogleLoginViewSet(viewsets.ViewSet):
     """
     Login a user using Google
@@ -279,6 +283,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
             'access_token': access_token,
         }, status=status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
+        print('response >>> ', access_token)
         return response
 
 
@@ -361,10 +366,163 @@ class LogoutViewSet(viewsets.ViewSet):
         return response
 
 
-class UpdateView(generics.UpdateAPIView):
+
+#################################  UPDATE & DELETE & TOWFac_Send_email VIEWS   ##############################
+
+
+class UpdateUserDataView(APIView):
     """
-    Update user information.
+        update the user data:
+          username
+          email
+          avatar
     """
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-    lookup_field = 'username'
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        data = request.data.copy()
+        data['avatar'] = None
+        if 'isRemove' in data:
+            if  data['isRemove'] == 'yes': del data['avatar']
+            if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
+                data['avatar'] = request.FILES['avatar']
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateUserPasswordView(APIView):
+    """
+        update the password
+    """
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        required_fields = ['CurrentPassword', 'password', 'confirmPassword']
+        data = request.data.copy()
+
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        if missing_fields:
+            return Response(
+                {field: "This field may not be blank." for field in missing_fields},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not check_password(data['CurrentPassword'], user.password):
+            return Response(
+                {"CurrentPassword": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if data['password'] != data['confirmPassword']:
+            return Response(
+                {"confirmPassword": "Passwords do not match."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DeleteUserAccountView(APIView):
+    """
+        delete user
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        if 'confirm' in request.data and request.data['confirm'] != 'yes':
+            return Response(
+                {"detail": "Account deletion not confirmed."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        logout(request)
+        user.delete()
+        response = Response({"detail": "Your account has been successfully deleted."},status=status.HTTP_200_OK)
+        response.delete_cookie(settings.AUTH_COOKIE)
+        return response
+
+class UserDetailView(APIView):
+    """
+    View to retrieve user details based on the provided username.
+    """
+    def get(self, request, username, format=None):
+        """
+        Retrieve user data by username.
+        """
+        user = get_object_or_404(User, username=username)
+        serializer = UserSerializer(user)
+        data = serializer.data
+        data.pop("password", None)
+        return Response(data, status=status.HTTP_200_OK)
+
+class GetIntraLink(APIView):
+    """
+        get intra link
+    """
+    permission_classes = [AllowAny]
+    def get(self, request):
+        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
+        return Response(data, status=status.HTTP_200_OK)
+
+class GetGoogleLink(APIView):
+    """
+        get google link
+    """
+    permission_classes = [AllowAny]
+    def get(self, request):
+        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class SendOTPView(APIView):
+    """
+         This view handles the generation and sending of OTP
+         to the authenticated user (in setting)
+        to activate the otp in user account
+    """
+    permission_classes = [IsAuthenticated]
+    val = False
+    def post(self, request):
+        user = request.user
+        user.seed = pyotp.random_base32()
+        user.otp = pyotp.TOTP(user.seed).now()
+        user.otp_created_at = timezone.now()
+        user.save()
+        print(user.otp)
+        send_otp_email(user)
+        return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
+
+    def get(self, request):
+        user = request.user
+        val = user.otp is not None
+        print(val)
+        return Response(val, status=status.HTTP_200_OK)
+
+
+
+class checkValidOtp(APIView):
+    """
+     This view checks if the OTP eentered by th user is valid(in setting)
+     to activate the otp in user account
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        otp = request.data['key']
+        total_difference = timezone.now() - user.otp_created_at
+        if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            return Response({'error': 'Key is invalid'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)

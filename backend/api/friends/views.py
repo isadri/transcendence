@@ -9,6 +9,7 @@ from django.db.models import Q
 
 from .models import FriendList, FriendRequest
 from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -222,3 +223,52 @@ class UserListView(APIView):
         # Serialize and return the data
         serializer = FriendSerializer(non_friends, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FriendshipStatusView(APIView):
+    """
+    View to check the friendship status between the authenticated user and another user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk: int):
+        """
+        Return the status between the authenticated user and the user with the given ID (pk).
+        """
+        try:
+            friend_request = FriendRequest.objects.filter(
+                (Q(sender=request.user, receiver_id=pk) | Q(sender_id=pk, receiver=request.user))
+            ).first()
+
+            if not friend_request:
+                return Response({'status': 'no_request'}, status=status.HTTP_200_OK)
+
+            return Response({'status': friend_request.status}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Error retrieving friendship status: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class MutualFriendsView(generics.ListAPIView):
+    """
+    View to get mutual friends between the authenticated user and a specific user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username):
+        authenticated_user = request.user
+        specific_user = get_object_or_404(User, username=username)
+
+        try:
+            authenticated_user_friends = FriendList.objects.get(user=authenticated_user).friends.all()
+            specific_user_friends = FriendList.objects.get(user=specific_user).friends.all()
+
+            mutual_friends = authenticated_user_friends.filter(id__in=specific_user_friends)
+            serializer = FriendSerializer(mutual_friends, many=True)
+            print("================>",serializer.data,"<====================")
+
+            return Response(serializer.data, status=200)
+        except FriendList.DoesNotExist:
+            return Response([], status=200)

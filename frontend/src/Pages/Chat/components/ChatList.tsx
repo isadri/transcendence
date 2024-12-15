@@ -4,6 +4,7 @@ import "./ChatList.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
 import { ChatMessage } from "./context/ChatUseContext";
+import { useNavigate } from "react-router-dom";
 
 // export interface ChatMessage {
 // 	id: number;
@@ -43,7 +44,7 @@ const ChatList = ({
 	setListAllFriends,
 }: ChatListProps) => {
 	const [chats, setChats] = useState<GetChats[]>([]);
-
+	const navigate = useNavigate(); 
 	useEffect(() => {
 		const fetchChats = async () => {
 			try {
@@ -108,7 +109,7 @@ const ChatList = ({
 								setListAllFriends(false);
 							}}
 						>
-							<img src={friend.avatar} alt="profile" className="profile" />
+							<img src={friend.avatar} alt="profile" className="profile"  onClick={() => navigate(`/profile/${friend.username}`)}/>
 							<div className="text">
 								<span>{friend.username}</span>
 							</div>

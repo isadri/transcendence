@@ -1,7 +1,6 @@
 // import ProfileImg from "../images/profile.svg";
 import Cbadge from "../images/CourentBadge.svg";
-import { getUser } from "../../../context/getContextData";
-import { getendpoint } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
 
 function Profile() {
   const user = getUser()
@@ -10,7 +9,7 @@ function Profile() {
     return (
       <div className="Home-profile">
         <div className="Home-ProfImg">
-          <a href="profile">
+          <a href="profile" className="img">
             <img src={getendpoint("http", user?.avatar)} alt="" />
           </a>
           <a href="profile">

@@ -9,7 +9,7 @@ function navBar() {
   const handelClick = () =>{
     setValue(!value)
   }
-  const hideNavBar = useLocation().pathname === "/Auth";
+  const hideNavBar = useLocation().pathname === "/Auth" || useLocation().pathname === "/callBack/google" || useLocation().pathname === "/callBack/intra";
   return (
     <>
       {!hideNavBar &&

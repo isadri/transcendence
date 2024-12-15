@@ -15,6 +15,8 @@ function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
   let [user, setUser] = useState<userDataType>()
   // const hostname = window.location.hostname
+  let [createdAlert, setCreatedAlert] = useState('')
+  let [Displayed, setDisplayed] = useState(1)
   useEffect(() => {
     axios.get(getendpoint('http', "/"), {withCredentials:true})
     .then((response) => {
@@ -29,7 +31,8 @@ function App() {
   if (isLogged == null)
     return <></>
   return (
-    <loginContext.Provider value={{  user, setUser, isLogged, setIsLogged}}>
+    <loginContext.Provider value={{user, setUser, isLogged, setIsLogged,
+    createdAlert, setCreatedAlert, Displayed, setDisplayed}}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={ isLogged ? mainRouter : landingRouter} />
       </BackGround>
