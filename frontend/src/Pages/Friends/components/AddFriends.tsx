@@ -11,7 +11,7 @@ interface AllUsers {
 }
 
 const AddFriends = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
@@ -48,9 +48,9 @@ const AddFriends = () => {
 		};
 
 		fetchUsers();
-		
+
 		document.addEventListener("mousedown", handleClickOutside);
-		
+
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 			// clearInterval(intervalId);
@@ -59,19 +59,19 @@ const AddFriends = () => {
 
 	const handleSearchFriend = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-		
+
 		setSearchFriend(value);
 		const filterResults = allUsers.filter((user) =>
 			user.username.toLowerCase().includes(value.toLowerCase())
-	);
-	setResults(filterResults);
+		);
+		setResults(filterResults);
 	};
-	
+
 	const handleReturnToList = () => {
 		setFocusOnSearch(false);
 		setSearchFriend("");
 	};
-	
+
 	const handleSendRequests = async (id: number) => {
 		try {
 			await axios.post(
@@ -116,7 +116,12 @@ const AddFriends = () => {
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
+								<img
+									src={friend.avatar}
+									alt=""
+									className="friendImage"
+									onClick={() => navigate(`/profile/${friend.username}`)}
+								/>
 								<span>{friend.username}</span>
 							</div>
 							<button

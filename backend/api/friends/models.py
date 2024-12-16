@@ -148,6 +148,33 @@ class FriendRequest(models.Model):
         except Exception as e:
             raise ValueError(f"Failed to block the friend request: {str(e)}")
 
+    def remove(self, remover_user):
+        """
+        remove a user from the friend request.
+        The remover_user must be either the sender or receiver.
+        """
+        try:
+            if remover_user not in [self.sender, self.receiver]:
+                raise ValueError("The remover_user must be either the sender or the receiver.")
+        
+            # Determine the user being removed
+            removed_user = self.receiver if remover_user == self.sender else self.sender
+        
+            with transaction.atomic():
+                remover_user_friend_list, _ = FriendList.objects.get_or_create(user=remover_user)
+                remover_user_friend_list.remove_friend(removed_user)
+        
+                # Remove the blocker from the user-to-block's friend list
+                removed_user_friend_list, _ = FriendList.objects.get_or_create(user=removed_user)
+                removed_user_friend_list.remove_friend(remover_user)
+        
+                # Update the FriendRequest status and record who blocked whom
+                # self.status = 'blocked'
+                # self.blocked_by = remover_user
+                self.save()
+        except Exception as e:
+            raise ValueError(f"Failed to remove the friend request: {str(e)}")
+
     def unblock(self, unblocker_user):
         """
         Block a user from the friend request.

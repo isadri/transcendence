@@ -124,6 +124,31 @@ class FriendRequestBlockView(APIView):
             return Response({'error': f'Failed to block the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class FriendRequestRemoveView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk: int):
+        try:
+            # Find the FriendRequest where the user is either sender or receiver
+            friend_request = FriendRequest.objects.filter(
+                Q(sender=request.user, receiver_id=pk) |
+                Q(sender_id=pk, receiver=request.user),
+                status='accepted'
+            ).first()
+
+            if not friend_request:
+                return Response({'error': 'Friend request not found or already processed.'},
+                                status=status.HTTP_404_NOT_FOUND)
+
+            friend_request.remove(request.user)
+            friend_request.delete()
+            return Response({'message': 'Remove friend and delete the request.'}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Failed to remove the friend request: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
 class FriendRequestUnblockView(APIView):
     """
     This view is used to unblock a friend request.

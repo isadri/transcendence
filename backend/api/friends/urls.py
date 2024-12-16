@@ -14,6 +14,7 @@ urlpatterns = [
     path('cancel/<int:pk>', views.FriendRequestCancelView.as_view(), name='cancel-friend-request'),
     path('block/<int:pk>', views.FriendRequestBlockView.as_view(), name='block-friend-request'),
     path('unblock/<int:pk>', views.FriendRequestUnblockView.as_view(), name='unblock-friend-request'),
+    path('remove/<int:pk>', views.FriendRequestRemoveView.as_view(), name='remove-friend-request'),
     path('friendship-status/<int:pk>', views.FriendshipStatusView.as_view(), name='friendship-status'), #add by naima
     path('pending', views.PendingFriendRequestsView.as_view(), name='pending-friend-requests'),
     path('accepted', views.AcceptedFriendRequestsView.as_view(), name='accepted-friend-requests'),

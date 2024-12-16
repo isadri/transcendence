@@ -11,7 +11,7 @@ interface GetFriends {
 }
 
 const AllFriends = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [results, setResults] = useState<GetFriends[]>([]);
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
@@ -45,7 +45,7 @@ const AllFriends = () => {
 				);
 				setGetFriends(response.data.friends);
 			} catch (err) {
-				console.log("Error to fetch friends.",err); // Set the response data to state
+				console.log("Error to fetch friends.", err); // Set the response data to state
 			}
 		};
 
@@ -102,12 +102,29 @@ const AllFriends = () => {
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
+								<img
+									src={friend.avatar}
+									alt=""
+									className="friendImage"
+									onClick={() => navigate(`/profile/${friend.username}`)}
+								/>
 								<span>{friend.username}</span>
 							</div>
 							<div className="iconFriend">
-								<i className="fa-solid fa-user user"></i>
-								<i className="fa-solid fa-comment-dots chat"></i>
+								<button
+									className="block"
+									// onClick={() => handleUnblockRequests(friend.id)}
+								>
+									Block
+								</button>
+								<button
+									className="remove"
+									// onClick={() => handleUnblockRequests(friend.id)}
+								>
+									Remove
+								</button>
+								{/* <i className="fa-solid fa-user user"></i>
+								<i className="fa-solid fa-comment-dots chat"></i> */}
 							</div>
 						</div>
 					);
