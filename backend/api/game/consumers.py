@@ -15,6 +15,9 @@ SIDE_Z = (8.65640+ 0.5)/2
 GAME_SPEED = 1/60
 PADDLE_SPEED = 0.1
 
+X_SPEED = 1
+Z_SPEED = 1
+
 
 class RandomGame(AsyncWebsocketConsumer):
 
@@ -116,16 +119,21 @@ class RandomGame(AsyncWebsocketConsumer):
 
 class GameData:
 
-  def __init__(self, p1, p2, game, channel, name):
+  def __init__(self, p1, p2, game, name):
     self.game = game
     self.room_name = name
-    self.channel = channel
+
     self.ball = [0, 0.2, 0]
+    self.z = 0.1
+    self.z_direction = 1
+    self.x = 0
+    self.x_direction = 1
+
     self.done = False
-    self.direction = 1
+    self.winneer = None
+
     self.player1 = p1.username
     self.player2 = p2.username
-    self.winneer = None
     self.score = {p1.username : 0, p2.username : 0}
     self.players = {p1.username : p1, p2.username : p2}
     self.players_pos = {
@@ -156,9 +164,10 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
-    self.ball[2] += 0.1 * self.direction
+    self.ball[2] += self.z * self.z_direction * Z_SPEED
+    self.ball[0] += self.x * self.x_direction * X_SPEED
     if self.hitPaddle(self.players_pos[self.player1]) or self.hitPaddle(self.players_pos[self.player2]):
-        self.direction *= -1
+        self.z_direction *= -1
 
   def checkScore(self):
     if abs(SIDE_Z - self.ball[2]) <= BALL_R * 2:
@@ -234,6 +243,9 @@ class RemoteGame(AsyncWebsocketConsumer):
       await self.abort("No game found with this ID")
       return
     if await self.isPartOfTheGame(self.game):
+      if await self.isStarted():
+        await self.abort('The game is already done')
+        return
       if self.game_id not in self.connected:
         self.connected[self.game_id] = {self.username: self}
       else:
@@ -243,6 +255,12 @@ class RemoteGame(AsyncWebsocketConsumer):
         self.task = asyncio.create_task(self.game_loop())
     else:
       await self.abort("You are not allowed to join this game")
+
+  @database_sync_to_async
+  def isStarted(self) -> bool:
+    if self.game.progress != 'P':
+      return True
+    return False
 
   @database_sync_to_async
   def isPartOfTheGame(self, game):
@@ -313,7 +331,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       await self.abort(e.args[0])
       return
     if not player1.game_data and not player2.game_data:
-      player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.channel_layer, self.room_name)
+      player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.room_name)
     player2.game_data = player1.game_data
     await self.channel_layer.group_send(self.room_name, {
       'type': 'game.start',
@@ -332,11 +350,8 @@ class RemoteGame(AsyncWebsocketConsumer):
       'type': 'got_winner',
       'winner': self.game_data.getWinner()
     })
-    print(self.user, self.game_data.getWinner())
 
   async def got_winner(self, event):
-    # if self.game_data.isDone():
-    print(event)
     await self.send(json.dumps({
       "event": "WINNER",
       "winner": event['winner']
@@ -346,11 +361,14 @@ class RemoteGame(AsyncWebsocketConsumer):
   def abort_game(self):
     self.game_data.abort_game(self.username)
     self.game.abortGame(self.username, self.game_data.getScore())
-    
-
 
   async def player_disconnected(self, event):
-    await self.abort("The enemy disconnected, you won!")
+    if self.game_data:
+      await self.abort_game()
+      await self.send(json.dumps({
+        "event": "WINNER",
+        "winner": self.game_data.getWinner()
+      }))
 
   def getUsername(self):
     return self.username
