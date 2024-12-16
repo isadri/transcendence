@@ -38,7 +38,6 @@ const AllFriends = () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/friends"),
-					// "http://0.0.0.0:8000/api/friends/friends",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -50,7 +49,6 @@ const AllFriends = () => {
 		};
 
 		fetchFriend();
-		// const intervalId = setInterval(fetchFriend, 5000);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
@@ -71,6 +69,32 @@ const AllFriends = () => {
 	const handleReturnToList = () => {
 		setFocusOnSearch(false);
 		setSearchFriend("");
+	};
+
+	const handleRemoveRequests = async (id: number) => {
+		const existingFriend = getFriends.find(
+			(friend) => friend.id === id
+		);
+		if (!existingFriend)
+			return;
+		try {
+			await axios.post(getendpoint("http", `/api/friends/remove/${id}`), null, {
+				withCredentials: true,
+			});
+			setGetFriends((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}
+	};
+	const handleBlockRequests = async (id: number) => {
+		try {
+			await axios.post(getendpoint("http", `/api/friends/block/${id}`), null, {
+				withCredentials: true,
+			});
+			setGetFriends((prev) => prev.filter((user) => user.id !== id));
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+		}
 	};
 
 	const friendsList = searchFriend ? results : getFriends;
@@ -113,13 +137,13 @@ const AllFriends = () => {
 							<div className="iconFriend">
 								<button
 									className="block"
-									// onClick={() => handleUnblockRequests(friend.id)}
+									onClick={() => handleBlockRequests(friend.id)}
 								>
 									Block
 								</button>
 								<button
 									className="remove"
-									// onClick={() => handleUnblockRequests(friend.id)}
+									onClick={() => handleRemoveRequests(friend.id)}
 								>
 									Remove
 								</button>

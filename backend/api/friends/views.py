@@ -114,7 +114,7 @@ class FriendRequestBlockView(APIView):
 
             if not friend_request:
                 return Response({'error': 'Friend request not found or already processed.'},
-                                status=status.HTTP_404_NOT_FOUND)
+                                status=status.HTTP_200_OK)
 
             # Block the user
             friend_request.block(request.user)
@@ -138,10 +138,10 @@ class FriendRequestRemoveView(APIView):
 
             if not friend_request:
                 return Response({'error': 'Friend request not found or already processed.'},
-                                status=status.HTTP_404_NOT_FOUND)
+                                status=status.HTTP_200_OK)
 
             friend_request.remove(request.user)
-            friend_request.delete()
+            # friend_request.delete()
             return Response({'message': 'Remove friend and delete the request.'}, status=status.HTTP_200_OK)
 
         except Exception as e:

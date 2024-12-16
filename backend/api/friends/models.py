@@ -171,7 +171,7 @@ class FriendRequest(models.Model):
                 # Update the FriendRequest status and record who blocked whom
                 # self.status = 'blocked'
                 # self.blocked_by = remover_user
-                self.save()
+                self.delete()
         except Exception as e:
             raise ValueError(f"Failed to remove the friend request: {str(e)}")
 
