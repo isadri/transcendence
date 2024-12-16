@@ -34,20 +34,20 @@ services:
         condition: service_healthy
     restart: on-failure
 
-  #front-end:
-  #  container_name: frontend
-  #  image: frontend
-  #  build: ./frontend
-  #  ports:
-  #    - 5000:5000
-  #  volumes:
-  #    - ./frontend:/code/
-  #    - modules_files:/code/node_modules
-  #  networks:
-  #    - app-network
-  #  depends_on:
-  #    - back-end
-  #  restart: on-failure
+  front-end:
+    container_name: frontend
+    image: frontend
+    build: ./frontend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./frontend:/code/
+      - modules_files:/code/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - back-end
+    restart: on-failure
 
   postgres:
     container_name: postgres
@@ -136,7 +136,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials' "
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
         ]
       interval: 10s
       timeout: 10s
@@ -165,7 +165,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials' "
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
         ]
       interval: 10s
       timeout: 10s
