@@ -5,13 +5,14 @@ import ListChat from "./components/List";
 // import moment from "moment";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import axios from "axios";
-import { getendpoint } from "../../context/getContextData";
+import { getContext, getendpoint } from "../../context/getContextData";
 import {
 	ChatProvider,
 	GetFriends,
 	GetChats,
 	useChatContext,
 } from "./components/context/ChatUseContext";
+import Alert from "../../components/Alert/Alert";
 
 const Chat = () => {
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
@@ -42,9 +43,13 @@ const Chat = () => {
 		setSelectedFriend(friend);
 		activeChat({chatid: friend.id})
 	};
-
+	const account = getContext();
 	return (
 		<ChatProvider>
+			<Alert primaryColor="red" secondaryColor="#f18b8b">
+			<i className="fa-solid fa-circle-exclamation"></i>
+				<span>{account?.createdAlert}</span>
+			</Alert>
 			<div className="Chat">
 				{isSmallDevice ? (
 					!selectedFriend && (

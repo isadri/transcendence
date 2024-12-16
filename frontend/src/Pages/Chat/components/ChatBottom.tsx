@@ -1,8 +1,13 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { GetChats, MessageType, useChatContext } from "./context/ChatUseContext";
-import { getUser } from "../../../context/getContextData";
+import {
+	GetChats,
+	MessageType,
+	useChatContext,
+} from "./context/ChatUseContext";
+import { getContext, getUser } from "../../../context/getContextData";
+import Alert from "../../../components/Alert/Alert";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
@@ -14,8 +19,9 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
 		const [text, setText] = useState("");
-		const { block,sendMessage } = useChatContext()
-		const user = getUser()
+		const { block, sendMessage } = useChatContext();
+		const user = getUser();
+		const authContext = getContext()
 
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
@@ -39,21 +45,27 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const handleSendMessage = async () => {
 			const maxLength = 300; // Set your max length
 			if (text.trim().length > maxLength) {
-				alert(`Message cannot exceed ${maxLength} characters.`);
+				authContext?.setCreatedAlert("Message cannot exceed 300 characters.")
+				authContext?.setDisplayed(2);
+				// <Alert primaryColor="#00ff115a" secondaryColor="#90f18b">
+				// 	<i className="fa-solid fa-circle-check"></i>
+				// 	<span>{`Message cannot exceed ${maxLength} characters.`}</span>
+				// </Alert>;
+				// alert(`Message cannot exceed ${maxLength} characters.`);
 				return;
 			}
 			if (selectedFriend && text.trim()) {
-				let receiver_id
+				let receiver_id;
 				if (user?.id === selectedFriend.user1.id) {
-					receiver_id = selectedFriend.user2.id
+					receiver_id = selectedFriend.user2.id;
 				} else {
-					receiver_id = selectedFriend.user1.id
+					receiver_id = selectedFriend.user1.id;
 				}
 				sendMessage({
 					message: text.trim(),
 					receiver: receiver_id,
 					message_type: MessageType.SendMessage,
-				})
+				});
 				setText("");
 				setOpen(false);
 			}

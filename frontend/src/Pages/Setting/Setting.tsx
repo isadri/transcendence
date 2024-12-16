@@ -4,7 +4,7 @@ import ava from "./images/default.jpeg"
 import { useEffect, useState } from "react";
 import { getContext, getUser, getendpoint } from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
-import { verify } from "crypto";
+
 
 interface Data {
   username: string | undefined;

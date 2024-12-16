@@ -5,9 +5,17 @@ import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
 // import moment from "moment";
 import axios from "axios";
-import { getUser, getendpoint } from "../../../context/getContextData";
-import { useChatContext, GetChats, ChatMessage } from "./context/ChatUseContext";
-
+import {
+	getContext,
+	getUser,
+	getendpoint,
+} from "../../../context/getContextData";
+import {
+	useChatContext,
+	GetChats,
+	ChatMessage,
+} from "./context/ChatUseContext";
+import Alert from "../../../components/Alert/Alert";
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -33,9 +41,9 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 				console.log("Error in fetching chats", err);
 			}
 		};
-
+		
 		if (selectedFriend) {
-			clearMessages()
+			clearMessages();
 			fetchMessages();
 		}
 
@@ -58,22 +66,29 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 				console.log("Error in fetching chats", err);
 			}
 		};
-
+		
 		fetchBlockedFriend();
 	}, [selectedFriend]);
-
+	
+	// const account = getContext();
 	return (
-		<div className="chatContent">
-			<ChatTop
-				selectedFriend={selectedFriend}
-				setSelectedFriend={setSelectedFriend}
-			/>
-			<ChatCenter selectedFriend={selectedFriend} messagesUser={messagesUser} />
-			<ChatBottom
-				selectedFriend={selectedFriend}
-				ref={ref}
-			/>
-		</div>
+		<>
+			{/* <Alert primaryColor="#00ff115a" secondaryColor="#90f18b">
+				<i className="fa-solid fa-circle-check"></i>
+				<span>{account?.createdAlert}</span>
+			</Alert> */}
+			<div className="chatContent">
+				<ChatTop
+					selectedFriend={selectedFriend}
+					setSelectedFriend={setSelectedFriend}
+				/>
+				<ChatCenter
+					selectedFriend={selectedFriend}
+					messagesUser={messagesUser}
+				/>
+				<ChatBottom selectedFriend={selectedFriend} ref={ref} />
+			</div>
+		</>
 	);
 };
 
