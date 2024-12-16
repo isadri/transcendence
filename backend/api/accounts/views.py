@@ -487,12 +487,11 @@ class GetGoogleLink(APIView):
 
 class SendOTPView(APIView):
     """
-         This view handles the generation and sending of OTP
-         to the authenticated user (in setting)
+        This view handles the generation and sending of OTP
+        to the authenticated user (in setting)
         to activate the otp in user account
     """
     permission_classes = [IsAuthenticated]
-    val = False
     def post(self, request):
         user = request.user
         user.seed = pyotp.random_base32()
@@ -505,11 +504,9 @@ class SendOTPView(APIView):
 
     def get(self, request):
         user = request.user
-        val = user.otp is not None
+        val = user.is_otp_active
         print(val)
         return Response(val, status=status.HTTP_200_OK)
-
-
 
 class checkValidOtp(APIView):
     """
@@ -523,6 +520,9 @@ class checkValidOtp(APIView):
         otp = request.data['key']
         total_difference = timezone.now() - user.otp_created_at
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            # user.is_otp_active = False
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
+        user.is_otp_active = True
+        user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)

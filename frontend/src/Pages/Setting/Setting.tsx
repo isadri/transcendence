@@ -158,6 +158,9 @@ const Setting = () => {
     });
   };
   
+
+  /// OTP HANDLING
+
   const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       console.log("OTP Enabled");
@@ -165,14 +168,14 @@ const Setting = () => {
       sendOtpRequest();
     } else {
       console.log("OTP Disabled");
+      
       SetshowOtpAlert(false);
     }
   };
 
   const sendOtpRequest = () => {
-    axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),{}, {withCredentials: true})
+    axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),{key: isOtpActive}, {withCredentials: true})
     .then(response => {
-      // setOtpCodeVerify(response.data.otp)
       console.log(response.data.message)
     })
   };
@@ -187,16 +190,9 @@ const Setting = () => {
         setVerified(1)
         console.log(error.response.error)
       })
-    // console.log("code send on email => ", otpcodeVerify)
-    // console.log("code entred by user => ", otpcode)
-      // if (otpcodeVerify === otpcode)
-      // else
-      //   setVerified(1)
   }
   
   const handelActiveOTP = () => {
-    const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
-    checkbox.checked = true;
     SetshowOtpAlert(false)
     setVerified(0)
   }

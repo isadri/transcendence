@@ -110,7 +110,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     seed = models.CharField(max_length=40, blank=True, null=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
-
+    is_otp_active = models.BooleanField(default=False) # remove
     active_chat = models.IntegerField(default=-1)
 
     # Add friends field

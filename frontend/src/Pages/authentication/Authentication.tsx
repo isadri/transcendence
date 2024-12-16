@@ -106,6 +106,7 @@ function Authentication() {
               });
             })
             .catch((error:any) => {
+              console.log(error.response.data)
               setError(true)
               if (error.response && error.response.data){
                 const list = []
