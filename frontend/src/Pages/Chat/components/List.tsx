@@ -86,18 +86,19 @@ const ListChat = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 					/>
 				</div>
 			</div>
-			{searchFriend && results.length === 0 && (
+			{searchFriend && results.length === 0 ? (
 				<div className="NotFoundChat">No results found for your search.</div>
+			) : (
+				<ChatList
+					friends={searchFriend ? results : friends}
+					onSelectFriend={onSelectFriend}
+					selectedFriend={selectedFriend}
+					setSearchFriend={setSearchFriend}
+					setFocusOnSearch={setFocusOnSearch}
+					listAllFriends={listAllFriends}
+					setListAllFriends={setListAllFriends}
+				/>
 			)}
-			<ChatList
-				friends={searchFriend ? results : friends}
-				onSelectFriend={onSelectFriend}
-				selectedFriend={selectedFriend}
-				setSearchFriend={setSearchFriend}
-				setFocusOnSearch={setFocusOnSearch}
-				listAllFriends={listAllFriends}
-				setListAllFriends={setListAllFriends}
-			/>
 		</div>
 	);
 };
