@@ -491,9 +491,9 @@ class SendOTPView(APIView):
         to the authenticated user (in setting)
         to activate the otp in user account
     """
-    permission_classes = [IsAuthenticated]
-    def post(self, request):
-        user = request.user
+    permission_classes = [AllowAny]
+    def post(self, request, username):
+        user = user = get_object_or_404(User, username=username)
         if request.data['val'] == True:
             user.seed = pyotp.random_base32()
             user.otp = pyotp.TOTP(user.seed).now()
@@ -508,8 +508,8 @@ class SendOTPView(APIView):
         print(user.otp)
         return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
-    def get(self, request):
-        user = request.user
+    def get(self, request, username):
+        user = user = get_object_or_404(User, username=username)
         val = user.otp_active
         print(val)
         return Response(val, status=status.HTTP_200_OK)

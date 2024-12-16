@@ -19,6 +19,7 @@ interface errorDataTypes{
 function Authentication() {
   const [url, setUrl] = useState("")
   const [urlGoogle, setUrlGoogle] = useState("")
+  const [isOtpActive, setIsOtpActive] = useState(false) //variable to store the state of otp is active or not
   useEffect(() => {
     axios.get(getendpoint("http", "/api/accounts/GetIntraLink/"))
       .then(response => {
@@ -37,7 +38,7 @@ function Authentication() {
   const [email, setEmail] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [val, setVal] = useState(true)
-
+  const [showOtpAlert, SetshowOtpAlert] = useState(false) // otp alert
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([])
   const [errors, SetErrors] = useState<errorDataTypes>({
@@ -52,7 +53,9 @@ function Authentication() {
       password
   }
 
-  const url_login = getendpoint("http", '/api/accounts/login/')
+  var url_login = getendpoint("http", '/api/accounts/login/')
+  // if (isOtpActive)
+  //   url_login = getendpoint("http", '/api/accounts/login2fa/')
   
   const data_reg = {
     username,
@@ -71,57 +74,74 @@ function Authentication() {
       authContext?.setUser(undefined)
     })
   }
-
-  // const handelgGoogleLogin = () => {
-  //   axios.get(getendpoint("http", '/api/accounts/login/google/'))
-  //     .then(() =>{
-  //       console.log("saccess")
-  //     })
-  //     .catch(() => {
-  //       console.log("failer")
-  //     })
-  // }
-  const handelSubmit = (e: any, str: string) => {
+  const handelSubmit = async (e: any, str: string) => {
     if (str === "signin" || (str === "signup" && confirmPassword === password))
     {
       e.preventDefault();
-      const endpont = val ? url_login : url_reg
       const data = val ? data_login : data_reg
+      const otpResponse = await axios.get(getendpoint("http", `/api/accounts/SendOTPView/${data.username}`), {withCredentials: true})
+      // .then((response) => {
+      //   if (response.data === true){
+      //     console.log("otp is ", response.data)
+      //     url_login = getendpoint("http", '/api/accounts/login2fa/')
+      //     console.log("url_login => ", url_login)
+      //     setIsOtpActive(true)
+      //   }
+      // })
+      if (otpResponse.data === true) {
+        console.log("otp is ", otpResponse.data)
+          url_login = getendpoint("http", '/api/accounts/login2fa/')
+          console.log("url_login => ", url_login)
+          // setIsOtpActive(true)
+      }
+      const endpont = val ? url_login : url_reg
+      console.log(endpont)
+      console.log("otp var => ", isOtpActive)
       axios.post(endpont, data, {withCredentials: true})
             .then(() => {
-                !val ? setVal(true) :
-                (
-                  authContext?.setIsLogged(true),
-                  navigate('/'),
-                  GetUserInfo()
-                );
-                setUsername('')
-                setEmail('')
-                setPassword('')
-                SetErrors({
-                username: '',
-                email: '',
-                password: '',
-                confirmPassword: ''
-              });
-            })
-            .catch((error:any) => {
-              console.log(error.response.data)
-              setError(true)
-              if (error.response && error.response.data){
-                const list = []
-                const errors = error.response.data;
-                for (const field in errors) {
-                    if (errors[field].length > 0) {
-                        list.push([field, errors[field][0]])
-                    }
+              if (!val) {
+                setVal(true);
+              } else {
+                if (otpResponse.data) {
+                  console.log("otp is active in the auth")
+                  // Handle OTP active case
+                  SetshowOtpAlert(true)
+                  // axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),
+                  // {val: true}, {withCredentials: true}) // Send email to user
+                } else {
+                  console.log("the user loged in a normal way")
+                  authContext?.setIsLogged(true);
+                  navigate('/');
+                  GetUserInfo();
                 }
-                setErrorList(list)
-               }
-               else if (error.request){
-                //to do
-               }
+              }
+              setUsername('')
+              setEmail('')
+              setPassword('')
+              SetErrors({
+              username: '',
+              email: '',
+              password: '',
+              confirmPassword: ''
             });
+          })
+          .catch((error:any) => {
+            console.log(error.response.data)
+            setError(true)
+            if (error.response && error.response.data){
+              const list = []
+              const errors = error.response.data;
+              for (const field in errors) {
+                  if (errors[field].length > 0) {
+                    list.push([field, errors[field][0]])
+                  }
+              }
+              setErrorList(list)
+             }
+             else if (error.request){
+              //to do
+             }
+          });
     }
   }
 
@@ -338,8 +358,32 @@ function Authentication() {
               </div>
           </div>
       </div>
+      {
+        showOtpAlert && 
+        <div className="GameModePopUpBlur">
+          <div className="alertDeleteUser alertOTP">
+            <div className="cancelIcon">
+              <i className="fa-solid fa-xmark" onClick={() => {setIsOtpActive(false)}}></i>
+            </div>
+            <div className="contentOtp">
+              <div className="iconEmail">
+              <i className="fa-solid fa-envelope-open-text"></i>
+              <span></span>
+              </div>
+              <div className="content-text">
+                <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
+                <span>A verification code has been sent to your email. Please check your inbox.</span>
+                <input type="text" placeholder="Enter Code" />
+              </div>
+              <div className="Codefiled">
+                <button type="submit">Verify</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </>
-    )
+  )
 }
 
 export default Authentication

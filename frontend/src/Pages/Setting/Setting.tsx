@@ -163,12 +163,12 @@ const Setting = () => {
     const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
     checkbox.checked = false
     SetshowOtpAlert(false);
-    axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),{val: false}, {withCredentials: true})
+    axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: false}, {withCredentials: true})
   }
   const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       SetshowOtpAlert(true);
-      axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),{val: true}, {withCredentials: true})
+      axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: true}, {withCredentials: true})
     } else {
       disableOtp()
     }
@@ -190,7 +190,7 @@ const Setting = () => {
   }
 
   useEffect(() => {
-    axios.get(getendpoint("http", "/api/accounts/SendOTPView/"), {withCredentials: true})
+    axios.get(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}`), {withCredentials: true})
     .then((response) => {
       const checkbox = document.getElementById('otpToggle') as HTMLInputElement
       if (response.data === true)
