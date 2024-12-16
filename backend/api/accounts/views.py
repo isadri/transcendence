@@ -2,25 +2,30 @@ import os
 import pyotp
 from typing import Optional
 from django.conf import settings
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth import (
+    authenticate,
+    login,
+    logout,
+)
+from django.contrib.auth.hashers import check_password
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
 from django.utils import timezone
 from rest_framework import generics
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
-from django.contrib.auth.hashers import check_password
-from rest_framework.permissions import IsAuthenticated
-
-from django.shortcuts import get_object_or_404,redirect
-
 from .utils import (
     get_access_token_from_api,
     get_tokens_for_user,
@@ -31,6 +36,8 @@ from .utils import (
     get_user,
     get_user_info,
     send_otp_email,
+    create_random_user,
+    get_response,
 )
 
 
@@ -88,7 +95,6 @@ class LoginViewSet(viewsets.ViewSet):
         return Response({
             'error': 'A user with that password does not exist.'
         }, status=status.HTTP_404_NOT_FOUND)
-        
 
 
 class LoginWith2FAViewSet(viewsets.ViewSet):
@@ -133,29 +139,33 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class VerifyOTPViewSet(viewsets.ViewSet):
-    """
-    A ViewSet for verifying if the otp provided by the user is valid.
-    """
-    permission_classes = [AllowAny]
-    authentication_classes = []
+# Replaced by checkValidOtp
 
-    def create(self, request: Request) -> Response:
-        otp = request.data['key']
-        username = request.data['username'].lower()
-        user = User.objects.get(username=username)
-        total_difference = timezone.now() - user.otp_created_at
-        if total_difference.total_seconds() > 60 or otp != str(user.otp):
-            return Response({'error': 'Key is incorrect'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        login(request, user)
-        refresh_token, access_token = get_tokens_for_user(user)
-        response = Response({
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-        }, status=status.HTTP_200_OK)
-        store_token_in_cookies(response, access_token)
-        return response
+#class VerifyOTPViewSet(viewsets.ViewSet):
+#    """
+#    A ViewSet for verifying if the otp provided by the user is valid.
+#    """
+#    permission_classes = [AllowAny]
+#    authentication_classes = []
+
+#    def create(self, request: Request) -> Response:
+#        otp = request.data['key']
+#        username = request.data['username'].lower()
+#        user = User.objects.get(username=username)
+#        total_difference = timezone.now() - user.otp_created_at
+#        if total_difference.total_seconds() > 60 or otp != str(user.otp):
+#            return Response({'error': 'Key is incorrect'},
+#                            status=status.HTTP_400_BAD_REQUEST)
+#        login(request, user)
+#        refresh_token, access_token = get_tokens_for_user(user)
+#        response = Response({
+#            'refresh_token': refresh_token,
+#            'access_token': access_token,
+#        }, status=status.HTTP_200_OK)
+#        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+#        store_token_in_cookies(response, access_token)
+#        return response
+
 
 class GoogleLoginViewSet(viewsets.ViewSet):
     """
@@ -167,12 +177,12 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     """
     permission_classes = [AllowAny]
 
-    def get_user(self, user_info: dict[str, str]) -> User:
+    def get_user(self, username: str, email: str) -> User:
         """
-        Extract a username from the email of the user and get the user.
+        use the get_user function to get a user.
         """
         username = user_info['email'].split('@')[0].replace('.', '_').lower()
-        return get_user(username, user_info['email'])
+        return get_user(username, email)
 
     def list(self, request: Request) -> Response:
         """
@@ -186,12 +196,17 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = self.get_user(user_info)
+        if not user:
+            return Response({
+                'error': 'A user with this email is already exist'
+            }, status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        response = Response({
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-        }, status=status.HTTP_200_OK)
+        #response = Response({
+        #    'refresh_token': refresh_token,
+        #    'access_token': access_token,
+        #}, status=status.HTTP_200_OK)
+        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
         return response
 
@@ -276,14 +291,18 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
+        if not user:
+            return Response({
+                'error': 'A user with this email is already exist'
+            }, status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        response = Response({
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-        }, status=status.HTTP_200_OK)
+        #response = Response({
+        #    'refresh_token': refresh_token,
+        #    'access_token': access_token,
+        #}, status=status.HTTP_200_OK)
+        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
-        print('response >>> ', access_token)
         return response
 
 
@@ -332,7 +351,6 @@ class IntraLoginWith2FAViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
 
-
 class RegisterViewSet(viewsets.ViewSet):
     """
     A ViewSet for creating new user.
@@ -364,7 +382,6 @@ class LogoutViewSet(viewsets.ViewSet):
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
-
 
 
 #################################  UPDATE & DELETE & TOWFac_Send_email VIEWS   ##############################
@@ -508,7 +525,6 @@ class SendOTPView(APIView):
         val = user.otp is not None
         print(val)
         return Response(val, status=status.HTTP_200_OK)
-
 
 
 class checkValidOtp(APIView):

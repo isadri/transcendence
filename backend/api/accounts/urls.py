@@ -15,7 +15,7 @@ router = routers.SimpleRouter()
 router.register(r'register', views.RegisterViewSet, basename='register')
 router.register(r'login', views.LoginViewSet, basename='login')
 router.register(r'login2fa', views.LoginWith2FAViewSet, basename='login-2fa')
-router.register(r'verify-otp', views.VerifyOTPViewSet, basename='verify-otp')
+#router.register(r'verify-otp', views.VerifyOTPViewSet, basename='verify-otp')
 router.register(r'logout', views.LogoutViewSet, basename='logout')
 
 # The frontend should redirect the user to one of these two apis

@@ -113,6 +113,9 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     active_chat = models.IntegerField(default=-1)
 
+    registered_done = models.BooleanField(default=True)
+    from_remote_api = models.BooleanField(default=False)
+
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
