@@ -30,7 +30,7 @@
 
 .settingContent {
     width: 90%;
-    height: 880px;
+    height: 900px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -385,7 +385,6 @@
   margin-bottom: 10px;
 }
 
-
 .alertOTP{
     width: 40%;
     height: 35%;
@@ -471,15 +470,93 @@
     box-shadow: 0 0 5px var(--primary);
   }
 
-.alertOTP .contentOtp .Codefiled button{
+.alertOTP .Codefiled button{
     width: 50%;
     height: 50%;
     border-radius: 10px;
     background-color: var(--primary);
     border: 1px solid var(--primary);
     color: white;
+    cursor: pointer;
 }
 
+
+
+/********************************************/
+
+
+.alertOTP .contentvalidate{
+    width: 80%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: var(--mono);
+}
+
+.alertDeleteUser .contentvalidate .fa-circle-check {
+    font-size: 55px;
+    color: #fff;
+    background: radial-gradient(circle, #3fa73f, #3fa73f);
+    padding: 15px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px #3a9f3ad1;
+}
+
+.alertDeleteUser .contentvalidate .fa-circle-xmark{
+    font-size: 55px;
+    color: #fff;
+    background: radial-gradient(circle, #c92929, #c92929);
+    padding: 15px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px rgba(139, 23, 23, 0.682);
+}
+.alertOTP .contentvalidate h2{
+    color: #3fa73f;
+    text-shadow: 0 4px 8px #3a9f3ad1;
+}
+
+.alertOTP .contentvalidate .fail{
+    color: #c92929;
+    text-shadow: 0 4px 8px rgba(139, 23, 23, 0.682);
+}
+
+
+.alertDeleteUser .contentvalidate h3 {
+    font-weight: bold;
+    margin: 10px 0;
+    color: #ffffff;
+}
+
+.alertDeleteUser .contentvalidate span {
+    font-size: 16px;
+    color: #e8f5e9;
+    margin-top: 5px;
+}
+
+.alertOTP .contentvalidate .Codefiled{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.alertOTP .contentvalidate .Codefiled button{
+    height: 35px;
+    width: 90px;
+    margin-top: 10%;
+    background-color: #3fa73f;
+    border-color:#3fa73f;
+}
+.alertOTP .contentvalidate .Codefiled .failbutton{
+    height: 35px;
+    width: 90px;
+    margin-top: 10%;
+    background-color: #c92929;
+    border-color:#c92929;
+}
 
 @media only screen and (max-width: 478px) {
     .ProfileEdit-C2, .ChangePass-C2 ,.ProfileEdit-C1, .ChangePass-C1{

@@ -124,6 +124,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+myenv
 env/
 venv/
 ENV/
@@ -167,3 +168,5 @@ checker.sh
 .idea/
 
 logstash.db
+
+node_modules

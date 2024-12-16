@@ -24,7 +24,7 @@ from config.routing import websocket_urlpatterns
 
 # from api.chat.routing import websocket_urlpatterns
 
-from api.notifications.routing import websocket_urlpatterns
+# from api.notifications.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,

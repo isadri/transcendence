@@ -5,6 +5,7 @@ import { Group, PerspectiveCamera, WebGLRenderer } from 'three';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Alert from '../../components/Alert/Alert';
+import { getContext } from '../../context/getContextData';
 
 // TODO: change the color of floating
 const modelUrl = new URL('../../assets/glb/sceen_without_balls.glb', import.meta.url).href;
@@ -67,6 +68,7 @@ function Model() {
 }
 
 function LandingSceen() {
+  
   return (
     <>
       <OrbitControls enableZoom={false} />
@@ -79,10 +81,12 @@ function LandingSceen() {
 }
 
 function Landing() {
+    const account = getContext()
     return (
       <>
         <Alert primaryColor='#00ff115a' secondaryColor='#90f18b'>
           <i className="fa-solid fa-circle-check"></i>
+          <span>{account?.createdAlert}</span>
         </Alert>
         <div className='landing'>
           <div className='landing3d'>

@@ -121,3 +121,4 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 };
 
 export default ChatCenter;
+
