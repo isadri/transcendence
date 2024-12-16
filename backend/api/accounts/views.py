@@ -494,17 +494,23 @@ class SendOTPView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
-        user.seed = pyotp.random_base32()
-        user.otp = pyotp.TOTP(user.seed).now()
-        user.otp_created_at = timezone.now()
+        if request.data['val'] == True:
+            user.seed = pyotp.random_base32()
+            user.otp = pyotp.TOTP(user.seed).now()
+            user.otp_created_at = timezone.now()
+        else:
+            user.otp_active = False
+            user.otp = None
+            user.save()
+            return Response({'message': 'otp '}, status=status.HTTP_200_OK)
         user.save()
-        print(user.otp)
         send_otp_email(user)
+        print(user.otp)
         return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
     def get(self, request):
         user = request.user
-        val = user.is_otp_active
+        val = user.otp_active
         print(val)
         return Response(val, status=status.HTTP_200_OK)
 
@@ -523,6 +529,6 @@ class checkValidOtp(APIView):
             # user.is_otp_active = False
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
-        user.is_otp_active = True
+        user.otp_active = True
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
