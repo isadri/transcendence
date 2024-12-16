@@ -56,12 +56,21 @@ const ListChat = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 		<div className="chat-list">
 			<div className="chat-container">
 				<div>Messages</div>
-				<img
-					src="/ChatImages/newChat.svg"
-					alt="New Chat"
-					className="newChat"
-					onClick={() => setListAllFriends((prev) => !prev)}
-				/>
+				{!listAllFriends ? (
+					<img
+						src="/ChatImages/newChat.svg"
+						alt="New Chat"
+						className="newChat"
+						onClick={() => setListAllFriends((prev) => !prev)}
+					/>
+				) : (
+					<img
+						src="/ChatImages/Vector.png"
+						alt="New Chat"
+						className="newChat"
+						onClick={() => setListAllFriends((prev) => !prev)}
+					/>
+				)}
 			</div>
 			<div className="chat-search">
 				<div className="chat-search-container">
