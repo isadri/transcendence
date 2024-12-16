@@ -36,7 +36,6 @@ from .utils import (
     get_user,
     get_user_info,
     send_otp_email,
-    create_random_user,
     get_response,
 )
 
@@ -176,13 +175,14 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     If the user does not exist, it creates a new one.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
-    def get_user(self, username: str, email: str) -> User:
+    def get_user(self, user_info: dict) -> User:
         """
         use the get_user function to get a user.
         """
         username = user_info['email'].split('@')[0].replace('.', '_').lower()
-        return get_user(username, email)
+        return get_user(username, user_info.get('email'))
 
     def list(self, request: Request) -> Response:
         """
@@ -202,10 +202,6 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        #response = Response({
-        #    'refresh_token': refresh_token,
-        #    'access_token': access_token,
-        #}, status=status.HTTP_200_OK)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
         return response
