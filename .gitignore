@@ -156,7 +156,6 @@ dmypy.json
 cython_debug/
 
 app.log
-media/avatars
 google-api.json
 migrations/
 development.py
@@ -170,3 +169,6 @@ checker.sh
 logstash.db
 
 node_modules
+
+static/
+media/
