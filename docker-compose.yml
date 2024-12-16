@@ -17,16 +17,13 @@ services:
   back-end:
     container_name: backend
     image: backend
-    build:
-      context: backend
+    build: ./backend
     volumes:
       - ./backend/:/code
       - certs:/certs
       - static_volumes:/code/static
     networks:
       - app-network
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
     env_file:
       - .env
     depends_on:
@@ -68,7 +65,7 @@ services:
     restart: on-failure
 
   redis:
-    image: redis:latest
+    image: redis:7
     container_name: redis
     env_file:
       - .env
@@ -77,10 +74,9 @@ services:
     restart: on-failure
 
   nginx:
+    image: nginx:perl
     container_name: nginx
-    image: nginx
-    build:
-      context: nginx
+    build: ./nginx
     ports:
       - 8000:8000
     networks:
