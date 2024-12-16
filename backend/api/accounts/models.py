@@ -111,6 +111,19 @@ class User(PermissionsMixin, AbstractBaseUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
+    otp_active =models.BooleanField(
+        default=False,
+        help_text=_(
+            '2FA active or not'
+        )
+    )
+    is_online = models.BooleanField(
+        default=False,
+        help_text=_(
+            'the user online or not'
+        )
+    )
+
     active_chat = models.IntegerField(default=-1)
 
     # Add friends field
