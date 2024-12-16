@@ -217,45 +217,45 @@ CHANNEL_LAYERS = {
     },
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'json': {
-            '()': 'config.formatters.CustomizedJSONFormatter',
-        },
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-            'class': 'logging.FileHandler',
-            'filename': '/code/app.log',
-            'formatter': 'verbose',
-        },
-        'logstash': {
-            'level': 'DEBUG',
-            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
-            'transport': 'logstash_async.transport.TcpTransport',
-            'host': 'logstash',
-            #'formatter': 'verbose',
-            'port': int(os.getenv('TCP_PORT', '5959')),
-            'database_path': None, # use in-memory cache instead of a SQLite database
-            'ssl_enable': True,
-            'ssl_verify': True,
-            'ca_certs': '/certs/ca/ca.crt',
-            'certfile': '/certs/backend-server/backend-server.crt',
-            'keyfile': '/certs/backend-server/backend-server.key',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['logstash'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
+#LOGGING = {
+#    'version': 1,
+#    'disable_existing_loggers': False,
+#    'formatters': {
+#        'json': {
+#            '()': 'config.formatters.CustomizedJSONFormatter',
+#        },
+#        "verbose": {
+#            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+#            "style": "{",
+#        },
+#    },
+#    'handlers': {
+#        'file': {
+#            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+#            'class': 'logging.FileHandler',
+#            'filename': '/code/app.log',
+#            'formatter': 'verbose',
+#        },
+#        'logstash': {
+#            'level': 'DEBUG',
+#            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+#            'transport': 'logstash_async.transport.TcpTransport',
+#            'host': 'logstash',
+#            #'formatter': 'verbose',
+#            'port': int(os.getenv('TCP_PORT', '5959')),
+#            'database_path': None, # use in-memory cache instead of a SQLite database
+#            'ssl_enable': True,
+#            'ssl_verify': True,
+#            'ca_certs': '/certs/ca/ca.crt',
+#            'certfile': '/certs/backend-server/backend-server.crt',
+#            'keyfile': '/certs/backend-server/backend-server.key',
+#        },
+#    },
+#    'loggers': {
+#        'django': {
+#            'handlers': ['logstash'],
+#            'level': 'DEBUG',
+#            'propagate': False,
+#        },
+#    },
+#}
