@@ -60,5 +60,5 @@ class Game(models.Model):
 
   def abortGame(self, winner, score):
     self.winner = self.player1 if self.player1.username == winner else self.player2
-    self.setScore(score)
+    self.setAsEnded(score)
     self.save()

@@ -205,9 +205,11 @@ class GameData:
 
   def getPlayer(self, username):
     return self.players[username]
+
   def getPlayerPos(self, username):
     return self.players_pos[username]
-  def setPlayerPos(self, username, pos):
+
+  def setPlayerPos(self, username, pos):#khasseha tn9ah
     direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
     newpos = self.players_pos[username][0] + direct
     if newpos < (3.07345 - 0.75) and newpos > -(3.07345 - 0.75):
