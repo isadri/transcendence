@@ -46,6 +46,7 @@ def get_user_token_data(request) -> dict:
     except Exception as e:
         raise AuthenticationFailed(e)
 
+
 def get_current_user_id(request) -> int:
     """
     Gets current user id from access token
@@ -148,31 +149,22 @@ def get_user(username: str, email: str) -> User:
         if not user.from_remote_api:
             try:
                 user = User.objects.get(email=email)
-
-                if not user.from_remote_api:
-                    return None
             except User.DoesNotExist:
                 user = User.objects.create_user(
                     username=username + '*' + str(get_next_id()),
                     email=email
                 )
-                user.from_remote_api = True
-                user.registered_done = False
-                user.save()
     except User.DoesNotExist:
         try:
             user = User.objects.get(email=email)
-
-            if not user.from_remote_api:
-                return None
         except User.DoesNotExist:
             user = User.objects.create_user(
                 username=username,
                 email=email
             )
-            user.from_remote_api = True
-            user.registered_done = False
-            user.save()
+    user.from_remote_api = True
+    user.register_complete = False
+    user.save()
     return user
 
 
@@ -245,3 +237,19 @@ def get_response(refresh_token: str, access_token: str,
         'refresh_token': refresh_token,
         'access_token': access_token
     }, status=status_code)
+
+
+def is_another_user(user: User, email: str) -> bool:
+    """
+    This function is used when a user tried to login with 42 intra or Google.
+
+    If the user has an email does not match the given email, then this user
+    has another account and should set a new username for this account. If the
+    user has an email that matches the given email, then she will logging
+    directly without setting a new username, since she is the owner of the
+    email.
+
+    Returns:
+        True if the emails do not match, False otherwise.
+    """
+    return user.email != email

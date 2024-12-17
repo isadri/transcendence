@@ -13,9 +13,11 @@ from django.shortcuts import (
     redirect,
 )
 from django.utils import timezone
-from rest_framework import generics
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import (
+    generics,
+    status,
+    viewsets
+)
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -37,6 +39,7 @@ from .utils import (
     get_user_info,
     send_otp_email,
     get_response,
+    is_another_user,
 )
 
 
@@ -177,13 +180,6 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def get_user(self, user_info: dict) -> User:
-        """
-        use the get_user function to get a user.
-        """
-        username = user_info['email'].split('@')[0].replace('.', '_').lower()
-        return get_user(username, user_info.get('email'))
-
     def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
@@ -195,11 +191,12 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = self.get_user(user_info)
-        if not user:
+        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
+        user = get_user(username, user_info.get('email'))
+        if is_another_user(user, user_info.get('email')):
             return Response({
-                'error': 'A user with this email is already exist'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'info': 'The user needs to set a username'
+            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
@@ -226,7 +223,7 @@ class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
         authorization_code which is necessary to authenticate with the API.
 
         Returns:
-            The access token
+            The access token.
         """
         token_endpoint = 'https://oauth2.googleapis.com/token'
         payload = {
@@ -287,16 +284,12 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
-        if not user:
+        if is_another_user(user, user_info.get('email')):
             return Response({
-                'error': 'A user with this email is already exist'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'info': 'The user needs to set a username'
+            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        #response = Response({
-        #    'refresh_token': refresh_token,
-        #    'access_token': access_token,
-        #}, status=status.HTTP_200_OK)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
         return response
@@ -361,6 +354,7 @@ class RegisterViewSet(viewsets.ViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
