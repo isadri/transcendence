@@ -3,7 +3,6 @@ import { getContext, getendpoint } from '../../context/getContextData'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
-import { log } from 'three/webgpu'
 
 function CallBack() {
   const authContext = getContext()
@@ -21,17 +20,14 @@ function CallBack() {
     })
   }
   const {from} = useParams()
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    console.log("from ==========> ", from);
-
+  const handelLogin = async (code: string | null) => {
     if (code)
     {
         if (from === "intra")
         {
+          var url = getendpoint("http", '/api/accounts/login/intra')
           axios
-            .get(getendpoint("http", '/api/accounts/login/intra'), {params: { code: code }, withCredentials: true })
+            .get(url, {params: { code: code }, withCredentials: true })
             .then((response) => {
                 setTimeout(() => {
                     authContext?.setIsLogged(true)
@@ -65,6 +61,12 @@ function CallBack() {
     } else {
       console.error('error');
     }
+  }
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    console.log("from ==========> ", from);
+    handelLogin(code)
   }, [authContext, navigate]);
 
   return (

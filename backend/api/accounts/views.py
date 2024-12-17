@@ -124,6 +124,7 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             user.otp = pyotp.TOTP(user.seed).now()
             user.otp_created_at = timezone.now()
             user.save()
+            print(user.otp)
             send_otp_email(user)
             return Response({
                 'detail': 'The verification code sent successfully',
@@ -141,6 +142,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
+        print("===========> " ,request.data)
         otp = request.data['key']
         username = request.data['username'].lower()
         user = User.objects.get(username=username)
@@ -367,7 +369,7 @@ class LogoutViewSet(viewsets.ViewSet):
 
 
 
-#################################  UPDATE & DELETE & TOWFac_Send_email VIEWS   ##############################
+#################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
 
 
 class UpdateUserDataView(APIView):
@@ -509,14 +511,17 @@ class SendOTPView(APIView):
         return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
     def get(self, request, username):
-        user = user = get_object_or_404(User, username=username)
-        val = user.otp_active
-        print(val)
-        return Response(val, status=status.HTTP_200_OK)
+        try:
+            user = User.objects.get(username=username)
+            val = user.otp_active
+            print(val)
+            return Response(val, status=status.HTTP_200_OK)
+        except:
+            return Response({'error' : "user not found"}, status=status.HTTP_200_OK)
 
 class checkValidOtp(APIView):
     """
-     This view checks if the OTP eentered by th user is valid(in setting)
+     This view checks if the OTP entered by th user is valid(in setting)
      to activate the otp in user account
     """
     permission_classes = [IsAuthenticated]
@@ -529,6 +534,7 @@ class checkValidOtp(APIView):
             # user.is_otp_active = False
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
-        user.otp_active = True
-        user.save()
+        if not user.otp_active:
+            user.otp_active = True
+            user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)

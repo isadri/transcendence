@@ -20,7 +20,7 @@ const emptyUser = {
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
-  let [user, setUser] = useState<userDataType>(emptyUser)
+  let [user, setUser] = useState<userDataType | undefined>(emptyUser)
   // const hostname = window.location.hostname
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)

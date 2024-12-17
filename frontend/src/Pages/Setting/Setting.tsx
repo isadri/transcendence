@@ -27,6 +27,7 @@ const Setting = () => {
   const [Verified, setVerified] = useState(0) // otp valid => done alert, otp invalid try agin alert
   const [confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
   const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
+  const [isOtpDisactive, setIsOtpDisactive] = useState(false)
   const [errors, SetErrors] = useState<Data>({
     username: "",
     email: "",
@@ -163,6 +164,7 @@ const Setting = () => {
     const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
     checkbox.checked = false
     SetshowOtpAlert(false);
+    setIsOtpDisactive(true)
     axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: false}, {withCredentials: true})
   }
   const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,15 +203,23 @@ const Setting = () => {
     if (showAlert) {
       setTimeout(() => {
         SetConfirm(1);
+        setIsOtpDisactive(false)
       }, 900);
     }
-  }, [showAlert, Verified]);
+    setTimeout(() => {
+      setIsOtpDisactive(false)
+    }, 900);
+  }, [showAlert, Verified, setIsOtpDisactive, isOtpDisactive]);
 
   return (
     <>
       <div className={`alert-acountNotDeleted ${confirm === 3 ? "show" : "hide"}`}>
           <i className="fa-solid fa-circle-exclamation"></i>
           <span>{createdAlert}</span>
+      </div>
+      <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>
+          <i className="fa-solid fa-circle-exclamation"></i>
+          <span>Two-Factor Authentication disabled</span>
       </div>
       <div className="Par">
         <div className="settingPage">
