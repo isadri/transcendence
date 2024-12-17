@@ -141,32 +141,30 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-# Replaced by checkValidOtp
+class VerifyOTPViewSet(viewsets.ViewSet):
+    """
+    A ViewSet for verifying if the otp provided by the user is valid.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
-#class VerifyOTPViewSet(viewsets.ViewSet):
-#    """
-#    A ViewSet for verifying if the otp provided by the user is valid.
-#    """
-#    permission_classes = [AllowAny]
-#    authentication_classes = []
-
-#    def create(self, request: Request) -> Response:
-#        otp = request.data['key']
-#        username = request.data['username'].lower()
-#        user = User.objects.get(username=username)
-#        total_difference = timezone.now() - user.otp_created_at
-#        if total_difference.total_seconds() > 60 or otp != str(user.otp):
-#            return Response({'error': 'Key is incorrect'},
-#                            status=status.HTTP_400_BAD_REQUEST)
-#        login(request, user)
-#        refresh_token, access_token = get_tokens_for_user(user)
-#        response = Response({
-#            'refresh_token': refresh_token,
-#            'access_token': access_token,
-#        }, status=status.HTTP_200_OK)
-#        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
-#        store_token_in_cookies(response, access_token)
-#        return response
+    def create(self, request: Request) -> Response:
+        otp = request.data['key']
+        username = request.data['username'].lower()
+        user = User.objects.get(username=username)
+        total_difference = timezone.now() - user.otp_created_at
+        if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            return Response({'error': 'Key is incorrect'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        login(request, user)
+        refresh_token, access_token = get_tokens_for_user(user)
+        response = Response({
+            'refresh_token': refresh_token,
+            'access_token': access_token,
+        }, status=status.HTTP_200_OK)
+        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+        store_token_in_cookies(response, access_token)
+        return response
 
 
 class GoogleLoginViewSet(viewsets.ViewSet):
