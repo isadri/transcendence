@@ -300,6 +300,9 @@ function GameTable() {
             setWinner(enemy)
         }
       }
+      return () => {
+        if ()
+      }
     }, [context])
     if (!loading)
       return (
@@ -430,7 +433,7 @@ const Remote = () => {
   const { id } = useParams();
   const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
   const [socket] = useState<WebSocket>(new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`)))
-  console.log(socket.readyState)
+  socket.onclose = (e) => console.log('closed')
   return (<Provider socket={socket} />)
 }
 
