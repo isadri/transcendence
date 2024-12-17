@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
 from .models import FriendList, FriendRequest
-from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
+from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer, FriendRequestSenderSerializer
 from django.shortcuts import get_object_or_404
 
 User = get_user_model()
@@ -186,6 +186,49 @@ class PendingFriendRequestsView(generics.ListAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(receiver=self.request.user, status="pending")
 
+# class DeclineFriendRequestsView(generics.ListAPIView):
+#     """
+#     View to list all pending friend requests.
+#     """
+#     serializer_class = FriendSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         return FriendRequest.objects.filter(sender=self.request.user, status="pending")
+
+# class DeclineFriendRequestsView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         friends = FriendRequest.objects.filter(sender=self.request.user,
+#                         status="pending")
+
+#         # # Get all users who are not in the friends list
+#         # non_friends = User.objects.exclude(id__in=friends_ids)
+
+#         # Serialize and return the data
+#         serializer = FriendSerializer(friends.receiver, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CancelFriendRequestsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Get all users to whom the current user has sent pending friend requests.
+        """
+        # Filter FriendRequests where current user is the sender and status is pending
+        pending_requests = FriendRequest.objects.filter(
+            sender=request.user, status="pending"
+        ).select_related("receiver")  # Optimize query for receiver
+
+        # Extract only the `receiver` users
+        receivers = [request.receiver for request in pending_requests]
+
+        # Serialize the user data for the receivers
+        serializer = FriendSerializer(receivers, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AcceptedFriendRequestsView(generics.ListAPIView):
     """
@@ -266,6 +309,10 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # friends_ids = FriendRequest.objects.filter(
+        #     Q(sender=request.user, status__in=['accepted', "blocked"]) |
+        #     Q(receiver=request.user, status__in=['accepted', 'blocked'])
+        # ).values_list('sender_id', 'receiver_id')
         friends_ids = FriendRequest.objects.filter(
             Q(sender=request.user, status__in=['accepted', 'pending', "blocked"]) |
             Q(receiver=request.user, status__in=['accepted', 'pending', 'blocked'])

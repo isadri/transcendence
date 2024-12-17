@@ -1,23 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./AddFriends.css";
+import "./CancelFriends.css";
 import axios from "axios";
 import { getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
-interface AllUsers {
+interface PendingUsers {
 	id: number;
 	username: string;
 	avatar: string;
 }
 
-const AddFriends = () => {
+const CancelFriends = () => {
 	const navigate = useNavigate();
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
-	const [allUsers, setAllUsers] = useState<AllUsers[]>([]);
-	const [results, setResults] = useState<AllUsers[]>([]);
+	const [pendingUsers, setPendingUsers] = useState<PendingUsers[]>([]);
+	const [results, setResults] = useState<PendingUsers[]>([]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -35,13 +35,12 @@ const AddFriends = () => {
 		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", "/api/friends/users"),
-					// "http://0.0.0.0:8000/api/friends/users",
+					getendpoint("http", "/api/friends/cancel"),
 					{
 						withCredentials: true,
 					}
 				);
-				setAllUsers(response.data);
+				setPendingUsers(response.data);
 			} catch (err) {
 				console.log("Error fetching users:", err);
 			}
@@ -61,7 +60,7 @@ const AddFriends = () => {
 		const value = event.target.value;
 
 		setSearchFriend(value);
-		const filterResults = allUsers.filter((user) =>
+		const filterResults = pendingUsers.filter((user) =>
 			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
@@ -72,23 +71,26 @@ const AddFriends = () => {
 		setSearchFriend("");
 	};
 
-	const handleSendRequests = async (id: number) => {
+	const handleCancelRequests = async (id: number) => {
+		const existingFriend = pendingUsers.find(
+			(friend) => friend.id === id
+		);
+		if (!existingFriend)
+			return;
 		try {
-			await axios.post(
-				getendpoint("http", "/api/friends/send/"),
-				{ receiver: id },
+			await axios.delete(
+				getendpoint("http", `/api/friends/cancel/${id}`),
 				{
 					withCredentials: true,
 				}
 			);
-			setAllUsers((prev) => prev.filter((user) => user.id !== id));
+			setPendingUsers((prev) => prev.filter((user) => user.id !== id));
 		} catch (error) {
-			console.error("Error accepting friend request:", error);
+			console.error("Error decline friend request:", error);
 		}
 	};
 
-	const friendsList = searchFriend ? results : allUsers;
-	// console.log(friendsList)
+	const friendsList = searchFriend ? results : pendingUsers;
 	return (
 		<div>
 			<>
@@ -126,10 +128,10 @@ const AddFriends = () => {
 								<span>{friend.username}</span>
 							</div>
 							<button
-								className="addFriend"
-								onClick={() => handleSendRequests(friend.id)}
+								className="cancelFriend"
+								onClick={() => handleCancelRequests(friend.id)}
 							>
-								Add Friend
+								Decline Friend
 							</button>
 						</div>
 					);
@@ -139,4 +141,4 @@ const AddFriends = () => {
 	);
 };
 
-export default AddFriends;
+export default CancelFriends;

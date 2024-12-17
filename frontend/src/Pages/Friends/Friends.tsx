@@ -4,6 +4,7 @@ import AllFriends from "./components/AllFriends.tsx";
 import FriendRequests from "./components/FriendRequests.tsx";
 import AddFriends from "./components/AddFriends.tsx";
 import BlockedFriends from "./components/BlockedFriends.tsx";
+import CancelFriends from "./components/CancelFriends.tsx";
 
 
 const Friends = () => {
@@ -49,6 +50,16 @@ const Friends = () => {
 					>
 						Blocked Friend
 					</li>
+					<li
+						className={`${
+							activeSection == "cancelFriends" ? "selectedItem" : ""
+						}`}
+						onClick={() => {
+							setActiveSection("cancelFriends");
+						}}
+					>
+						Decline Friend
+					</li>
 				</ul>
 			</div>
 			<div className="bodyFriends">
@@ -56,6 +67,7 @@ const Friends = () => {
 				{activeSection === "friendRequests" && <FriendRequests/>}
 				{activeSection === "addFriends" && <AddFriends/>}
 				{activeSection === "blockedFriends" && <BlockedFriends/>}
+				{activeSection === "cancelFriends" && <CancelFriends/>}
 			</div>
 		</div>
 	);

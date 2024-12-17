@@ -11,7 +11,7 @@ interface FriendRequests {
 }
 
 const FriendRequests = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [friendRequests, setFriendRequests] = useState<FriendRequests[]>([]);
 
 	useEffect(() => {
@@ -73,7 +73,12 @@ const FriendRequests = () => {
 				return (
 					<div className="friendProfile friendRequests" key={friend.id}>
 						<div className="imageNameFriend">
-							<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
+							<img
+								src={friend.avatar}
+								alt=""
+								className="friendImage"
+								onClick={() => navigate(`/profile/${friend.username}`)}
+							/>
 							<span>{friend.username}</span>
 						</div>
 						<div className="buttonFriend">
