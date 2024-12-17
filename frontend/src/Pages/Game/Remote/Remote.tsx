@@ -15,8 +15,8 @@ import {
   useSphere,
 } from "@react-three/cannon";
 import { Material } from 'cannon-es';
-import { createContext, useContext, useEffect, useState } from "react";
-import { AxesHelper, DoubleSide, Fog, MathUtils, Object3D, Object3DEventMap } from "three";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { AxesHelper, DoubleSide, Fog, MathUtils, Object3D, Object3DEventMap, WebGLRenderer } from "three";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { userDataType } from "../../../context/context";
@@ -300,9 +300,6 @@ function GameTable() {
             setWinner(enemy)
         }
       }
-      return () => {
-        if ()
-      }
     }, [context])
     if (!loading)
       return (
@@ -315,6 +312,10 @@ function GameTable() {
           <SideWall position={[-(6.1469 + 0.5) / 2, 0, 0]} />
           <GoalWall position={[0, 0, (8.65640 + 0.5) / 2]} />
           <GoalWall position={[0, 0, -(8.65640 + 0.4) / 2]} />
+          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
+            <planeGeometry args={[300, 300]} />
+            <meshStandardMaterial side={DoubleSide} color={"#c1596c"} />
+          </mesh>
         </>
       );
     return <></>
@@ -324,8 +325,36 @@ function GameTable() {
 
 const Play = () => {
   const context = useContext(resultsContext)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   if (context) {
-    const { result, user, enemy, error, winner } = context
+    const { result, user, enemy, error, winner, socket } = context
+
+    useEffect(() => {
+      let renderer: WebGLRenderer | null = null;
+
+      const handleContextLost = (event: Event) => {
+        event.preventDefault()
+        if (socket.readyState === WebSocket.OPEN)
+          socket.close()
+      };
+
+      if (canvasRef.current) {
+        renderer = new WebGLRenderer({ canvas: canvasRef.current });
+        const glCanvas = renderer.domElement;
+        glCanvas.addEventListener("webglcontextlost", handleContextLost);
+      }
+
+      return () => {
+        if (renderer) {
+          const glCanvas = renderer.domElement;
+          glCanvas.removeEventListener("webglcontextlost", handleContextLost);
+        }
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.close(1000, "Component unmounted");
+        }
+      };
+    }, [socket]);
+
     return (
       <>
         <div className="PlayScreen">
@@ -337,10 +366,6 @@ const Play = () => {
             <directionalLight position={[3, 9, 5]} intensity={2} />
             <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 240} isPaused={false}>
               {/* <Debug> */}
-              <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
-                <planeGeometry args={[300, 300]} />
-                <meshStandardMaterial side={DoubleSide} color={"#c1596c"} />
-              </mesh>
               <GameTable />
               {/* </Debug> */}
             </Physics>
@@ -360,7 +385,7 @@ const Play = () => {
               </div>
               <div className='Home-Row3'>
                 <span>{enemy.username}</span>
-                <img src={getendpoint("http", enemy.avatar)} alt="" />
+                <img src={enemy.id !== -1 ? getendpoint("http", enemy.avatar) : pic} alt="" />
               </div>
             </div>
           </div>
@@ -408,7 +433,7 @@ const Play = () => {
 
 const emptyUser = {
   id: -1,
-  username: "",
+  username: "Enemy",
   email: "",
   avatar: ""
 }
