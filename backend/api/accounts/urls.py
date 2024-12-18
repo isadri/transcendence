@@ -17,23 +17,6 @@ router.register(r'login', views.LoginViewSet, basename='login')
 router.register(r'login2fa', views.LoginWith2FAViewSet, basename='login-2fa')
 router.register(r'verify-otp', views.VerifyOTPViewSet, basename='verify-otp')
 router.register(r'logout', views.LogoutViewSet, basename='logout')
-
-# The frontend should redirect the user to one of these two apis
-# For login with 42, the frontend should redirect the user to the
-# endpoint:
-# For Google:
-# 'https://api.intra.42.fr/oauth/authorize?'
-#                   'client_id={"INTRA_ID"}'
-#                   '&redirect_uri={"INTRA_REDIRECT_URI"}'
-#                   '&state={settings.OAUTH2_STATE_PARAMETER}'
-#                   '&response_type=code'
-#'https://accounts.google.com/o/oauth2/v2/auth?'
-#                   'client_id={"GOOGLE_ID")}'
-#                   '&redirect_uri={"GOOGLE_REDIRECT_URI")}'
-#                   '&state={settings.OAUTH2_STATE_PARAMETER}'
-#                   '&scope=openid profile email&response_type=code'
-#                   '&display=popup'
-
 router.register(r'login/intra', views.IntraLoginViewSet,
                 basename='intra-login')
 router.register(r'login/intra-2fa', views.IntraLoginWith2FAViewSet,

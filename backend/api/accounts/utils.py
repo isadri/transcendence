@@ -2,59 +2,21 @@ from django.conf import settings
 import pyotp
 import os
 import requests
+from django.db import connection
+from django.db.models import Max
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 
-from rest_framework.decorators import api_view
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.backends import TokenBackend
-from rest_framework_simplejwt.views import TokenVerifyView
 
-def get_user_token_data(request) -> dict:
-    """
-    Gets current user data stored on access token
-    Args:
-        request: the request to get the cookies
-    Return:
-        returns a dict of user data, example :
-        {
-            "token_type": string,
-            "exp": number,
-            "iat": number,
-            "jti": string,
-            "user_id": number
-        }
-    """
-    try:
-        token = request.COOKIES.get(settings.AUTH_COOKIE)
-        if not token:
-            raise AuthenticationFailed("Authentication credentials were not provided.")
-        token_decoder = TokenBackend(
-            algorithm=settings.SIMPLE_JWT['ALGORITHM'],
-            signing_key=settings.SIMPLE_JWT['SIGNING_KEY']
-        )
-        return (token_decoder.decode(token, verify=True))
-    except Exception as e:
-        raise AuthenticationFailed(e)
+def get_next_id():
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT nextval(pg_get_serial_sequence('accounts_user', 'id'))")
+        next_id = cursor.fetchone()[0]
+    return next_id + 1
 
-def get_current_user_id(request) -> int:
-    """
-    Gets current user id from access token
-    Args:
-        request: the request to get the cookies
-    """
-    data = get_user_token_data(request)
-    if not data or not data['user_id']:
-        raise AuthenticationFailed("Something went wrong.")
-    return data['user_id']
-
-from rest_framework.decorators import api_view
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.backends import TokenBackend
-from rest_framework_simplejwt.views import TokenVerifyView
 
 def get_user_token_data(request) -> dict:
     """
@@ -84,6 +46,7 @@ def get_user_token_data(request) -> dict:
     except Exception as e:
         raise AuthenticationFailed(e)
 
+
 def get_current_user_id(request) -> int:
     """
     Gets current user id from access token
@@ -95,6 +58,7 @@ def get_current_user_id(request) -> int:
     if not data or not data['user_id']:
         raise AuthenticationFailed("Something went wrong.")
     return data['user_id']
+
 
 def send_otp_email(user: User) -> None:
     """
@@ -173,18 +137,34 @@ def create_user(username: str, email: str) -> User:
 
 def get_user(username: str, email: str) -> User:
     """
-    Get a user.
-
-    This funtion checks if a user exists, otherwise it creates a new one.
+    This function searches for the user and ensures that the user is
+    registered with 42 intra. If the user is registered with another
+    api, a new random usename will be given to the user.
+    If the user does not exist, the method creates a new one and add her
+    to the list of the users registered with 42 intra.
     """
     try:
         user = User.objects.get(username=username)
+
+        if not user.from_remote_api:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                user = User.objects.create_user(
+                    username=username + '*' + str(get_next_id()),
+                    email=email
+                )
     except User.DoesNotExist:
-        user = User.objects.create_user(
-            username=username,
-            email=email
-        )
-    # print("----------------------> ", user, "<-----------------")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = User.objects.create_user(
+                username=username,
+                email=email
+            )
+    user.from_remote_api = True
+    user.register_complete = False
+    user.save()
     return user
 
 
@@ -246,3 +226,30 @@ def get_access_token_42(authorization_code: str) -> str:
         'grant_type': 'authorization_code'
     }
     return get_access_token_from_api(token_endpoint, payload)
+
+
+def get_response(refresh_token: str, access_token: str,
+                status_code: int) -> Response:
+    """
+    return a response with the refresh, access tokens, and the status code.
+    """
+    return Response({
+        'refresh_token': refresh_token,
+        'access_token': access_token
+    }, status=status_code)
+
+
+def is_another_user(user: User, email: str) -> bool:
+    """
+    This function is used when a user tried to login with 42 intra or Google.
+
+    If the user has an email does not match the given email, then this user
+    has another account and should set a new username for this account. If the
+    user has an email that matches the given email, then she will logging
+    directly without setting a new username, since she is the owner of the
+    email.
+
+    Returns:
+        True if the emails do not match, False otherwise.
+    """
+    return user.email != email

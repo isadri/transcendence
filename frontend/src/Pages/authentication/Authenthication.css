@@ -248,6 +248,12 @@
 }
 
 
+.contentOtp .auth-alert .inputt{
+    background-color: transparent;
+    height: 20%;
+    color: #ffffff;
+}
+
 @media only screen and (max-width: 720px){
     .SecondContainer{
         display: none;

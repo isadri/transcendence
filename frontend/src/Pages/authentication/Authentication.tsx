@@ -452,7 +452,7 @@ function Authentication() {
                 <div className="content-text">
                   <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
                   <span>A verification code has been sent to your email. Please check your inbox.</span>
-                  <input type="text" placeholder="Enter Code" 
+                  <input className='inputt' type="text" placeholder="Enter Code" 
                     value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
                 </div>
                 <div className="Codefiled">
@@ -461,6 +461,31 @@ function Authentication() {
               </div>
             </div>
           </div>
+        }
+        {
+          // <div className="GameModePopUpBlur">
+          //   <div className="alertDeleteUser alertOTP">
+          //     {/* <div className="cancelIcon">
+          //       <i className="fa-solid fa-xmark" onClick={() => SetshowOtpAlert(false)}></i>
+          //     </div> */}
+          //     <div className="contentOtp">
+          //       <div className="iconEmail">
+          //       <i className="fa-solid fa-user-pen"></i>
+          //       <span></span>
+          //       </div>
+          //       <div className="content-text auth-alert">
+          //         <h3>Update Your Username</h3>
+          //         <span>Please ensure your username complies with our policy. It must be
+          //           alphanumeric and between 3-15 characters. If valid, click "Confirm" to
+          //           continue.</span>
+          //         <input className='inputt' type="text" placeholder="Enter Username" />
+          //       </div>
+          //       <div className="Codefiled">
+          //         <button type="submit">Confirm</button>
+          //       </div>
+          //     </div>
+          //   </div>
+          // </div>
         }
     </>
   )

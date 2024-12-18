@@ -1,13 +1,15 @@
-import { useEffect } from 'react'
-import { getContext, getendpoint } from '../../context/getContextData'
+import { useEffect, useState } from 'react'
+import { getContext, getUser, getendpoint } from '../../context/getContextData'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
 
 function CallBack() {
   const authContext = getContext()
+  const user = getUser()
   const navigate = useNavigate()
-
+  const [usernameAlert, setUsernameAlert] = useState(false)
+  const [username, setUsername] = useState('')
   const GetUserInfo = () =>{
     axios.get(getendpoint("http", '/'),  {withCredentials:true})
     .then((response) => {
@@ -27,14 +29,20 @@ function CallBack() {
         {
           var url = getendpoint("http", '/api/accounts/login/intra')
           axios
-            .get(url, {params: { code: code }, withCredentials: true })
-            .then((response) => {
-                // setTimeout(() => {
-                    authContext?.setIsLogged(true)
-                    navigate('/')
-                    GetUserInfo()
-                  // }, 2000);
-                console.log("the user auth is ", authContext?.user?.username)
+          .get(url, {params: { code: code }, withCredentials: true })
+          .then((response) => {
+            console.log(response.data.info)
+            // if (response.data.info){
+            //   authContext?.setUser(response.data)
+            //   setUsernameAlert(true)
+            //   }
+              // else{
+                setTimeout(() => {
+                  GetUserInfo()
+                  authContext?.setIsLogged(true)
+                  navigate('/')
+                }, 2000);
+              // }
                 console.log('Success:', response.data)
               })
               .catch((error) => {
@@ -47,11 +55,11 @@ function CallBack() {
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
-                  // setTimeout(() => {
+                  setTimeout(() => {
+                      GetUserInfo()
                       authContext?.setIsLogged(true)
                       navigate('/')
-                      GetUserInfo()
-                  // }, 2000);
+                  }, 2000);
                   console.log('Success:', response.data)
                 })
                 .catch((error) => {
@@ -63,6 +71,22 @@ function CallBack() {
       console.error('error');
     }
   }
+
+  // const hadelSaveUsername = () => {
+  //   axios
+  //     .put(getendpoint("http", "/api/accounts/updateuserData/"), {username}, {
+  //       withCredentials: true,
+  //     })
+  //     .then((response) => {
+  //         console.log(response.data)
+  //         authContext?.setUser(response.data)
+  //         navigate('/')
+  //     })
+  //     .catch((error)=> {
+  //       console.log(error.response.data)
+  //     })
+  // }
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
@@ -72,7 +96,35 @@ function CallBack() {
 
   return (
     <div className="loader-container">
-        <div className="ripple"></div>
+      {
+        // usernameAlert ? 
+        // <div className="GameModePopUpBlur">
+        //     <div className="alertDeleteUser alertOTP">
+        //       {/* <div className="cancelIcon">
+        //         <i className="fa-solid fa-xmark" onClick={() => SetshowOtpAlert(false)}></i>
+        //       </div> */}
+        //       <div className="contentOtp">
+        //         <div className="iconEmail">
+        //         <i className="fa-solid fa-user-pen"></i>
+        //         <span></span>
+        //         </div>
+        //         <div className="content-text auth-alert">
+        //           <h3>Update Your Username</h3>
+        //           <span>Please ensure your username complies with our policy. It must be
+        //             alphanumeric and between 3-15 characters. If valid, click "Confirm" to
+        //             continue.</span>
+        //           <input className='inputt' type="text" placeholder="Enter Username"
+        //                 value={username} onChange={e => setUsername(e.target.value)}/>
+        //         </div>
+        //         <div className="Codefiled">
+        //           <button type="submit" onClick={hadelSaveUsername}>Confirm</button>
+        //         </div>
+        //       </div>
+        //     </div>
+        //   </div>
+        //   :
+          <div className="ripple"></div>
+      }
     </div>
   )
 }

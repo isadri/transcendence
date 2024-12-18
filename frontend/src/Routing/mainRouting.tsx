@@ -14,11 +14,13 @@ import Setting from '../Pages/Setting/Setting';
 // import Tictactoe from '../Pages/TicTacToe/Tictactoe';
 // import { Children } from 'react';
 import SideNavbar from '../components/sideNavbar/SideNavbar';
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet, /*useNavigate*/ } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
+// import { getContext, getUser } from '../context/getContextData';
+// import { useEffect } from 'react';
 
 
 // isLogged  routing table and layout
@@ -81,6 +83,20 @@ const mainRoutingTable = [
 ]
 
 function MainLayout() {
+  // const user = getUser()
+  // const context = getContext()
+
+  // const navigate = useNavigate()
+  // useEffect(() => {
+  //   if (!context) return
+  //   const {setIsLogged} = context
+  //   if (!user?.register_complete)
+  //   {
+  //     navigate('/Auth')
+  //     setIsLogged(false)
+  //     console.log("hello")
+  //   }
+  // }, [user])
   return (
     <>
       <SideNavbar/>

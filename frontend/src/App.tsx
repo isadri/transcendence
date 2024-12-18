@@ -1,5 +1,5 @@
 import BackGround from './components/background/BackGround'
-import {RouterProvider} from "react-router-dom";
+import {Navigate, RouterProvider, useNavigate} from "react-router-dom";
 import './App.css'
 
 import {useEffect, useState } from 'react';
@@ -15,7 +15,9 @@ const emptyUser = {
   id : -1,
   username : "",
   email : "",
-  avatar : ""
+  avatar : "",
+  register_complete: true,
+  from_remote_api: false
 }
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
     .then((response:any) => {
       setIsLogged(true)
       setUser(response.data)
+
     })
     .catch(() => {
       setIsLogged(false)
