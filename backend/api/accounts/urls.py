@@ -19,12 +19,12 @@ router.register(r'verify-otp', views.VerifyOTPViewSet, basename='verify-otp')
 router.register(r'logout', views.LogoutViewSet, basename='logout')
 router.register(r'login/intra', views.IntraLoginViewSet,
                 basename='intra-login')
-router.register(r'login/intra-2fa', views.IntraLoginWith2FAViewSet,
-                basename='intra-2fa')
+#router.register(r'login/intra-2fa', views.IntraLoginWith2FAViewSet,
+#                basename='intra-2fa')
 router.register(r'login/google', views.GoogleLoginViewSet,
                 basename='google-login')
-router.register(r'login/google-2fa', views.GoogleLoginViewSet,
-                basename='google-2fa')
+#router.register(r'login/google-2fa', views.GoogleLoginViewSet,
+#                basename='google-2fa')
 
 
 urlpatterns = [

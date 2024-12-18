@@ -107,6 +107,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         )
     )
     date_joined = models.DateTimeField(default=timezone.now)
+    code = models.CharField(max_length=70, blank=True, null=True) # for OTP verfiy request
     seed = models.CharField(max_length=40, blank=True, null=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)

@@ -40,6 +40,8 @@ from .utils import (
     send_otp_email,
     get_response,
     is_another_user,
+    generate_otp_for_user,
+    reset_code
 )
 
 
@@ -150,21 +152,25 @@ class VerifyOTPViewSet(viewsets.ViewSet):
 
     def create(self, request: Request) -> Response:
         otp = request.data['key']
-        username = request.data['username'].lower()
-        user = User.objects.get(username=username)
-        total_difference = timezone.now() - user.otp_created_at
-        if total_difference.total_seconds() > 60 or otp != str(user.otp):
-            return Response({'error': 'Key is incorrect'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        login(request, user)
-        refresh_token, access_token = get_tokens_for_user(user)
-        response = Response({
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-        }, status=status.HTTP_200_OK)
-        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
-        store_token_in_cookies(response, access_token)
-        return response
+        code = request.data['code'] # need code to specify the user
+        try:
+            user = User.objects.get(code=code)
+            total_difference = timezone.now() - user.otp_created_at
+            if total_difference.total_seconds() > 60 or otp != str(user.otp):
+                return Response({'error': 'Key is incorrect'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            reset_code(user)
+            login(request, user)
+            refresh_token, access_token = get_tokens_for_user(user)
+            response = Response({
+                'refresh_token': refresh_token,
+                'access_token': access_token,
+            }, status=status.HTTP_200_OK)
+            response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+            store_token_in_cookies(response, access_token)
+            return response
+        except User.DoesNotExist:
+            return Response({'error':'Code is Incorrect'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GoogleLoginViewSet(viewsets.ViewSet):
@@ -191,72 +197,79 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             return Response(user_info, status=status_code)
         username = user_info.get('email').split('@')[0].replace('.', '_').lower()
         user = get_user(username, user_info.get('email'))
-        if is_another_user(user, user_info.get('email')):
+        if user.otp_active:
+            generate_otp_for_user(user)
+            send_otp_email(user)
             return Response({
-                'info': 'The user needs to set a username'
-            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
+                'info': 'The verification code sent successfully',
+                'code': user.code
+            }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
+        if is_another_user(user, user_info.get('email')):
+            return Response({
+                'info': 'The user needs to set a username',
+            }, status=status.HTTP_200_OK)
         return response
 
 
-class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
-    """
-    2FA with Google.
+#class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
+#    """
+#    2FA with Google.
 
-    This class requests an access token by authenticating with Google API, and
-    fetches user information (such as username, first name, and last name).
-    If the user does not exist, it creates a new one.
-    """
-    permission_classes = [AllowAny]
+#    This class requests an access token by authenticating with Google API, and
+#    fetches user information (such as username, first name, and last name).
+#    If the user does not exist, it creates a new one.
+#    """
+#    permission_classes = [AllowAny]
 
-    def get_access_token(self, authorization_code: str) -> str:
-        """
-        Get access token from the Google API.
+#    def get_access_token(self, authorization_code: str) -> str:
+#        """
+#        Get access token from the Google API.
 
-        This method makes a request to Google API to get the access token that
-        will be used to get user information. The request contains
-        authorization_code which is necessary to authenticate with the API.
+#        This method makes a request to Google API to get the access token that
+#        will be used to get user information. The request contains
+#        authorization_code which is necessary to authenticate with the API.
 
-        Returns:
-            The access token.
-        """
-        token_endpoint = 'https://oauth2.googleapis.com/token'
-        payload = {
-            'code': authorization_code,
-            'client_id': os.getenv('GOOGLE_ID'),
-            'client_secret': os.getenv('GOOGLE_SECRET'),
-            'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
-            'grant_type': 'authorization_code'
-        }
-        return get_access_token_from_api(token_endpoint, payload)
+#        Returns:
+#            The access token.
+#        """
+#        token_endpoint = 'https://oauth2.googleapis.com/token'
+#        payload = {
+#            'code': authorization_code,
+#            'client_id': os.getenv('GOOGLE_ID'),
+#            'client_secret': os.getenv('GOOGLE_SECRET'),
+#            'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
+#            'grant_type': 'authorization_code'
+#        }
+#        return get_access_token_from_api(token_endpoint, payload)
 
-    def create_user(self, user_info: dict[str, str]) -> Response:
-        """
-        Create a user and returns a response containing the user information
-        along with the refresh and access tokens.
+#    def create_user(self, user_info: dict[str, str]) -> Response:
+#        """
+#        Create a user and returns a response containing the user information
+#        along with the refresh and access tokens.
 
-        This function use the create_user function from utils.py.
-        """
-        username = user_info['email'].split('@')[0].replace('.', '_').lower()
-        return create_user(username, user_info['email'])
+#        This function use the create_user function from utils.py.
+#        """
+#        username = user_info['email'].split('@')[0].replace('.', '_').lower()
+#        return create_user(username, user_info['email'])
 
-    def list(self, request: Request) -> Response:
-        """
-        Authenticate with the authorization server and obtain user information.
-        """
-        authorization_code = request.GET.get('code')
-        access_token = self.get_access_token(authorization_code)
-        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
-                             '?scope=openid profile email')
-        user_info, _ = get_user_info(userinfo_endpoint, access_token)
-        user = self.create_user(user_info)
-        send_otp_email(user)
-        return Response({
-            'detail': 'The verification code sent successfully',
-        }, status=status.HTTP_200_OK)
+#    def list(self, request: Request) -> Response:
+#        """
+#        Authenticate with the authorization server and obtain user information.
+#        """
+#        authorization_code = request.GET.get('code')
+#        access_token = self.get_access_token(authorization_code)
+#        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
+#                             '?scope=openid profile email')
+#        user_info, _ = get_user_info(userinfo_endpoint, access_token)
+#        user = self.create_user(user_info)
+#        send_otp_email(user)
+#        return Response({
+#            'detail': 'The verification code sent successfully',
+#        }, status=status.HTTP_200_OK)
 
 
 class IntraLoginViewSet(viewsets.ViewSet):
@@ -282,60 +295,67 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
-        if is_another_user(user, user_info.get('email')):
+        if user.otp_active:
+            generate_otp_for_user(user)
+            send_otp_email(user)
             return Response({
-                'info': 'The user needs to set a username'
-            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
+                'info': 'The verification code sent successfully',
+                'code': user.code
+            }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
+        if is_another_user(user, user_info.get('email')):
+            return Response({
+                'info': 'The user needs to set a username',
+            }, status=status.HTTP_200_OK)
         return response
 
 
-class IntraLoginWith2FAViewSet(viewsets.ViewSet):
-    """
-    2FA authentication with 42.
+#class IntraLoginWith2FAViewSet(viewsets.ViewSet):
+#    """
+#    2FA authentication with 42.
 
-    This class requests an access token by authenticating with 42 API, and
-    fetches user information (such as username, first name, last name,
-    and email).
-    """
-    permission_classes = [AllowAny]
-    authentication_classes = []
+#    This class requests an access token by authenticating with 42 API, and
+#    fetches user information (such as username, first name, last name,
+#    and email).
+#    """
+#    permission_classes = [AllowAny]
+#    authentication_classes = []
 
-    def get_access_token(self, authorization_code: str) -> str:
-        """
-        get access token using authorization code.
+#    def get_access_token(self, authorization_code: str) -> str:
+#        """
+#        get access token using authorization code.
 
-        Returns:
-            str: The authorization code obtained from the authorization server.
-        """
-        token_endpoint = 'https://api.intra.42.fr/oauth/token'
-        payload = {
-            'grant_type': 'authorization_code',
-            'client_id': os.getenv('INTRA_ID'),
-            'client_secret': os.getenv('INTRA_SECRET'),
-            'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
-            'code': authorization_code
-        }
-        return get_access_token_from_api(token_endpoint, payload)
+#        Returns:
+#            str: The authorization code obtained from the authorization server.
+#        """
+#        token_endpoint = 'https://api.intra.42.fr/oauth/token'
+#        payload = {
+#            'grant_type': 'authorization_code',
+#            'client_id': os.getenv('INTRA_ID'),
+#            'client_secret': os.getenv('INTRA_SECRET'),
+#            'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
+#            'code': authorization_code
+#        }
+#        return get_access_token_from_api(token_endpoint, payload)
 
-    def list(self, request: Request) -> Response:
-        """
-        Authenticate with the authorization server and obtain user information.
-        """
-        authorization_code = request.GET.get('code', '')
-        access_token = self.get_access_token(authorization_code)
-        userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
-        user_info, status_code = get_user_info(userinfo_endpoint, access_token)
-        if status_code != 200:
-            return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
-        user = create_user(user_info['login'], user_info['email'])
-        send_otp_email(user)
-        return Response({
-            'detail': 'The verification code sent successfully',
-        }, status=status.HTTP_200_OK)
+#    def list(self, request: Request) -> Response:
+#        """
+#        Authenticate with the authorization server and obtain user information.
+#        """
+#        authorization_code = request.GET.get('code', '')
+#        access_token = self.get_access_token(authorization_code)
+#        userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
+#        user_info, status_code = get_user_info(userinfo_endpoint, access_token)
+#        if status_code != 200:
+#            return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
+#        user = create_user(user_info['login'], user_info['email'])
+#        send_otp_email(user)
+#        return Response({
+#            'detail': 'The verification code sent successfully',
+#        }, status=status.HTTP_200_OK)
 
 
 class RegisterViewSet(viewsets.ViewSet):
@@ -352,7 +372,6 @@ class RegisterViewSet(viewsets.ViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -529,4 +548,6 @@ class checkValidOtp(APIView):
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
+        user.otp_active = not user.otp_active
+        user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
