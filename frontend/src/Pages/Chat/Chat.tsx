@@ -30,7 +30,7 @@ const Chat = () => {
 						withCredentials: true,
 					}
 				);
-				console.log("here we are users: ",response.data)
+				// console.log("here we are users: ",response.data)
 				setGetFriends(response.data || []);
 			} catch (err) {
 				console.error("Error fetching friends:", err);

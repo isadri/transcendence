@@ -1,15 +1,44 @@
 from django.contrib.auth import get_user_model
+from django.http import request
 from rest_framework import serializers
+from django.db.models import Q
 
 from .models import FriendList, FriendRequest
 
 
 User = get_user_model()
 
+# class FriendSerializer(serializers.ModelSerializer):
+#     is_friend = serializers.BooleanField(read_only=True) # i add this suppose to deleted
+#     is_blocked = serializers.SerializerMethodField()
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'avatar', 'is_friend', 'is_blocked']
+
+#     def get_is_blocked(self, obj):
+#         request_user = self.context['request'].user
+#         return FriendRequest.objects.filter(
+#             Q(sender=request_user, receiver=obj, status='blocked') |
+#             Q(sender=request_user, receiver=obj, status='blocked')
+#         ).exists()
+
 class FriendSerializer(serializers.ModelSerializer):
+    is_blocked = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar']
+        fields = ['id', 'username', 'avatar', 'is_blocked']
+
+    def get_is_blocked(self, obj):
+        """
+        Checks if the current user has blocked or is blocked by the given user (`obj`).
+        """
+        request_user = self.context['request'].user
+        # Check if there is a blocked friend request in either direction
+        return FriendRequest.objects.filter(
+            Q(sender=request_user, receiver=obj, status='blocked') |
+            Q(sender=obj, receiver=request_user, status='blocked')
+        ).exists()
 
 class FriendListSerializer(serializers.ModelSerializer):
     # user = FriendSerializer(read_only=True)

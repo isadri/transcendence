@@ -23,5 +23,6 @@ urlpatterns = [
     path('blocked', views.BlockedFriendsRequestsView.as_view(), name='blocked-friends-requests'),
     path('blockedfriend/<int:pk>', views.BlockedFriendRequestsView.as_view(), name='blocked-friend-requests'),
     path('users', views.UserListView.as_view(), name='users-requests'),
+    path('usersUnfriends', views.UserListUnfriendsView.as_view(), name='users-unfriends-requests'),
     path('MutualFriendsView/<str:username>', views.MutualFriendsView.as_view(), name='user-friends')
 ]

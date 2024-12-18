@@ -35,7 +35,7 @@ const AddFriends = () => {
 		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", "/api/friends/users"),
+					getendpoint("http", "/api/friends/usersUnfriends"),
 					// "http://0.0.0.0:8000/api/friends/users",
 					{
 						withCredentials: true,
