@@ -37,11 +37,11 @@ function CallBack() {
               setUsernameAlert(true)
               }
               else{
-                // setTimeout(() => {
+                setTimeout(() => {
                   GetUserInfo()
                   authContext?.setIsLogged(true)
                   navigate('/')
-                // }, 2000);
+                }, 2000);
               }
                 console.log('Success:', response.data)
               })
@@ -74,7 +74,7 @@ function CallBack() {
 
   const hadelSaveUsername = () => {
     axios
-      .put(getendpoint("http", "/api/accounts/updateuserData/"), {username}, {
+      .put(getendpoint("http", "/api/accounts/updateUsername/"), {username}, {
         withCredentials: true,
       })
       .then((response) => {

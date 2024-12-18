@@ -164,11 +164,10 @@ class VerifyOTPViewSet(viewsets.ViewSet):
             reset_code(user)
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
-            response = Response({
+            response = get_response({
                 'refresh_token': refresh_token,
                 'access_token': access_token,
-            }, status=status.HTTP_200_OK)
-            response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+            }, status.HTTP_200_OK)
             store_token_in_cookies(response, access_token)
             return response
         except User.DoesNotExist:
@@ -197,8 +196,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
-        user = get_user(username, user_info.get('email'))
+        user = get_user(user_info, 'google')
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
@@ -208,11 +206,10 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
+        info = {'refresh_token': refresh_token, 'access_token': access_token}
         if not user.register_complete:
-            response =  Response({'info': 'The user needs to set a username',}, status=status.HTTP_200_OK)
-            store_token_in_cookies(response, access_token)
-            return response
-        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+            info['info'] = 'The user needs to set a username'
+        response = get_response(info, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
         return response
 
@@ -296,7 +293,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
                                                access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info.get('login'), user_info.get('email'))
+        user = get_user(user_info, 'intra')
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
@@ -306,11 +303,10 @@ class IntraLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
+        info = {'refresh_token': refresh_token, 'access_token': access_token}
         if not user.register_complete:
-            response =  Response({'info': 'The user needs to set a username',}, status=status.HTTP_200_OK)
-            store_token_in_cookies(response, access_token)
-            return response
-        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+            info['info'] ='The user needs to set a username'
+        response = get_response(info, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
         return response
 
@@ -509,7 +505,6 @@ class UserDetailView(APIView):
         user = get_object_or_404(User, username=username)
         serializer = UserSerializer(user)
         data = serializer.data
-        data.pop("password", None)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetIntraLink(APIView):
