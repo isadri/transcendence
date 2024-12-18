@@ -89,12 +89,12 @@ function Authentication() {
         setUsername('')
         setEmail('')
         setPassword('')
-        // SetErrors({
-        //   username: '',
-        //   email: '',
-        //   password: '',
-        //   confirmPassword: ''
-        // });
+        SetErrors({
+          username: '',
+          email: '',
+          password: '',
+          confirmPassword: ''
+        });
       })
       .catch((error) => {
         console.log(error.response.data.error)
@@ -106,7 +106,7 @@ function Authentication() {
 
   const handelRegistringSubmit = async (e: any) => {
     e.preventDefault();
-    if (confirmPassword === password) {
+    if (confirmPassword === password && (errors.username === '' && errors.email === '' && errors.password === '')) {
       axios.post(getendpoint("http", '/api/accounts/register/'), data_reg, { withCredentials: true })
         .then(() => {
           setVal(true);
@@ -166,12 +166,6 @@ function Authentication() {
               setUsername('')
               setEmail('')
               setPassword('')
-              // SetErrors({
-              //   username: '',
-              //   email: '',
-              //   password: '',
-              //   confirmPassword: ''
-              // });
             }
           })
           .catch((error: any) => {
@@ -201,11 +195,6 @@ function Authentication() {
           console.log("Error response data:", error.response.data.detail);
         }
       }
-      //  else if (error.request) {
-      //   authContext?.setDisplayed(2)
-      //   authContext?.setCreatedAlert(error.request);
-      //   console.log("No response received:", error.request);
-      // }
     }
   }
 
@@ -365,7 +354,7 @@ function Authentication() {
             <input type="text" name="username" id="UserName" placeholder='UserName'
               value={username} onChange={(e) => handelRegisterErorrs(e, "username")} required />
             {
-               Error && checkError("username") && checkError("username")[0] === "username" &&
+              Error && checkError("username") && checkError("username")[0] === "username" &&
                <p className='errorSet'>{checkError("username")[1]}</p>
             }
             {

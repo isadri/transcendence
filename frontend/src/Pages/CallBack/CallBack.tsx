@@ -29,11 +29,12 @@ function CallBack() {
           axios
             .get(url, {params: { code: code }, withCredentials: true })
             .then((response) => {
-                setTimeout(() => {
+                // setTimeout(() => {
                     authContext?.setIsLogged(true)
                     navigate('/')
                     GetUserInfo()
-                }, 2000);
+                  // }, 2000);
+                console.log("the user auth is ", authContext?.user?.username)
                 console.log('Success:', response.data)
               })
               .catch((error) => {
@@ -46,11 +47,11 @@ function CallBack() {
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
-                  setTimeout(() => {
+                  // setTimeout(() => {
                       authContext?.setIsLogged(true)
                       navigate('/')
                       GetUserInfo()
-                  }, 2000);
+                  // }, 2000);
                   console.log('Success:', response.data)
                 })
                 .catch((error) => {
