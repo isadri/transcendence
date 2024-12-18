@@ -9,7 +9,7 @@ from .serializers import ChatSerializer, MessageSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from api.friends.models import FriendList, FriendRequest
+# from api.friends.models import FriendList, FriendRequest
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
@@ -118,15 +118,15 @@ class ChatView(viewsets.ModelViewSet):
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        try:
-            friend_list1 = FriendList.objects.get(user=user1)
-        except FriendList.DoesNotExist:
-            return Response({'error': 'Friend list not found.'},
-                               status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        #     friend_list1 = FriendList.objects.get(user=user1)
+        # except FriendList.DoesNotExist:
+        #     return Response({'error': 'Friend list not found.'},
+        #                        status=status.HTTP_400_BAD_REQUEST)
 
-        if not friend_list1.friends.filter(id=user2.id).exists():
-            return Response({'error': 'You cannot create chat with a user who is not your friend.'},
-                               status=status.HTTP_400_BAD_REQUEST)
+        # if not friend_list1.friends.filter(id=user2.id).exists():
+        #     return Response({'error': 'You cannot create chat with a user who is not your friend.'},
+        #                        status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Use filter first to check if the chat exists

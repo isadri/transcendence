@@ -29,6 +29,17 @@ class FriendRequestReceiverSerializer(serializers.ModelSerializer):
         read_only_fields = ['sender','status', 'blocked_by']
         fields = ['sender', 'receiver', 'status', 'timestamp', 'blocked_by']
 
+class FriendRequestUnblockSerializer(serializers.ModelSerializer):
+    """
+    A serializer for receivers of the friend requests.
+    """
+    sender = FriendSerializer(read_only=True)
+    receiver = FriendSerializer(read_only=True)
+    class Meta:
+        model = FriendRequest
+        read_only_fields = ['sender','status', 'blocked_by']
+        fields = ['sender', 'receiver', 'status', 'timestamp', 'blocked_by']
+
 class FriendRequestSenderSerializer(serializers.ModelSerializer):
     """
     A serializer for receivers of the friend requests.

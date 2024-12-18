@@ -25,12 +25,13 @@ const Chat = () => {
 		const fetchFriend = async () => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", "/api/friends/friends"),
+					getendpoint("http", "/api/friends/users"),
 					{
 						withCredentials: true,
 					}
 				);
-				setGetFriends(response.data?.friends || []);
+				console.log("here we are users: ",response.data)
+				setGetFriends(response.data || []);
 			} catch (err) {
 				console.error("Error fetching friends:", err);
 			}

@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
 from .models import FriendList, FriendRequest
-from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer, FriendRequestSenderSerializer
+from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer, FriendRequestUnblockSerializer
 from django.shortcuts import get_object_or_404
 
 User = get_user_model()
@@ -44,7 +44,7 @@ class FriendRequestSendView(generics.CreateAPIView):
         receiver=request.user, status__in=['pending', 'accepted', 'blocked']).first()
         if check_friendShip:
             return Response({'error': 'A friend request already exists between you and this user.'},
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_201_CREATED)
 
         friendShip = FriendRequest.objects.create(sender=request.user, receiver=receiver)
         return Response({'message': 'Friend request send successfuly.'},
@@ -114,7 +114,7 @@ class FriendRequestBlockView(APIView):
 
             if not friend_request:
                 return Response({'error': 'Friend request not found or already processed.'},
-                                status=status.HTTP_200_OK)
+                                status=status.HTTP_404_NOT_FOUND)
 
             # Block the user
             friend_request.block(request.user)
@@ -244,7 +244,7 @@ class BlockedFriendsRequestsView(generics.ListAPIView):
     """
     View to list all blocked friend requests.
     """
-    serializer_class = FriendRequestReceiverSerializer
+    serializer_class = FriendRequestUnblockSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

@@ -73,6 +73,11 @@ const AddFriends = () => {
 	};
 
 	const handleSendRequests = async (id: number) => {
+		const existingFriend = allUsers.find(
+			(friend) => friend.id === id
+		);
+		if (!existingFriend)
+			return;
 		try {
 			await axios.post(
 				getendpoint("http", "/api/friends/send/"),

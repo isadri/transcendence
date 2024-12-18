@@ -215,7 +215,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'error': 'This user does not exist.'
             }))
             return
-
         chat = await Chat.objects.filter(
             Q(user1=self.user, user2=receiver) |
             Q(user1=receiver, user2=self.user)
