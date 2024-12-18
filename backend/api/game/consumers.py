@@ -1,4 +1,5 @@
 import json
+import math
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -11,12 +12,14 @@ TABLE_Z = 8.65640
 PADDLE_Z = 0.5
 PADDLE_X = 1.5
 BALL_R = 0.12
-SIDE_Z = (8.65640+ 0.5)/2
+GOAL_Z = (8.65640+ 0.5)/2
 GAME_SPEED = 1/60
 PADDLE_SPEED = 0.1
-
+SIDE_LIMIT = (3.07345 - 0.75)
 X_SPEED = 1
 Z_SPEED = 1
+PI_4 = math.pi / 4
+PI_4_100 = PI_4 / (PADDLE_X / 2)
 
 
 class RandomGame(AsyncWebsocketConsumer):
@@ -123,11 +126,7 @@ class GameData:
     self.game = game
     self.room_name = name
 
-    self.ball = [0, 0.2, 0]
-    self.z = 0.1
-    self.z_direction = 1
-    self.x = 0
-    self.x_direction = 1
+    self.resetBall()
 
     self.done = False
     self.winneer = None
@@ -170,12 +169,20 @@ class GameData:
         self.z_direction *= -1
 
   def checkScore(self):
-    if abs(SIDE_Z - self.ball[2]) <= BALL_R * 2:
+    if abs(GOAL_Z - self.ball[2]) <= BALL_R * 2:
       self.score[self.player2] += 1
-      self.ball = [0, 0.2, 0]
-    if abs(-SIDE_Z - self.ball[2]) <= BALL_R * 2:
+      self.resetBall()
+    if abs(-GOAL_Z - self.ball[2]) <= BALL_R * 2:
       self.score[self.player1] += 1
-      self.ball = [0, 0.2, 0]
+      self.resetBall()
+
+  def resetBall(self):
+    self.ball = [0, 0.2, 0]
+    self.z = 0.1
+    self.z_direction = 1
+    self.x = 0
+    self.x_direction = 1
+
 
   def checkWinner(self):
     if self.score[self.player1] == 7 or self.score[self.player2] == 7:
@@ -191,6 +198,12 @@ class GameData:
     x = self.ball[0]
     z = self.ball[2]
     if abs(pos[2] - z) <= ((PADDLE_Z/2) + BALL_R) and abs(pos[0] - x) <= PADDLE_X/2:
+      self.x_direction = -1 if  pos[0] - x >= 0 else 1
+      print(self.x_direction)
+      x_hit = pos[0] - x
+      alpha = PI_4_100 * x_hit
+      self.x = math.sin(alpha)
+      print(self.x)
       return True
     return False
 
@@ -205,14 +218,12 @@ class GameData:
 
   def getPlayer(self, username):
     return self.players[username]
-
   def getPlayerPos(self, username):
     return self.players_pos[username]
-
   def setPlayerPos(self, username, pos):#khasseha tn9ah
     direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
     newpos = self.players_pos[username][0] + direct
-    if newpos < (3.07345 - 0.75) and newpos > -(3.07345 - 0.75):
+    if newpos < SIDE_LIMIT and newpos > -SIDE_LIMIT:
       self.players_pos[username][0] += direct
 
   def abort_game(self, username=None):
