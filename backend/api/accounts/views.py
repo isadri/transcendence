@@ -41,6 +41,7 @@ from .utils import (
     get_response,
     is_another_user,
     generate_otp_for_user,
+    reset_code
 )
 
 
@@ -151,21 +152,25 @@ class VerifyOTPViewSet(viewsets.ViewSet):
 
     def create(self, request: Request) -> Response:
         otp = request.data['key']
-        username = request.data['username'].lower()
-        user = User.objects.get(username=username)
-        total_difference = timezone.now() - user.otp_created_at
-        if total_difference.total_seconds() > 60 or otp != str(user.otp):
-            return Response({'error': 'Key is incorrect'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        login(request, user)
-        refresh_token, access_token = get_tokens_for_user(user)
-        response = Response({
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-        }, status=status.HTTP_200_OK)
-        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
-        store_token_in_cookies(response, access_token)
-        return response
+        code = request.data['code'] # need code to specify the user
+        try:
+            user = User.objects.get(code=code)
+            total_difference = timezone.now() - user.otp_created_at
+            if total_difference.total_seconds() > 60 or otp != str(user.otp):
+                return Response({'error': 'Key is incorrect'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            reset_code(user)
+            login(request, user)
+            refresh_token, access_token = get_tokens_for_user(user)
+            response = Response({
+                'refresh_token': refresh_token,
+                'access_token': access_token,
+            }, status=status.HTTP_200_OK)
+            response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+            store_token_in_cookies(response, access_token)
+            return response
+        except User.DoesNotExist:
+            return Response({'error':'Code is Incorrect'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GoogleLoginViewSet(viewsets.ViewSet):
@@ -192,20 +197,21 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             return Response(user_info, status=status_code)
         username = user_info.get('email').split('@')[0].replace('.', '_').lower()
         user = get_user(username, user_info.get('email'))
-        if is_another_user(user, user_info.get('email')):
-            return Response({
-                'info': 'The user needs to set a username'
-            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
             return Response({
-                'info': 'The verification code sent successfully'
-            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
+                'info': 'The verification code sent successfully',
+                'code': user.code
+            }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
+        if is_another_user(user, user_info.get('email')):
+            return Response({
+                'info': 'The user needs to set a username',
+            }, status=status.HTTP_200_OK)
         return response
 
 
@@ -289,20 +295,21 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = get_user(user_info.get('login'), user_info.get('email'))
-        if is_another_user(user, user_info.get('email')):
-            return Response({
-                'info': 'The user needs to set a username'
-            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
             return Response({
-                'info': 'The verification code sent successfully'
-            }, status=status.HTTP_307_TEMPORARY_REDIRECT)
+                'info': 'The verification code sent successfully',
+                'code': user.code
+            }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
+        if is_another_user(user, user_info.get('email')):
+            return Response({
+                'info': 'The user needs to set a username',
+            }, status=status.HTTP_200_OK)
         return response
 
 

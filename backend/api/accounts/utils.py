@@ -263,6 +263,11 @@ def generate_otp_for_user(user: User) -> None:
     Generate a new otp for the given user.
     """
     user.seed = pyotp.random_base32()
+    user.code = f"{user.id}_{pyotp.random_base32()}"
     user.otp = pyotp.TOTP(user.seed).now()
     user.otp_created_at = timezone.now()
+    user.save()
+
+def reset_code(user: User):
+    user.code = None
     user.save()
