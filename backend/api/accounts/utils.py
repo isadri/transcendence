@@ -11,7 +11,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 
 
-def get_next_id():
+def get_next_id() -> int:
+    """
+    Get the next last id of the user table.
+    """
     with connection.cursor() as cursor:
         cursor.execute("SELECT nextval(pg_get_serial_sequence('accounts_user', 'id'))")
         next_id = cursor.fetchone()[0]
@@ -253,3 +256,13 @@ def is_another_user(user: User, email: str) -> bool:
         True if the emails do not match, False otherwise.
     """
     return user.email != email
+
+
+def generate_otp_for_user(user: User) -> None:
+    """
+    Generate a new otp for the given user.
+    """
+    user.seed = pyotp.random_base32()
+    user.otp = pyotp.TOTP(user.seed).now()
+    user.otp_created_at = timezone.now()
+    user.save()
