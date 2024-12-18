@@ -206,12 +206,12 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
+        if is_another_user(user, user_info.get('email')):
+            response = Response({'info': 'The user needs to set a username',}, status=status.HTTP_200_OK)
+            store_token_in_cookies(response, access_token)
+            return response
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
-        if is_another_user(user, user_info.get('email')):
-            return Response({
-                'info': 'The user needs to set a username',
-            }, status=status.HTTP_200_OK)
         return response
 
 
@@ -304,12 +304,12 @@ class IntraLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
+        if is_another_user(user, user_info.get('email')):
+            response = Response({'info': 'The user needs to set a username',}, status=status.HTTP_200_OK)
+            store_token_in_cookies(response, access_token)
+            return response
         response = get_response(refresh_token, access_token, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
-        if is_another_user(user, user_info.get('email')):
-            return Response({
-                'info': 'The user needs to set a username',
-            }, status=status.HTTP_200_OK)
         return response
 
 
