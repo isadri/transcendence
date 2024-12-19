@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import "./BackGround.css";
 import circl from "./images/circle.png";
 import { useMediaQuery } from "@uidotdev/usehooks";
@@ -9,6 +9,7 @@ interface Props {
 }
 
 const BackGround = ({ children, isLogged }: Props) => {
+
   const win_width = useMediaQuery("only screen and (max-width : 478px)");
   return (
     <>

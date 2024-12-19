@@ -134,6 +134,7 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
             user.otp = pyotp.TOTP(user.seed).now()
             user.otp_created_at = timezone.now()
             user.save()
+            print(user.otp)
             send_otp_email(user)
             return Response({
                 'detail': 'The verification code sent successfully',
@@ -151,6 +152,7 @@ class VerifyOTPViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
+        print("===========> " ,request.data)
         otp = request.data['key']
         code = request.data['code'] # need code to specify the user
         try:
@@ -162,11 +164,10 @@ class VerifyOTPViewSet(viewsets.ViewSet):
             reset_code(user)
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
-            response = Response({
+            response = get_response({
                 'refresh_token': refresh_token,
                 'access_token': access_token,
-            }, status=status.HTTP_200_OK)
-            response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+            }, status.HTTP_200_OK)
             store_token_in_cookies(response, access_token)
             return response
         except User.DoesNotExist:
@@ -195,8 +196,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
-        user = get_user(username, user_info.get('email'))
+        user = get_user(user_info, 'google')
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
@@ -206,12 +206,11 @@ class GoogleLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+        info = {'refresh_token': refresh_token, 'access_token': access_token}
+        if not user.register_complete:
+            info['info'] = 'The user needs to set a username'
+        response = get_response(info, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
-        if is_another_user(user, user_info.get('email')):
-            return Response({
-                'info': 'The user needs to set a username',
-            }, status=status.HTTP_200_OK)
         return response
 
 
@@ -294,7 +293,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
                                                access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info.get('login'), user_info.get('email'))
+        user = get_user(user_info, 'intra')
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
@@ -304,12 +303,11 @@ class IntraLoginViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         login(request, user)
         refresh_token, access_token = get_tokens_for_user(user)
-        response = get_response(refresh_token, access_token, status.HTTP_200_OK)
+        info = {'refresh_token': refresh_token, 'access_token': access_token}
+        if not user.register_complete:
+            info['info'] ='The user needs to set a username'
+        response = get_response(info, status.HTTP_200_OK)
         store_token_in_cookies(response, access_token)
-        if is_another_user(user, user_info.get('email')):
-            return Response({
-                'info': 'The user needs to set a username',
-            }, status=status.HTTP_200_OK)
         return response
 
 
@@ -391,8 +389,29 @@ class LogoutViewSet(viewsets.ViewSet):
         return response
 
 
-#################################  UPDATE & DELETE & TOWFac_Send_email VIEWS   ##############################
 
+#################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
+
+
+class UpdateUsernameView(APIView):
+    """
+        updating usernames for users 
+        who have logged in via Intra or Google
+        but have not completed 
+        the registration process yet
+    """
+    permission_classes = [IsAuthenticated]
+    def put(self, request):
+        user = request.user
+        print("user =============> ", user)
+        data = request.data.copy()
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            user.register_complete = True
+            user.save()
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateUserDataView(APIView):
     """
@@ -415,7 +434,6 @@ class UpdateUserDataView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -487,7 +505,6 @@ class UserDetailView(APIView):
         user = get_object_or_404(User, username=username)
         serializer = UserSerializer(user)
         data = serializer.data
-        data.pop("password", None)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetIntraLink(APIView):
@@ -511,32 +528,39 @@ class GetGoogleLink(APIView):
 
 class SendOTPView(APIView):
     """
-         This view handles the generation and sending of OTP
-         to the authenticated user (in setting)
+        This view handles the generation and sending of OTP
+        to the authenticated user (in setting)
         to activate the otp in user account
     """
-    permission_classes = [IsAuthenticated]
-    val = False
-    def post(self, request):
-        user = request.user
-        user.seed = pyotp.random_base32()
-        user.otp = pyotp.TOTP(user.seed).now()
-        user.otp_created_at = timezone.now()
+    permission_classes = [AllowAny]
+    def post(self, request, username):
+        user = user = get_object_or_404(User, username=username)
+        if request.data['val'] == True:
+            user.seed = pyotp.random_base32()
+            user.otp = pyotp.TOTP(user.seed).now()
+            user.otp_created_at = timezone.now()
+        else:
+            user.otp_active = False
+            user.otp = None
+            user.save()
+            return Response({'message': 'otp '}, status=status.HTTP_200_OK)
         user.save()
-        print(user.otp)
         send_otp_email(user)
+        print(user.otp)
         return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
-    def get(self, request):
-        user = request.user
-        val = user.otp is not None
-        print(val)
-        return Response(val, status=status.HTTP_200_OK)
-
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+            val = user.otp_active
+            print(val)
+            return Response(val, status=status.HTTP_200_OK)
+        except:
+            return Response({'error' : "user not found"}, status=status.HTTP_200_OK)
 
 class checkValidOtp(APIView):
     """
-     This view checks if the OTP eentered by th user is valid(in setting)
+     This view checks if the OTP entered by th user is valid(in setting)
      to activate the otp in user account
     """
     permission_classes = [IsAuthenticated]

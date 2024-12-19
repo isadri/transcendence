@@ -112,6 +112,11 @@ class User(PermissionsMixin, AbstractBaseUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
+    remote_id = models.CharField(max_length=100, blank=True, null=True, default="",
+        help_text=_(
+            'A unique Id for remote accounts (42 / google)'
+    ))
+
     otp_active =models.BooleanField(
         default=False,
         help_text=_(

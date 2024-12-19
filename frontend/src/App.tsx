@@ -1,5 +1,5 @@
 import BackGround from './components/background/BackGround'
-import {RouterProvider} from "react-router-dom";
+import {Navigate, RouterProvider, useNavigate} from "react-router-dom";
 import './App.css'
 
 import {useEffect, useState } from 'react';
@@ -15,12 +15,14 @@ const emptyUser = {
   id : -1,
   username : "",
   email : "",
-  avatar : ""
+  avatar : "",
+  register_complete: true,
+  from_remote_api: false
 }
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
-  let [user, setUser] = useState<userDataType>(emptyUser)
+  let [user, setUser] = useState<userDataType | undefined>(emptyUser)
   // const hostname = window.location.hostname
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
@@ -29,6 +31,7 @@ function App() {
     .then((response:any) => {
       setIsLogged(true)
       setUser(response.data)
+
     })
     .catch(() => {
       setIsLogged(false)

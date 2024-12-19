@@ -37,6 +37,8 @@ interface userDataType {
     username : string,
     email : string,
     avatar : string
+    register_complete: boolean,
+    from_remote_api: boolean
 }
 interface loginContextData {
     isLogged:boolean |null,

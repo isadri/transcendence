@@ -393,6 +393,17 @@
     min-width: 300px;
     max-width: 450px;
 }
+.alertOTP .cancelIcon{
+    display: flex;
+    width: 90%;
+    justify-content: flex-end;
+}
+
+.alertOTP .cancelIcon i{
+    font-size: 25px;
+    color: var(--primary);
+    cursor: pointer;
+}
 
 .alertOTP .contentOtp{
     display: flex;
