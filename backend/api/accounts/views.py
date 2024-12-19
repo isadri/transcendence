@@ -516,7 +516,9 @@ class GetIntraLink(APIView):
     """
     permission_classes = [AllowAny]
     def get(self, request):
-        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
+        url =  request.META.get('HTTP_ORIGIN')
+        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url+settings.INTRA_REDIRECT_URI}&response_type=code'
+        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetGoogleLink(APIView):
@@ -525,7 +527,8 @@ class GetGoogleLink(APIView):
     """
     permission_classes = [AllowAny]
     def get(self, request):
-        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
+        url =  request.META.get('HTTP_ORIGIN')
+        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url+settings.GOOGLE_REDIRECT_URI}'
         return Response(data, status=status.HTTP_200_OK)
 
 
