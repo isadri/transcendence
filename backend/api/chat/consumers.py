@@ -1,3 +1,4 @@
+from ..friends.models import FriendRequest
 import json
 from django.db.models.query_utils import Q
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -148,7 +149,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'blocked': blocked,
                 'status': relation_status
             }
-
+            print(1)
             await self.channel_layer.group_send(blocker_room, payload)
             await self.channel_layer.group_send(blocked_room, payload)
 
@@ -167,6 +168,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         Sends block/unblock updates to the client.
         """
+        print("--------------------------------")
         await self.send(text_data=json.dumps({
             'type': 'block_status_update',
             'chat_id': event['chat_id'],
@@ -205,6 +207,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         "chat_id": event["chat_id"]
     #     }))
 
+    # @database_sync_to_async
+    async def reciver_blocked(self, receiver:User):
+        try:
+            blocked_request = await FriendRequest.objects.aget(
+                Q(sender=self.user, receiver=receiver, status='blocked') |  # User blocked target
+                Q(sender=receiver, receiver=self.user, status='blocked')   # Target blocked user
+            )
+
+            return (blocked_request , True)
+        except:
+            return (None, False)
+    
+    @database_sync_to_async
+    def send_block_status(self, chat, blocked_req, is_blocked):
+        blocker = blocked_req.blocked_by
+        blocked = blocked_req.sender if blocked_req.blocked_by != blocked_req.sender else blocked_req.receiver
+        blocker_room = f"chat_room_of_{blocker}"
+        blocked_room = f"chat_room_of_{blocked}"
+
+        payload = {
+            # 'type': 'block_status_update',
+            'chat_id': chat.id,
+            'blocker': blocker,
+            'blocked': blocked,
+            'status': is_blocked
+        }
+        return (payload, blocker_room, blocked_room)
+
+
+
     async def handle_send_message(self, data):
         message = data.get('message')
         receiver_id = data.get('receiver')
@@ -225,7 +257,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user1=self.user,
                 user2=receiver
             )
-
+        # blocked_req , is_blocked= await self.reciver_blocked(receiver)
+        # if  blocked_req and is_blocked:
+        #     payload, blocker_room, blocked_room = await self.send_block_status(chat ,blocked_req, is_blocked)
+            # print(payload, blocker_room, blocked_room)
+            # await self.send(text_data=json.dumps({
+            #     'type': 'block_status_update',
+            #     'chat_id': payload['chat_id'],
+            #     'blocker': payload['blocker'],
+            #     'blocked': payload['blocked'],
+            #     'status': payload['status']  # true if blocked, false otherwise
+            # }))
+            # await self.channel_layer.group_send(blocker_room, payload)
+            # await self.channel_layer.group_send(blocked_room, payload)
+            # await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
+            return
         if self.is_blocked(chat):
             await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
             return
