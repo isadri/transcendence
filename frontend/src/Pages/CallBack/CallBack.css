@@ -39,3 +39,15 @@
         opacity: 0;
     }
 }
+
+ .GameModePopUpBlur .userAlert{
+    width: 70%;
+    height: 50%;
+}
+.GameModePopUpBlur .userAlert .username-Alert{
+    height: 40%;
+    
+}
+.GameModePopUpBlur .userAlert .username-Alert .inputt{
+    width: 55%;
+}

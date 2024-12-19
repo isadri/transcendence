@@ -42,6 +42,7 @@ function Authentication() {
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([])
   const [otpcode, setOtpCode] = useState('')
+  const [userCode, setUserCode] = useState('')
   const [errors, SetErrors] = useState<errorDataTypes>({
     username: '',
     email: '',
@@ -77,6 +78,7 @@ function Authentication() {
     {
       username,
       password,
+      code: userCode,
       key: otpcode
     },
     {withCredentials: true})
@@ -156,8 +158,10 @@ function Authentication() {
           url_login = getendpoint("http", '/api/accounts/login2fa/')
         }
         axios.post(url_login, data_login, { withCredentials: true })
-          .then(() => {
+          .then((response) => {
             if (otpResponse.data) {
+              console.log( "code ===>  ",  response.data)
+              setUserCode(response.data.code)
               SetshowOtpAlert(true)
             } else {
               authContext?.setIsLogged(true);
