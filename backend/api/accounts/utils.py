@@ -165,7 +165,8 @@ def get_user(user_info: dict, src:str) -> User:
         #if there no user with that remote_id we
         try:
             user = User.objects.get(email=email) #check if there any user with this email
-            user.remote_id = remote_id # link the remote with normal acc
+            return None # email already token
+            # user.remote_id = remote_id # link the remote with normal acc
         except User.DoesNotExist:
             #if no user has the email we do create a new acc
             register_state = True

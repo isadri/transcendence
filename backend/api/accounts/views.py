@@ -130,14 +130,12 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
-            user.seed = pyotp.random_base32()
-            user.otp = pyotp.TOTP(user.seed).now()
-            user.otp_created_at = timezone.now()
-            user.save()
+            generate_otp_for_user(user)
             print(user.otp)
             send_otp_email(user)
             return Response({
-                'detail': 'The verification code sent successfully',
+                'info': 'The verification code sent successfully',
+                'code': user.code
             }, status=status.HTTP_200_OK)
         if not User.objects.filter(username=username).exists():
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -197,8 +195,12 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = get_user(user_info, 'google')
+        if not user:
+            return Response({'error': 'Email is already in use'},
+                        status=status.HTTP_400_BAD_REQUEST)
         if user.otp_active:
             generate_otp_for_user(user)
+            print(user.otp)
             send_otp_email(user)
             return Response({
                 'info': 'The verification code sent successfully',
@@ -297,6 +299,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
+            print(user.otp)
             return Response({
                 'info': 'The verification code sent successfully',
                 'code': user.code
