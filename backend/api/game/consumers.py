@@ -1,5 +1,6 @@
 import json
 import math
+import random
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -11,13 +12,14 @@ channel_layer = get_channel_layer()
 TABLE_Z = 8.65640
 PADDLE_Z = 0.5
 PADDLE_X = 1.5
+
+SIDE_WIDTH = 0.5
 BALL_R = 0.12
 GOAL_Z = (8.65640+ 0.5)/2
 GAME_SPEED = 1/60
 PADDLE_SPEED = 0.1
-SIDE_LIMIT = (3.07345 - 0.75)
-X_SPEED = 1
-Z_SPEED = 1
+SIDE_LIMIT = 3.07345 - 0.5/2
+BALL_SPEED = 0.05
 PI_4 = math.pi / 4
 PI_4_100 = PI_4 / (PADDLE_X / 2)
 
@@ -163,10 +165,13 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
-    self.ball[2] += self.z * self.z_direction * Z_SPEED
-    self.ball[0] += self.x * self.x_direction * X_SPEED
     if self.hitPaddle(self.players_pos[self.player1]) or self.hitPaddle(self.players_pos[self.player2]):
-        self.z_direction *= -1
+      self.z_direction *= -1
+    if self.hitSideWalls():
+      self.x_direction *= -1
+    self.ball[2] += self.dz * self.z_direction
+    self.ball[0] += self.dx * self.x_direction
+
 
   def checkScore(self):
     if abs(GOAL_Z - self.ball[2]) <= BALL_R * 2:
@@ -177,11 +182,13 @@ class GameData:
       self.resetBall()
 
   def resetBall(self):
-    self.ball = [0, 0.2, 0]
-    self.z = 0.1
     self.z_direction = 1
-    self.x = 0
     self.x_direction = 1
+    self.ball = [0, 0.2, 0]
+    self.alpha = math.pi/6
+    self.dz = math.cos(self.alpha) * BALL_SPEED
+    self.dx = 0#math.sin(self.alpha) * X_SPEED
+
 
 
   def checkWinner(self):
@@ -194,16 +201,24 @@ class GameData:
   def getScore(self):
     return self.score
 
-  def hitPaddle(self, pos):
+  def hitSideWalls(self):
     x = self.ball[0]
     z = self.ball[2]
+    if abs(SIDE_LIMIT - x) <= BALL_R or abs(-SIDE_LIMIT - x) <= BALL_R:
+      return True
+    return False
+
+  def hitPaddle(self, pos):
+    z = self.ball[2]
+    x = self.ball[0]
+    if abs(pos[2] - x) <= BALL_R + PADDLE_X/2:
+      self.x_direction *= -1
     if abs(pos[2] - z) <= ((PADDLE_Z/2) + BALL_R) and abs(pos[0] - x) <= PADDLE_X/2:
-      self.x_direction = -1 if  pos[0] - x >= 0 else 1
-      print(self.x_direction)
-      x_hit = pos[0] - x
-      alpha = PI_4_100 * x_hit
-      self.x = math.sin(alpha)
-      print(self.x)
+      x_hit = x - pos[0]
+      self.alpha = PI_4_100 * x_hit
+      # self.dz += math.cos(self.alpha) * BALL_SPEED
+      self.dx += math.sin(self.alpha) * BALL_SPEED
+      print(self.dz, self.dx, self.ball)
       return True
     return False
 
@@ -264,7 +279,8 @@ class RemoteGame(AsyncWebsocketConsumer):
       else:
         self.connected[self.game_id][self.username] = self
       await self.channel_layer.group_add(self.room_name, self.channel_name)
-      if len(self.connected[self.game_id]) == 2:
+      print(self.connected[self.game_id])
+      if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
         self.task = asyncio.create_task(self.game_loop())
     else:
       await self.abort("You are not allowed to join this game")
@@ -359,6 +375,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       if self.game_data.isDone():
         break
     await self.end_game()
+    print(f'loop :{self.user}', self.game_data.getWinner())
     await self.channel_layer.group_send(self.room_name, {
       'type': 'got_winner',
       'winner': self.game_data.getWinner()

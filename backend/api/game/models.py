@@ -38,7 +38,7 @@ class Game(models.Model):
     self.save()
 
   def setAsEnded(self, score):
-    if self.progress != 'S' or self.progress != 'P':
+    if self.progress != 'S' and self.progress != 'P':
       raise ValueError("Cannot end the game unless it's has started.")
     self.setScore(score)
     self.progress = 'E'
