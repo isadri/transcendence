@@ -181,50 +181,6 @@ class FriendRequest(models.Model):
         except Exception as e:
             raise ValueError(f"Failed to remove the friend request: {str(e)}")
 
-    # def unblock(self, unblocker_user):
-    #     """
-    #     Block a user from the friend request.
-    #     The unblocker_user must be either the sender or receiver.
-    #     """
-    #     try:
-    #         if unblocker_user not in [self.sender, self.receiver]:
-    #             raise ValueError("The unblocker_user must be either the sender or the receiver.")
-
-    #         # Determine the user being blocked
-    #         blocked_user = self.receiver if unblocker_user == self.sender else self.sender
-
-    #         with transaction.atomic():
-    #             # ensure the friend request status is 'blocked' before proceeeding
-    #             if self.status != 'blocked' or self.blocked_by != unblocker_user:
-    #                 raise ValueError("This friend request is not blocked.")
-
-    #             unblocker_user.is_blocked = False
-    #             blocked_user.is_blocked = False
-
-    #             # if they were previously friends, restore is_friend
-    #             if FriendList.objects.filter(user=unblocker_user, friends__id=blocked_user).exists():
-    #                 unblocker_user.is_friend = True
-    #                 blocked_user.is_friend = True
-    #                 unblocker_user_friend_list, _ = FriendList.objects.get_or_create(user=unblocker_user)
-    #                 unblocker_user_friend_list.add_friend(blocked_user)
-
-    #                 # Remove the blocker from the user-to-block's friend list
-    #                 blocked_user_friend_list, _ = FriendList.objects.get_or_create(user=blocked_user)
-    #                 blocked_user_friend_list.add_friend(unblocker_user)
-    #             else:
-    #                 unblocker_user.is_friend = False
-    #                 blocked_user.is_friend = False
-
-    #             # Update the FriendRequest status and record who blocked whom
-    #             self.status = 'accepted'
-    #             self.blocked_by = None
-    #             self.save()
-
-    #             unblocker_user.save()
-    #             blocked_user.save()
-    #     except Exception as e:
-    #         raise ValueError(f"Failed to block the friend request: {str(e)}")
-
     def unblock(self, unblocker_user):
         """
         Unblock a user from the friend request.
@@ -245,22 +201,6 @@ class FriendRequest(models.Model):
                 # Reset block status for both users
                 unblocker_user.is_blocked = False
                 blocked_user.is_blocked = False
-        
-                # If they were previously friends, restore is_friend and add to FriendList
-                # if FriendList.objects.filter(user=unblocker_user, friends=blocked_user).exists():
-                #     unblocker_user.is_friend = True
-                #     blocked_user.is_friend = True
-        
-                #     # Add both users to each other's friend list
-                #     # unblocker_user_friend_list, _ = FriendList.objects.get_or_create(user=unblocker_user)
-                #     # unblocker_user_friend_list.add_friend(blocked_user)
-        
-                #     # blocked_user_friend_list, _ = FriendList.objects.get_or_create(user=blocked_user)
-                #     # blocked_user_friend_list.add_friend(unblocker_user)
-                # else:
-                #     # If they were not friends, no need to modify friend lists
-                # unblocker_user.is_friend = False
-                # blocked_user.is_friend = False
         
                 # Update the FriendRequest status and clear block information
                 self.status = 'accepted'

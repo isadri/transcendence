@@ -145,63 +145,6 @@ class FriendRequestBlockView(APIView):
             return Response({'error': f'Failed to block the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# class FriendRequestBlockView(APIView):
-#     """
-#     This view is used to block a user, managing both FriendRequest and Chat states.
-#     """
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, pk: int):
-#         try:
-#             # Validate receiver
-#             try:
-#                 receiver = User.objects.get(id=pk)
-#             except User.DoesNotExist:
-#                 return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-#             # Check if a FriendRequest exists
-#             friend_request = FriendRequest.objects.filter(
-#                 Q(sender=request.user, receiver=receiver) |
-#                 Q(sender=receiver, receiver=request.user),
-#             ).first()
-
-#             # Block the chat
-#             chat = Chat.objects.filter(
-#                 Q(user1=request.user, user2=receiver) |
-#                 Q(user1=receiver, user2=request.user)
-#             ).first()
-
-#             if chat:
-#                 # Update block states
-#                 if request.user == chat.user1:
-#                     chat.blocke_state_user1 = "blocked"
-#                     chat.blocke_state_user2 = "blocker"
-#                 else:
-#                     chat.blocke_state_user1 = "blocker"
-#                     chat.blocke_state_user2 = "blocked"
-#                 chat.save()
-#             else:
-#                 # Optionally, create a chat object if necessary
-#                 chat = Chat.objects.create(user1=request.user, user2=receiver)
-#                 chat.blocke_state_user1 = "blocked" if request.user == chat.user1 else "blocker"
-#                 chat.blocke_state_user2 = "blocker" if request.user == chat.user1 else "blocked"
-#                 chat.save()
-
-#             # Handle the FriendRequest blocking
-#             if friend_request:
-#                 friend_request.status = 'blocked'
-#                 friend_request.blocked_by = request.user
-#                 friend_request.save()
-#             else:
-#                 # Skip creating a FriendRequest if it doesn't already exist
-#                 pass
-
-#             return Response({'message': 'User blocked successfully.'}, status=status.HTTP_200_OK)
-
-#         except Exception as e:
-#             return Response({'error': f'Failed to block the user: {str(e)}'},
-#                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 class FriendRequestRemoveView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -259,7 +202,6 @@ class FriendRequestUnblockView(APIView):
                     status='blocked',
                     blocked_by=request.user,
                     ).first()
-            # print(friend_request)
             if not friend_request:
                 return Response({'error': 'No blocked request found.'},
                                 status=status.HTTP_404_NOT_FOUND)
@@ -282,30 +224,6 @@ class PendingFriendRequestsView(generics.ListAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(receiver=self.request.user, status="pending")
 
-# class DeclineFriendRequestsView(generics.ListAPIView):
-#     """
-#     View to list all pending friend requests.
-#     """
-#     serializer_class = FriendSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         return FriendRequest.objects.filter(sender=self.request.user, status="pending")
-
-# class DeclineFriendRequestsView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request):
-#         friends = FriendRequest.objects.filter(sender=self.request.user,
-#                         status="pending")
-
-#         # # Get all users who are not in the friends list
-#         # non_friends = User.objects.exclude(id__in=friends_ids)
-
-#         # Serialize and return the data
-#         serializer = FriendSerializer(friends.receiver, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
 class CancelFriendRequestsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -322,8 +240,6 @@ class CancelFriendRequestsView(APIView):
             # Extract only the `receiver` users
             receivers = [request.receiver for request in pending_requests]
 
-            # Serialize the user data for the receivers
-            # serializer = FriendSerializer(receivers, many=True)
             serializer = FriendSerializer(
                     receivers, many=True, context={"request": request}
                 )

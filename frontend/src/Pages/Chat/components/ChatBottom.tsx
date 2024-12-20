@@ -21,7 +21,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const [text, setText] = useState("");
 		const { block, sendMessage } = useChatContext();
 		const user = getUser();
-		const authContext = getContext()
+		const authContext = getContext();
 
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
@@ -45,13 +45,8 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const handleSendMessage = async () => {
 			const maxLength = 300; // Set your max length
 			if (text.trim().length > maxLength) {
-				authContext?.setCreatedAlert("Message cannot exceed 300 characters.")
+				authContext?.setCreatedAlert("Message cannot exceed 300 characters.");
 				authContext?.setDisplayed(2);
-				// <Alert primaryColor="#00ff115a" secondaryColor="#90f18b">
-				// 	<i className="fa-solid fa-circle-check"></i>
-				// 	<span>{`Message cannot exceed ${maxLength} characters.`}</span>
-				// </Alert>;
-				// alert(`Message cannot exceed ${maxLength} characters.`);
 				return;
 			}
 			if (selectedFriend && text.trim()) {
@@ -102,7 +97,18 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 							<textarea
 								placeholder="Type a message..."
 								value={text}
-								onChange={(event) => setText(event.target.value)}
+								onChange={(event) => {
+									const maxLength = 300; // Set your max length
+									if (event.target.value.trim().length > maxLength) {
+										authContext?.setCreatedAlert(
+											"Message cannot exceed 300 characters."
+										);
+										authContext?.setDisplayed(2);
+										setText("");
+										return;
+									}
+									setText(event.target.value);
+								}}
 								onKeyDown={handleKeyDown}
 								ref={ref}
 								// rows={3}

@@ -13,6 +13,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
         self.room_group_name = f"chat_room_of_{self.user.id}"
+        self.isBlocked = False
+        self.isBlockedPayload = None
 
         # Check if the user is authenticated
         if not self.user.is_authenticated:
@@ -53,21 +55,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if (message_type == "send_message"):
             await self.handle_send_message(data)
 
-        elif (message_type == "block_friend"):
+        if (message_type == "block_friend" or self.isBlocked):
+            data = self.isBlockedPayload if self.isBlocked else data
             await self.handle_block_friend(data)
-        elif (message_type == "active_chat"):
+        if (message_type == "active_chat"):
             chat_id = data.get('chat_id')
             if chat_id == -1:
                 await self.handle_reset_active_chat()
             else:
                 await self.handle_active_chat(chat_id)
-        elif (message_type == "mark_is_read"):
+        if (message_type == "mark_is_read"):
             chat_id = data.get('chat_id')
             await self.handle_mark_is_read(chat_id)
 
     async def handle_mark_is_read(self, chat_id):
         try:
-            # Use database_sync_to_async to run the synchronous operation in an async context
             chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
 
             # Check if the current user is user1 or user2
@@ -149,7 +151,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'blocked': blocked,
                 'status': relation_status
             }
-            print(1)
             await self.channel_layer.group_send(blocker_room, payload)
             await self.channel_layer.group_send(blocked_room, payload)
 
@@ -168,7 +169,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         Sends block/unblock updates to the client.
         """
-        print("--------------------------------")
         await self.send(text_data=json.dumps({
             'type': 'block_status_update',
             'chat_id': event['chat_id'],
@@ -223,17 +223,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def send_block_status(self, chat, blocked_req, is_blocked):
         blocker = blocked_req.blocked_by
         blocked = blocked_req.sender if blocked_req.blocked_by != blocked_req.sender else blocked_req.receiver
-        blocker_room = f"chat_room_of_{blocker}"
-        blocked_room = f"chat_room_of_{blocked}"
+
 
         payload = {
-            # 'type': 'block_status_update',
             'chat_id': chat.id,
-            'blocker': blocker,
-            'blocked': blocked,
+            'blocker': blocker.id,
+            'blocked': blocked.id,
             'status': is_blocked
         }
-        return (payload, blocker_room, blocked_room)
+        return payload#(payload, blocker_room, blocked_room)
 
 
 
@@ -257,20 +255,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user1=self.user,
                 user2=receiver
             )
-        # blocked_req , is_blocked= await self.reciver_blocked(receiver)
-        # if  blocked_req and is_blocked:
-        #     payload, blocker_room, blocked_room = await self.send_block_status(chat ,blocked_req, is_blocked)
-            # print(payload, blocker_room, blocked_room)
-            # await self.send(text_data=json.dumps({
-            #     'type': 'block_status_update',
-            #     'chat_id': payload['chat_id'],
-            #     'blocker': payload['blocker'],
-            #     'blocked': payload['blocked'],
-            #     'status': payload['status']  # true if blocked, false otherwise
-            # }))
-            # await self.channel_layer.group_send(blocker_room, payload)
-            # await self.channel_layer.group_send(blocked_room, payload)
-            # await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
+        blocked_req , is_blocked= await self.reciver_blocked(receiver)
+        if  blocked_req and is_blocked:
+            self.isBlockedPayload = await self.send_block_status(chat ,blocked_req, is_blocked)
+            self.isBlocked = True
             return
         if self.is_blocked(chat):
             await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
@@ -331,17 +319,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'nbr_of_unseen_msg_user1': chat.nbr_of_unseen_msg_user1,
                 'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             })
-            # await self.channel_layer.group_send(
-            # self.room_group_name,
-            # {
-            #     'type': 'update_unseen_message',
-            #     'status': True,
-            # })
         await chat.asave()
-
-    # async def update_unseen_message(self, chat, receiver):
-    #     if chat.id == receiver.active_chat:
-
 
     async def chat_message(self, event):
         # Send message to websocket

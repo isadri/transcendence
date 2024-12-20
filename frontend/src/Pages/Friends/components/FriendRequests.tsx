@@ -19,9 +19,8 @@ const FriendRequests = () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/pending"),
-					// "http://0.0.0.0:8000/api/friends/pending",
 					{
-						withCredentials: true, // Include cookies in the request
+						withCredentials: true,
 					}
 				);
 				const senderData = response.data.map((request: any) => ({
@@ -37,16 +36,16 @@ const FriendRequests = () => {
 		};
 
 		fetchFriendRequests();
-		// Set up an interval to fetch new data every 10 seconds
-		// const intervalId = setInterval(fetchFriendRequests, 5000);
-
-		// Clean up the interval when the component unmounts
-		// return () => {
-		// 	// clearInterval(intervalId);
-		// };
 	}, []);
 
 	const handleAcceptRequest = async (id: number) => {
+		console.log(friendRequests)
+		const existingFriend = friendRequests.find(
+			(friend) => friend.id === id
+		)
+		if (!existingFriend)
+			return;
+		console.log(friendRequests)
 		try {
 			await axios.post(getendpoint("http", `/api/friends/accept/${id}`), null, {
 				withCredentials: true,
@@ -67,6 +66,7 @@ const FriendRequests = () => {
 			console.error("Error decline friend request:", error);
 		}
 	};
+
 	return (
 		<div>
 			{friendRequests.map((friend) => {

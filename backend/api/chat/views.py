@@ -1,7 +1,3 @@
-# from django.contrib.auth import models
-# from api.accounts.models import User
-# from rest_framework.generics import ListAPIView
-
 from rest_framework.exceptions import PermissionDenied
 from .models import Chat, Message
 from rest_framework.views import APIView
@@ -9,48 +5,11 @@ from .serializers import ChatSerializer, MessageSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-# from api.friends.models import FriendList, FriendRequest
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
-
-# class UserChatView(APIView):
-#     """
-#     API view to fetch the chat details between the authenticated user and the specified user2.
-#     """
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, user2_id: int):
-#         user1 = request.user  # The authenticated user
-
-#         # Validate user2_id
-#         if user1.id == user2_id:
-#             return Response({'error': 'You cannot start a chat with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         try:
-#             user2 = User.objects.get(id=user2_id)
-#         except User.DoesNotExist:
-#             return Response({'error': 'The specified user does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-
-#         # Fetch the chat between the two users
-#         chat = Chat.objects.filter(
-#             (Q(user1=user1) & Q(user2=user2)) | (Q(user1=user2) & Q(user2=user1))
-#         ).first()
-
-#         if not chat:
-#             return Response({'error': 'No chat found between the two users.'}, status=status.HTTP_404_NOT_FOUND)
-
-#         # Fetch all messages in the chat
-#         messages = Message.objects.filter(chat=chat).order_by('timestamp')
-
-#         # Serialize chat and messages
-#         chat_data = ChatSerializer(chat).data
-
-#         return Response({
-#             'chat': chat_data,
-#         }, status=status.HTTP_200_OK)
 
 class ChatConversationView(APIView):
     """
@@ -117,16 +76,6 @@ class ChatView(viewsets.ModelViewSet):
             user2 = User.objects.get(id=user2_id)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        # try:
-        #     friend_list1 = FriendList.objects.get(user=user1)
-        # except FriendList.DoesNotExist:
-        #     return Response({'error': 'Friend list not found.'},
-        #                        status=status.HTTP_400_BAD_REQUEST)
-
-        # if not friend_list1.friends.filter(id=user2.id).exists():
-        #     return Response({'error': 'You cannot create chat with a user who is not your friend.'},
-        #                        status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Use filter first to check if the chat exists

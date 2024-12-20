@@ -58,7 +58,7 @@ const Friends = () => {
 							setActiveSection("cancelFriends");
 						}}
 					>
-						Decline Friend
+						Cancel Friend
 					</li>
 				</ul>
 			</div>
