@@ -137,7 +137,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             elif status == False:
                 chat.blocke_state_user1 = "none"
                 chat.blocke_state_user2 = "none"
-
             await chat.asave()
 
             blocker_room = f"chat_room_of_{blocker}"
@@ -260,6 +259,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.isBlockedPayload = await self.send_block_status(chat ,blocked_req, is_blocked)
             self.isBlocked = True
             return
+        if not is_blocked:
+            self.isBlocked = False
+            self.isBlockedPayload = None
+        # else:
+        #     self.isBlockedPayload = await self.send_block_status(chat ,blocked_req, is_blocked)
+        #     self.isBlocked = False
+
         if self.is_blocked(chat):
             await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
             return

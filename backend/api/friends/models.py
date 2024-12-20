@@ -203,7 +203,7 @@ class FriendRequest(models.Model):
                 blocked_user.is_blocked = False
         
                 # Update the FriendRequest status and clear block information
-                self.status = 'accepted'
+                # self.status = 'accepted'
                 self.blocked_by = None
                 self.save()
         
