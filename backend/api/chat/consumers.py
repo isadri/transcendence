@@ -137,6 +137,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             elif status == False:
                 chat.blocke_state_user1 = "none"
                 chat.blocke_state_user2 = "none"
+                self.isBlocked = False
+                self.isBlockedPayload = None
             await chat.asave()
 
             blocker_room = f"chat_room_of_{blocker}"

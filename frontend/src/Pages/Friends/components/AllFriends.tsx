@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AllFriends.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface GetFriends {
@@ -18,6 +18,7 @@ const AllFriends = () => {
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
+	const authContext = getContext();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -80,8 +81,14 @@ const AllFriends = () => {
 		try {
 			await axios.post(getendpoint("http", `/api/friends/remove/${id}`), null, {
 				withCredentials: true,
-			});
-			setGetFriends((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then((response) => {
+				if (response.data.error === "Friend request not found or already processed.") {
+					authContext?.setCreatedAlert("Friend request not found or already processed.");
+					authContext?.setDisplayed(2);
+				}
+				setGetFriends((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
@@ -90,8 +97,15 @@ const AllFriends = () => {
 		try {
 			await axios.post(getendpoint("http", `/api/friends/block/${id}`), null, {
 				withCredentials: true,
-			});
-			setGetFriends((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then((response) => {
+				// console.log(response.data)
+				if (response.data.error === "You can not block this user.") {
+					authContext?.setCreatedAlert("You can not block this user.");
+					authContext?.setDisplayed(2);
+				}
+				setGetFriends((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}

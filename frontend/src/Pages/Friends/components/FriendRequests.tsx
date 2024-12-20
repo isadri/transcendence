@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./FriendRequests.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface FriendRequests {
@@ -13,6 +13,7 @@ interface FriendRequests {
 const FriendRequests = () => {
 	const navigate = useNavigate();
 	const [friendRequests, setFriendRequests] = useState<FriendRequests[]>([]);
+	const authContext = getContext();
 
 	useEffect(() => {
 		const fetchFriendRequests = async () => {
@@ -39,18 +40,17 @@ const FriendRequests = () => {
 	}, []);
 
 	const handleAcceptRequest = async (id: number) => {
-		console.log(friendRequests)
-		const existingFriend = friendRequests.find(
-			(friend) => friend.id === id
-		)
-		if (!existingFriend)
-			return;
-		console.log(friendRequests)
 		try {
 			await axios.post(getendpoint("http", `/api/friends/accept/${id}`), null, {
 				withCredentials: true,
-			});
-			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then((response) => {
+				if (response.data.error === "Friend request not found or already processed.") {
+					authContext?.setCreatedAlert("Friend request not found or already processed.");
+					authContext?.setDisplayed(2);
+				}
+				setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
@@ -60,8 +60,14 @@ const FriendRequests = () => {
 		try {
 			await axios.delete(getendpoint("http", `/api/friends/decline/${id}`), {
 				withCredentials: true,
-			});
-			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then(response => {
+				if (response.data.error == "Friend request not found or already processed.") {
+					authContext?.setCreatedAlert("Friend request not found or already processed.");
+					authContext?.setDisplayed(2);
+				}
+				setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			}) 
 		} catch (error) {
 			console.error("Error decline friend request:", error);
 		}

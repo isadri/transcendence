@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./BlockedFriends.css";
 import axios from "axios";
-import { getUser, getendpoint } from "../../../context/getContextData.tsx";
+import { getContext, getUser, getendpoint } from "../../../context/getContextData.tsx";
 import { useNavigate } from "react-router-dom";
 
 interface BlockedFriend {
@@ -14,6 +14,7 @@ const BlockedFriends = () => {
 	const navigate = useNavigate()
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
 	const user = getUser()
+	const authContext = getContext();
 
 	useEffect(() => {
 		const fetchBlockedFriend = async () => {
@@ -72,8 +73,14 @@ const BlockedFriends = () => {
 		try {
 			await axios.post(getendpoint("http", `/api/friends/unblock/${id}`), null, {
 				withCredentials: true,
-			});
-			setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then((response) => {
+				if (response.data.error == "No blocked request found.") {
+					authContext?.setCreatedAlert("No blocked request found.");
+					authContext?.setDisplayed(2);
+				}
+				setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}

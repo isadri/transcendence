@@ -7,7 +7,7 @@ import {
 	useChatContext,
 } from "./context/ChatUseContext";
 import { getContext, getUser } from "../../../context/getContextData";
-import Alert from "../../../components/Alert/Alert";
+// import Alert from "../../../components/Alert/Alert";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;

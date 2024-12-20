@@ -92,7 +92,7 @@ class FriendRequest(models.Model):
                                    related_name='blocked_requests')
 
     def __str__(self) -> str:
-        return self.sender.username
+        return f'sender:{self.sender.username} receiver:{self.receiver.username} status:{self.status}'
 
     def accept(self) -> None:
         """

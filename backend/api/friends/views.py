@@ -63,7 +63,7 @@ class FriendRequestAcceptView(APIView):
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+           status=status.HTTP_200_OK)
         friend_request.accept()
         return Response({'message': 'Friend request accepted.'}, status=status.HTTP_200_OK)
 
@@ -79,7 +79,7 @@ class FriendRequestDeclineView(APIView):
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+           status=status.HTTP_200_OK)
         friend_request.delete()
         return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
@@ -94,7 +94,7 @@ class FriendRequestCancelView(APIView):
             friend_request = FriendRequest.objects.get(sender=request.user, receiver=pk, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+           status=status.HTTP_200_OK)
         friend_request.delete()
         return Response({'message': 'Friend request cancel.'}, status=status.HTTP_200_OK)
 
@@ -129,7 +129,10 @@ class FriendRequestBlockView(APIView):
                 Q(sender_id=pk, receiver=request.user),
                 # status='accepted'
             ).first()
+            print(friend_request)
             if friend_request:
+                if friend_request.status == 'blocked':
+                    return Response({'error': 'You can not block this user.'}, status=status.HTTP_200_OK)
                 friend_request.block(request.user)
             else:
                 FriendRequest.objects.create(
@@ -204,7 +207,7 @@ class FriendRequestUnblockView(APIView):
                     ).first()
             if not friend_request:
                 return Response({'error': 'No blocked request found.'},
-                                status=status.HTTP_404_NOT_FOUND)
+                                status=status.HTTP_200_OK)
 
             friend_request.unblock(request.user)
             friend_request.delete()
@@ -355,7 +358,6 @@ class FriendListView(generics.ListAPIView):
 #         # Serialize and return the data
 #         serializer = FriendSerializer(users, many=True)
 #         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 class UserListView(APIView):
     permission_classes = [IsAuthenticated]

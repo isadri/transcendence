@@ -19,7 +19,7 @@ const Chat = () => {
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
-	const { activeChat } = useChatContext()
+	const { activeChat } = useChatContext();
 
 	useEffect(() => {
 		const fetchFriend = async () => {
@@ -42,13 +42,13 @@ const Chat = () => {
 
 	const handleSelectFriend = (friend: GetChats) => {
 		setSelectedFriend(friend);
-		activeChat({chatid: friend.id})
+		activeChat({ chatid: friend.id });
 	};
 	const account = getContext();
 	return (
 		<ChatProvider>
 			<Alert primaryColor="red" secondaryColor="#f18b8b">
-			<i className="fa-solid fa-circle-exclamation"></i>
+				<i className="fa-solid fa-circle-exclamation"></i>
 				<span>{account?.createdAlert}</span>
 			</Alert>
 			<div className="Chat">

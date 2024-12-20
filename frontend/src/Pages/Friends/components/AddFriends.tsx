@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AddFriends.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface AllUsers {
@@ -18,6 +18,7 @@ const AddFriends = () => {
 	const Ref = useRef<HTMLInputElement>(null);
 	const [allUsers, setAllUsers] = useState<AllUsers[]>([]);
 	const [results, setResults] = useState<AllUsers[]>([]);
+	const authContext = getContext();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -85,8 +86,14 @@ const AddFriends = () => {
 				{
 					withCredentials: true,
 				}
-			);
-			setAllUsers((prev) => prev.filter((user) => user.id !== id));
+			)
+			.then((response) => {
+				if (response.data.error == "A friend request already exists between you and this user.") {
+					authContext?.setCreatedAlert("A friend request already exists between you and this user.");
+					authContext?.setDisplayed(2);
+				}
+				setAllUsers((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}

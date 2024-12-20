@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./CancelFriends.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface PendingUsers {
@@ -18,6 +18,7 @@ const CancelFriends = () => {
 	const Ref = useRef<HTMLInputElement>(null);
 	const [pendingUsers, setPendingUsers] = useState<PendingUsers[]>([]);
 	const [results, setResults] = useState<PendingUsers[]>([]);
+	const authContext = getContext();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -39,7 +40,7 @@ const CancelFriends = () => {
 					{
 						withCredentials: true,
 					}
-				);
+				)
 				setPendingUsers(response.data);
 			} catch (err) {
 				console.log("Error fetching users:", err);
@@ -83,8 +84,14 @@ const CancelFriends = () => {
 				{
 					withCredentials: true,
 				}
-			);
-			setPendingUsers((prev) => prev.filter((user) => user.id !== id));
+			)
+			.then((response) => {
+				if (response.data.error == "Friend request not found or already processed.") {
+					authContext?.setCreatedAlert("Friend request not found or already processed.");
+					authContext?.setDisplayed(2);
+				}
+				setPendingUsers((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error decline friend request:", error);
 		}
