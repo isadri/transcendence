@@ -1,4 +1,4 @@
-import { Canvas, context } from "@react-three/fiber";
+import { Canvas, context, useThree } from "@react-three/fiber";
 import "../Play/Play.css";
 import winnerImg from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
@@ -91,7 +91,7 @@ function Table() {
 
 interface Paddlerops {
   position: any, // can be  Vector3 or Triplet,
-  box: number
+  box: [number, number, number]
 }
 
 const move = (socket: WebSocket, username: string, direction: string) => {
@@ -120,7 +120,7 @@ function Paddle1({ position, box }: Paddlerops) { // my Paddle
 
   useEffect(() => {
     if (api && api.position)
-      api.position.set(box, 0.09, +(8.65640 - 1) / 2)
+      api.position.set(...box)
   }, [box, api])
   useEffect(() => {
     if (context) {
@@ -168,7 +168,7 @@ function Paddle2({ position, box }: Paddlerops) {
 
   useEffect(() => {
     if (api && api.position)
-      api.position.set(box, 0.09, -(8.65640 - 1) / 2)
+      api.position.set(...box)
   }, [box, api])
   return (
     <mesh ref={ref} position={position} name="paddle">
@@ -246,8 +246,9 @@ function GameTable() {
     friction: 0,
     restitution: 1,
   });
-  const [paddle1, setpaddle1] = useState<number>(0)
-  const [paddle2, setpaddle2] = useState<number>(0)
+  const { camera } = useThree();
+  const [paddle1, setpaddle1] = useState<[number, number, number]>([0, 0.09, -(8.65640 - 1) / 2])
+  const [paddle2, setpaddle2] = useState<[number, number, number]>([0, 0.09, +(8.65640 - 1) / 2])
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
   if (context) {
@@ -265,27 +266,34 @@ function GameTable() {
           console.log(data);
           setEnemy(data.enemy)
           setLoading(false)
+          if (data[user.username] && data[user.username] == 'player2')
+          {
+            camera.position.set(0, 5, -8)
+            setpaddle1([0, 0.09, -(8.65640 - 1) / 2])
+            setpaddle2([0, 0.09, +(8.65640 - 1) / 2])
+          }
         }
         if (data.event == "GAME_UPDATE") {
           if (data.ball) {
             let xyz: [number, number, number] = data.ball
-            if (data[user.username] && data[user.username] == 'player2')
-              xyz[2] *= -1 // to reverse the ball for one of them
+            // if (data[user.username] && data[user.username] == 'player2')
+              // camera.position.set(0, 5, -8)
+              // xyz[2] *= -1 // to reverse the ball for one of them
             setball(xyz)
           }
           if (data[user.username]) {
             let x = data[data[user.username]]
             if (data[user.username] == 'player2')
-              setpaddle1(-x)
+              setpaddle1([-x, 0.09,-(8.65640 - 1) / 2])
             else
-              setpaddle1(x)
+              setpaddle1([-x, 0.09,+(8.65640 - 1) / 2])
           }
           if (data[enemy.username]) {
             let x = data[data[enemy.username]]
             if (data[enemy.username] == 'player1')
-              setpaddle2(-x)
+              setpaddle2([-x, 0.09,+(8.65640 - 1) / 2])
             else
-              setpaddle2(x)
+              setpaddle2([-x, 0.09,-(8.65640 - 1) / 2])
           }
           if (data[enemy.username] && data[user.username]) {
             let s1 = data[data[user.username] + '_score']
@@ -316,6 +324,8 @@ function GameTable() {
             <planeGeometry args={[300, 300]} />
             <meshStandardMaterial side={DoubleSide} color={"#c1596c"} />
           </mesh>
+
+          <primitive object={new AxesHelper(5)} />
         </>
       );
     return <></>
@@ -358,7 +368,7 @@ const Play = () => {
     return (
       <>
         <div className="PlayScreen">
-          <Canvas frameloop="always" camera={{ position: [0, 5, 8] }} onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
+          <Canvas ref={canvasRef} frameloop="always" camera={{ position: [0, 5, 8] }} onCreated={({ scene }) => { scene.fog = new Fog(0x000000, 1, 100); }}>
             <OrbitControls maxPolarAngle={MathUtils.degToRad(100)} />
             <directionalLight position={[-50, 9, 5]} intensity={1} />
             <directionalLight position={[-50, -9, -5]} intensity={1} />

@@ -59,8 +59,8 @@ class RandomGame(AsyncWebsocketConsumer):
         iterator = iter(iter(self.qeuee.items()))
         key1 , player1 = next(iterator)
         key2 , player2 = next(iterator)
-        print(player1, player2)
-        print(self.qeuee)
+        # print(player1, player2)
+        # print(self.qeuee)
         self.gameMatch = await self.create_game(player1.user, player2.user)
         self.room_name = f"room_{self.gameMatch.id}"
         self.setAsConnected(key1, key2)
@@ -165,8 +165,8 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
-    if self.hitPaddle(self.players_pos[self.player1]) or self.hitPaddle(self.players_pos[self.player2]):
-      self.z_direction *= -1
+    self.hitPaddle(self.players_pos[self.player1])
+    self.hitPaddle(self.players_pos[self.player2])
     if self.hitSideWalls():
       self.x_direction *= -1
     self.ball[2] += self.dz * self.z_direction
@@ -185,9 +185,9 @@ class GameData:
     self.z_direction = 1
     self.x_direction = 1
     self.ball = [0, 0.2, 0]
-    self.alpha = math.pi/6
+    self.alpha = math.pi/4
     self.dz = math.cos(self.alpha) * BALL_SPEED
-    self.dx = 0#math.sin(self.alpha) * X_SPEED
+    self.dx = math.sin(self.alpha) * BALL_SPEED
 
 
 
@@ -211,16 +211,16 @@ class GameData:
   def hitPaddle(self, pos):
     z = self.ball[2]
     x = self.ball[0]
-    if abs(pos[2] - x) <= BALL_R + PADDLE_X/2:
+    if abs(pos[0] - x) <= BALL_R + PADDLE_X/2 and abs(pos[2] - z) < PADDLE_Z/2:
       self.x_direction *= -1
+      return
     if abs(pos[2] - z) <= ((PADDLE_Z/2) + BALL_R) and abs(pos[0] - x) <= PADDLE_X/2:
       x_hit = x - pos[0]
       self.alpha = PI_4_100 * x_hit
-      # self.dz += math.cos(self.alpha) * BALL_SPEED
+      ## self.dz += math.cos(self.alpha) * BALL_SPEED
       self.dx += math.sin(self.alpha) * BALL_SPEED
       print(self.dz, self.dx, self.ball)
-      return True
-    return False
+      self.z_direction *= -1
 
   def getBall(self):
     return self.ball
@@ -237,6 +237,8 @@ class GameData:
     return self.players_pos[username]
   def setPlayerPos(self, username, pos):#khasseha tn9ah
     direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
+    if username == self.player1:
+      direct *= -1
     newpos = self.players_pos[username][0] + direct
     if newpos < SIDE_LIMIT and newpos > -SIDE_LIMIT:
       self.players_pos[username][0] += direct
@@ -340,7 +342,9 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def game_start(self, event):
     await self.send(json.dumps({
       "event": "START",
-      "enemy": UserSerializer(self.enemy).data
+      "enemy": UserSerializer(self.enemy).data,
+      event['player1']:'player1',
+      event['player2']:'player2',
     }))
 
 
@@ -364,7 +368,9 @@ class RemoteGame(AsyncWebsocketConsumer):
     player2.game_data = player1.game_data
     await self.channel_layer.group_send(self.room_name, {
       'type': 'game.start',
-      'event': 'START'
+      'event': 'START',
+      'player1':self.game_data.player1,
+      'player2':self.game_data.player2
     })
     while True:
       await self.game_data.update()
