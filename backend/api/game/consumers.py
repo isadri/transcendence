@@ -160,7 +160,6 @@ class GameData:
     self.update_ball()
     self.update_Players()
     self.checkScore()
-    
 
   def update_Players(self):
     newpos = self.players_pos[self.player1][0] + self.player1Update
@@ -177,14 +176,12 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
-
     self.hitPaddle(self.players_pos[self.player1])
     self.hitPaddle(self.players_pos[self.player2])
     if self.hitSideWalls():
       self.x_direction *= -1
     self.ball[2] += self.dz * self.z_direction
     self.ball[0] += self.dx * self.x_direction
-
 
   def checkScore(self):
     if abs(GOAL_Z - self.ball[2]) <= BALL_R * 2:
@@ -200,9 +197,7 @@ class GameData:
     self.ball = [0, 0.2, 0]
     self.alpha = math.pi/4
     self.dz = math.cos(self.alpha) * BALL_SPEED
-    self.dx = -math.sin(self.alpha) * BALL_SPEED
-
-
+    self.dx = math.sin(self.alpha) * BALL_SPEED
 
   def checkWinner(self):
     if self.score[self.player1] == 7 or self.score[self.player2] == 7:
@@ -222,18 +217,29 @@ class GameData:
     return False
 
   def hitPaddle(self, pos):
-    z = self.ball[2]
-    x = self.ball[0]
-    z_diff = pos[2] - z
-    x_diff = pos[0] - x
-    if abs(x_diff) <= PADDLE_X/2:
-      if abs(z_diff) <= Z_PADDLE_BALL_R:
-        x_hit = x_diff
-        self.alpha = PI_4_100 * x_hit
-        self.dx += math.sin(self.alpha) * BALL_SPEED
-        self.z_direction *= -1
-    elif abs(x_diff) <= X_PADDLE_BALL_R and abs(z_diff) < Z_PADDLE_BALL_R:
-      self.z_direction *= -1
+    z = self.ball[2] + GOAL_Z
+    x = self.ball[0] + SIDE_LIMIT
+    pz = pos[2] + GOAL_Z
+    px = pos[0] + SIDE_LIMIT
+
+    ball_LEFT   = x - BALL_R
+    ball_RIGHT  = x + BALL_R
+    ball_TOP    = z - BALL_R
+    ball_BOTTOM = z + BALL_R
+    paddle_LEFT   = px - PADDLE_X/2
+    paddle_RIGHT  = px + PADDLE_X/2
+    paddle_TOP    = pz - PADDLE_Z/2
+    paddle_BOTTOM = pz + PADDLE_Z/2
+    if ball_LEFT <= paddle_RIGHT and ball_TOP <= paddle_BOTTOM :
+      if ball_RIGHT >= paddle_LEFT and ball_BOTTOM >= paddle_TOP:
+        horizontal_overlap = min(ball_RIGHT - paddle_LEFT, paddle_RIGHT - ball_LEFT)
+        vertical_overlap = min(ball_BOTTOM - paddle_TOP, paddle_BOTTOM - ball_TOP)
+        if vertical_overlap < horizontal_overlap:
+          self.z_direction *= -1
+          self.alpha = PI_4_100 * abs(px - x)
+          self.dx += math.sin(self.alpha) * BALL_SPEED
+        else:
+          self.x_direction *= -1
 
   def getBall(self):
     return self.ball

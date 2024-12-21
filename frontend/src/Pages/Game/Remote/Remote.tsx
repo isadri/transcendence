@@ -130,22 +130,15 @@ function Paddle1({ position, box }: Paddlerops) { // my Paddle
   useEffect(() => {
     if (context) {
       const { socket, user } = context
-      // let unsubscribe: (() => void) | null = null
       const onKeyDown = (event: KeyboardEvent) => {
-        // unsubscribe = () => {
-          if (event.key == "ArrowRight" || event.key == "ArrowUp")
-            move(socket, user.username, box.right)
-          else if (event.key == "ArrowLeft" || event.key == "ArrowDown")
-            move(socket, user.username, box.left)
-        // }
+        if (event.key == "ArrowRight" || event.key == "ArrowUp")
+          move(socket, user.username, box.right)
+        else if (event.key == "ArrowLeft" || event.key == "ArrowDown")
+          move(socket, user.username, box.left)
       }
 
       const onKeyUp = (event: KeyboardEvent) => {
-        // if (unsubscribe) {
-        //   unsubscribe();
-        //   unsubscribe = null;
-          move(socket, user.username, '*')
-        // }
+        move(socket, user.username, '*')
       }
 
       window.addEventListener("keydown", onKeyDown)
@@ -317,7 +310,7 @@ function GameTable() {
           if (data[enemy.username]) {
             let x = data[data[enemy.username]]
             const newData: PaddleBox = ({
-              xyz: [x, 0.09, paddle2 .xyz[2]],
+              xyz: [x, 0.09, paddle2.xyz[2]],
               left: paddle2.left,
               right: paddle2.right
             })
