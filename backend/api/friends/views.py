@@ -111,11 +111,22 @@ class FriendRequestBlockView(APIView):
             except User.DoesNotExist:
                 return Response({'error': 'User not found.'},
                         status=status.HTTP_404_NOT_FOUND)
-
-            chat, _ = Chat.objects.get_or_create(
+            # chat, _ = Chat.objects.get_or_create(
+            #     Q(user1=request.user, user2=receiver) |
+            #     Q(user1=receiver, user2=request.user),
+            #     defaults={'blocke_state_user1': 'none', 'blocke_state_user2': 'none'}
+            # )
+            chat = Chat.objects.filter(
                 Q(user1=request.user, user2=receiver) |
-                Q(user1=receiver, user2=request.user),
+                Q(user1=receiver, user2=request.user)
+            ).first()  # Fetch the first match asynchronously
+
+            if not chat:
+                chat = Chat.objects.create(
+                    user1=request.user,
+                    user2=receiver
             )
+            # print("--------------------------------")
             if request.user == chat.user1:
                 chat.blocke_state_user1 = "blocked"
                 chat.blocke_state_user2 = "blocker"
@@ -129,9 +140,9 @@ class FriendRequestBlockView(APIView):
                 Q(sender_id=pk, receiver=request.user),
                 # status='accepted'
             ).first()
-            print(friend_request)
             if friend_request:
                 if friend_request.status == 'blocked':
+            # print(friend_request)
                     return Response({'error': 'You can not block this user.'}, status=status.HTTP_200_OK)
                 friend_request.block(request.user)
             else:
@@ -187,9 +198,19 @@ class FriendRequestUnblockView(APIView):
                 return Response({'error': 'User not found.'},
                         status=status.HTTP_404_NOT_FOUND)
 
-            chat, _ = Chat.objects.get_or_create(
+            # chat, _ = Chat.objects.get_or_create(
+            #     Q(user1=request.user, user2=receiver) |
+            #     Q(user1=receiver, user2=request.user),
+            # )
+            chat = Chat.objects.filter(
                 Q(user1=request.user, user2=receiver) |
-                Q(user1=receiver, user2=request.user),
+                Q(user1=receiver, user2=request.user)
+            ).first()  # Fetch the first match asynchronously
+
+            if not chat:
+                chat = Chat.objects.create(
+                    user1=request.user,
+                    user2=receiver
             )
             if request.user == chat.user1:
                 chat.blocke_state_user1 = "none"

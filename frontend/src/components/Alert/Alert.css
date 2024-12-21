@@ -13,7 +13,7 @@
 	align-items: center;
 	padding-left: 2%;
 	/* color:#90f18b; */
-	border: 1px solid;
+	/* border: 1px solid; */
 	opacity: 0;
 	transition: opacity 0.5s ease-in-out, display 0s 0.5s;
 }
