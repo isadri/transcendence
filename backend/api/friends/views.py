@@ -11,6 +11,8 @@ from .models import FriendList, FriendRequest
 from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
 from django.shortcuts import get_object_or_404
 
+from api.notifications.consumers import NotificationConsumer
+
 User = get_user_model()
 
 class FriendRequestSendView(generics.CreateAPIView):
@@ -38,7 +40,7 @@ class FriendRequestSendView(generics.CreateAPIView):
             return Response({'error': 'That user does not exist'},
             status=status.HTTP_404_NOT_FOUND)
 
-        check_friendShip = FriendRequest.objects.filter(sender=request.user, 
+        check_friendShip = FriendRequest.objects.filter(sender=request.user,
         receiver=receiver, status__in=['pending', 'accepted', 'blocked']).first() \
         or FriendRequest.objects.filter(sender=receiver, 
         receiver=request.user, status__in=['pending', 'accepted', 'blocked']).first()
@@ -47,6 +49,8 @@ class FriendRequestSendView(generics.CreateAPIView):
             status=status.HTTP_400_BAD_REQUEST)
 
         friendShip = FriendRequest.objects.create(sender=request.user, receiver=receiver)
+        message = f"You have a new friend request from {request.user.username}!"
+        NotificationConsumer.send_friend_request_notification(receiver.id, message)
         return Response({'message': 'Friend request send successfuly.'},
         status=status.HTTP_201_CREATED)
 
@@ -63,7 +67,14 @@ class FriendRequestAcceptView(APIView):
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
            status=status.HTTP_404_NOT_FOUND)
+        # try:
+        #     sender = User.objects.get(id=pk)
+        # except User.DoesNotExist:
+        #     return Response({'error': 'That user does not exist'},
+        #     status=status.HTTP_404_NOT_FOUND)
         friend_request.accept()
+        message = f"Your friend request was accepted by {request.user.username}!"
+        NotificationConsumer.send_friend_request_notification(pk, message)
         return Response({'message': 'Friend request accepted.'}, status=status.HTTP_200_OK)
 
 
@@ -302,7 +313,6 @@ class MutualFriendsView(generics.ListAPIView):
 
             mutual_friends = authenticated_user_friends.filter(id__in=specific_user_friends)
             serializer = FriendSerializer(mutual_friends, many=True)
-            print("================>",serializer.data,"<====================")
 
             return Response(serializer.data, status=200)
         except FriendList.DoesNotExist:

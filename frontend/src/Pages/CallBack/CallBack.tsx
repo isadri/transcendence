@@ -171,7 +171,8 @@ function CallBack() {
           <div className="GameModePopUpBlur">
              <div className="alertDeleteUser alertOTP">
                <div className="cancelIcon">
-                 <i className="fa-solid fa-xmark" onClick={() => {SetshowOtpAlert(false), navigate('/Auth')}}></i>
+                 <i className="fa-solid fa-xmark" 
+                 onClick={() => {SetshowOtpAlert(false), navigate('/Auth')}}></i>
                </div>
                <div className="contentOtp">
                  <div className="iconEmail">
