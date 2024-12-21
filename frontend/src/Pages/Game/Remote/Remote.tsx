@@ -88,10 +88,15 @@ function Table() {
   );
 }
 
+interface PaddleBox {
+  xyz: [number, number, number],
+  right: string,
+  left: string
+}
 
 interface Paddlerops {
   position: any, // can be  Vector3 or Triplet,
-  box: [number, number, number]
+  box: PaddleBox
 }
 
 const move = (socket: WebSocket, username: string, direction: string) => {
@@ -120,16 +125,16 @@ function Paddle1({ position, box }: Paddlerops) { // my Paddle
 
   useEffect(() => {
     if (api && api.position)
-      api.position.set(...box)
+      api.position.set(...box.xyz)
   }, [box, api])
   useEffect(() => {
     if (context) {
       const { socket, user } = context
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key == "ArrowRight" || event.key == "ArrowUp")
-          move(socket, user.username, "+")
+          move(socket, user.username, box.right)
         else if (event.key == "ArrowLeft" || event.key == "ArrowDown")
-          move(socket, user.username, "-")
+          move(socket, user.username, box.left)
       }
 
       const onKeyUp = (event: KeyboardEvent) => {
@@ -168,7 +173,7 @@ function Paddle2({ position, box }: Paddlerops) {
 
   useEffect(() => {
     if (api && api.position)
-      api.position.set(...box)
+      api.position.set(...box.xyz)
   }, [box, api])
   return (
     <mesh ref={ref} position={position} name="paddle">
@@ -247,8 +252,16 @@ function GameTable() {
     restitution: 1,
   });
   const { camera } = useThree();
-  const [paddle1, setpaddle1] = useState<[number, number, number]>([0, 0.09, -(8.65640 - 1) / 2])
-  const [paddle2, setpaddle2] = useState<[number, number, number]>([0, 0.09, +(8.65640 - 1) / 2])
+  const [paddle1, setpaddle1] = useState<PaddleBox>({
+    xyz: [0, 0.09, +(8.65640 - 1) / 2],
+    left: '-',
+    right: '+'
+  })
+  const [paddle2, setpaddle2] = useState<PaddleBox>({
+    xyz: [0, 0.09, -(8.65640 - 1) / 2],
+    left: '+',
+    right: '-'
+  })
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
   if (context) {
@@ -266,34 +279,45 @@ function GameTable() {
           console.log(data);
           setEnemy(data.enemy)
           setLoading(false)
-          if (data[user.username] && data[user.username] == 'player2')
-          {
+          if (data[user.username] && data[user.username] == 'player2') {
             camera.position.set(0, 5, -8)
-            setpaddle1([0, 0.09, -(8.65640 - 1) / 2])
-            setpaddle2([0, 0.09, +(8.65640 - 1) / 2])
+            setpaddle1({
+              xyz: [0, 0.09, -(8.65640 - 1) / 2],
+              left: '+',
+              right: '-'
+            })
+            setpaddle2({
+              xyz: [0, 0.09, +(8.65640 - 1) / 2],
+              left: '+',
+              right: '-'
+            })
           }
         }
         if (data.event == "GAME_UPDATE") {
           if (data.ball) {
             let xyz: [number, number, number] = data.ball
             // if (data[user.username] && data[user.username] == 'player2')
-              // camera.position.set(0, 5, -8)
-              // xyz[2] *= -1 // to reverse the ball for one of them
+            // camera.position.set(0, 5, -8)
+            // xyz[2] *= -1 // to reverse the ball for one of them
             setball(xyz)
           }
           if (data[user.username]) {
             let x = data[data[user.username]]
-            if (data[user.username] == 'player2')
-              setpaddle1([-x, 0.09,-(8.65640 - 1) / 2])
-            else
-              setpaddle1([-x, 0.09,+(8.65640 - 1) / 2])
+            const newData: PaddleBox = ({
+              xyz: [x, 0.09, paddle1.xyz[2]],
+              left: paddle1.left,
+              right: paddle1.right
+            })
+            setpaddle1(newData)
           }
           if (data[enemy.username]) {
             let x = data[data[enemy.username]]
-            if (data[enemy.username] == 'player1')
-              setpaddle2([-x, 0.09,+(8.65640 - 1) / 2])
-            else
-              setpaddle2([-x, 0.09,-(8.65640 - 1) / 2])
+            const newData: PaddleBox = ({
+              xyz: [x, 0.09, paddle2 .xyz[2]],
+              left: paddle2.left,
+              right: paddle2.right
+            })
+            setpaddle2(newData)
           }
           if (data[enemy.username] && data[user.username]) {
             let s1 = data[data[user.username] + '_score']
@@ -304,7 +328,7 @@ function GameTable() {
         if (data.event == 'WINNER') {
           if (data.winner == user.username)
             setWinner(user)
-          else
+          else//need tn9ah
             setWinner(enemy)
         }
       }

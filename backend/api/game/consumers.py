@@ -18,11 +18,13 @@ BALL_R = 0.12
 GOAL_Z = (8.65640+ 0.5)/2
 GAME_SPEED = 1/60
 PADDLE_SPEED = 0.1
-SIDE_LIMIT = 3.07345 - 0.5/2
+SIDE_LIMIT = 3.07345
+MOVE_SIDE_LIMIT = 3.07345-PADDLE_X/2
 BALL_SPEED = 0.05
 PI_4 = math.pi / 4
 PI_4_100 = PI_4 / (PADDLE_X / 2)
-
+Z_PADDLE_BALL_R = PADDLE_Z/2 + BALL_R
+X_PADDLE_BALL_R = PADDLE_Z/2 + BALL_R
 
 class RandomGame(AsyncWebsocketConsumer):
 
@@ -59,8 +61,6 @@ class RandomGame(AsyncWebsocketConsumer):
         iterator = iter(iter(self.qeuee.items()))
         key1 , player1 = next(iterator)
         key2 , player2 = next(iterator)
-        # print(player1, player2)
-        # print(self.qeuee)
         self.gameMatch = await self.create_game(player1.user, player2.user)
         self.room_name = f"room_{self.gameMatch.id}"
         self.setAsConnected(key1, key2)
@@ -165,6 +165,7 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
+
     self.hitPaddle(self.players_pos[self.player1])
     self.hitPaddle(self.players_pos[self.player2])
     if self.hitSideWalls():
@@ -187,7 +188,7 @@ class GameData:
     self.ball = [0, 0.2, 0]
     self.alpha = math.pi/4
     self.dz = math.cos(self.alpha) * BALL_SPEED
-    self.dx = math.sin(self.alpha) * BALL_SPEED
+    self.dx = -math.sin(self.alpha) * BALL_SPEED
 
 
 
@@ -203,7 +204,7 @@ class GameData:
 
   def hitSideWalls(self):
     x = self.ball[0]
-    z = self.ball[2]
+    # z = self.ball[2]
     if abs(SIDE_LIMIT - x) <= BALL_R or abs(-SIDE_LIMIT - x) <= BALL_R:
       return True
     return False
@@ -211,16 +212,29 @@ class GameData:
   def hitPaddle(self, pos):
     z = self.ball[2]
     x = self.ball[0]
-    if abs(pos[0] - x) <= BALL_R + PADDLE_X/2 and abs(pos[2] - z) < PADDLE_Z/2:
-      self.x_direction *= -1
-      return
-    if abs(pos[2] - z) <= ((PADDLE_Z/2) + BALL_R) and abs(pos[0] - x) <= PADDLE_X/2:
-      x_hit = x - pos[0]
-      self.alpha = PI_4_100 * x_hit
-      ## self.dz += math.cos(self.alpha) * BALL_SPEED
-      self.dx += math.sin(self.alpha) * BALL_SPEED
-      print(self.dz, self.dx, self.ball)
+    # if abs(pos[0] - x) <= BALL_R + PADDLE_X/2 and abs(pos[2] - z) < PADDLE_Z/2:
+    #   self.x_direction *= -1
+    #   return
+    z_diff = pos[2] - z
+    x_diff = pos[0] - x
+    if abs(x_diff) <= PADDLE_X/2:
+      if abs(z_diff) <= Z_PADDLE_BALL_R:
+        x_hit = x_diff
+        self.alpha = PI_4_100 * x_hit
+        self.dx += math.sin(self.alpha) * BALL_SPEED
+        self.z_direction *= -1
+    elif abs(x_diff) <= X_PADDLE_BALL_R and abs(z_diff) < Z_PADDLE_BALL_R:
       self.z_direction *= -1
+    # if  abs(z_diff) <= Z_PADDLE_BALL_R:
+    #   pass
+    # if abs(z_diff) <= Z_PADDLE_BALL_R and abs(x_diff) <= PADDLE_X/2:
+    #   x_hit = x_diff
+    #   self.alpha = PI_4_100 * x_hit
+    #   # self.dz += math.cos(self.alpha) * BALL_SPEED
+    #   self.dx += math.sin(self.alpha) * BALL_SPEED
+    #   self.z_direction *= -1
+    # if abs(x_diff) <= X_PADDLE_BALL_R and abs(z_diff) < Z_PADDLE_BALL_R:
+    #   self.x_direction *= -1
 
   def getBall(self):
     return self.ball
@@ -237,10 +251,10 @@ class GameData:
     return self.players_pos[username]
   def setPlayerPos(self, username, pos):#khasseha tn9ah
     direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
-    if username == self.player1:
-      direct *= -1
+    # if username == self.player1:
+    #   direct *= -1
     newpos = self.players_pos[username][0] + direct
-    if newpos < SIDE_LIMIT and newpos > -SIDE_LIMIT:
+    if newpos < MOVE_SIDE_LIMIT and newpos > -MOVE_SIDE_LIMIT:
       self.players_pos[username][0] += direct
 
   def abort_game(self, username=None):
@@ -281,7 +295,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       else:
         self.connected[self.game_id][self.username] = self
       await self.channel_layer.group_add(self.room_name, self.channel_name)
-      print(self.connected[self.game_id])
+      print(self.user, self.connected[self.game_id])
       if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
         self.task = asyncio.create_task(self.game_loop())
     else:
