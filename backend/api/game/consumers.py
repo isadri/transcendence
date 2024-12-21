@@ -133,6 +133,8 @@ class GameData:
     self.done = False
     self.winneer = None
 
+    self.player1Update = 0
+    self.player2Update = 0
     self.player1 = p1.username
     self.player2 = p2.username
     self.score = {p1.username : 0, p2.username : 0}
@@ -156,7 +158,17 @@ class GameData:
     })
     self.checkWinner()
     self.update_ball()
+    self.update_Players()
     self.checkScore()
+    
+
+  def update_Players(self):
+    newpos = self.players_pos[self.player1][0] + self.player1Update
+    if newpos < MOVE_SIDE_LIMIT and newpos > -MOVE_SIDE_LIMIT:
+      self.players_pos[self.player1][0] += self.player1Update 
+    newpos = self.players_pos[self.player2][0] + self.player2Update
+    if newpos < MOVE_SIDE_LIMIT and newpos > -MOVE_SIDE_LIMIT:
+      self.players_pos[self.player2][0] += self.player2Update 
 
   def update_player1(self, pos):
     self.player1_pos = pos
@@ -212,9 +224,6 @@ class GameData:
   def hitPaddle(self, pos):
     z = self.ball[2]
     x = self.ball[0]
-    # if abs(pos[0] - x) <= BALL_R + PADDLE_X/2 and abs(pos[2] - z) < PADDLE_Z/2:
-    #   self.x_direction *= -1
-    #   return
     z_diff = pos[2] - z
     x_diff = pos[0] - x
     if abs(x_diff) <= PADDLE_X/2:
@@ -225,16 +234,6 @@ class GameData:
         self.z_direction *= -1
     elif abs(x_diff) <= X_PADDLE_BALL_R and abs(z_diff) < Z_PADDLE_BALL_R:
       self.z_direction *= -1
-    # if  abs(z_diff) <= Z_PADDLE_BALL_R:
-    #   pass
-    # if abs(z_diff) <= Z_PADDLE_BALL_R and abs(x_diff) <= PADDLE_X/2:
-    #   x_hit = x_diff
-    #   self.alpha = PI_4_100 * x_hit
-    #   # self.dz += math.cos(self.alpha) * BALL_SPEED
-    #   self.dx += math.sin(self.alpha) * BALL_SPEED
-    #   self.z_direction *= -1
-    # if abs(x_diff) <= X_PADDLE_BALL_R and abs(z_diff) < Z_PADDLE_BALL_R:
-    #   self.x_direction *= -1
 
   def getBall(self):
     return self.ball
@@ -249,13 +248,20 @@ class GameData:
     return self.players[username]
   def getPlayerPos(self, username):
     return self.players_pos[username]
-  def setPlayerPos(self, username, pos):#khasseha tn9ah
-    direct = PADDLE_SPEED if pos == '+' else -PADDLE_SPEED
-    # if username == self.player1:
-    #   direct *= -1
+  def setPlayerPos(self, username, pos):
+    direct = 0
     newpos = self.players_pos[username][0] + direct
     if newpos < MOVE_SIDE_LIMIT and newpos > -MOVE_SIDE_LIMIT:
-      self.players_pos[username][0] += direct
+      if pos == '+':
+        direct = PADDLE_SPEED
+      elif pos == '-':
+        direct = -PADDLE_SPEED
+    else:
+      pos = '*'
+    if username == self.player1:
+      self.player1Update = direct
+    if username == self.player2:
+      self.player2Update = direct
 
   def abort_game(self, username=None):
     self.done = True

@@ -130,17 +130,21 @@ function Paddle1({ position, box }: Paddlerops) { // my Paddle
   useEffect(() => {
     if (context) {
       const { socket, user } = context
+      // let unsubscribe: (() => void) | null = null
       const onKeyDown = (event: KeyboardEvent) => {
-        if (event.key == "ArrowRight" || event.key == "ArrowUp")
-          move(socket, user.username, box.right)
-        else if (event.key == "ArrowLeft" || event.key == "ArrowDown")
-          move(socket, user.username, box.left)
+        // unsubscribe = () => {
+          if (event.key == "ArrowRight" || event.key == "ArrowUp")
+            move(socket, user.username, box.right)
+          else if (event.key == "ArrowLeft" || event.key == "ArrowDown")
+            move(socket, user.username, box.left)
+        // }
       }
 
       const onKeyUp = (event: KeyboardEvent) => {
         // if (unsubscribe) {
         //   unsubscribe();
         //   unsubscribe = null;
+          move(socket, user.username, '*')
         // }
       }
 
