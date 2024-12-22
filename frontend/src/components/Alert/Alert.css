@@ -4,12 +4,11 @@
 	z-index: 10;
 	top: 18px;
 	right: 34px;
-
 	width: 420px;
 	height: 60px;
 	/* background-color: #00ff115a; */
 	border-radius: 10px;
-	/* display: flex; */
+	display: flex;
 	align-items: center;
 	padding-left: 2%;
 	/* color:#90f18b; */

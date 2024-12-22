@@ -29,7 +29,7 @@ function Authentication() {
       .then(response => {
         setUrlGoogle(response.data)
       })
-  }, [url, urlGoogle])
+  }, [url, urlGoogle, setUrlGoogle, setUrl])
 
   const authContext = getContext()
   const navigate = useNavigate();
