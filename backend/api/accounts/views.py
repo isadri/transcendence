@@ -83,6 +83,7 @@ class LoginViewSet(viewsets.ViewSet):
         username = request.data.get('username').lower()
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
+        print(user)
         if user:
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
@@ -225,6 +226,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
 #    If the user does not exist, it creates a new one.
 #    """
 #    permission_classes = [AllowAny]
+#    authentication_classes = []
 
 #    def get_access_token(self, authorization_code: str) -> str:
 #        """
@@ -381,6 +383,7 @@ class LogoutViewSet(viewsets.ViewSet):
     Logout a the currently active user.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def list(self, request: Request) -> Response:
         """
@@ -510,15 +513,38 @@ class UserDetailView(APIView):
         data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
 
+# class GetIntraLink(APIView):
+#     """
+#         get intra link
+#     """
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
+#     def get(self, request):
+#         url =  request.META.get('HTTP_ORIGIN')
+#         print("url ============> ",url)
+#         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url+settings.INTRA_REDIRECT_URI}&response_type=code'
+#         print(data)
+#         return Response(data, status=status.HTTP_200_OK)
+
+# class GetGoogleLink(APIView):
+#     """
+#         get google link
+#     """
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
+#     def get(self, request):
+#         url =  request.META.get('HTTP_ORIGIN')
+#         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url+settings.GOOGLE_REDIRECT_URI}'
+#         return Response(data, status=status.HTTP_200_OK)
+
+
 class GetIntraLink(APIView):
     """
         get intra link
     """
     permission_classes = [AllowAny]
     def get(self, request):
-        url =  request.META.get('HTTP_ORIGIN')
-        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url+settings.INTRA_REDIRECT_URI}&response_type=code'
-        print(data)
+        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
         return Response(data, status=status.HTTP_200_OK)
 
 class GetGoogleLink(APIView):
@@ -527,8 +553,7 @@ class GetGoogleLink(APIView):
     """
     permission_classes = [AllowAny]
     def get(self, request):
-        url =  request.META.get('HTTP_ORIGIN')
-        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url+settings.GOOGLE_REDIRECT_URI}'
+        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -539,6 +564,8 @@ class SendOTPView(APIView):
         to activate the otp in user account
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
+
     def post(self, request, username):
         user = user = get_object_or_404(User, username=username)
         if request.data['val'] == True:
@@ -558,11 +585,12 @@ class SendOTPView(APIView):
     def get(self, request, username):
         try:
             user = User.objects.get(username=username)
+            print(user)
             val = user.otp_active
             print(val)
             return Response(val, status=status.HTTP_200_OK)
-        except:
-            return Response({'error' : "user not found"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error' : e.args[0]}, status=status.HTTP_200_OK)
 
 class checkValidOtp(APIView):
     """
