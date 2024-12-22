@@ -1,23 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./AllFriends.css";
+import "./CancelFriends.css";
 import axios from "axios";
 import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
-interface GetFriends {
+interface PendingUsers {
 	id: number;
 	username: string;
 	avatar: string;
 }
 
-const AllFriends = () => {
+const CancelFriends = () => {
 	const navigate = useNavigate();
-	const [results, setResults] = useState<GetFriends[]>([]);
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
-	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
+	const [pendingUsers, setPendingUsers] = useState<PendingUsers[]>([]);
+	const [results, setResults] = useState<PendingUsers[]>([]);
 	const authContext = getContext();
 
 	useEffect(() => {
@@ -33,23 +33,23 @@ const AllFriends = () => {
 			}
 		};
 
-		document.addEventListener("mousedown", handleClickOutside);
-
-		const fetchFriend = async () => {
+		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", "/api/friends/friends"),
+					getendpoint("http", "/api/friends/cancel"),
 					{
-						withCredentials: true, // Include cookies in the request
+						withCredentials: true,
 					}
-				);
-				setGetFriends(response.data.friends);
+				)
+				setPendingUsers(response.data);
 			} catch (err) {
-				console.log("Error to fetch friends.", err); // Set the response data to state
+				console.log("Error fetching users:", err);
 			}
 		};
 
-		fetchFriend();
+		fetchUsers();
+
+		document.addEventListener("mousedown", handleClickOutside);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
@@ -61,7 +61,7 @@ const AllFriends = () => {
 		const value = event.target.value;
 
 		setSearchFriend(value);
-		const filterResults = getFriends.filter((user) =>
+		const filterResults = pendingUsers.filter((user) =>
 			user.username.toLowerCase().includes(value.toLowerCase())
 		);
 		setResults(filterResults);
@@ -72,46 +72,32 @@ const AllFriends = () => {
 		setSearchFriend("");
 	};
 
-	const handleRemoveRequests = async (id: number) => {
-		const existingFriend = getFriends.find(
+	const handleCancelRequests = async (id: number) => {
+		const existingFriend = pendingUsers.find(
 			(friend) => friend.id === id
 		);
 		if (!existingFriend)
 			return;
 		try {
-			await axios.post(getendpoint("http", `/api/friends/remove/${id}`), null, {
-				withCredentials: true,
-			})
+			await axios.delete(
+				getendpoint("http", `/api/friends/cancel/${id}`),
+				{
+					withCredentials: true,
+				}
+			)
 			.then((response) => {
-				if (response.data.error === "Friend request not found or already processed.") {
+				if (response.data.error == "Friend request not found or already processed.") {
 					authContext?.setCreatedAlert("Friend request not found or already processed.");
 					authContext?.setDisplayed(2);
 				}
-				setGetFriends((prev) => prev.filter((user) => user.id !== id));
+				setPendingUsers((prev) => prev.filter((user) => user.id !== id));
 			})
 		} catch (error) {
-			console.error("Error accepting friend request:", error);
-		}
-	};
-	const handleBlockRequests = async (id: number) => {
-		try {
-			await axios.post(getendpoint("http", `/api/friends/block/${id}`), null, {
-				withCredentials: true,
-			})
-			.then((response) => {
-				// console.log(response.data)
-				if (response.data.error === "You can not block this user.") {
-					authContext?.setCreatedAlert("You can not block this user.");
-					authContext?.setDisplayed(2);
-				}
-				setGetFriends((prev) => prev.filter((user) => user.id !== id));
-			})
-		} catch (error) {
-			console.error("Error accepting friend request:", error);
+			console.error("Error decline friend request:", error);
 		}
 	};
 
-	const friendsList = searchFriend ? results : getFriends;
+	const friendsList = searchFriend ? results : pendingUsers;
 	return (
 		<div>
 			<>
@@ -148,22 +134,12 @@ const AllFriends = () => {
 								/>
 								<span>{friend.username}</span>
 							</div>
-							<div className="iconFriend">
-								<button
-									className="block"
-									onClick={() => handleBlockRequests(friend.id)}
-								>
-									Block
-								</button>
-								<button
-									className="remove"
-									onClick={() => handleRemoveRequests(friend.id)}
-								>
-									Remove
-								</button>
-								{/* <i className="fa-solid fa-user user"></i>
-								<i className="fa-solid fa-comment-dots chat"></i> */}
-							</div>
+							<button
+								className="cancelFriend"
+								onClick={() => handleCancelRequests(friend.id)}
+							>
+								Decline Friend
+							</button>
 						</div>
 					);
 				})}
@@ -172,4 +148,4 @@ const AllFriends = () => {
 	);
 };
 
-export default AllFriends;
+export default CancelFriends;

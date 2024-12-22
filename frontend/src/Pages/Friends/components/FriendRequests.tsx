@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./FriendRequests.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface FriendRequests {
@@ -11,17 +11,17 @@ interface FriendRequests {
 }
 
 const FriendRequests = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [friendRequests, setFriendRequests] = useState<FriendRequests[]>([]);
+	const authContext = getContext();
 
 	useEffect(() => {
 		const fetchFriendRequests = async () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/pending"),
-					// "http://0.0.0.0:8000/api/friends/pending",
 					{
-						withCredentials: true, // Include cookies in the request
+						withCredentials: true,
 					}
 				);
 				const senderData = response.data.map((request: any) => ({
@@ -37,21 +37,20 @@ const FriendRequests = () => {
 		};
 
 		fetchFriendRequests();
-		// Set up an interval to fetch new data every 10 seconds
-		// const intervalId = setInterval(fetchFriendRequests, 5000);
-
-		// Clean up the interval when the component unmounts
-		// return () => {
-		// 	// clearInterval(intervalId);
-		// };
 	}, []);
 
 	const handleAcceptRequest = async (id: number) => {
 		try {
 			await axios.post(getendpoint("http", `/api/friends/accept/${id}`), null, {
 				withCredentials: true,
-			});
-			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then((response) => {
+				if (response.data.error === "Friend request not found or already processed.") {
+					authContext?.setCreatedAlert("Friend request not found or already processed.");
+					authContext?.setDisplayed(2);
+				}
+				setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
@@ -61,19 +60,31 @@ const FriendRequests = () => {
 		try {
 			await axios.delete(getendpoint("http", `/api/friends/decline/${id}`), {
 				withCredentials: true,
-			});
-			setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then(response => {
+				if (response.data.error == "Friend request not found or already processed.") {
+					authContext?.setCreatedAlert("Friend request not found or already processed.");
+					authContext?.setDisplayed(2);
+				}
+				setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+			}) 
 		} catch (error) {
 			console.error("Error decline friend request:", error);
 		}
 	};
+
 	return (
 		<div>
 			{friendRequests.map((friend) => {
 				return (
 					<div className="friendProfile friendRequests" key={friend.id}>
 						<div className="imageNameFriend">
-							<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
+							<img
+								src={friend.avatar}
+								alt=""
+								className="friendImage"
+								onClick={() => navigate(`/profile/${friend.username}`)}
+							/>
 							<span>{friend.username}</span>
 						</div>
 						<div className="buttonFriend">

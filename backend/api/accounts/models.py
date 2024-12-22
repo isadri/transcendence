@@ -131,6 +131,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     )
 
     active_chat = models.IntegerField(default=-1)
+    open_chat = models.BooleanField(default=False)
 
     register_complete = models.BooleanField(default=True)
     from_remote_api = models.BooleanField(default=False)

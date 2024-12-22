@@ -37,17 +37,5 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    # def formatted_close_time(self):
-    #     # HH:MM AM/PM
-    #     return self.created_at.strftime("%I:%M %p")
-
-    # def formatted_far_time(self):
-    #     # November 17, 2024
-    #     return self.created_at.strftime("%B %d, %Y")
-
-    # def human_readable_time(self):
-    #     # 5 minutes ago
-    #     return timesince(self.timestamp)
-
     def __str__(self):
         return f"Message from {self.sender.username} in chat {self.chat.id}"

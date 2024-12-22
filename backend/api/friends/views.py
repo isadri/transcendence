@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
 from .models import FriendList, FriendRequest
-from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer
+from ..chat.models import Chat
+from .serializers import FriendRequestReceiverSerializer, FriendListSerializer, FriendSerializer, FriendRequestUnblockSerializer
 from django.shortcuts import get_object_or_404
 
 from api.notifications.consumers import NotificationConsumer
@@ -46,7 +47,7 @@ class FriendRequestSendView(generics.CreateAPIView):
         receiver=request.user, status__in=['pending', 'accepted', 'blocked']).first()
         if check_friendShip:
             return Response({'error': 'A friend request already exists between you and this user.'},
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_201_CREATED)
 
         friendShip = FriendRequest.objects.create(sender=request.user, receiver=receiver)
         message = f"You have a new friend request from {request.user.username}!"
@@ -66,12 +67,7 @@ class FriendRequestAcceptView(APIView):
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
-        # try:
-        #     sender = User.objects.get(id=pk)
-        # except User.DoesNotExist:
-        #     return Response({'error': 'That user does not exist'},
-        #     status=status.HTTP_404_NOT_FOUND)
+           status=status.HTTP_200_OK)
         friend_request.accept()
         message = f"Your friend request was accepted by {request.user.username}!"
         NotificationConsumer.send_friend_request_notification(pk, message, "Accepted")
@@ -89,7 +85,7 @@ class FriendRequestDeclineView(APIView):
             friend_request = FriendRequest.objects.get(sender=pk, receiver=request.user, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+           status=status.HTTP_200_OK)
         friend_request.delete()
         return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
@@ -104,7 +100,7 @@ class FriendRequestCancelView(APIView):
             friend_request = FriendRequest.objects.get(sender=request.user, receiver=pk, status='pending')
         except FriendRequest.DoesNotExist:
            return Response({'error': 'Friend request not found or already processed.'},
-           status=status.HTTP_404_NOT_FOUND)
+           status=status.HTTP_200_OK)
         friend_request.delete()
         return Response({'message': 'Friend request cancel.'}, status=status.HTTP_200_OK)
 
@@ -112,6 +108,62 @@ class FriendRequestBlockView(APIView):
     """
     This view is used to block a friend request.
     """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk: int):
+        try:
+            try:
+                receiver = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response({'error': 'User not found.'},
+                        status=status.HTTP_404_NOT_FOUND)
+            # chat, _ = Chat.objects.get_or_create(
+            #     Q(user1=request.user, user2=receiver) |
+            #     Q(user1=receiver, user2=request.user),
+            #     # defaults={'blocke_state_user1': 'none', 'blocke_state_user2': 'none'}
+            # )
+            chat = Chat.objects.filter(
+                Q(user1=request.user, user2=receiver) |
+                Q(user1=receiver, user2=request.user)
+            ).first()  # Fetch the first match asynchronously
+
+            if not chat:
+                chat = Chat.objects.create(
+                    user1=request.user,
+                    user2=receiver
+                )
+            if request.user == chat.user1:
+                chat.blocke_state_user1 = "blocked"
+                chat.blocke_state_user2 = "blocker"
+            else:
+                chat.blocke_state_user1 = "blocker"
+                chat.blocke_state_user2 = "blocked"
+            chat.save()
+
+            friend_request = FriendRequest.objects.filter(
+                Q(sender=request.user, receiver_id=pk) |
+                Q(sender_id=pk, receiver=request.user),
+                # status='accepted'
+            ).first()
+            if friend_request:
+                if friend_request.status == 'blocked':
+                    return Response({'error': 'You can not block this user.'}, status=status.HTTP_200_OK)
+                friend_request.block(request.user)
+            else:
+                FriendRequest.objects.create(
+                    sender=request.user,
+                    receiver=receiver,
+                    status='blocked',
+                    blocked_by=request.user
+                )
+            # Block the user
+            return Response({'message': 'User blocked successfully.'}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Failed to block the friend request: {str(e)}'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class FriendRequestRemoveView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk: int):
@@ -125,15 +177,16 @@ class FriendRequestBlockView(APIView):
 
             if not friend_request:
                 return Response({'error': 'Friend request not found or already processed.'},
-                                status=status.HTTP_404_NOT_FOUND)
+                                status=status.HTTP_200_OK)
 
-            # Block the user
-            friend_request.block(request.user)
-            return Response({'message': 'Friend request blocked.'}, status=status.HTTP_200_OK)
+            friend_request.remove(request.user)
+            # friend_request.delete()
+            return Response({'message': 'Remove friend and delete the request.'}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({'error': f'Failed to block the friend request: {str(e)}'},
+            return Response({'error': f'Failed to remove the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 class FriendRequestUnblockView(APIView):
     """
@@ -143,19 +196,46 @@ class FriendRequestUnblockView(APIView):
 
     def post(self, request, pk: int):
         try:
-            # Find the FriendRequest where the user is either sender or receiver
+            try:
+                receiver = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response({'error': 'User not found.'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+            # chat, _ = Chat.objects.get_or_create(
+            #     Q(user1=request.user, user2=receiver) |
+            #     Q(user1=receiver, user2=request.user),
+            # )
+            chat = Chat.objects.filter(
+                Q(user1=request.user, user2=receiver) |
+                Q(user1=receiver, user2=request.user)
+            ).first()  # Fetch the first match asynchronously
+
+            if not chat:
+                chat = Chat.objects.create(
+                    user1=request.user,
+                    user2=receiver
+            )
+            if request.user == chat.user1:
+                chat.blocke_state_user1 = "none"
+                chat.blocke_state_user2 = "none"
+            else:
+                chat.blocke_state_user1 = "none"
+                chat.blocke_state_user2 = "none"
+            chat.save()
+
             friend_request = FriendRequest.objects.filter(
                     Q(sender=request.user, receiver_id=pk) |
                     Q(sender_id=pk, receiver=request.user),
                     status='blocked',
                     blocked_by=request.user,
                     ).first()
-            # print(friend_request)
             if not friend_request:
                 return Response({'error': 'No blocked request found.'},
-                                status=status.HTTP_404_NOT_FOUND)
+                                status=status.HTTP_200_OK)
 
             friend_request.unblock(request.user)
+            friend_request.delete()
             return Response({'message': 'Friend request unblocked.'}, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -172,6 +252,33 @@ class PendingFriendRequestsView(generics.ListAPIView):
     def get_queryset(self):
         return FriendRequest.objects.filter(receiver=self.request.user, status="pending")
 
+class CancelFriendRequestsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Get all users to whom the current user has sent pending friend requests.
+        """
+        # Filter FriendRequests where current user is the sender and status is pending
+        try:
+            pending_requests = FriendRequest.objects.filter(
+                sender=request.user, status="pending"
+            ).select_related("receiver")  # Optimize query for receiver
+
+            # Extract only the `receiver` users
+            receivers = [request.receiver for request in pending_requests]
+
+            serializer = FriendSerializer(
+                    receivers, many=True, context={"request": request}
+                )
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            # Log and return an error response
+            return Response(
+                {"error": "An unexpected error occurred.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class AcceptedFriendRequestsView(generics.ListAPIView):
     """
@@ -187,7 +294,7 @@ class BlockedFriendsRequestsView(generics.ListAPIView):
     """
     View to list all blocked friend requests.
     """
-    serializer_class = FriendRequestReceiverSerializer
+    serializer_class = FriendRequestUnblockSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -221,11 +328,12 @@ class BlockedFriendRequestsView(APIView):
 
             if not blocked_request:
                 return Response({'blocked': False}, status=status.HTTP_200_OK)
-
+            blocker = blocked_request.blocked_by.id
+            blocked = pk if blocker != pk else request.user.id
             return Response({
                 'status': True,
-                'blocked': pk,
-                'blocker': blocked_request.blocked_by.id
+                'blocked': blocked,
+                'blocker': blocker
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -248,26 +356,76 @@ class FriendListView(generics.ListAPIView):
             return Response({"friends": []})
 
 
+# class UserListView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         # friends_ids = FriendRequest.objects.filter(
+#         #     Q(sender=request.user, status__in=['accepted', "blocked"]) |
+#         #     Q(receiver=request.user, status__in=['accepted', 'blocked'])
+#         # ).values_list('sender_id', 'receiver_id')
+#         # friends_ids = FriendRequest.objects.filter(
+#         #     Q(sender=request.user, status__in=['accepted', 'pending', "blocked"]) |
+#         #     Q(receiver=request.user, status__in=['accepted', 'pending', 'blocked'])
+#         # ).values_list('sender_id', 'receiver_id')
+
+#         # # Flatten the list of friend IDs
+#         # friends_ids = {friend_id for pair in friends_ids for friend_id in pair}
+
+#         # # Add the current user's ID to exclude them as well
+#         # friends_ids.add(request.user.id)
+
+#         # # Get all users who are not in the friends list
+#         # non_friends = User.objects.exclude(id__in=friends_ids)
+        
+#         users = User.objects.exclude(id=request.user.id)
+
+#         # Serialize and return the data
+#         serializer = FriendSerializer(users, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
 class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        friends_ids = FriendRequest.objects.filter(
-            Q(sender=request.user, status__in=['accepted', 'pending', "blocked"]) |
-            Q(receiver=request.user, status__in=['accepted', 'pending', 'blocked'])
+        # Get the IDs of users who have blocked the current user and who have been blocked by the current user
+        blocked_users = FriendRequest.objects.filter(
+            Q(sender=request.user, status='blocked') | Q(receiver=request.user, status='blocked')
         ).values_list('sender_id', 'receiver_id')
 
-        # Flatten the list of friend IDs
-        friends_ids = {friend_id for pair in friends_ids for friend_id in pair}
+        # Flatten the list of blocked user IDs and remove the current user from the exclusion list
+        blocked_users_ids = {user_id for pair in blocked_users for user_id in pair}
+        blocked_users_ids.discard(request.user.id)  # Make sure the current user isn't excluded
 
-        # Add the current user's ID to exclude them as well
-        friends_ids.add(request.user.id)
+        # Get the list of users excluding the current user and any blocked users
+        users = User.objects.exclude(id=request.user.id).exclude(id__in=blocked_users_ids)
 
-        # Get all users who are not in the friends list
-        non_friends = User.objects.exclude(id__in=friends_ids)
+        # Pass the request context to the serializer
+        serializer = FriendSerializer(users, many=True, context={'request': request})
 
         # Serialize and return the data
-        serializer = FriendSerializer(non_friends, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserListUnfriendsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = FriendRequest.objects.filter(
+            Q(sender=request.user, status__in=['accepted', 'pending', "blocked"]) |
+            Q(receiver=request.user, status__in=['accepted', 'pending', "blocked"])
+        ).values_list('sender_id', 'receiver_id')
+
+        # Flatten the list of blocked user IDs and remove the current user from the exclusion list
+        users_ids = {user_id for pair in users for user_id in pair}
+        users_ids.discard(request.user.id)  # Make sure the current user isn't excluded
+
+        # Get the list of users excluding the current user and any blocked users
+        users = User.objects.exclude(id=request.user.id).exclude(id__in=users_ids)
+
+        # Pass the request context to the serializer
+        serializer = FriendSerializer(users, many=True, context={'request': request})
+
+        # Serialize and return the data
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

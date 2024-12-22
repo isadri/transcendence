@@ -1,33 +1,34 @@
-.alert-acountDeleted{
-    display: none;
-    position: absolute;
-    z-index: 20;
-    top: 40px;
-    right: 10px;
-    width: 420px;
-    height: 60px;
-    /* background-color: #00ff115a; */
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    padding-left: 2%;
-    /* color:#90f18b; */
-    border: 1px solid;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out, display 0s 0.5s;
-  }
-  
-  .alert-acountDeleted.show {
-    display: flex;
-    opacity: 1;
-    transition: opacity 0.5s ease-in-out;
-  }
-  
-  .alert-acountDeleted.hide {
-    opacity: 0;
-    transition: opacity 1s ease-in-out, display 0s 1s;
-  }
-  
-  .alert-acountDeleted i{
-    margin-right: 1.3%;
-  }
+.alert-acountDeleted {
+	display: none;
+	position: absolute;
+	z-index: 10;
+	top: 18px;
+	right: 34px;
+
+	width: 420px;
+	height: 60px;
+	/* background-color: #00ff115a; */
+	border-radius: 10px;
+	/* display: flex; */
+	align-items: center;
+	padding-left: 2%;
+	/* color:#90f18b; */
+	/* border: 1px solid; */
+	opacity: 0;
+	transition: opacity 0.5s ease-in-out, display 0s 0.5s;
+}
+
+.alert-acountDeleted.show {
+	display: flex;
+	opacity: 1;
+	transition: opacity 0.5s ease-in-out;
+}
+
+.alert-acountDeleted.hide {
+	opacity: 0;
+	transition: opacity 1s ease-in-out, display 0s 1s;
+}
+
+.alert-acountDeleted i {
+	margin-right: 1.3%;
+}

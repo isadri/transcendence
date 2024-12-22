@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./BlockedFriends.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData.tsx";
+import { getContext, getUser, getendpoint } from "../../../context/getContextData.tsx";
 import { useNavigate } from "react-router-dom";
 
 interface BlockedFriend {
@@ -13,6 +13,8 @@ interface BlockedFriend {
 const BlockedFriends = () => {
 	const navigate = useNavigate()
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
+	const user = getUser()
+	const authContext = getContext();
 
 	useEffect(() => {
 		const fetchBlockedFriend = async () => {
@@ -24,12 +26,28 @@ const BlockedFriends = () => {
 						withCredentials: true, // Include cookies in the request
 					}
 				);
-				const senderData = response.data.map((request: any) => ({
-					id: request.sender.id,
-					username: request.sender.username,
-					avatar: request.sender.avatar,
-				}));
-
+				const senderData = response.data.map((request: any) => {
+					const friend_id =
+						user?.id === request.sender.id
+							? request.receiver.id
+							: request.sender.id;
+		
+					const username =
+						user?.id === request.sender.id
+							? request.receiver.username
+							: request.sender.username;
+		
+					const avatar =
+						user?.id === request.sender.id
+							? request.receiver.avatar
+							: request.sender.avatar;
+		
+					return {
+						id: friend_id,
+						username: username,
+						avatar: avatar,
+					};
+				});
 				setBlockedFriend(senderData);
 			} catch (err) {
 				console.error("Error fetching data:", err);
@@ -47,11 +65,22 @@ const BlockedFriends = () => {
 	}, []);
 
 	const handleUnblockRequests = async (id: number) => {
+		const existingFriend = blockedfriend.find(
+			(friend) => friend.id === id
+		);
+		if (!existingFriend)
+			return;
 		try {
 			await axios.post(getendpoint("http", `/api/friends/unblock/${id}`), null, {
 				withCredentials: true,
-			});
-			setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
+			})
+			.then((response) => {
+				if (response.data.error == "No blocked request found.") {
+					authContext?.setCreatedAlert("No blocked request found.");
+					authContext?.setDisplayed(2);
+				}
+				setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
