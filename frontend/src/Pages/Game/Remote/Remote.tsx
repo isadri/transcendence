@@ -250,12 +250,12 @@ function GameTable() {
   });
   const { camera } = useThree();
   const [paddle1, setpaddle1] = useState<PaddleBox>({
-    xyz: [0, 0.09, +(8.65640 - 1) / 2],
+    xyz: [0, 0.09, +(8.65640 - 0.6) / 2],
     left: '-',
     right: '+'
   })
   const [paddle2, setpaddle2] = useState<PaddleBox>({
-    xyz: [0, 0.09, -(8.65640 - 1) / 2],
+    xyz: [0, 0.09, -(8.65640 - 0.6) / 2],
     left: '+',
     right: '-'
   })
@@ -279,12 +279,12 @@ function GameTable() {
           if (data[user.username] && data[user.username] == 'player2') {
             camera.position.set(0, 5, -8)
             setpaddle1({
-              xyz: [0, 0.09, -(8.65640 - 1) / 2],
+              xyz: [0, 0.09, -(8.65640 - 0.6) / 2],
               left: '+',
               right: '-'
             })
             setpaddle2({
-              xyz: [0, 0.09, +(8.65640 - 1) / 2],
+              xyz: [0, 0.09, +(8.65640 - 0.6) / 2],
               left: '+',
               right: '-'
             })
@@ -335,10 +335,10 @@ function GameTable() {
         <>
           <Table />
           <Ball ball={ball} />
-          <Paddle1 position={[0, 0.09, +(8.65640 - 1) / 2]} box={paddle1} />
-          <Paddle2 position={[0, 0.09, -(8.65640 - 1) / 2]} box={paddle2} />
-          <SideWall position={[(6.1469 + 0.5) / 2, 0, 0]} />
-          <SideWall position={[-(6.1469 + 0.5) / 2, 0, 0]} />
+          <Paddle1 position={[0, 0.09, +(8.65640 - 0.6) / 2]} box={paddle1} />
+          <Paddle2 position={[0, 0.09, -(8.65640 - 0.6) / 2]} box={paddle2} />
+          <SideWall position={[(6.1469 + 0.1) / 2, 0, 0]} />
+          <SideWall position={[-(6.1469 + 0.1) / 2, 0, 0]} />
           <GoalWall position={[0, 0, (8.65640 + 0.5) / 2]} />
           <GoalWall position={[0, 0, -(8.65640 + 0.4) / 2]} />
           <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -5, 0]}>

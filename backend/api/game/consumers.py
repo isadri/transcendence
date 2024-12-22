@@ -15,9 +15,9 @@ PADDLE_X = 1.5
 
 SIDE_WIDTH = 0.5
 BALL_R = 0.12
-GOAL_Z = (8.65640+ 0.5)/2
+GOAL_Z = (8.65640 + 0.5)/2
 GAME_SPEED = 1/60
-PADDLE_SPEED = 0.1
+PADDLE_SPEED = 0.08
 SIDE_LIMIT = 3.07345
 MOVE_SIDE_LIMIT = 3.07345-PADDLE_X/2
 BALL_SPEED = 0.05
@@ -57,6 +57,7 @@ class RandomGame(AsyncWebsocketConsumer):
     data = json.loads(text_data)
     if data["event"] == "READY":
       self.qeuee[self.user.username] = self
+      print(self.qeuee)
       if len(self.qeuee) >= 2:
         iterator = iter(iter(self.qeuee.items()))
         key1 , player1 = next(iterator)
@@ -140,8 +141,8 @@ class GameData:
     self.score = {p1.username : 0, p2.username : 0}
     self.players = {p1.username : p1, p2.username : p2}
     self.players_pos = {
-      self.player1 : [0, 0.09, (TABLE_Z - 1)/ 2],
-      self.player2 : [0, 0.09, -(TABLE_Z - 1)/ 2]
+      self.player1 : [0, 0.09, (TABLE_Z - 0.6)/ 2],
+      self.player2 : [0, 0.09, -(TABLE_Z - 0.6)/ 2]
     }
 
   async def update(self):
@@ -157,11 +158,13 @@ class GameData:
       'player2': self.players_pos[self.player2][0]
     })
     self.checkWinner()
-    self.update_ball()
     self.update_Players()
+    self.update_ball()
     self.checkScore()
 
   def update_Players(self):
+    if self.justBeenHited():
+      return
     newpos = self.players_pos[self.player1][0] + self.player1Update
     if newpos < MOVE_SIDE_LIMIT and newpos > -MOVE_SIDE_LIMIT:
       self.players_pos[self.player1][0] += self.player1Update 
@@ -176,10 +179,16 @@ class GameData:
     self.player1_pos = pos
 
   def update_ball(self):
-    self.hitPaddle(self.players_pos[self.player1])
-    self.hitPaddle(self.players_pos[self.player2])
     if self.hitSideWalls():
       self.x_direction *= -1
+    else:
+      self.hitPaddle(self.players_pos[self.player1])
+      self.hitPaddle(self.players_pos[self.player2])
+    self.oldx_direction = self.x_direction
+    self.moveBall()
+
+  def moveBall(self):
+    self.oldBall = self.ball
     self.ball[2] += self.dz * self.z_direction
     self.ball[0] += self.dx * self.x_direction
 
@@ -195,12 +204,15 @@ class GameData:
     self.z_direction = 1
     self.x_direction = 1
     self.ball = [0, 0.2, 0]
-    self.alpha = math.pi/4
+    self.oldBall = self.ball
+    self.counter = 0
+    self.alpha = math.pi / 4
+    self.oldx_direction = self.x_direction
     self.dz = math.cos(self.alpha) * BALL_SPEED
     self.dx = math.sin(self.alpha) * BALL_SPEED
 
   def checkWinner(self):
-    if self.score[self.player1] == 7 or self.score[self.player2] == 7:
+    if self.score[self.player1] == 70000 or self.score[self.player2] == 70000:
       self.done = True
       self.winneer = self.player1 if self.score[self.player1] == 7 else self.player2
       return True
@@ -211,14 +223,25 @@ class GameData:
 
   def hitSideWalls(self):
     x = self.ball[0]
-    # z = self.ball[2]
     if abs(SIDE_LIMIT - x) <= BALL_R or abs(-SIDE_LIMIT - x) <= BALL_R:
       return True
     return False
 
+  def justBeenHited(self) -> bool:
+    # old_x = self.oldBall[0]
+    # cur_x = self.ball[0]
+    # new_x = self.ball[0] + self.dx * self.x_direction
+    # if (old_x - cur_x >= 0 and new_x - cur_x >= 0) or (old_x - cur_x <= 0 and new_x - cur_x <= 0):
+    #   print(f'({old_x - cur_x >= 0} and {new_x - cur_x >= 0}) or ({old_x - cur_x <= 0} and {new_x - cur_x <= 0})')
+    #   return True
+    if self.counter == 0:
+      return False
+    self.counter -= 1
+    return True
+
   def hitPaddle(self, pos):
-    z = self.ball[2] + GOAL_Z
-    x = self.ball[0] + SIDE_LIMIT
+    z = self.ball[2] + GOAL_Z + self.dz * self.z_direction
+    x = self.ball[0] + SIDE_LIMIT + self.dx * self.x_direction
     pz = pos[2] + GOAL_Z
     px = pos[0] + SIDE_LIMIT
 
@@ -240,6 +263,9 @@ class GameData:
           self.dx += math.sin(self.alpha) * BALL_SPEED
         else:
           self.x_direction *= -1
+          self.alpha = PI_4_100 * abs(pz - z)
+          self.dz += math.sin(self.alpha) * BALL_SPEED * 3
+          self.counter = 5
 
   def getBall(self):
     return self.ball
@@ -310,8 +336,16 @@ class RemoteGame(AsyncWebsocketConsumer):
       print(self.user, self.connected[self.game_id])
       if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
         self.task = asyncio.create_task(self.game_loop())
+        self.task.add_done_callback(self.handle_task)
+        print(self.task)
     else:
       await self.abort("You are not allowed to join this game")
+
+  def handle_task(self, task):
+    try:
+        task.result()  #  re-raise any error has been 
+    except Exception as e:
+        print(f"Task crashed with error: {e}")
 
   @database_sync_to_async
   def isStarted(self) -> bool:
