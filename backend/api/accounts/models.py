@@ -107,11 +107,33 @@ class User(PermissionsMixin, AbstractBaseUser):
         )
     )
     date_joined = models.DateTimeField(default=timezone.now)
+    code = models.CharField(max_length=70, blank=True, null=True) # for OTP verfiy request
     seed = models.CharField(max_length=40, blank=True, null=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
+    remote_id = models.CharField(max_length=100, blank=True, null=True, default="",
+        help_text=_(
+            'A unique Id for remote accounts (42 / google)'
+    ))
+
+    otp_active =models.BooleanField(
+        default=False,
+        help_text=_(
+            '2FA active or not'
+        )
+    )
+    is_online = models.BooleanField(
+        default=False,
+        help_text=_(
+            'the user online or not'
+        )
+    )
+
     active_chat = models.IntegerField(default=-1)
+
+    register_complete = models.BooleanField(default=True)
+    from_remote_api = models.BooleanField(default=False)
 
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
