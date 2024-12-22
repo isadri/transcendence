@@ -9,6 +9,7 @@
 	padding: 1.4dvh;
 	gap: 20px;
 	position: relative;
+	min-width: 320px;
 }
 
 .messageContent {
@@ -78,11 +79,21 @@
 	font-family: var(--sans);
 }
 
+/* @media (width: 320px) {
+	.bottom {
+		padding: 1.5dvh;
+		gap: 10px;
+		border-radius: 0;
+		min-width: none;
+	}
+} */
+
 @media (max-width: 478px) {
 	.bottom {
 		padding: 1.5dvh;
 		gap: 10px;
 		border-radius: 0;
+		min-width: none;
 	}
 
 	.messageContent {
@@ -100,6 +111,10 @@
 
 	.send-icon {
 		color: white;
-		font-size: 17px;
+		font-size: 15px;
+	}
+
+	.subButton {
+		padding: 0.8dvh;
 	}
 }

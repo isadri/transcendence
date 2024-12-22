@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./AddFriends.css";
 import axios from "axios";
-import { getendpoint } from "../../../context/getContextData";
+import { getContext, getendpoint } from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface AllUsers {
@@ -11,13 +11,14 @@ interface AllUsers {
 }
 
 const AddFriends = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [searchFriend, setSearchFriend] = useState("");
 	const [focusOnSearch, setFocusOnSearch] = useState(false);
 	const ChangeSearchRef = useRef<HTMLDivElement>(null);
 	const Ref = useRef<HTMLInputElement>(null);
 	const [allUsers, setAllUsers] = useState<AllUsers[]>([]);
 	const [results, setResults] = useState<AllUsers[]>([]);
+	const authContext = getContext();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -35,7 +36,7 @@ const AddFriends = () => {
 		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(
-					getendpoint("http", "/api/friends/users"),
+					getendpoint("http", "/api/friends/usersUnfriends"),
 					// "http://0.0.0.0:8000/api/friends/users",
 					{
 						withCredentials: true,
@@ -48,9 +49,9 @@ const AddFriends = () => {
 		};
 
 		fetchUsers();
-		
+
 		document.addEventListener("mousedown", handleClickOutside);
-		
+
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 			// clearInterval(intervalId);
@@ -59,20 +60,25 @@ const AddFriends = () => {
 
 	const handleSearchFriend = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-		
+
 		setSearchFriend(value);
 		const filterResults = allUsers.filter((user) =>
 			user.username.toLowerCase().includes(value.toLowerCase())
-	);
-	setResults(filterResults);
+		);
+		setResults(filterResults);
 	};
-	
+
 	const handleReturnToList = () => {
 		setFocusOnSearch(false);
 		setSearchFriend("");
 	};
-	
+
 	const handleSendRequests = async (id: number) => {
+		const existingFriend = allUsers.find(
+			(friend) => friend.id === id
+		);
+		if (!existingFriend)
+			return;
 		try {
 			await axios.post(
 				getendpoint("http", "/api/friends/send/"),
@@ -80,14 +86,21 @@ const AddFriends = () => {
 				{
 					withCredentials: true,
 				}
-			);
-			setAllUsers((prev) => prev.filter((user) => user.id !== id));
+			)
+			.then((response) => {
+				if (response.data.error == "A friend request already exists between you and this user.") {
+					authContext?.setCreatedAlert("A friend request already exists between you and this user.");
+					authContext?.setDisplayed(2);
+				}
+				setAllUsers((prev) => prev.filter((user) => user.id !== id));
+			})
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
 	};
 
 	const friendsList = searchFriend ? results : allUsers;
+	// console.log(friendsList)
 	return (
 		<div>
 			<>
@@ -116,7 +129,12 @@ const AddFriends = () => {
 					return (
 						<div className="friendProfile" key={friend.id}>
 							<div className="imageNameFriend">
-								<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
+								<img
+									src={friend.avatar}
+									alt=""
+									className="friendImage"
+									onClick={() => navigate(`/profile/${friend.username}`)}
+								/>
 								<span>{friend.username}</span>
 							</div>
 							<button

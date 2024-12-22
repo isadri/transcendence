@@ -159,7 +159,7 @@ const ChatList = ({
 							}}
 						>
 							<img
-								src={friend.avatar}
+								src={getendpoint("http", friend.avatar)}
 								alt="profile"
 								className="profile"
 								onClick={() => navigate(`/profile/${friend.username}`)}

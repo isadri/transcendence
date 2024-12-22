@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getContext, getUser, getendpoint } from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
+
 interface Data {
   username: string | undefined;
   email: string | undefined;

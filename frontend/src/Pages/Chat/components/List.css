@@ -21,8 +21,9 @@
 
 .chat-container .newChat {
 	width: 24px;
-	height: 2.5dvh;
+	height: 25px;
 	cursor: pointer;
+	/* transition: 1s; */
 }
 
 .chat-container .iconMenu {
