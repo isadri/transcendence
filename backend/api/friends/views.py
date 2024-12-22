@@ -114,7 +114,7 @@ class FriendRequestBlockView(APIView):
             # chat, _ = Chat.objects.get_or_create(
             #     Q(user1=request.user, user2=receiver) |
             #     Q(user1=receiver, user2=request.user),
-            #     defaults={'blocke_state_user1': 'none', 'blocke_state_user2': 'none'}
+            #     # defaults={'blocke_state_user1': 'none', 'blocke_state_user2': 'none'}
             # )
             chat = Chat.objects.filter(
                 Q(user1=request.user, user2=receiver) |
@@ -125,8 +125,7 @@ class FriendRequestBlockView(APIView):
                 chat = Chat.objects.create(
                     user1=request.user,
                     user2=receiver
-            )
-            # print("--------------------------------")
+                )
             if request.user == chat.user1:
                 chat.blocke_state_user1 = "blocked"
                 chat.blocke_state_user2 = "blocker"
@@ -142,7 +141,6 @@ class FriendRequestBlockView(APIView):
             ).first()
             if friend_request:
                 if friend_request.status == 'blocked':
-            # print(friend_request)
                     return Response({'error': 'You can not block this user.'}, status=status.HTTP_200_OK)
                 friend_request.block(request.user)
             else:
