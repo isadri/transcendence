@@ -212,7 +212,7 @@ class GameData:
     self.dx = math.sin(self.alpha) * BALL_SPEED
 
   def checkWinner(self):
-    if self.score[self.player1] == 70000 or self.score[self.player2] == 70000:
+    if self.score[self.player1] == 7 or self.score[self.player2] == 7:
       self.done = True
       self.winneer = self.player1 if self.score[self.player1] == 7 else self.player2
       return True
