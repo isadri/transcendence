@@ -55,8 +55,8 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
+        request.user.open_chat = False
         serializer =  UserSerializer(request.user)
-
         if request.user.is_authenticated:
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
