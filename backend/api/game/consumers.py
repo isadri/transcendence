@@ -228,12 +228,6 @@ class GameData:
     return False
 
   def justBeenHited(self) -> bool:
-    # old_x = self.oldBall[0]
-    # cur_x = self.ball[0]
-    # new_x = self.ball[0] + self.dx * self.x_direction
-    # if (old_x - cur_x >= 0 and new_x - cur_x >= 0) or (old_x - cur_x <= 0 and new_x - cur_x <= 0):
-    #   print(f'({old_x - cur_x >= 0} and {new_x - cur_x >= 0}) or ({old_x - cur_x <= 0} and {new_x - cur_x <= 0})')
-    #   return True
     if self.counter == 0:
       return False
     self.counter -= 1
@@ -345,7 +339,7 @@ class RemoteGame(AsyncWebsocketConsumer):
     try:
         task.result()  #  re-raise any error has been 
     except Exception as e:
-        print(f"Task crashed with error: {e}")
+        print(f"Task crashed with error: {e}")# to do : send error message to the client
 
   @database_sync_to_async
   def isStarted(self) -> bool:
