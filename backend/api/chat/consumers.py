@@ -15,6 +15,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"chat_room_of_{self.user.id}"
         self.isBlocked = False
         self.isBlockedPayload = None
+        print("++++++++", self.user.open_chat)
+        self.user.open_chat = True
+        await self.user.asave()
+        print("-------", self.user.open_chat)
 
         # Check if the user is authenticated
         if not self.user.is_authenticated:
@@ -30,6 +34,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave the chat room group
+        self.user.open_chat = False
+        await self.user.asave()
         await self.handle_reset_active_chat()
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -307,6 +313,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'nbr_of_unseen_msg_user2': chat.nbr_of_unseen_msg_user2,
             }
         )
+        if (receiver.open_chat == False):
+            print("------->", receiver.open_chat)
+
         chat.last_message = message
         await chat.asave()
 
