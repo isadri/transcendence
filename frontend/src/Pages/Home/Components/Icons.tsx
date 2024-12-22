@@ -1,10 +1,12 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import {getendpoint } from "../../../context/getContextData"
+import { log } from "console"
 
 interface NotificationsData{
   id: number,
   message : string,
+  type: string,
   created_at : string,
   is_read: boolean,
 }
@@ -20,7 +22,8 @@ function Icons() {
     axios
       .get(getendpoint("http", "/api/notifications/notifications/"),
       {withCredentials: true})
-      .then(response => {
+      .then((response) => {
+        console.log("res => " , response.data);
         setNotificationList(response.data)
       })
       .catch(error => {
@@ -64,6 +67,7 @@ function Icons() {
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log("data =========> ", data)
       setNotificationList((prev) => [data, ...prev]);
     };
     ws.onclose = () => {
@@ -74,6 +78,7 @@ function Icons() {
       ws.close();
     };
   }, [setNotificationList,notificationList, UnreadNotif, setUnreadNotif, isIconClicked]);
+  console.log("notf", notificationList)
   return (
     <>
     {
@@ -101,7 +106,7 @@ function Icons() {
                 notificationList.map((notif) => (
                   <div  key={notif.id} className="notification-ele">
                     <div className="Notif-info">
-                    <span>Friend Request</span>
+                    <span>{notif.type}</span>
                     <span>{notif.created_at}</span>
                     </div>
                   <div className="Notif-msg">

@@ -30,22 +30,27 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def send_notification(self, event):
         notification = event['data']['message']
+        notification_type = event['data']['type']
+        print("notification_type ====> ", notification_type)
         notification_id = event['data']['notification_id']
         notification_created_at = event['data']['notification_created_at']
         await self.send(text_data=json.dumps({
             'id': notification_id,
             'message': notification,
+            'type': notification_type,
             'created_at': notification_created_at
         }))
 
     @staticmethod
-    def send_friend_request_notification(user_id, message):
+    def send_friend_request_notification(user_id, message, type):
         """
         Sends a friend request notification to the user.
         """
+        print("type ===> ", type)
         notification = Notification.objects.create(
             user_id=user_id,
             message=message,
+            type=type,
             created_at=timezone.now(),
             is_read=False
         )
@@ -56,8 +61,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 "type": "send_notification",
                 "data": {
                     "message": message,
+                    "type" : type,
                     "notification_id": notification.id,
-                    "notification_created_at": notification.created_at.strftime('%b %d, %Y at %H:%M'),
+                    "notification_created_at": notification.created_at.strftime('%b %d, %Y at %H:%M')
                 },
             }
         )

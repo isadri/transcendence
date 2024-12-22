@@ -50,7 +50,7 @@ class FriendRequestSendView(generics.CreateAPIView):
 
         friendShip = FriendRequest.objects.create(sender=request.user, receiver=receiver)
         message = f"You have a new friend request from {request.user.username}!"
-        NotificationConsumer.send_friend_request_notification(receiver.id, message)
+        NotificationConsumer.send_friend_request_notification(receiver.id, message, "Friend Request")
         return Response({'message': 'Friend request send successfuly.'},
         status=status.HTTP_201_CREATED)
 
@@ -74,7 +74,7 @@ class FriendRequestAcceptView(APIView):
         #     status=status.HTTP_404_NOT_FOUND)
         friend_request.accept()
         message = f"Your friend request was accepted by {request.user.username}!"
-        NotificationConsumer.send_friend_request_notification(pk, message)
+        NotificationConsumer.send_friend_request_notification(pk, message, "Accepted")
         return Response({'message': 'Friend request accepted.'}, status=status.HTTP_200_OK)
 
 
