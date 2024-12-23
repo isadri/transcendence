@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone, tree
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields import ArrayField
 
 # from ..friends.models import Friend
 
@@ -112,10 +113,20 @@ class User(PermissionsMixin, AbstractBaseUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
-    remote_id = models.CharField(max_length=100, blank=True, null=True, default="",
+    # remote_id = models.CharField(max_length=100, blank=True, null=True, default="",
+    #     help_text=_(
+    #         'A unique Id for remote accounts (42 / google)'
+    # ))
+    remote_id = ArrayField(
+        models.CharField(max_length=100, blank=True, null=True, default="",
+            help_text=_('A unique Id for remote accounts (42 / google)'
+        )),
+        blank=True,             # Allow the field to be empty
+        default=list,
         help_text=_(
-            'A unique Id for remote accounts (42 / google)'
-    ))
+            'array of A unique Id for remote accounts (42 / google ) to link both google and intra'
+        )
+    )
 
     otp_active =models.BooleanField(
         default=False,

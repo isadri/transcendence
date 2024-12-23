@@ -147,7 +147,7 @@ def get_user(user_info: dict, src:str) -> User:
     If the user does not exist, the method creates a new one and add her
     to the list of the users registered with 42 intra.
     """
-    
+
     remote_id = username = None
     #get data depending on remote user_info
     if (src == 'intra'):
@@ -157,16 +157,16 @@ def get_user(user_info: dict, src:str) -> User:
         username = user_info.get('email').split('@')[0].replace('.', '_').lower()
         remote_id = user_info.get('sub')
     email = user_info.get('email')
-    remote_id = f'{src}_{str(remote_id)}'
+    remote_id = [f'{src}_{str(remote_id)}']
 
     try:
-        user = User.objects.get(remote_id=remote_id) #since remote_id is uniqe for any remote acc, we get thr user by remote_id
+        user = User.objects.get(remote_id__contains=[remote_id]) #since remote_id is uniqe for any remote acc, we get thr user by remote_id
     except User.DoesNotExist:
         #if there no user with that remote_id we
         try:
             user = User.objects.get(email=email) #check if there any user with this email
-            return None # email already token
-            # user.remote_id = remote_id # link the remote with normal acc
+            # return None # email already token
+            user.remote_id.append(remote_id) # link the remote with normal acc
         except User.DoesNotExist:
             #if no user has the email we do create a new acc
             register_state = True
