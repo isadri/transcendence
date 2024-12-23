@@ -8,11 +8,17 @@ from django.contrib.auth import (
     logout,
 )
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import (
     get_object_or_404,
     redirect,
 )
 from django.utils import timezone
+from django.utils.http import (
+    urlsafe_base64_encode,
+    urlsafe_base64_decode,
+)
+from django.utils.encoding import force_bytes
 from rest_framework import (
     generics,
     status,
@@ -28,6 +34,10 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
+from .mails import (
+    send_email_verification,
+    send_email,
+)
 from .utils import (
     get_access_token_from_api,
     get_tokens_for_user,
@@ -42,7 +52,6 @@ from .utils import (
     is_another_user,
     generate_otp_for_user,
     reset_code,
-    send_email_verification,
     validate_token,
 )
 
@@ -405,6 +414,126 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+class PasswordResetEmailViewSet(viewsets.ViewSet):
+    """
+    A viewset for sending an email for reseting the password.
+    """
+    permission_classes = [AllowAny]
+
+    def send_email(self, user: User, reset_url: str) -> None:
+        """
+        Send the email to the user with the url for reseting the password.
+        """
+        html_message = f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #000;
+                        color: #333;
+                        margin: 0;
+                        padding: 0;
+                    }}
+                    .email-container {{
+                        background-color: #ffffff;
+                        border: 1px solid #ddd;
+                        padding: 20px;
+                        margin: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }}
+                    h1 {{
+                        color: #4CAF50;
+                    }}
+                    p {{
+                        font-size: 16px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <h1>Please confirm your Email</h1>
+                    <p>Click here to confirm your email:</p>
+                    <a href="{reset_url}"
+                    style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
+                        Confirm
+                    </a>
+                </div>
+            </body>
+        </html>
+        """
+        send_email(
+            user,
+            subject='Reset Password',
+            message='',
+            html_message=html_message
+        )
+
+
+    def create(self, request: Request) -> Response:
+        """
+        Send the email to let the user reset the password.
+        """
+        username = request.data.get('username')
+        email = request.data.get('email')
+        print(username)
+        print(email)
+        try:
+            user = User.objects.get(username=username, email=email)
+            token = PasswordResetTokenGenerator().make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = (
+                'http://localhost:8000/api/accounts/password-reset-confirm/'
+                f'?uid={uid}&token={token}'
+            )
+            self.send_email(user, reset_url)
+            return Response({
+                'message': 'Password reset email sent'
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({
+                'error': 'No such user with the given credentials'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordViewSet(viewsets.ViewSet):
+    """
+    A viewset for reseting the password.
+    """
+    permission_classes = [AllowAny]
+
+    def create(self, request: Request) -> None:
+        """
+        This method get the uid and the token from the url. If the uid and
+        the token are valid, a new password will be set for the user.
+        """
+        try:
+            uid = urlsafe_base64_decode(request.GET.get('uid')).decode()
+            token = request.GET.get('token')
+            user = User.objects.get(pk=uid)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response({
+                    'error': 'Invalid token'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        # urlsafe_base64_decode() might throw a ValueError if the uid is not
+        # valid
+        except (User.DoesNotExist, ValueError):
+            return Response({
+                'error': 'Invalid request'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        new_password = request.data.get('password')
+        if not new_password:
+            return Response({
+                'error': 'Password cannot be empty'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save()
+        return Response({
+            'message': 'Password reset successful'
+        }, status=status.HTTP_200_OK)
+
+
 class LogoutViewSet(viewsets.ViewSet):
     """
     Logout a the currently active user.
@@ -420,7 +549,6 @@ class LogoutViewSet(viewsets.ViewSet):
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
-
 
 
 #################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
