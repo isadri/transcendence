@@ -1,5 +1,5 @@
 .Friend-Container {
-	width: 100%; /* vw */
+	width: 100vw; /* % */
 	height: 96dvh;
 	position: relative;
 	display: flex;
