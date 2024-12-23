@@ -363,14 +363,14 @@ def send_email_verification(user: User, confirmation_url: str) -> None:
     )
 
 
-def validate_token(token: str) -> User | None:
+def validate_token(username: str, token: str) -> User | None:
     """
     Return the user that has the given token. Return
     None if no such user exists.
     """
     try:
-        user = User.objects.get(email_verification_token=token)
+        user = User.objects.get(username=username)
     except User.DoesNotExist:
         return None
-    return user
+    return user if user.email_verification_token == token else None
 
