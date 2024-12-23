@@ -1,8 +1,8 @@
 from django.db import models
-from ..accounts.models import User
+from django.contrib.auth import get_user_model
 from django.utils.timezone import now, timedelta
-# Create your models here.
 
+User = get_user_model()
 
 
 class Game(models.Model):
