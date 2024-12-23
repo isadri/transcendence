@@ -139,7 +139,7 @@ def create_user(username: str, email: str) -> User:
     return user
 
 
-def get_user(user_info: dict, src:str) -> User:
+def get_user(user_info: dict, src: str) -> User:
     """
     This function searches for the user and ensures that the user is
     registered with 42 intra. If the user is registered with another

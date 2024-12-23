@@ -168,3 +168,6 @@ checker.sh
 .idea/
 
 node_modules
+
+avatars/
+
