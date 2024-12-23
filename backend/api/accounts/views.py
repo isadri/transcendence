@@ -41,7 +41,9 @@ from .utils import (
     get_response,
     is_another_user,
     generate_otp_for_user,
-    reset_code
+    reset_code,
+    send_email_verification,
+    validate_token,
 )
 
 
@@ -373,9 +375,34 @@ class RegisterViewSet(viewsets.ViewSet):
         data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            user.email_verification_token = user.username + pyotp.random_base32()
+            user.save()
+            confirmation_url = ('http://localhost:8000/api/accounts/confirm-email/'
+                                  f'?token={user.email_verification_token}'
+                                  f'&username={user.username}')
+            send_email_verification(user, confirmation_url)
+            return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConfirmEmailViewSet(viewsets.ViewSet):
+    """
+    A viewset for validating the user email.
+    """
+    permission_classes = [AllowAny]
+
+    def list(self, request: Request) -> Response:
+        """
+        Validate the token given in the url.
+        """
+        token = request.GET.get('token')
+        username = request.GET.get('username')
+        user = validate_token(username, token)
+        if user:
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        return Response({'error': 'email validation failed'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutViewSet(viewsets.ViewSet):
@@ -418,6 +445,7 @@ class UpdateUsernameView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UpdateUserDataView(APIView):
     """
@@ -479,7 +507,7 @@ class UpdateUserPasswordView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class DeleteUserAccountView(APIView):
     """
@@ -499,6 +527,7 @@ class DeleteUserAccountView(APIView):
         response = Response({"detail": "Your account has been successfully deleted."},status=status.HTTP_200_OK)
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
+
 
 class UserDetailView(APIView):
     """
@@ -547,6 +576,7 @@ class GetIntraLink(APIView):
         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
         return Response(data, status=status.HTTP_200_OK)
 
+
 class GetGoogleLink(APIView):
     """
         get google link
@@ -592,6 +622,7 @@ class SendOTPView(APIView):
         except Exception as e:
             return Response({'error' : e.args[0]}, status=status.HTTP_200_OK)
 
+
 class checkValidOtp(APIView):
     """
      This view checks if the OTP entered by th user is valid(in setting)
@@ -609,3 +640,4 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
+
