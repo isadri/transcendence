@@ -136,6 +136,8 @@ class User(PermissionsMixin, AbstractBaseUser):
     register_complete = models.BooleanField(default=True)
     from_remote_api = models.BooleanField(default=False)
 
+    email_verification_token = models.CharField(max_length=40, default='')
+
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 

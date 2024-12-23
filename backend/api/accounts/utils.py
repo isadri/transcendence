@@ -278,9 +278,11 @@ def generate_otp_for_user(user: User) -> None:
     user.otp_created_at = timezone.now()
     user.save()
 
+
 def reset_code(user: User):
     user.code = None
     user.save()
+
 
 def usernamePolicy(value: str):
     """
@@ -296,7 +298,8 @@ def usernamePolicy(value: str):
     allowed_characters = string.ascii_lowercase + string.digits + '_' + '-' + '.'
     if any(c for c in value if c not in allowed_characters):
         raise ValueError("The username can only contain lowercase characters, digits, '.', '_', or '-'.")
-    
+
+
 def usernamePolicyWrong(value: str):
     """
         Check if username policy wrong
@@ -306,3 +309,28 @@ def usernamePolicyWrong(value: str):
     except ValueError :
         return True
     return False
+
+
+def send_verification_email(user: User, confirmation_email: str) -> None:
+    """
+    Send the verification email to the user.
+    """
+    user.email_user(
+        subject='Please confirm your Email',
+        message=('Click this link to confirm your email '
+                 f'{confirmation_email}'),
+        from_email=settings.EMAIL_HOST_USER
+    )
+
+
+def confirm_token(token: str) -> User | None:
+    """
+    Return the user that has the given token. Return
+    None if no such user exists.
+    """
+    try:
+        user = User.objects.get(email_verification_token=token)
+    except User.DoesNotExist:
+        return None
+    return user
+

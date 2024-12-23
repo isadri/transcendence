@@ -13,6 +13,7 @@ app_name = 'api.accounts'
 
 router = routers.SimpleRouter()
 router.register(r'register', views.RegisterViewSet, basename='register')
+router.register(r'confirm-email', views.ConfirmEmailViewSet, basename='confirm-email')
 router.register(r'login', views.LoginViewSet, basename='login')
 router.register(r'login2fa', views.LoginWith2FAViewSet, basename='login-2fa')
 router.register(r'verify-otp', views.VerifyOTPViewSet, basename='verify-otp')
