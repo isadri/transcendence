@@ -1,5 +1,6 @@
 .Chat {
-	width: 94%;
+	/* width: 94%; */
+	width: 100%; /* add by naima*/
 	height: 96dvh;
 	position: relative;
 	display: flex;

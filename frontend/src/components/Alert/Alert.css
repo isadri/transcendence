@@ -2,7 +2,7 @@
 	display: none;
 	position: absolute;
 	z-index: 10;
-	top: 18px;
+	top: 70px; /****/
 	right: 34px;
 	width: 420px;
 	height: 60px;

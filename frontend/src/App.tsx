@@ -1,5 +1,5 @@
 import BackGround from './components/background/BackGround'
-import {Navigate, RouterProvider, useNavigate} from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import './App.css'
 
 import {useEffect, useState } from 'react';
@@ -23,21 +23,21 @@ const emptyUser = {
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
   let [user, setUser] = useState<userDataType | undefined>(emptyUser)
-  // const hostname = window.location.hostname
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
+
   useEffect(() => {
     axios.get(getendpoint('http', "/"), {withCredentials:true})
     .then((response:any) => {
       setIsLogged(true)
       setUser(response.data)
-
     })
     .catch(() => {
       setIsLogged(false)
       setUser(emptyUser)
     })
-  },[setIsLogged]) 
+  },[setIsLogged])
+
   if (isLogged == null)
     return <></>
   return (
