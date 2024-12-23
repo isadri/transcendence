@@ -7,6 +7,10 @@ from django.contrib.auth import get_user_model
 from channels.db import database_sync_to_async
 from django.db import transaction
 
+from ..notifications.consumers import NotificationConsumer
+from ..notifications.models import Notification
+from django.utils import timezone
+
 User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -315,6 +319,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         if (receiver.open_chat == False):
             print("------->", receiver.open_chat)
+            msg = f"You have a new message from {self.user.username}!"
+            notification = await Notification.objects.acreate(
+                user_id=receiver_id,
+                message=msg,
+                type= "Message",
+                created_at=timezone.now(),
+                is_read=False
+            )
+            await NotificationConsumer.send_friend_request_notificationChat(receiver_id, msg, notification.id, notification.type, notification.created_at)
 
         chat.last_message = message
         await chat.asave()

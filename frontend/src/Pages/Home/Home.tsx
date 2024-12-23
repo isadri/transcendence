@@ -1,5 +1,5 @@
-import  Search from './Components/Search'
-import Icons from './Components/Icons'
+// import  Search from './Components/Search'
+// import Icons from './Components/Icons'
 import Welcome from './Components/Welcome'
 import Profile from './Components/Profile'
 import GameModes from './Components/GameModes'
@@ -14,10 +14,10 @@ function Home() {
 
   return (
     <div className='Home-homePage'>
-      <div className='Home-searchAndIcons'>
+      {/* <div className='Home-searchAndIcons'>
         <Search/>
         <Icons/>
-      </div>
+      </div> */}
       <div className='Home-welcome'>
         <Welcome/>
         <Profile/>

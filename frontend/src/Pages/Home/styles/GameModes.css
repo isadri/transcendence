@@ -55,8 +55,8 @@
 }
 
 .Home-Mode div button:hover{
-    background-color: #57265a;
-    border: 1px solid #57265a;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
 }
 
 @media only screen and (max-width: 1073px){

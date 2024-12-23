@@ -67,3 +67,23 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 },
             }
         )
+    @staticmethod
+    async def send_friend_request_notificationChat(user_id, message, notification_id, type, created_at):
+        """
+        Sends a friend request notification to the user.
+        """
+        print("type ===> ", type)
+        channel_layer = get_channel_layer()
+        # async_to_sync(channel_layer.group_send)(
+        await channel_layer.group_send(
+            f"user_{user_id}_notifications",
+            {
+                "type": "send_notification",
+                "data": {
+                    "message": message,
+                    "type" : type,
+                    "notification_id": notification_id,
+                    "notification_created_at": created_at.strftime('%b %d, %Y at %H:%M')
+                },
+            }
+        )

@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import {getendpoint } from "../../../context/getContextData"
+import { getUser, getendpoint } from "../../context/getContextData"
+import { Link, useLocation } from "react-router-dom"
 
 interface NotificationsData{
   id: number,
@@ -16,6 +17,8 @@ function Icons() {
   const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
   const [UnreadNotif, setUnreadNotif] = useState(0)
 
+  const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"
+                        || useLocation().pathname === "/profile"
   const handelNotifacations = () => {
     setIsIconClicked(!isIconClicked)
     axios
@@ -78,55 +81,63 @@ function Icons() {
     };
   }, [setNotificationList,notificationList, UnreadNotif, setUnreadNotif, isIconClicked]);
   console.log("notf", notificationList)
+  const user = getUser()
   return (
     <>
-    {
-      UnreadNotif !== 0 && 
-      <div className="unreadNotif">
-      <span>{UnreadNotif}</span>
-      </div>
-    }
-      <span className='Home-Icons'>
-          <div className="notifIcon">
-            <i className="fa-solid fa-bell" onClick={handelNotifacations}></i>
+      <span className="Home-Icons">
+        <div className="notifIcon">
+        {
+          UnreadNotif !== 0 && 
+          <div className="unreadNotif">
+          <span>{UnreadNotif}</span>
           </div>
-      </span>
-      {
-        isIconClicked &&
-        <div className="Notifications">
-         <div className="topSide">
-           <span>Your Notifications</span>
-         </div>
-          {
-            notificationList.length > 0 ?
-            <>
-              <div className="dropConntent">
-              {
-                notificationList.map((notif) => (
-                  <div  key={notif.id} className="notification-ele">
-                    <div className="Notif-info">
-                    <span>{notif.type}</span>
-                    <span>{notif.created_at}</span>
+        }
+         <i className="fa-solid fa-bell" onClick={handelNotifacations}></i>
+        {
+          isIconClicked &&
+          <div className="Notifications">
+           <div className="topSide">
+             <span>Your Notifications</span>
+           </div>
+            {
+              notificationList.length > 0 ?
+              <>
+                <div className="dropConntent">
+                {
+                  notificationList.map((notif) => (
+                    <div  key={notif.id} className="notification-ele">
+                      <div className="Notif-info">
+                      <span>{notif.type}</span>
+                      <span>{notif.created_at}</span>
+                      </div>
+                    <div className="Notif-msg">
+                      <span>{notif.message}</span>
                     </div>
-                  <div className="Notif-msg">
-                    <span>{notif.message}</span>
-                  </div>
-                  </div>
-                ))
-              }
-              </div>
-              <div className="footerSide">
-                <button onClick={handelClearAll}>Clear All</button>
-              </div>
-            </>
-            :
-              <div className="No-Notif">
-                <span>No notifications available</span>
-              </div>
-          }
-        
+                    </div>
+                  ))
+                }
+                </div>
+                <div className="footerSide">
+                  <button onClick={handelClearAll}>Clear All</button>
+                </div>
+              </>
+              :
+                <div className="No-Notif">
+                  <span>No notifications available</span>
+                </div>
+            }
+          
+          </div>
+        }
         </div>
-      }
+        { !hideProfileImg && 
+          <div className="Home-ProfImg imgGlobal">
+            <Link to="/profile" className="img">
+              {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
+            </Link>
+          </div>
+        }
+      </span>
     </>
   )
 }

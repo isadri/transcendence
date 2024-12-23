@@ -14,6 +14,7 @@ import Setting from '../Pages/Setting/Setting';
 // import Tictactoe from '../Pages/TicTacToe/Tictactoe';
 // import { Children } from 'react';
 import SideNavbar from '../components/sideNavbar/SideNavbar';
+import Global from '../components/globalComponent/global';
 import { createBrowserRouter, Navigate, Outlet, /*useNavigate*/ } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
@@ -100,7 +101,11 @@ function MainLayout() {
   return (
     <>
       <SideNavbar/>
-      <Outlet/>
+  
+      <div className='mainContent'>
+        <Global/>
+        <Outlet/>
+      </div>
     </>
   )
 }
