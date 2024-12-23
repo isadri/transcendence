@@ -378,9 +378,9 @@ class RegisterViewSet(viewsets.ViewSet):
             user = serializer.save()
             user.email_verification_token = user.username + pyotp.random_base32()
             user.save()
-            confirmation_email = ('http://localhost:8000/api/accounts/confirm-email/'
+            confirmation_url = ('http://localhost:8000/api/accounts/confirm-email/'
                                   f'?token={user.email_verification_token}')
-            send_email_verification(user, confirmation_email)
+            send_email_verification(user, confirmation_url)
             return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
