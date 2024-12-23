@@ -182,7 +182,7 @@ def get_user(user_info: dict, src:str) -> User:
 
     user.from_remote_api = True
     user.save()
-    return user, need_email_verification
+    return user
 
 
 def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
