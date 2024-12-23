@@ -42,8 +42,8 @@ from .utils import (
     is_another_user,
     generate_otp_for_user,
     reset_code,
-    send_verification_email,
-    confirm_token,
+    send_email_verification,
+    validate_token,
 )
 
 
@@ -380,7 +380,7 @@ class RegisterViewSet(viewsets.ViewSet):
             user.save()
             confirmation_email = ('http://localhost:8000/api/accounts/confirm-email/'
                                   f'?token={user.email_verification_token}')
-            send_verification_email(user, confirmation_email)
+            send_email_verification(user, confirmation_email)
             return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -396,7 +396,7 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
         Validate the token given in the url.
         """
         token = request.GET.get('token')
-        user = confirm_token(token)
+        user = validate_token(token)
         if user:
             return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
         return Response({'error': 'email validation failed'},
@@ -638,3 +638,4 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
+
