@@ -41,6 +41,8 @@ const Chat = () => {
 	}, [selectedFriend]);
 
 	const handleSelectFriend = (friend: GetChats) => {
+		if (friend.id === selectedFriend?.id)
+			return ;
 		setSelectedFriend(friend);
 		activeChat({ chatid: friend.id });
 	};
