@@ -393,9 +393,11 @@ class RegisterViewSet(viewsets.ViewSet):
             user = serializer.save()
             user.email_verification_token = user.username + pyotp.random_base32()
             user.save()
-            confirmation_url = ('http://localhost:8000/api/accounts/confirm-email/'
-                                  f'?token={user.email_verification_token}'
-                                  f'&username={user.username}')
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            confirmation_url = (
+                'http://localhost:8000/api/accounts/confirm-email/'
+                f'?uid={uid}&token={user.email_verification_token}'
+            )
             send_email_verification(user, confirmation_url)
             return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -413,8 +415,14 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
         Validate the token given in the url.
         """
         token = request.GET.get('token')
-        username = request.GET.get('username')
-        user = validate_token(username, token)
+        try:
+            uid = urlsafe_base64_decode(
+                request.GET.get('uid')
+            ).decode()
+        except ValueError:
+            return Response({'error': 'email validation failed'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        user = validate_token(uid, token)
         if user:
             user.email_verified = True
             user.save()
