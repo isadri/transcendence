@@ -39,7 +39,7 @@ class CancelGameInvite(APIView):
   def get(self, request, pk):
     user = request.user
     try:
-      invite = GameInvite.objects.get(Q(pk=pk) & (Q(inviter=user) | Q(invited=user)))
+      invite = GameInvite.objects.get(pk=pk ,inviter=user)
       serializer = GameInviteSerializer(invite)
       return Response(serializer.data, status=status.HTTP_200_OK)
     except GameInvite.DoesNotExist:
@@ -71,6 +71,27 @@ class GetGameInvite(APIView):
 
 class AcceptGameInvite(APIView):
   permission_classes = [IsAuthenticated]
+
+  def get(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(pk=pk ,invited=user)
+      serializer = GameInviteSerializer(invite)
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    except GameInvite.DoesNotExist:
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
+  def post(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(pk=pk)
+      try:
+        invite.accept(user)
+        return Response({'detials' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+      except ValueError as e:
+        return Response({'error': str(e)}, status=status.HTTP_200_OK)
+    except GameInvite.DoesNotExist:
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
 
 
 
