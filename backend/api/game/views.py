@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
@@ -36,6 +37,16 @@ class CancelGameInvite(APIView):
 
 class GetGameInvite(APIView):
   permission_classes = [IsAuthenticated]
+
+  def get(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(Q(pk=pk) & (Q(inviter=user) | Q(invited=user)))
+      serializer = GameInviteSerializer(invite)
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    except GameInvite.DoesNotExist:
+      return Response({'error' : 'You dont have acces or the invite does not exists'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 
