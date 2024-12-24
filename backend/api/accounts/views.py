@@ -203,6 +203,20 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def _get_user(self, user_info: dict) -> User:
+        """
+        This methods calls the get_user() function and passes to it the data
+        that is required to get the user or create a new one.
+        """
+        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
+        data = {
+            'username': username,
+            'email': user_info.get('email'),
+            'remote_id': 'GOOGLE-' + str(user_info.get('sub')),
+            'avatar_url': user_info.get('picture'),
+        }
+        return get_user(data)
+
     def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
@@ -214,7 +228,8 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info, 'google', user_info['picture'])
+        user = self._get_user(user_info)
+        #user = get_user(user_info, 'google', user_info['picture'])
         if not user:
             return Response({'error': 'Email is already in use'},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -305,6 +320,19 @@ class IntraLoginViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def _get_user(self, user_info: dict) -> User:
+        """
+        This methods calls the get_user() function and passes to it the data
+        that is required to get the user or create a new one.
+        """
+        data = {
+            'username': user_info.get('login'),
+            'email': user_info.get('email'),
+            'remote_id': 'INTRA-' + str(user_info.get('id')),
+            'avatar_url': user_info.get('image').get('link'),
+        }
+        return get_user(data)
+
     def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
@@ -315,7 +343,8 @@ class IntraLoginViewSet(viewsets.ViewSet):
                                                access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info, 'intra', user_info['image']['link'])
+        user = self._get_user(user_info)
+        #user = get_user(user_info, 'intra', user_info['image']['link'])
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
