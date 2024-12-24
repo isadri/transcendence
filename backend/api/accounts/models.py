@@ -1,4 +1,5 @@
 from typing import Optional
+import uuid
 from django.apps import apps
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
@@ -72,6 +73,7 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     username_validators = [ASCIIUsernameValidator()]
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(
         max_length=150,
         unique=True,
