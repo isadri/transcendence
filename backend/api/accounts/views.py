@@ -1,5 +1,7 @@
+import io
 import os
 import pyotp
+import requests
 from typing import Optional
 from django.conf import settings
 from django.contrib.auth import (
@@ -206,13 +208,12 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info, 'google')
+        user = get_user(user_info, 'google', user_info['picture'])
         if not user:
             return Response({'error': 'Email is already in use'},
                         status=status.HTTP_400_BAD_REQUEST)
         if user.otp_active:
             generate_otp_for_user(user)
-            print(user.otp)
             send_otp_email(user)
             return Response({
                 'info': 'The verification code sent successfully',
@@ -308,11 +309,10 @@ class IntraLoginViewSet(viewsets.ViewSet):
                                                access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info, 'intra')
+        user = get_user(user_info, 'intra', user_info['image']['link'])
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
-            print(user.otp)
             return Response({
                 'info': 'The verification code sent successfully',
                 'code': user.code

@@ -1,13 +1,15 @@
-from django.conf import settings
+import io
 import pyotp
 import os
 import requests
+import string
+from django.conf import settings
+from django.core.files.base import File
 from django.db import connection
 from django.db.models import Max
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-import string
 
 from .models import User
 
@@ -119,6 +121,18 @@ def get_access_token_from_api(token_endpoint: str,
     return response.json().get('access_token')
 
 
+def set_avatar(user: User, avatar_url: str) -> None:
+    """
+    Get the avatar if available and set it to the user.
+    """
+    response = requests.get(avatar_url)
+    if response.status_code == 200:
+        image_content = io.BytesIO(response.content)
+        image_name = os.path.basename(avatar_url)
+        user.avatar.save(image_name, File(image_content))
+        user.save()
+
+
 def create_user(username: str, email: str) -> User:
     """
     Create a user.
@@ -139,7 +153,7 @@ def create_user(username: str, email: str) -> User:
     return user
 
 
-def get_user(user_info: dict, src:str) -> User:
+def get_user(user_info: dict, src: str, avatar_url: str) -> User:
     """
     This function searches for the user and ensures that the user is
     registered with 42 intra. If the user is registered with another
@@ -178,6 +192,7 @@ def get_user(user_info: dict, src:str) -> User:
                 username=username,
                 email=email,
             )
+            set_avatar(user, avatar_url)
             user.register_complete = register_state
 
     user.from_remote_api = True
