@@ -12,4 +12,8 @@ urlpatterns = [
   path('accept/<int:pk>', views.AcceptGameInvite.as_view(), name='accept-game-invite'),
   path('cancel/<int:pk>', views.CancelGameInvite.as_view(), name='cancel-game-invite'),
   path('decline/<int:pk>', views.DeclineGameInvite.as_view(), name='decline-game-invite'),
+
+  path('invites/sent/', views.ListSentGameInvites.as_view(), name='list-sent-game-invites'),
+  path('invites/received/', views.ListReceivedGameInvites.as_view(), name='list-received-game-invites'),
+
 ]

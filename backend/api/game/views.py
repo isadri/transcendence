@@ -48,8 +48,6 @@ class GetGameInvite(APIView):
       return Response({'error' : 'You dont have acces or the invite does not exists'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 class AcceptGameInvite(APIView):
   permission_classes = [IsAuthenticated]
 
@@ -65,6 +63,25 @@ class ListGameInvites(APIView):
 
   def get(self, request):
     user = request.user
+    inivtes = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
+    serializer = GameInviteSerializer(inivtes, many=True)
+    return Response(serializer.data)
+  
+
+class ListSentGameInvites(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    user = request.user
     inivtes = GameInvite.objects.filter(inviter=user)
+    serializer = GameInviteSerializer(inivtes, many=True)
+    return Response(serializer.data)
+
+class ListReceivedGameInvites(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    user = request.user
+    inivtes = GameInvite.objects.filter(invited=user)
     serializer = GameInviteSerializer(inivtes, many=True)
     return Response(serializer.data)
