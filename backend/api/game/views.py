@@ -12,6 +12,8 @@ from rest_framework.permissions import IsAuthenticated
 
 User = get_user_model()
 
+NO_INV_NO_ACCESS = {'error' : 'You dont have access or the invite does not exists'}
+
 
 class CreateGameInvite(APIView):
   serializer_class = GameInviteSerializer
@@ -34,6 +36,24 @@ class CreateGameInvite(APIView):
 class CancelGameInvite(APIView):
   permission_classes = [IsAuthenticated]
 
+  def get(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(Q(pk=pk) & (Q(inviter=user) | Q(invited=user)))
+      serializer = GameInviteSerializer(invite)
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    except GameInvite.DoesNotExist:
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
+  def delete(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(pk=pk, inviter=user)
+      invite.delete()
+      return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    except:
+       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
 
 class GetGameInvite(APIView):
   permission_classes = [IsAuthenticated]
@@ -45,7 +65,8 @@ class GetGameInvite(APIView):
       serializer = GameInviteSerializer(invite)
       return Response(serializer.data, status=status.HTTP_200_OK)
     except GameInvite.DoesNotExist:
-      return Response({'error' : 'You dont have acces or the invite does not exists'}, status=status.HTTP_404_NOT_FOUND)
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class AcceptGameInvite(APIView):
@@ -66,7 +87,8 @@ class ListGameInvites(APIView):
     inivtes = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
     serializer = GameInviteSerializer(inivtes, many=True)
     return Response(serializer.data)
-  
+
+
 
 class ListSentGameInvites(APIView):
   permission_classes = [IsAuthenticated]
@@ -77,6 +99,8 @@ class ListSentGameInvites(APIView):
     serializer = GameInviteSerializer(inivtes, many=True)
     return Response(serializer.data)
 
+
+
 class ListReceivedGameInvites(APIView):
   permission_classes = [IsAuthenticated]
 
@@ -85,3 +109,4 @@ class ListReceivedGameInvites(APIView):
     inivtes = GameInvite.objects.filter(invited=user)
     serializer = GameInviteSerializer(inivtes, many=True)
     return Response(serializer.data)
+  
