@@ -164,7 +164,6 @@ class VerifyOTPViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
-        print("===========> " ,request.data)
         otp = request.data['key']
         code = request.data['code'] # need code to specify the user
         try:
