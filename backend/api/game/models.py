@@ -93,7 +93,7 @@ class GameInvite(models.Model):
     if self.isExpired() or self.status != 'P':
       raise ValueError('the invite already been processed or its expired')
     if user != self.invited:
-      raise ValueError('You dont have permession to prosses this invite')
+      raise ValueError('The invited user can prosses this invite')
     self.status = 'A'
     self.save()
 
@@ -101,7 +101,7 @@ class GameInvite(models.Model):
     if self.isExpired() or self.status != 'P':
       raise ValueError('the invite already been processed or its expired')
     if user != self.invited:
-      raise ValueError('You dont have permession to prosses this invite')
+      raise ValueError('The invited user can prosses this invite')
     self.status = 'D'
     self.save()
 
