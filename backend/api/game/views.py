@@ -98,6 +98,27 @@ class AcceptGameInvite(APIView):
 class DeclineGameInvite(APIView):
   permission_classes = [IsAuthenticated]
 
+  def get(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(pk=pk ,invited=user)
+      serializer = GameInviteSerializer(invite)
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    except GameInvite.DoesNotExist:
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
+  def put(self, request, pk):
+    user = request.user
+    try:
+      invite = GameInvite.objects.get(pk=pk)
+      try:
+        invite.decline(user)
+        return Response({'detials' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+      except ValueError as e:
+        return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
+    except GameInvite.DoesNotExist:
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class ListGameInvites(APIView):
