@@ -6,8 +6,9 @@ import string
 from django.conf import settings
 from django.core.files.base import File
 from django.db import connection
-from django.db.models import Max
 from django.utils import timezone
+from rest_framework.authentication import TokenBackend
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
