@@ -337,3 +337,12 @@ def validate_token(username: str, token: str) -> User | None:
         return None
     return user if user.email_verification_token == token else None
 
+
+def check_otp_key(otp: str, user: User) -> bool:
+    """
+    """
+    total_difference = timezone.now() - usre.otp_created_at
+    if total_difference.total_seconds() > 60 or otp != str(user.otp):
+        return False
+    return True
+

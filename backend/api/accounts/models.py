@@ -140,6 +140,8 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     email_verification_token = models.CharField(max_length=40, default='')
 
+    email_verified = models.BooleanField(default=False)
+
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
