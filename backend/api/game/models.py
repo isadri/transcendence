@@ -26,6 +26,9 @@ class Game(models.Model):
     null=True,
   )
 
+  def __str__(self) -> str:
+    return f"{self.pk} => {self.progress}:{self.player1} [{self.p1_score} vs {self.p2_score}] {self.player2}"
+
   def setAsStarted(self):
     if self.progress != 'P':
       raise ValueError("Cannot start the game unless it's is pending.")
@@ -82,7 +85,11 @@ class GameInvite(models.Model):
   status  = models.CharField(max_length=1, choices=INVITE_STATE, default="P")
   sent_at = models.DateTimeField(auto_now_add=True)
 
-  def accept(self, user : User):
+
+  def __str__(self) -> str:
+    return f'{self.pk} : {self.status} => {self.inviter} invites {self.invited}'
+
+  def accept(self, user : User): 
     if self.isExpired() or self.status != 'P':
       raise ValueError('the invite already been processed or its expired')
     if user != self.invited:
