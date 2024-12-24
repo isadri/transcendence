@@ -326,14 +326,23 @@ def usernamePolicyWrong(value: str):
     return False
 
 
-def validate_token(username: str, token: str) -> User | None:
+def validate_token(uid: str, token: str) -> User | None:
     """
     Return the user that has the given token. Return
     None if no such user exists.
     """
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(pk=uid)
     except User.DoesNotExist:
         return None
     return user if user.email_verification_token == token else None
+
+
+def check_otp_key(otp: str, user: User) -> bool:
+    """
+    """
+    total_difference = timezone.now() - usre.otp_created_at
+    if total_difference.total_seconds() > 60 or otp != str(user.otp):
+        return False
+    return True
 

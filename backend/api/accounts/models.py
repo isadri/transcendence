@@ -1,4 +1,5 @@
 from typing import Optional
+import uuid
 from django.apps import apps
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
@@ -137,6 +138,8 @@ class User(PermissionsMixin, AbstractBaseUser):
     from_remote_api = models.BooleanField(default=False)
 
     email_verification_token = models.CharField(max_length=40, default='')
+
+    email_verified = models.BooleanField(default=False)
 
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
