@@ -51,3 +51,9 @@ class DeclineGameInvite(APIView):
 
 class ListGameInvites(APIView):
   permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    user = request.user
+    inivtes = GameInvite.objects.filter(inviter=user)
+    serializer = GameInviteSerializer(inivtes, many=True)
+    return Response(serializer.data)
