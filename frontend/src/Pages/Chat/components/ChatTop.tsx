@@ -95,6 +95,27 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					status: true,
 				});
 			}
+			// // addded by jhamza
+			// try {
+			// 	let friend_id;
+			// 	if (user?.id === selectedFriend?.user1.id) {
+			// 		friend_id = selectedFriend?.user2.id;
+			// 	} else {
+			// 		friend_id = selectedFriend?.user1.id;
+			// 	}
+			// 	const response = await axios.get(
+			// 		getendpoint("http", `/api/friends/blockedfriend/${friend_id}`),
+			// 		{
+			// 			withCredentials: true,
+			// 		}
+			// 	);
+			// 	selectedFriend.is_blocked = response.data.status;
+			// } catch (err) {
+			// 	console.log("Error in fetching chats", err);
+			// 	selectedFriend.is_blocked = false;
+			// }
+			// setSelectedFriend({...selectedFriend});
+			// // addded by jhamza
 			setOpenMenu(false);
 		} catch (err) {
 			console.log("Error in handling block/unblock: ", err);
