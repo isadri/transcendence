@@ -1,5 +1,4 @@
 import pyotp
-import requests
 from typing import Optional
 from django.conf import settings
 from django.contrib.auth import (
@@ -205,7 +204,7 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         data = {
             'username': username,
             'email': user_info.get('email'),
-            'remote_id': 'GOOGLE-' + str(user_info.get('sub')),
+            'remote_id': ['GOOGLE-' + str(user_info.get('sub'))],
             'avatar_url': user_info.get('picture'),
         }
         return get_user(data)
@@ -317,7 +316,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
         data = {
             'username': user_info.get('login'),
             'email': user_info.get('email'),
-            'remote_id': 'INTRA-' + str(user_info.get('id')),
+            'remote_id': ['INTRA-' + str(user_info.get('id'))],
             'avatar_url': user_info.get('image').get('link'),
         }
         return get_user(data)
