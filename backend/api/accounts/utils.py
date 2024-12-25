@@ -9,6 +9,7 @@ from django.db import connection
 from django.utils import timezone
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
+from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
@@ -179,7 +180,6 @@ def invalid_username(username: str):
     return False
 
 
-
 def user_exists(username: str) -> bool:
     """
     Return True if a user with username exists, False otherwise.
@@ -228,53 +228,6 @@ def get_user(data: dict) -> User | None:
             )
             set_avatar(user, data.get('avatar_url'))
     return user
-
-
-#def get_user(user_info: dict, src: str, avatar_url: str) -> User:
-#    """
-#    This function searches for the user and ensures that the user is
-#    registered with 42 intra. If the user is registered with another
-#    api, a new random usename will be given to the user.
-#    If the user does not exist, the method creates a new one and add her
-#    to the list of the users registered with 42 intra.
-#    """
-#
-#    remote_id = username = None
-#    #get data depending on remote user_info
-#    if (src == 'intra'):
-#        username = user_info.get('login')
-#        remote_id = user_info.get('id')
-#    elif (src == 'google'):
-#        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
-#        remote_id = user_info.get('sub')
-#    email = user_info.get('email')
-#    remote_id = f'{src}_{str(remote_id)}'
-#
-#    try:
-#        user = User.objects.get(remote_id=remote_id) #since remote_id is uniqe for any remote acc, we get thr user by remote_id
-#    except User.DoesNotExist:
-#        #if there no user with that remote_id we
-#        try:
-#            user = User.objects.get(email=email) #check if there any user with this email
-#            return None # email already token
-#            # user.remote_id = remote_id # link the remote with normal acc
-#        except User.DoesNotExist:
-#            #if no user has the email we do create a new acc
-#            register_state = True
-#            if User.objects.filter(username=username).exists() or usernamePolicyWrong(username): # if a user exists with the same_username or its not accepted by policy
-#                username += '*' + str(get_next_id()) #we genrate a tmp username
-#                register_state = False # and set as not complate , let the  user change the username
-#            user = User.objects.create_user(
-#                remote_id=remote_id,
-#                username=username,
-#                email=email,
-#            )
-#            set_avatar(user, avatar_url)
-#            user.register_complete = register_state
-#
-#    user.from_remote_api = True
-#    user.save()
-#    return user
 
 
 def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
