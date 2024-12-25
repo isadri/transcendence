@@ -229,7 +229,6 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = self._get_user(user_info)
-        #user = get_user(user_info, 'google', user_info['picture'])
         if not user:
             return Response({'error': 'Email is already in use'},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -344,7 +343,9 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = self._get_user(user_info)
-        #user = get_user(user_info, 'intra', user_info['image']['link'])
+        if not user:
+            return Response({'error': 'Email is already in use'},
+                        status=status.HTTP_400_BAD_REQUEST)
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)

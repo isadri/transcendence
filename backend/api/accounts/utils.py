@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.files.base import File
 from django.db import connection
 from django.utils import timezone
-from rest_framework.authentication import TokenBackend
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -188,17 +187,18 @@ def user_exists(username: str) -> bool:
     return User.objects.filter(username=username).exists()
 
 
-def get_user(data: dict) -> User:
+def get_user(data: dict) -> User | None:
     """
     This function checks if a user exists with the remote_id that is unique for
     each user authenticated from 42 or Google, if a user is found, return her.
-    Otherwise, if a user exists with the given email then link the current
-    user with the accounts with the that email. If none of the previous is
-    true, then this function checks if a user with the given username is
-    already exist or if the username does not respect the username policy, and
-    if one or both the condition is True, creates a new username and set the
-    register_complete flag to False indicating that this user needs to set a
-    new valid username for herself.
+    Otherwise, if a user exists with the given email then this user cannot
+    logs in since the email is already taken. If none of the previous is true,
+    then this function checks if a user with the given username is already
+    exist or if the username does not respect the username policy, and if one
+    or both the conditions are True, this function creates a new username and
+    sets the register_complete flag to False indicating that this user needs to
+    set a new valid username for herself.
+
     If none of the conditions above is satisfied, then the function just
     creates a new user with the given data.
 
@@ -213,6 +213,8 @@ def get_user(data: dict) -> User:
     except User.DoesNotExist:
         try:
             user = User.objects.get(email=email)
+
+            return None
         except User.DoesNotExist:
             register_state = True
             if user_exists(username) or invalid_username(username):
