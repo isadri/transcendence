@@ -343,6 +343,7 @@ def validate_token(uid: str, token: str) -> User | None:
 
 def check_otp_key(otp: str, user: User) -> bool:
     """
+    Checks if the given otp is valid.
     """
     total_difference = timezone.now() - user.otp_created_at
     if total_difference.total_seconds() > 60 or otp != str(user.otp):
