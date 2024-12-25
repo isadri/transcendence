@@ -1,5 +1,3 @@
-import io
-import os
 import pyotp
 import requests
 from typing import Optional
@@ -13,7 +11,6 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import (
     get_object_or_404,
-    redirect,
 )
 from django.utils import timezone
 from django.utils.http import (
@@ -22,7 +19,6 @@ from django.utils.http import (
 )
 from django.utils.encoding import force_bytes
 from rest_framework import (
-    generics,
     status,
     viewsets
 )
@@ -41,17 +37,14 @@ from .mails import (
     send_email,
 )
 from .utils import (
-    get_access_token_from_api,
     get_tokens_for_user,
     store_token_in_cookies,
     get_access_token_google,
     get_access_token_42,
-    create_user,
     get_user,
     get_user_info,
     send_otp_email,
     get_response,
-    is_another_user,
     generate_otp_for_user,
     reset_code,
     validate_token,
@@ -229,9 +222,6 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = self._get_user(user_info)
-        if not user:
-            return Response({'error': 'Email is already in use'},
-                        status=status.HTTP_400_BAD_REQUEST)
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
@@ -343,9 +333,6 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if status_code != 200:
             return Response(user_info, status=status_code)
         user = self._get_user(user_info)
-        if not user:
-            return Response({'error': 'Email is already in use'},
-                        status=status.HTTP_400_BAD_REQUEST)
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
@@ -815,4 +802,3 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
-

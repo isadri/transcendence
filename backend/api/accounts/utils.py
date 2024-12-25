@@ -153,6 +153,7 @@ def create_user(username: str, email: str) -> User:
     user.save()
     return user
 
+
 def check_username_policy(value: str):
     """
     Check username Policy
@@ -214,7 +215,7 @@ def get_user(data: dict) -> User | None:
         try:
             user = User.objects.get(email=email)
 
-            return None
+            user.remote_id.append(remote_id)
         except User.DoesNotExist:
             register_state = True
             if user_exists(username) or invalid_username(username):
@@ -295,22 +296,6 @@ def get_response(info:dict, status_code: int) -> Response:
     return a response with the data passed by dict and the status code.
     """
     return Response(info, status=status_code)
-
-
-def is_another_user(user: User, email: str) -> bool:
-    """
-    This function is used when a user tried to login with 42 intra or Google.
-
-    If the user has an email does not match the given email, then this user
-    has another account and should set a new username for this account. If the
-    user has an email that matches the given email, then she will logging
-    directly without setting a new username, since she is the owner of the
-    email.
-
-    Returns:
-        True if the emails do not match, False otherwise.
-    """
-    return user.email != email
 
 
 def generate_otp_for_user(user: User) -> None:
