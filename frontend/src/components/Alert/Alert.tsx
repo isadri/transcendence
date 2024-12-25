@@ -14,7 +14,7 @@ function Alert({ primaryColor, secondaryColor, children }: Props) {
 			if (account.Displayed === 2) {
 				setTimeout(() => {
 					account.setDisplayed(1);
-				}, 1000);
+				}, 1200);
 			}
 		}, [account.Displayed]);
 		return (
@@ -22,7 +22,6 @@ function Alert({ primaryColor, secondaryColor, children }: Props) {
 				style={{
 					backgroundColor: primaryColor,
 					color: secondaryColor,
-					// borderColor: secondaryColor,
 				}}
 				className={`alert-acountDeleted
          ${account.Displayed === 2 ? "show" : "hide"}`}

@@ -188,12 +188,12 @@ def user_exists(username: str) -> bool:
     return User.objects.filter(username=username).exists()
 
 
-def get_user(data: dict) -> User:
+def get_user(data: dict) -> User | None:
     """
     This function checks if a user exists with the remote_id that is unique for
     each user authenticated from 42 or Google, if a user is found, return her.
-    Otherwise, if a user exists with the given email then link user with the
-    the account with the given email. If none of the previous is true,
+    Otherwise, if a user exists with the given email then this user cannot
+    logs in since the email is already taken. If none of the previous is true,
     then this function checks if a user with the given username is already
     exist or if the username does not respect the username policy, and if one
     or both the conditions are True, this function creates a new username and
@@ -206,11 +206,11 @@ def get_user(data: dict) -> User:
     Return:
         A user with the given data.
     """
-    remote_id = [data.get('remote_id')]
+    remote_id = data.get('remote_id')
     username = data.get('username')
     email = data.get('email')
     try:
-        user = User.objects.get(remote_id__contains=[remote_id])
+        user = User.objects.get(remote_id=remote_id)
     except User.DoesNotExist:
         try:
             user = User.objects.get(email=email)

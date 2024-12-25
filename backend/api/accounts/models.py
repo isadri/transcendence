@@ -1,4 +1,5 @@
 from typing import Optional
+import uuid
 from django.apps import apps
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password

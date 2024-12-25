@@ -18,7 +18,7 @@ INITIAL_TIME = time.time()
 
 ALLOWED_HOSTS = ['*']
 
-SITE_ID = 2
+SITE_ID = 1
 
 # Application definition
 
@@ -51,16 +51,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 	'rest_framework_simplejwt.token_blacklist',
 ]
-
-#SOCIALACCOUNT_PROVIDERS = {
-#	'google': {
-#		'SCOPE': [
-#			'profile',
-#			'email'
-#		],
-#		'AUTH_PARAMS' : {'access_type': 'online'}
-#	}
-#}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -153,7 +143,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 AUTHENTICATION_BACKENDS = [
-	#'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

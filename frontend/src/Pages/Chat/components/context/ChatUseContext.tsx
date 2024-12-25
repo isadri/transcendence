@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getendpoint } from "../../../../context/getContextData";
+import { getUser, getendpoint } from "../../../../context/getContextData";
 
 export interface ChatMessage {
 	id: number;
@@ -32,13 +32,14 @@ export interface GetChats {
 	messages: ChatMessage[];
 	nbr_of_unseen_msg_user1?: number | 0;
 	nbr_of_unseen_msg_user2?: number | 0;
+	is_blocked?: boolean;
 }
 
 export interface BlockedFriend {
 	chatid?: number;
 	status: boolean;
-	blocked: number;
-	blocker: number;
+	blocked?: number;
+	blocker?: number;
 }
 
 interface ChatContextType {
@@ -60,8 +61,8 @@ interface ChatContextType {
 	setLastMessage: React.Dispatch<React.SetStateAction<LastMessage>>;
 	chats: GetChats[];
 	setChats: React.Dispatch<React.SetStateAction<GetChats[]>>;
-	block: BlockedFriend | null;
-	setBlock: React.Dispatch<React.SetStateAction<BlockedFriend | null>>;
+	block: BlockedFriend;
+	setBlock: React.Dispatch<React.SetStateAction<BlockedFriend>>;
 	unseen: boolean;
 	setUnseen: React.Dispatch<React.SetStateAction<boolean>>;
 	activeChatId: number | null;
@@ -69,6 +70,8 @@ interface ChatContextType {
 	activeChat: (data: { chatid: number }) => void;
 	unseenMessage: (data: { chatid: number }) => void;
 	clearMessages: () => void;
+	// selectedFriend:GetChats | null;
+	// setSelectedFriend:React.Dispatch<React.SetStateAction<GetChats | null>>;
 	// deleteChat: (data: {chatId: number, message_type: MessageType}) => void;
 }
 
@@ -82,7 +85,7 @@ const ChatContext = createContext<ChatContextType>({
 	setLastMessage: () => {},
 	chats: [],
 	setChats: () => {},
-	block: null,
+	block: { status: false },
 	setBlock: () => {},
 	unseen: false,
 	setUnseen: () => {},
@@ -91,6 +94,8 @@ const ChatContext = createContext<ChatContextType>({
 	activeChat: () => {},
 	unseenMessage: () => {},
 	clearMessages: () => {},
+	// selectedFriend:null,
+	// setSelectedFriend:() => {},
 	// deleteChat: () => {},
 });
 
@@ -109,10 +114,11 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [lastMessage, setLastMessage] = useState<LastMessage>({});
 	const [chats, setChats] = useState<GetChats[]>([]);
-	const [block, setBlock] = useState<BlockedFriend | null>(null);
+	const [block, setBlock] = useState<BlockedFriend>({ status: false });
 	const [unseen, setUnseen] = useState<boolean>(false);
 	const [activeChatId, setActiveChatId] = useState<number | null>(null);
-
+	// const {selectedFriend, setSelectedFriend} = useChatContext();
+	const user = getUser()
 	useEffect(() => {
 		const ws = new WebSocket(getendpoint("ws", `/ws/chat/`));
 		ws.onopen = () => console.log("WebSocket connected");
@@ -125,12 +131,34 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				const data = JSON.parse(event.data);
 
 				if (data.type === "block_status_update") {
+					// if (!selectedFriend) return
+					// const block = data.block
+					// let friend_id;
+					// if (user?.id === selectedFriend.user1.id) {
+					// 	friend_id = selectedFriend.user2.id;
+					// } else {
+					// 	friend_id = selectedFriend.user1.id;
+					// }
+					// if (block.status && (friend_id == block.blocked || friend_id == block.blocker)) {
+					// 	selectedFriend.is_blocked = block.status;
+					// }
+					// else {
+					// 	selectedFriend.is_blocked = false;
+					// }
+					// setSelectedFriend(selectedFriend);
+					// if (data.status == false) {
+					// 	setBlock({ status: false });
+					// 	// return
+					// } else {
+					// to think about start
 					setBlock({
 						chatid: data.chat_id,
 						status: data.status,
 						blocker: data.blocker,
 						blocked: data.blocked,
 					});
+					// to think about end
+					// }
 				}
 				if (data.type === "update_unseen_message") {
 					setChats((prevChats) =>
@@ -294,7 +322,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 	};
 	const clearMessages = () => {
-		setMessages([])
+		setMessages([]);
 	};
 
 	const unseenMessage = (data: { chatid: number }) => {

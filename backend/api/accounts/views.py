@@ -1,4 +1,5 @@
 import pyotp
+import requests
 from typing import Optional
 from django.conf import settings
 from django.contrib.auth import (
@@ -801,5 +802,3 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
-
-
