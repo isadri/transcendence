@@ -210,12 +210,12 @@ def get_user(data: dict) -> User | None:
     username = data.get('username')
     email = data.get('email')
     try:
-        user = User.objects.get(remote_id=remote_id)
+        user = User.objects.get(remote_id__contains=[remote_id])
     except User.DoesNotExist:
         try:
             user = User.objects.get(email=email)
-
             user.remote_id.append(remote_id)
+            user.save()
         except User.DoesNotExist:
             register_state = True
             if user_exists(username) or invalid_username(username):
