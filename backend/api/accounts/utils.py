@@ -1,13 +1,16 @@
-from django.conf import settings
+import io
 import pyotp
 import os
 import requests
-from django.db import connection
-from django.db.models import Max
-from django.utils import timezone
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 import string
+from django.conf import settings
+from django.core.files.base import File
+from django.db import connection
+from django.utils import timezone
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.response import Response
+from rest_framework_simplejwt.backends import TokenBackend
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 
@@ -119,6 +122,18 @@ def get_access_token_from_api(token_endpoint: str,
     return response.json().get('access_token')
 
 
+def set_avatar(user: User, avatar_url: str) -> None:
+    """
+    Get the avatar if available and set it to the user.
+    """
+    response = requests.get(avatar_url)
+    if response.status_code == 200:
+        image_content = io.BytesIO(response.content)
+        image_name = os.path.basename(avatar_url)
+        user.avatar.save(image_name, File(image_content))
+        user.save()
+
+
 def create_user(username: str, email: str) -> User:
     """
     Create a user.
@@ -139,49 +154,80 @@ def create_user(username: str, email: str) -> User:
     return user
 
 
-def get_user(user_info: dict, src:str) -> User:
+def check_username_policy(value: str):
     """
-    This function searches for the user and ensures that the user is
-    registered with 42 intra. If the user is registered with another
-    api, a new random usename will be given to the user.
-    If the user does not exist, the method creates a new one and add her
-    to the list of the users registered with 42 intra.
+    Check username Policy
+        - Length 3 - 15
+        - a-z/0-9/-_.
+        - first char chold be a-z/_
     """
+    if not value[0] in string.ascii_lowercase and value[0] != '_':
+        raise ValueError('The username must begin with  a lowercase character or a _.')
+    if len(value) < 3 or len(value) > 15:
+        raise ValueError('username must at least contain 3 and at most 15 characters.')
+    allowed_characters = string.ascii_lowercase + string.digits + '_' + '-' + '.'
+    if any(c for c in value if c not in allowed_characters):
+        raise ValueError("The username can only contain lowercase characters, digits, '.', '_', or '-'.")
 
-    remote_id = username = None
-    #get data depending on remote user_info
-    if (src == 'intra'):
-        username = user_info.get('login')
-        remote_id = user_info.get('id')
-    elif (src == 'google'):
-        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
-        remote_id = user_info.get('sub')
-    email = user_info.get('email')
-    remote_id = [f'{src}_{str(remote_id)}']
 
+def invalid_username(username: str):
+    """
+    Check if username policy wrong
+    """
     try:
-        user = User.objects.get(remote_id__contains=[remote_id]) #since remote_id is uniqe for any remote acc, we get thr user by remote_id
+        check_username_policy(username)
+    except ValueError:
+        return True
+    return False
+
+
+def user_exists(username: str) -> bool:
+    """
+    Return True if a user with username exists, False otherwise.
+    """
+    return User.objects.filter(username=username).exists()
+
+
+def get_user(data: dict) -> User:
+    """
+    This function checks if a user exists with the remote_id that is unique for
+    each user authenticated from 42 or Google, if a user is found, return her.
+    Otherwise, if a user exists with the given email then link user with the
+    the account with the given email. If none of the previous is true,
+    then this function checks if a user with the given username is already
+    exist or if the username does not respect the username policy, and if one
+    or both the conditions are True, this function creates a new username and
+    sets the register_complete flag to False indicating that this user needs to
+    set a new valid username for herself.
+
+    If none of the conditions above is satisfied, then the function just
+    creates a new user with the given data.
+
+    Return:
+        A user with the given data.
+    """
+    remote_id = [data.get('remote_id')]
+    username = data.get('username')
+    email = data.get('email')
+    try:
+        user = User.objects.get(remote_id__contains=[remote_id])
     except User.DoesNotExist:
-        #if there no user with that remote_id we
         try:
-            user = User.objects.get(email=email) #check if there any user with this email
-            # return None # email already token
-            user.remote_id.append(remote_id) # link the remote with normal acc
+            user = User.objects.get(email=email)
+
+            user.remote_id.append(remote_id)
         except User.DoesNotExist:
-            #if no user has the email we do create a new acc
             register_state = True
-            if User.objects.filter(username=username).exists() or usernamePolicyWrong(username): # if a user exists with the same_username or its not accepted by policy
-                username += '*' + str(get_next_id()) #we genrate a tmp username
-                register_state = False # and set as not complate , let the  user change the username
+            if user_exists(username) or invalid_username(username):
+                username += '*' + str(get_next_id())
+                register_state = False
             user = User.objects.create_user(
                 remote_id=remote_id,
                 username=username,
                 email=email,
+                register_complete=register_state
             )
-            user.register_complete = register_state
-
-    user.from_remote_api = True
-    user.save()
+            set_avatar(user, data.get('avatar_url'))
     return user
 
 
@@ -252,22 +298,6 @@ def get_response(info:dict, status_code: int) -> Response:
     return Response(info, status=status_code)
 
 
-def is_another_user(user: User, email: str) -> bool:
-    """
-    This function is used when a user tried to login with 42 intra or Google.
-
-    If the user has an email does not match the given email, then this user
-    has another account and should set a new username for this account. If the
-    user has an email that matches the given email, then she will logging
-    directly without setting a new username, since she is the owner of the
-    email.
-
-    Returns:
-        True if the emails do not match, False otherwise.
-    """
-    return user.email != email
-
-
 def generate_otp_for_user(user: User) -> None:
     """
     Generate a new otp for the given user.
@@ -278,31 +308,30 @@ def generate_otp_for_user(user: User) -> None:
     user.otp_created_at = timezone.now()
     user.save()
 
+
 def reset_code(user: User):
     user.code = None
     user.save()
 
-def usernamePolicy(value: str):
+
+def validate_token(uid: str, token: str) -> User | None:
     """
-    Check username Policy 
-        - Length 3 - 15
-        - a-z/0-9/-_.
-        - first char chold be a-z/_
-    """
-    if not value[0] in string.ascii_lowercase and value[0] != '_':
-        raise ValueError('The username must begin with  a lowercase character or a _.')
-    if len(value) < 3 or len(value) > 15:
-        raise ValueError('username must at least contain 3 and at most 15 characters.')
-    allowed_characters = string.ascii_lowercase + string.digits + '_' + '-' + '.'
-    if any(c for c in value if c not in allowed_characters):
-        raise ValueError("The username can only contain lowercase characters, digits, '.', '_', or '-'.")
-    
-def usernamePolicyWrong(value: str):
-    """
-        Check if username policy wrong
+    Return the user that has the given token. Return
+    None if no such user exists.
     """
     try:
-        usernamePolicy(value)
-    except ValueError :
-        return True
-    return False
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return None
+    return user if user.email_verification_token == token else None
+
+
+def check_otp_key(otp: str, user: User) -> bool:
+    """
+    Checks if the given otp is valid.
+    """
+    total_difference = timezone.now() - user.otp_created_at
+    if total_difference.total_seconds() > 60 or otp != str(user.otp):
+        return False
+    return True
+

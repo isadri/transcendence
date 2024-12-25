@@ -1,4 +1,3 @@
-import os
 import pyotp
 from typing import Optional
 from django.conf import settings
@@ -8,13 +7,17 @@ from django.contrib.auth import (
     logout,
 )
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import (
     get_object_or_404,
-    redirect,
 )
 from django.utils import timezone
+from django.utils.http import (
+    urlsafe_base64_encode,
+    urlsafe_base64_decode,
+)
+from django.utils.encoding import force_bytes
 from rest_framework import (
-    generics,
     status,
     viewsets
 )
@@ -28,20 +31,23 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import UserSerializer
+from .mails import (
+    send_email_verification,
+    send_email,
+)
 from .utils import (
-    get_access_token_from_api,
     get_tokens_for_user,
     store_token_in_cookies,
     get_access_token_google,
     get_access_token_42,
-    create_user,
     get_user,
     get_user_info,
     send_otp_email,
     get_response,
-    is_another_user,
     generate_otp_for_user,
-    reset_code
+    reset_code,
+    validate_token,
+    check_otp_key,
 )
 
 
@@ -83,8 +89,11 @@ class LoginViewSet(viewsets.ViewSet):
         username = request.data.get('username').lower()
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user:
+            if not user.email_verified:
+                return Response({
+                    'error': 'You need to verify your email.'
+                }, status=status.HTTP_400_BAD_REQUEST)
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
             response = Response({
@@ -131,8 +140,11 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
         password = request.data['password']
         user = authenticate(request, username=username, password=password)
         if user:
+            if not user.email_verified:
+                return Response({
+                    'error': 'You need to verify your email.'
+                }, status=status.HTTP_400_BAD_REQUEST)
             generate_otp_for_user(user)
-            print(user.otp)
             send_otp_email(user)
             return Response({
                 'info': 'The verification code sent successfully',
@@ -151,13 +163,11 @@ class VerifyOTPViewSet(viewsets.ViewSet):
     authentication_classes = []
 
     def create(self, request: Request) -> Response:
-        print("===========> " ,request.data)
         otp = request.data['key']
         code = request.data['code'] # need code to specify the user
         try:
             user = User.objects.get(code=code)
-            total_difference = timezone.now() - user.otp_created_at
-            if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            if not check_otp_key(otp, user):
                 return Response({'error': 'Key is incorrect'},
                                 status=status.HTTP_400_BAD_REQUEST)
             reset_code(user)
@@ -170,7 +180,8 @@ class VerifyOTPViewSet(viewsets.ViewSet):
             store_token_in_cookies(response, access_token)
             return response
         except User.DoesNotExist:
-            return Response({'error':'Code is Incorrect'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'Code is Incorrect'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class GoogleLoginViewSet(viewsets.ViewSet):
@@ -184,6 +195,20 @@ class GoogleLoginViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def _get_user(self, user_info: dict) -> User:
+        """
+        This methods calls the get_user() function and passes to it the data
+        that is required to get the user or create a new one.
+        """
+        username = user_info.get('email').split('@')[0].replace('.', '_').lower()
+        data = {
+            'username': username,
+            'email': user_info.get('email'),
+            'remote_id': 'GOOGLE-' + str(user_info.get('sub')),
+            'avatar_url': user_info.get('picture'),
+        }
+        return get_user(data)
+
     def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
@@ -195,13 +220,9 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info, 'google')
-        if not user:
-            return Response({'error': 'Email is already in use'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        user = self._get_user(user_info)
         if user.otp_active:
             generate_otp_for_user(user)
-            print(user.otp)
             send_otp_email(user)
             return Response({
                 'info': 'The verification code sent successfully',
@@ -287,6 +308,19 @@ class IntraLoginViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def _get_user(self, user_info: dict) -> User:
+        """
+        This methods calls the get_user() function and passes to it the data
+        that is required to get the user or create a new one.
+        """
+        data = {
+            'username': user_info.get('login'),
+            'email': user_info.get('email'),
+            'remote_id': 'INTRA-' + str(user_info.get('id')),
+            'avatar_url': user_info.get('image').get('link'),
+        }
+        return get_user(data)
+
     def list(self, request: Request) -> Response:
         """
         Authenticate with the authorization server and obtain user information.
@@ -297,11 +331,10 @@ class IntraLoginViewSet(viewsets.ViewSet):
                                                access_token)
         if status_code != 200:
             return Response(user_info, status=status_code)
-        user = get_user(user_info, 'intra')
+        user = self._get_user(user_info)
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
-            print(user.otp)
             return Response({
                 'info': 'The verification code sent successfully',
                 'code': user.code
@@ -373,9 +406,165 @@ class RegisterViewSet(viewsets.ViewSet):
         data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            user.email_verification_token = user.username + pyotp.random_base32()
+            user.save()
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            confirmation_url = (
+                'http://localhost:8000/api/accounts/confirm-email/'
+                f'?uid={uid}&token={user.email_verification_token}'
+            )
+            send_email_verification(user, confirmation_url)
+            return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConfirmEmailViewSet(viewsets.ViewSet):
+    """
+    A viewset for validating the user email.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def list(self, request: Request) -> Response:
+        """
+        Validate the token given in the url.
+        """
+        token = request.GET.get('token')
+        try:
+            uid = urlsafe_base64_decode(
+                request.GET.get('uid')
+            ).decode()
+        except ValueError:
+            return Response({'error': 'email validation failed'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        user = validate_token(uid, token)
+        if user:
+            user.email_verified = True
+            user.save()
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        return Response({'error': 'email validation failed'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetEmailViewSet(viewsets.ViewSet):
+    """
+    A viewset for sending an email for reseting the password.
+    """
+    permission_classes = [AllowAny]
+
+    def send_email(self, user: User, reset_url: str) -> None:
+        """
+        Send the email to the user with the url for reseting the password.
+        """
+        html_message = f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        background-color: #000;
+                        color: #333;
+                        margin: 0;
+                        padding: 0;
+                    }}
+                    .email-container {{
+                        background-color: #ffffff;
+                        border: 1px solid #ddd;
+                        padding: 20px;
+                        margin: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }}
+                    h1 {{
+                        color: #4CAF50;
+                    }}
+                    p {{
+                        font-size: 16px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <h1>Please confirm your Email</h1>
+                    <p>Click here to confirm your email:</p>
+                    <a href="{reset_url}"
+                    style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
+                        Confirm
+                    </a>
+                </div>
+            </body>
+        </html>
+        """
+        send_email(
+            user,
+            subject='Reset Password',
+            message='',
+            html_message=html_message
+        )
+
+
+    def create(self, request: Request) -> Response:
+        """
+        Send the email to let the user reset the password.
+        """
+        username = request.data.get('username')
+        email = request.data.get('email')
+        print(username)
+        print(email)
+        try:
+            user = User.objects.get(username=username, email=email)
+            token = PasswordResetTokenGenerator().make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = (
+                'http://localhost:8000/api/accounts/password-reset-confirm/'
+                f'?uid={uid}&token={token}'
+            )
+            self.send_email(user, reset_url)
+            return Response({
+                'message': 'Password reset email sent'
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({
+                'error': 'No such user with the given credentials'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordViewSet(viewsets.ViewSet):
+    """
+    A viewset for reseting the password.
+    """
+    permission_classes = [AllowAny]
+
+    def create(self, request: Request) -> None:
+        """
+        This method get the uid and the token from the url. If the uid and
+        the token are valid, a new password will be set for the user.
+        """
+        try:
+            uid = urlsafe_base64_decode(request.GET.get('uid')).decode()
+            token = request.GET.get('token')
+            user = User.objects.get(pk=uid)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response({
+                    'error': 'Invalid token'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        # urlsafe_base64_decode() might throw a ValueError if the uid is not
+        # valid
+        except (User.DoesNotExist, ValueError):
+            return Response({
+                'error': 'Invalid request'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        new_password = request.data.get('password')
+        if not new_password:
+            return Response({
+                'error': 'Password cannot be empty'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save()
+        return Response({
+            'message': 'Password reset successful'
+        }, status=status.HTTP_200_OK)
 
 
 class LogoutViewSet(viewsets.ViewSet):
@@ -393,7 +582,6 @@ class LogoutViewSet(viewsets.ViewSet):
         response = Response({'message': 'Logged out'})
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
-
 
 
 #################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
@@ -418,6 +606,7 @@ class UpdateUsernameView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UpdateUserDataView(APIView):
     """
@@ -479,7 +668,7 @@ class UpdateUserPasswordView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class DeleteUserAccountView(APIView):
     """
@@ -499,6 +688,7 @@ class DeleteUserAccountView(APIView):
         response = Response({"detail": "Your account has been successfully deleted."},status=status.HTTP_200_OK)
         response.delete_cookie(settings.AUTH_COOKIE)
         return response
+
 
 class UserDetailView(APIView):
     """
@@ -547,6 +737,7 @@ class GetIntraLink(APIView):
         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
         return Response(data, status=status.HTTP_200_OK)
 
+
 class GetGoogleLink(APIView):
     """
         get google link
@@ -592,6 +783,7 @@ class SendOTPView(APIView):
         except Exception as e:
             return Response({'error' : e.args[0]}, status=status.HTTP_200_OK)
 
+
 class checkValidOtp(APIView):
     """
      This view checks if the OTP entered by th user is valid(in setting)
@@ -609,3 +801,5 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
+
+

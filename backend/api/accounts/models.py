@@ -4,11 +4,11 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.contrib.postgres.fields import ArrayField
 from django.core.mail import send_mail
 from django.db import models
-from django.utils import timezone, tree
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import ArrayField
 
 # from ..friends.models import Friend
 
@@ -113,10 +113,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
-    # remote_id = models.CharField(max_length=100, blank=True, null=True, default="",
-    #     help_text=_(
-    #         'A unique Id for remote accounts (42 / google)'
-    # ))
     remote_id = ArrayField(
         models.CharField(max_length=100, blank=True, null=True, default="",
             help_text=_('A unique Id for remote accounts (42 / google)'
@@ -146,6 +142,10 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     register_complete = models.BooleanField(default=True)
     from_remote_api = models.BooleanField(default=False)
+
+    email_verification_token = models.CharField(max_length=40, default='')
+
+    email_verified = models.BooleanField(default=False)
 
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
