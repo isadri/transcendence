@@ -66,7 +66,7 @@ function Icons() {
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("data =========> ", data)
+      // console.log("data =========> ", data)
       setNotificationList((prev) => [data, ...prev]);
     };
     ws.onclose = () => {
@@ -77,7 +77,7 @@ function Icons() {
       ws.close();
     };
   }, [setNotificationList,notificationList, UnreadNotif, setUnreadNotif, isIconClicked]);
-  console.log("notf", notificationList)
+  // console.log("notf", notificationList)
   return (
     <>
     {

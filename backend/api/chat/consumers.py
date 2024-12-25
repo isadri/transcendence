@@ -19,10 +19,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"chat_room_of_{self.user.id}"
         self.isBlocked = False
         self.isBlockedPayload = None
-        print("++++++++", self.user.open_chat)
+        # print("++++++++", self.user.open_chat)
         self.user.open_chat = True
         await self.user.asave()
-        print("-------", self.user.open_chat)
+        # print("-------", self.user.open_chat)
 
         # Check if the user is authenticated
         if not self.user.is_authenticated:

@@ -327,7 +327,7 @@ class BlockedFriendRequestsView(APIView):
             ).first()
 
             if not blocked_request:
-                return Response({'blocked': False}, status=status.HTTP_200_OK)
+                return Response({'status': False}, status=status.HTTP_200_OK)
             blocker = blocked_request.blocked_by.id
             blocked = pk if blocker != pk else request.user.id
             return Response({

@@ -6,7 +6,7 @@ import ChatBottom from "./ChatBottom";
 // import moment from "moment";
 import axios from "axios";
 import {
-	getContext,
+	// getContext,
 	getUser,
 	getendpoint,
 } from "../../../context/getContextData";
@@ -15,7 +15,7 @@ import {
 	GetChats,
 	ChatMessage,
 } from "./context/ChatUseContext";
-import Alert from "../../../components/Alert/Alert";
+// import Alert from "../../../components/Alert/Alert";
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -86,7 +86,7 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 					selectedFriend={selectedFriend}
 					messagesUser={messagesUser}
 				/>
-				<ChatBottom selectedFriend={selectedFriend} ref={ref} />
+				<ChatBottom selectedFriend={selectedFriend} ref={ref} setSelectedFriend={setSelectedFriend} />
 			</div>
 		</>
 	);
