@@ -6,8 +6,8 @@ from .models import User
 
 class UserAdmin(BaseUserAdmin):
     list_display = [
-        'username', 'remote_id', 'register_complete', 'email_verified',
-        'email', 'from_remote_api', 'avatar'
+        'username', 'email', 'avatar', 'remote_id', 'register_complete', 'email_verified',
+         'from_remote_api'
     ]
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
