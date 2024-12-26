@@ -14,11 +14,15 @@ import Setting from '../Pages/Setting/Setting';
 // import Tictactoe from '../Pages/TicTacToe/Tictactoe';
 // import { Children } from 'react';
 import SideNavbar from '../components/sideNavbar/SideNavbar';
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import Global from '../components/globalComponent/global';
+import { createBrowserRouter, Navigate, Outlet, /*useNavigate*/ } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
+import Local from '../Pages/Game/Tournament/Local/Local';
+// import { getContext, getUser } from '../context/getContextData';
+// import { useEffect } from 'react';
 
 
 // isLogged  routing table and layout
@@ -60,6 +64,19 @@ const mainRoutingTable = [
         element: <Game />,
       },
       {
+        path: "/game/tournament/",
+        children:[
+          {
+            path: "/game/tournament/local",
+            element: <Local />,
+          },
+          {
+            path: "/game/tournament/remote",
+            element: <Game />,
+          },
+        ]
+      },
+      {
         path: "/game/local",
         element: <Play />,
       },
@@ -81,10 +98,28 @@ const mainRoutingTable = [
 ]
 
 function MainLayout() {
+  // const user = getUser()
+  // const context = getContext()
+
+  // const navigate = useNavigate()
+  // useEffect(() => {
+  //   if (!context) return
+  //   const {setIsLogged} = context
+  //   if (!user?.register_complete)
+  //   {
+  //     navigate('/Auth')
+  //     setIsLogged(false)
+  //     console.log("hello")
+  //   }
+  // }, [user])
   return (
     <>
       <SideNavbar/>
-      <Outlet/>
+  
+      <div className='mainContent'>
+        <Global/>
+        <Outlet/>
+      </div>
     </>
   )
 }

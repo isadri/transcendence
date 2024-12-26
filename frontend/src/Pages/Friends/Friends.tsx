@@ -4,10 +4,13 @@ import AllFriends from "./components/AllFriends.tsx";
 import FriendRequests from "./components/FriendRequests.tsx";
 import AddFriends from "./components/AddFriends.tsx";
 import BlockedFriends from "./components/BlockedFriends.tsx";
-
+import CancelFriends from "./components/CancelFriends.tsx";
+import Alert from "../../components/Alert/Alert.tsx";
+import { getContext } from "../../context/getContextData.tsx";
 
 const Friends = () => {
 	const [activeSection, setActiveSection] = useState("allFriends");
+	const account = getContext();
 
 	return (
 		<div className="Friend-Container">
@@ -49,13 +52,28 @@ const Friends = () => {
 					>
 						Blocked Friend
 					</li>
+					<li
+						className={`${
+							activeSection == "cancelFriends" ? "selectedItem" : ""
+						}`}
+						onClick={() => {
+							setActiveSection("cancelFriends");
+						}}
+					>
+						Cancel Friend
+					</li>
 				</ul>
 			</div>
 			<div className="bodyFriends">
-				{activeSection === "allFriends" && <AllFriends/>}
-				{activeSection === "friendRequests" && <FriendRequests/>}
-				{activeSection === "addFriends" && <AddFriends/>}
-				{activeSection === "blockedFriends" && <BlockedFriends/>}
+				<Alert primaryColor="#d42f2f" secondaryColor="white">
+					<i className="fa-solid fa-circle-exclamation"></i>
+					<span>{account?.createdAlert}</span>
+				</Alert>
+				{activeSection === "allFriends" && <AllFriends />}
+				{activeSection === "friendRequests" && <FriendRequests />}
+				{activeSection === "addFriends" && <AddFriends />}
+				{activeSection === "blockedFriends" && <BlockedFriends />}
+				{activeSection === "cancelFriends" && <CancelFriends />}
 			</div>
 		</div>
 	);

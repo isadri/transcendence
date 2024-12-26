@@ -56,12 +56,21 @@ const ListChat = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 		<div className="chat-list">
 			<div className="chat-container">
 				<div>Messages</div>
-				<img
-					src="/ChatImages/newChat.svg"
-					alt="New Chat"
-					className="newChat"
-					onClick={() => setListAllFriends((prev) => !prev)}
-				/>
+				{!listAllFriends ? (
+					<img
+						src="/ChatImages/newChat.svg"
+						alt="New Chat"
+						className="newChat"
+						onClick={() => setListAllFriends((prev) => !prev)}
+					/>
+				) : (
+					<img
+						src="/ChatImages/Vector.png"
+						alt="New Chat"
+						className="newChat"
+						onClick={() => setListAllFriends((prev) => !prev)}
+					/>
+				)}
 			</div>
 			<div className="chat-search">
 				<div className="chat-search-container">
@@ -86,18 +95,19 @@ const ListChat = ({ friends, onSelectFriend, selectedFriend }: ListProps) => {
 					/>
 				</div>
 			</div>
-			{searchFriend && results.length === 0 && (
+			{searchFriend && results.length === 0 ? (
 				<div className="NotFoundChat">No results found for your search.</div>
+			) : (
+				<ChatList
+					friends={searchFriend ? results : friends}
+					onSelectFriend={onSelectFriend}
+					selectedFriend={selectedFriend}
+					setSearchFriend={setSearchFriend}
+					setFocusOnSearch={setFocusOnSearch}
+					listAllFriends={listAllFriends}
+					setListAllFriends={setListAllFriends}
+				/>
 			)}
-			<ChatList
-				friends={searchFriend ? results : friends}
-				onSelectFriend={onSelectFriend}
-				selectedFriend={selectedFriend}
-				setSearchFriend={setSearchFriend}
-				setFocusOnSearch={setFocusOnSearch}
-				listAllFriends={listAllFriends}
-				setListAllFriends={setListAllFriends}
-			/>
 		</div>
 	);
 };

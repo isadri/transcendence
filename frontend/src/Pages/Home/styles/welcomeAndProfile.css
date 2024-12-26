@@ -117,7 +117,7 @@
     object-fit: cover;
 }
 
-.Home-ProfImg a span{
+.Home-ProfImg  span{
     position: relative;
     left: 15px;
     cursor: pointer;

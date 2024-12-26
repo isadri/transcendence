@@ -1,0 +1,73 @@
+.tournament-list {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	/* justify-items: center; */
+	align-items: center;
+	text-align: center;
+	gap: 20px;
+	position: relative;
+	border-radius: 20px;
+	/* background-color: var(--fade); */
+	font-family: var(--sans);
+	margin: auto;
+}
+
+.tournament-list h2 {
+	color: var(--primary);
+	position: relative;
+	bottom: 60px;
+}
+
+.tournament-list .tournament-players {
+	padding: 20px;
+	background-color: var(--fade);
+	/* max-width: 4500px; */
+	width: 100%;
+	height: 300px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 50px;
+	border-radius: 25px;
+}
+
+.tournament-list .tournament-players .first-two-match {
+	display: flex;
+	flex-direction: row;
+	gap: 50px;
+}
+
+.tournament-list .tournament-match {
+	max-width: 210px;
+	width: 100%;
+	background-color: #665c5e;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 22px;
+	border-radius: 13px;
+	height: 50px;
+	padding: 10px;
+}
+.tournament-list .tournament-match:nth-child(3) {
+	max-width: 95px;
+	border-radius: 10px;
+	height: 40px;
+	/* padding: 5px; */
+	width: 100%;
+}
+
+.tournament-list .start-btn {
+	padding: 10px;
+	max-width: 80px;
+	width: 100%;
+	text-align: center;
+	border: none;
+	font-size: 14px;
+	border-radius: 11px;
+	background-color: var(--primary);
+	color: white;
+	cursor: pointer;
+}

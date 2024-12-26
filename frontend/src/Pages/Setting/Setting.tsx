@@ -4,7 +4,7 @@ import ava from "./images/default.jpeg"
 import { useEffect, useState } from "react";
 import { getContext, getUser, getendpoint } from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
-import { verify } from "crypto";
+
 
 interface Data {
   username: string | undefined;
@@ -18,16 +18,17 @@ interface Data {
 
 const Setting = () => {
   const authContext = getContext()
+  const user = getUser();
   const navigate = useNavigate();
-  const [myAlert, SetMyAlert] = useState(false)
-  const [showAlert, setShowAlert] = useState(false);
-  const [showOtpAlert, SetshowOtpAlert] = useState(false)
-  const [createdAlert, setcreatedAlert] = useState<string>("")
-  const [otpcode, setOtpCode] = useState('')
-  const [isOtpActive, setIsOtpActive] = useState(false)
-  const [Verified, setVerified] = useState(0)
-
-  const [confirm, SetConfirm] = useState(1)
+  const [myAlert, SetMyAlert] = useState(false) // alert confirm or cancel deleting account 
+  const [showAlert, setShowAlert] = useState(false); // show alert of cancel deleting account
+  const [showOtpAlert, SetshowOtpAlert] = useState(false) // otp alert
+  const [createdAlert, setcreatedAlert] = useState<string>("") //cancel deleting alert content
+  const [otpcode, setOtpCode] = useState('') //code entred by the user
+  const [Verified, setVerified] = useState(0) // otp valid => done alert, otp invalid try agin alert
+  const [confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
+  const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
+  const [isOtpDisactive, setIsOtpDisactive] = useState(false)
   const [errors, SetErrors] = useState<Data>({
     username: "",
     email: "",
@@ -35,11 +36,8 @@ const Setting = () => {
     CurrentPassword: "",
     password: "",
     confirmPassword: "",
-  });
-  const context = getContext();
-  const user = getUser();
-  const [IsRemove, SetIsRemove] = useState(false);
-  const [dataUpdated, SetDataUpdated] = useState<Data>({
+  }); //errors 
+  const [dataUpdated, SetDataUpdated] = useState<Data>({ // user data updated
     username: user?.username,
     email: user?.email,
     avatar: "",
@@ -48,31 +46,8 @@ const Setting = () => {
     confirmPassword: "",
   });
 
-  const handelDeleteAccount = (state: string) =>{
-    setShowAlert(true)
-    if (state === "confirm")
-    {
-      authContext?.setDisplayed(2);
-    }
-    else
-      SetConfirm(3)
-  axios
-    .delete(getendpoint("http", "/api/accounts/deleteUser/"), {
-      data: {confirm: state === "confirm" ?  "yes" : "no" },
-      withCredentials: true,
-    })
-    .then((response) =>{
-      authContext?.setCreatedAlert(response.data.detail);
-      authContext?.setIsLogged(false)
-      navigate('/')
-    })
-    .catch((error) => {
-        SetMyAlert(false)
-        setcreatedAlert(error.response.data.detail)
-    })
-  }
 
-  
+  // handel setting data changed username, email, password and avatar
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     SetDataUpdated({ ...dataUpdated, [name]: value });
@@ -109,7 +84,7 @@ const Setting = () => {
         withCredentials: true,
       })
       .then((response) => {
-        context?.setUser(response.data);
+        authContext?.setUser(response.data);
         SetErrors({ ...errors, username: "", email: "", avatar: "" });
       })
       .catch((error) => {
@@ -143,6 +118,7 @@ const Setting = () => {
         SetErrors(error.response.data);
       });
   };
+
   const handelChangeButton = () => {
     const fileInput = document.getElementById("file-input");
     if (fileInput) {
@@ -158,78 +134,93 @@ const Setting = () => {
     });
   };
   
+  //  delete account handling
+  const handelDeleteAccount = (state: string) =>{
+    setShowAlert(true)
+    if (state === "confirm")
+    {
+      authContext?.setDisplayed(2);
+    }
+    else
+      SetConfirm(3)
+  axios
+    .delete(getendpoint("http", "/api/accounts/deleteUser/"), {
+      data: {confirm: state === "confirm" ?  "yes" : "no" },
+      withCredentials: true,
+    })
+    .then((response) =>{
+      authContext?.setCreatedAlert(response.data.detail);
+      authContext?.setIsLogged(false)
+      navigate('/')
+    })
+    .catch((error) => {
+        SetMyAlert(false)
+        setcreatedAlert(error.response.data.detail)
+    })
+  }
+  
+  // handel otp activation
+  
+  const disableOtp = () => {
+    const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
+    checkbox.checked = false
+    SetshowOtpAlert(false);
+    setIsOtpDisactive(true)
+    axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: false}, {withCredentials: true})
+  }
   const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      console.log("OTP Enabled");
       SetshowOtpAlert(true);
-      sendOtpRequest();
+      axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: true}, {withCredentials: true})
     } else {
-      console.log("OTP Disabled");
-      SetshowOtpAlert(false);
+      disableOtp()
     }
-  };
-
-  const sendOtpRequest = () => {
-    axios.post(getendpoint("http", "/api/accounts/SendOTPView/"),{}, {withCredentials: true})
-    .then(response => {
-      // setOtpCodeVerify(response.data.otp)
-      console.log(response.data.message)
-    })
   };
   
   const handelVerifyCode = () => {
     axios.post(getendpoint("http", "/api/accounts/checkValidOtp/"), {key : otpcode}, {withCredentials: true})
-      .then(response => {
+      .then(() => {
         setVerified(2)
-        console.log(response.data.message)
       })
-      .catch(error => {
+      .catch(() => {
         setVerified(1)
-        console.log(error.response.error)
       })
-    // console.log("code send on email => ", otpcodeVerify)
-    // console.log("code entred by user => ", otpcode)
-      // if (otpcodeVerify === otpcode)
-      // else
-      //   setVerified(1)
   }
   
   const handelActiveOTP = () => {
-    const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
-    checkbox.checked = true;
     SetshowOtpAlert(false)
     setVerified(0)
   }
 
   useEffect(() => {
-    axios.get(getendpoint("http", "/api/accounts/SendOTPView/"), {withCredentials: true})
+    axios.get(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}`), {withCredentials: true})
     .then((response) => {
-      console.log("is otp active => ", response.data)
+      const checkbox = document.getElementById('otpToggle') as HTMLInputElement
       if (response.data === true)
-      {
-        const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
-        checkbox.checked = true;
-        setIsOtpActive(true)
-      }
-      else{
-        const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
-        checkbox.checked = false;
-        setIsOtpActive(false)
-      }
+        checkbox.checked = true
+      else
+        checkbox.checked = false
     })
     if (showAlert) {
       setTimeout(() => {
         SetConfirm(1);
+        setIsOtpDisactive(false)
       }, 900);
     }
-  }, [showAlert, Verified]);
-  
+    setTimeout(() => {
+      setIsOtpDisactive(false)
+    }, 900);
+  }, [showAlert, Verified, setIsOtpDisactive, isOtpDisactive]);
 
   return (
     <>
       <div className={`alert-acountNotDeleted ${confirm === 3 ? "show" : "hide"}`}>
           <i className="fa-solid fa-circle-exclamation"></i>
           <span>{createdAlert}</span>
+      </div>
+      <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>
+          <i className="fa-solid fa-circle-exclamation"></i>
+          <span>Two-Factor Authentication disabled</span>
       </div>
       <div className="Par">
         <div className="settingPage">
@@ -391,6 +382,9 @@ const Setting = () => {
               {
                 Verified === 0 ?
                 <div className="alertDeleteUser alertOTP">
+                  <div className="cancelIcon">
+                    <i className="fa-solid fa-xmark" onClick={disableOtp}></i>
+                  </div>
                   <div className="contentOtp">
                     <div className="iconEmail">
                     <i className="fa-solid fa-envelope-open-text"></i>
@@ -399,7 +393,8 @@ const Setting = () => {
                     <div className="content-text">
                       <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
                       <span>A verification code has been sent to your email. Please check your inbox.</span>
-                      <input type="text" placeholder="Enter Code" value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
+                      <input type="text" placeholder="Enter Code" 
+                      value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
                     </div>
                     <div className="Codefiled">
                       <button type="submit" onClick={handelVerifyCode}>Verify</button>
@@ -414,7 +409,7 @@ const Setting = () => {
                     <h3>Two-factor authentication failed!</h3>
                     <span>The code you entered is invalid. Please try again.</span>
                     <div className="Codefiled">
-                      <button type="submit" className="failbutton" >TRY AGAIN</button>
+                      <button type="submit" className="failbutton" onClick={handelActiveOTP}>TRY AGAIN</button>
                     </div>
                   </div>
                 </div>

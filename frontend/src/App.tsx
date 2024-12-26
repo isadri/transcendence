@@ -1,5 +1,5 @@
 import BackGround from './components/background/BackGround'
-import {RouterProvider} from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import './App.css'
 
 import {useEffect, useState } from 'react';
@@ -15,15 +15,17 @@ const emptyUser = {
   id : -1,
   username : "",
   email : "",
-  avatar : ""
+  avatar : "",
+  register_complete: true,
+  from_remote_api: false
 }
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
-  let [user, setUser] = useState<userDataType>(emptyUser)
-  // const hostname = window.location.hostname
+  let [user, setUser] = useState<userDataType | undefined>(emptyUser)
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
+
   useEffect(() => {
     axios.get(getendpoint('http', "/"), {withCredentials:true})
     .then((response:any) => {
@@ -34,7 +36,8 @@ function App() {
       setIsLogged(false)
       setUser(emptyUser)
     })
-  },[setIsLogged]) 
+  },[setIsLogged])
+
   if (isLogged == null)
     return <></>
   return (

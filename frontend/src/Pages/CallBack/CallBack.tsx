@@ -1,14 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getContext, getendpoint } from '../../context/getContextData'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
-import { log } from 'three/webgpu'
+import Alert from '../../components/Alert/Alert'
 
 function CallBack() {
   const authContext = getContext()
   const navigate = useNavigate()
-
+  const [usernameAlert, setUsernameAlert] = useState(false)
+  const [showOtpAlert, SetshowOtpAlert] = useState(false) // otp alert
+  const [username, setUsername] = useState('')
+  const [userCode, setUserCode] = useState('')
+  const [otpcode, setOtpCode] = useState('')
   const GetUserInfo = () =>{
     axios.get(getendpoint("http", '/'),  {withCredentials:true})
     .then((response) => {
@@ -21,23 +25,31 @@ function CallBack() {
     })
   }
   const {from} = useParams()
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    console.log("from ==========> ", from);
-
+  const handelLogin = async (code: string | null) => {
     if (code)
     {
         if (from === "intra")
         {
+          var url = getendpoint("http", '/api/accounts/login/intra')
           axios
-            .get(getendpoint("http", '/api/accounts/login/intra'), {params: { code: code }, withCredentials: true })
-            .then((response) => {
-                setTimeout(() => {
-                    authContext?.setIsLogged(true)
-                    navigate('/')
-                    GetUserInfo()
-                }, 2000);
+          .get(url, {params: { code: code }, withCredentials: true })
+          .then((response) => {
+            console.log(response.data.info)
+            if (response.data.info && response.data.code){
+              setUserCode(response.data.code)
+              SetshowOtpAlert(true)
+            }
+            else if (response.data.info){
+              authContext?.setUser(response.data)
+              setUsernameAlert(true)
+            }
+            else{
+              setTimeout(() => {
+                GetUserInfo()
+                authContext?.setIsLogged(true)
+                navigate('/')
+              }, 2000);
+            }
                 console.log('Success:', response.data)
               })
               .catch((error) => {
@@ -50,13 +62,24 @@ function CallBack() {
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
-                  setTimeout(() => {
+                console.log(response.data.info)
+                if (response.data.info && response.data.code){
+                  setUserCode(response.data.code)
+                  SetshowOtpAlert(true)
+                }
+                else if (response.data.info){
+                  authContext?.setUser(response.data)
+                  setUsernameAlert(true)
+                  }
+                  else{
+                    setTimeout(() => {
+                      GetUserInfo()
                       authContext?.setIsLogged(true)
                       navigate('/')
-                      GetUserInfo()
-                  }, 2000);
-                  console.log('Success:', response.data)
-                })
+                    }, 2000);
+                  }
+                    console.log('Success:', response.data)
+                  })
                 .catch((error) => {
                   authContext?.setIsLogged(false),
                 console.error('Error:', error.response ? error.response.data : error.message);
@@ -65,11 +88,113 @@ function CallBack() {
     } else {
       console.error('error');
     }
+  }
+
+  const hadelSaveUsername = () => {
+    axios
+      .put(getendpoint("http", "/api/accounts/updateUsername/"), {username}, {
+        withCredentials: true,
+      })
+      .then((response) => {
+          console.log("gg => ", response.data)
+          GetUserInfo()
+          authContext?.setIsLogged(true)
+          navigate('/')
+          authContext?.setUser(response.data)
+      })
+      .catch((error)=> {
+        authContext?.setDisplayed(2);
+        authContext?.setCreatedAlert(error.response.data.username[0]);
+        console.log(error.response.data.username[0])
+      })
+  }
+
+  const handelVerifyCode = () =>{
+    axios
+      .post(getendpoint("http", "/api/accounts/verify-otp/"),
+      {key: otpcode, code: userCode},
+      {withCredentials : true})
+      .then(() => {
+        GetUserInfo()
+        authContext?.setIsLogged(true)
+        navigate('/')
+        SetshowOtpAlert(false)
+      })
+      .catch(error => {
+        authContext?.setDisplayed(2)
+        authContext?.setCreatedAlert(error.response.data.error);
+        SetshowOtpAlert(false)
+        navigate('/Auth')
+      })
+  }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    console.log("from ==========> ", from);
+    handelLogin(code)
+    console.log(usernameAlert)
   }, [authContext, navigate]);
 
   return (
     <div className="loader-container">
+      <Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
+       {/* <i className="fa-solid fa-circle-exclamation"></i> */}
+        <span>{authContext?.createdAlert}</span>
+      </Alert>
+      {
+        usernameAlert || showOtpAlert ?
+        (
+          usernameAlert ?
+          <div className="GameModePopUpBlur">
+            <div className="alertDeleteUser alertOTP userAlert">
+              <div className="contentOtp">
+                <div className="iconEmail">
+                <i className="fa-solid fa-user-pen"></i>
+                <span></span>
+                </div>
+                <div className="content-text auth-alert username-Alert">
+                  <h3>Update Your Username</h3>
+                  <span>Please ensure your username complies with our policy. It must be
+                    alphanumeric and between 3-15 characters. If valid, click "Confirm" to
+                    continue.</span>
+                  <input className='inputt' type="text" placeholder="Enter Username"
+                        value={username} onChange={e => setUsername(e.target.value)}/>
+                </div>
+                <div className="Codefiled">
+                  <button type="submit" onClick={hadelSaveUsername}>Confirm</button>
+                </div>
+              </div>
+            </div>
+            </div>
+            :
+          <div className="GameModePopUpBlur">
+             <div className="alertDeleteUser alertOTP">
+               <div className="cancelIcon">
+                 <i className="fa-solid fa-xmark" 
+                 onClick={() => {SetshowOtpAlert(false), navigate('/Auth')}}></i>
+               </div>
+               <div className="contentOtp">
+                 <div className="iconEmail">
+                 <i className="fa-solid fa-envelope-open-text"></i>
+                 <span></span>
+                 </div>
+                 <div className="content-text">
+                   <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
+                   <span>A verification code has been sent to your email. Please check your inbox.</span>
+                   <input className='inputt' type="text" placeholder="Enter Code" 
+                     value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
+                 </div>
+                 <div className="Codefiled">
+                   <button type="submit" onClick={handelVerifyCode} >Verify</button>
+                 </div>
+               </div>
+             </div>
+            </div>
+        )
+        :
         <div className="ripple"></div>
+      }
     </div>
   )
 }

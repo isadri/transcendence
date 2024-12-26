@@ -1,12 +1,14 @@
 from typing import Optional
+import uuid
 from django.apps import apps
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.contrib.postgres.fields import ArrayField
 from django.core.mail import send_mail
 from django.db import models
-from django.utils import timezone, tree
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ..friends.models import FriendList
@@ -107,9 +109,21 @@ class User(PermissionsMixin, AbstractBaseUser):
         )
     )
     date_joined = models.DateTimeField(default=timezone.now)
+    code = models.CharField(max_length=70, blank=True, null=True) # for OTP verfiy request
     seed = models.CharField(max_length=40, blank=True, null=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
+
+    remote_id = ArrayField(
+        models.CharField(max_length=100, blank=True, null=True, default="",
+            help_text=_('A unique Id for remote accounts (42 / google)'
+        )),
+        blank=True,             # Allow the field to be empty
+        default=list,
+        help_text=_(
+            'array of A unique Id for remote accounts (42 / google ) to link both google and intra'
+        )
+    )
 
     otp_active =models.BooleanField(
         default=False,
@@ -125,6 +139,14 @@ class User(PermissionsMixin, AbstractBaseUser):
     )
 
     active_chat = models.IntegerField(default=-1)
+    open_chat = models.BooleanField(default=False)
+
+    register_complete = models.BooleanField(default=True)
+    from_remote_api = models.BooleanField(default=False)
+
+    email_verification_token = models.CharField(max_length=40, default='')
+
+    email_verified = models.BooleanField(default=False)
 
     # Add friends field
     # friends = models.ManyToManyField('self', symmetrical=True, blank=True)

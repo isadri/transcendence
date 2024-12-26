@@ -11,12 +11,6 @@
 	display: none;
 }
 
-.Home-searchAndIcons {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-}
 
 .Home-welcome {
 	display: flex;

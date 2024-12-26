@@ -1,7 +1,7 @@
 .searchFriend {
 	display: flex;
 	justify-content: center;
-	padding: 4vh 0 2vh;
+	padding: 2vh 0 2vh;
 }
 
 .searchfrienContainer {
@@ -69,7 +69,7 @@
 	flex-direction: row;
 }
 
-.friendProfile .iconFriend .user {
+/* .friendProfile .iconFriend .user {
 	margin-right: 10px;
 	cursor: pointer;
 }
@@ -84,4 +84,27 @@
 
 .friendProfile .iconFriend .chat:hover {
 	color: var(--primary);
+} */
+
+.friendProfile .iconFriend .block {
+	text-align: center;
+	border: none;
+	margin-right: 15px;
+	padding: 5% 1vh;
+	font-size: 14px;
+	border-radius: 8px;
+	background-color: #c1596c99;
+	color: white;
+	cursor: pointer;
+}
+.friendProfile .iconFriend .remove {
+	text-align: center;
+	border: none;
+	margin-right: 15px;
+	padding: 5% 1vh;
+	font-size: 14px;
+	border-radius: 8px;
+	background-color: #808080;
+	color: white;
+	cursor: pointer;
 }

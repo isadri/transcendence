@@ -1,6 +1,7 @@
 // import ProfileImg from "../images/profile.svg";
 import Cbadge from "../images/CourentBadge.svg";
 import { getUser, getendpoint } from "../../../context/getContextData";
+import { Link } from "react-router-dom";
 // line 14 check emergncy
 function Profile() {
   const user = getUser()
@@ -9,12 +10,12 @@ function Profile() {
     return (
       <div className="Home-profile">
         <div className="Home-ProfImg">
-          <a href="profile" className="img">
+          <Link to="/profile" className="img">
             <img src={getendpoint("http", user?.avatar)} alt="" />
-          </a>
-          <a href="profile">
+          </Link>
+          <Link to="/profile">
             <span>{user?.username}</span>
-          </a>
+          </Link>
         </div>
         <div className="Home-user">
           <img src={Cbadge} alt="" />

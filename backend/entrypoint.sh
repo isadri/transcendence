@@ -6,7 +6,7 @@ if [ ! -d /code/static ]; then
 fi;
 
 echo "Running database migrations"
-python manage.py makemigrations --noinput accounts chat friends game #notifications
+python manage.py makemigrations --noinput accounts chat friends game notifications
 python manage.py migrate
 
 if [ -z "$DJANGO_SUPERUSER_USERNAME" ]; then
@@ -34,4 +34,5 @@ if not get_user_model().objects.filter(username=username).exists():
 
 EOF
 
-exec "$@" 
+python manage.py runserver 0:8000
+

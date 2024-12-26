@@ -1,0 +1,118 @@
+.Local-page-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	/* justify-items: center; */
+	align-items: center;
+	text-align: center;
+	gap: 20px;
+	position: relative;
+	border-radius: 20px;
+	background-color: var(--fade);
+	font-family: var(--sans);
+	padding: 20px;
+	margin: auto;
+	/* min-height: 100vh; */
+	/* box-sizing: border-box; */
+}
+
+.Local-page-container .top-local-tournament {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	padding-right: 23px;
+	gap: 25px;
+	/* justify-content: center; */
+}
+
+.Local-page-container .Local-page-title {
+	color: var(--primary);
+}
+
+.Local-page-container .arrow-local {
+	font-size: 23px;
+	cursor: pointer;
+}
+
+.players-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	gap: 10px;
+	max-width: 211px;
+	width: 100%;
+}
+
+.players-container > div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 auto;
+	/* max-width: 211px; */
+	height: 45px;
+	width: 100%;
+	background-color: rgba(217, 217, 217, 0.15);
+	border-radius: 10px;
+	padding: 11px;
+}
+
+.players-container .remove {
+	color: #e53333;
+	cursor: pointer;
+}
+
+.Local-page-container .add-player-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	max-width: 250px;
+	width: 100%;
+	/* padding: 14px; */
+}
+
+.Local-page-container .add-player {
+	width: 100%;
+	background-color: rgba(217, 217, 217, 0.302);
+	border: none;
+	outline: none;
+	padding: 14px;
+	color: white;
+	border-radius: 10px 0 0 10px;
+}
+
+.Local-page-container .add-player::placeholder {
+	color: white;
+	font-size: 14px;
+}
+.Local-page-container .save {
+	padding: 14px;
+	background-color: var(--primary);
+	border-radius: 0 10px 10px 0;
+	cursor: pointer;
+}
+
+.Local-page-container .start-btn {
+	padding: 10px;
+	max-width: 100px;
+	width: 100%;
+	text-align: center;
+	border: none;
+	/* margin-right: 15px;
+	padding: 5% 1vh; */
+	font-size: 14px;
+	border-radius: 8px;
+	background-color: var(--primary);
+	color: white;
+	cursor: pointer;
+}
+
+.error-message {
+	color: red;
+	font-size: 12px;
+	/* margin-top: 5px; */
+}
