@@ -11,6 +11,14 @@ interface GameModePopUpProps {
 
 function GameModePopUp({mode, setter}:GameModePopUpProps) {
   const navigator = useNavigate()
+
+
+  const getModeLink = () => {
+    if (mode === 1)
+      navigator("/game/warmup/random")
+    else if (mode === 3)
+      navigator("/game/warmup/friends")
+  }
   return (
     <>
     <div className="GameModePopUpBlur">
@@ -20,14 +28,14 @@ function GameModePopUp({mode, setter}:GameModePopUpProps) {
 
         </i>
         <div className="GameModePopUpBoxTitle">
-          <h2>Game modes</h2>
+          <h2>Game modes</h2> 
         </div> 
         <div className="GameModePopUpGroup">
         <div className="GameModePopUpTournament">
           <img src={TImage} />
           <h3>Tournament</h3>
         </div>
-        <div className="GameModePopUp1vs1" onClick={() => navigator("/game/warmup")}>
+        <div className="GameModePopUp1vs1" onClick={getModeLink}>
           <img src={SImage} />
           <h3>1v1</h3>
         </div>

@@ -16,14 +16,14 @@ const ModesData = [
     {
         id: 2,
         image: AMode,
-        title: "Bot Mode",
-        text: "Computer Challenge",
+        title: "Local Mode",
+        text: "play in local computer",
     },
     {
         id: 3,
         image: FMode,
         title: "Friends Mode",
-        text: "start play with your friends",
+        text: "Start play with your friends",
     },
 ];
 
