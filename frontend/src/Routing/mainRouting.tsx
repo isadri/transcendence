@@ -20,6 +20,7 @@ import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
+import Local from '../Pages/Game/Tournament/Local/Local';
 // import { getContext, getUser } from '../context/getContextData';
 // import { useEffect } from 'react';
 
@@ -61,6 +62,19 @@ const mainRoutingTable = [
       {
         path: "/game/",
         element: <Game />,
+      },
+      {
+        path: "/game/tournament/",
+        children:[
+          {
+            path: "/game/tournament/local",
+            element: <Local />,
+          },
+          {
+            path: "/game/tournament/remote",
+            element: <Game />,
+          },
+        ]
       },
       {
         path: "/game/local",
