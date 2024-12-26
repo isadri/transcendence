@@ -60,28 +60,28 @@ const mainRoutingTable = [
     path: "/game",
     children:[
       {
-        path: "/game/",
+        path: "",
         element: <Game />,
       },
       {
-        path: "/game/tournament/",
+        path: "tournament",
         children:[
           {
-            path: "/game/tournament/local",
+            path: "local",
             element: <Local />,
           },
           {
-            path: "/game/tournament/remote",
+            path: "remote",
             element: <Game />,
           },
         ]
       },
       {
-        path: "/game/local",
+        path: "local",
         element: <Play />,
       },
       {
-        path: "/game/remote/:id",
+        path: "remote/:id",
         element: <Remote />,
       },
       {
@@ -98,20 +98,6 @@ const mainRoutingTable = [
 ]
 
 function MainLayout() {
-  // const user = getUser()
-  // const context = getContext()
-
-  // const navigate = useNavigate()
-  // useEffect(() => {
-  //   if (!context) return
-  //   const {setIsLogged} = context
-  //   if (!user?.register_complete)
-  //   {
-  //     navigate('/Auth')
-  //     setIsLogged(false)
-  //     console.log("hello")
-  //   }
-  // }, [user])
   return (
     <>
       <SideNavbar/>
