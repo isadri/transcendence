@@ -22,9 +22,8 @@
 	justify-content: space-around;
 	align-items: center;
 	padding-right: 23px;
-    gap: 25px;
+	gap: 25px;
 	/* justify-content: center; */
-
 }
 
 .Local-page-container .Local-page-title {
@@ -62,7 +61,7 @@
 }
 
 .players-container .remove {
-	color: #E53333;
+	color: #e53333;
 	cursor: pointer;
 }
 
@@ -75,7 +74,6 @@
 	width: 100%;
 	/* padding: 14px; */
 }
-
 
 .Local-page-container .add-player {
 	width: 100%;
@@ -95,11 +93,12 @@
 	padding: 14px;
 	background-color: var(--primary);
 	border-radius: 0 10px 10px 0;
+	cursor: pointer;
 }
 
-.Local-page-container .start-btn{
+.Local-page-container .start-btn {
 	padding: 10px;
-    max-width: 100px;
+	max-width: 100px;
 	width: 100%;
 	text-align: center;
 	border: none;
@@ -107,7 +106,13 @@
 	padding: 5% 1vh; */
 	font-size: 14px;
 	border-radius: 8px;
-	background-color: #c1596c99;
+	background-color: var(--primary);
 	color: white;
 	cursor: pointer;
+}
+
+.error-message {
+	color: red;
+	font-size: 12px;
+	/* margin-top: 5px; */
 }

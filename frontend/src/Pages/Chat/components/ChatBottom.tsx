@@ -28,7 +28,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const { block, sendMessage, setBlock } = useChatContext();
 		const user = getUser();
 		const authContext = getContext();
-		const [update, setUpdate] = useState(false)
+		const [update, setUpdate] = useState(false);
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
 				if (
@@ -55,14 +55,16 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 			} else {
 				friend_id = selectedFriend.user1.id;
 			}
-			if (block.status && (friend_id == block.blocked || friend_id == block.blocker)) {
+			if (
+				block.status &&
+				(friend_id == block.blocked || friend_id == block.blocker)
+			) {
 				selectedFriend.is_blocked = block.status;
-			}
-			else {
+			} else {
 				selectedFriend.is_blocked = false;
 			}
 			setSelectedFriend(selectedFriend);
-			setUpdate(block.status)
+			setUpdate(block.status);
 			// const updatedFriend = { ...selectedFriend, is_blocked: block.status };
 			// setSelectedFriend(updatedFriend);
 			// forceReRender()
@@ -96,10 +98,9 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 					selectedFriend.is_blocked = false;
 				}
 
-				if (selectedFriend.is_blocked)
-				{
-					setSelectedFriend({...selectedFriend});
-					return
+				if (selectedFriend.is_blocked) {
+					setSelectedFriend({ ...selectedFriend });
+					return;
 				}
 				// addded by jhamza
 				sendMessage({
