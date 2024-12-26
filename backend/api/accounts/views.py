@@ -90,10 +90,10 @@ class LoginViewSet(viewsets.ViewSet):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user:
-            if not user.email_verified:
-                return Response({
-                    'error': 'You need to verify your email.'
-                }, status=status.HTTP_400_BAD_REQUEST)
+            # if not user.email_verified:
+            #     return Response({
+            #         'error': 'You need to verify your email.'
+            #     }, status=status.HTTP_400_BAD_REQUEST)
             login(request, user)
             refresh_token, access_token = get_tokens_for_user(user)
             response = Response({
@@ -407,15 +407,15 @@ class RegisterViewSet(viewsets.ViewSet):
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
-            user.email_verification_token = user.username + pyotp.random_base32()
-            user.save()
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            confirmation_url = (
-                'http://localhost:8000/api/accounts/confirm-email/'
-                f'?uid={uid}&token={user.email_verification_token}'
-            )
-            send_email_verification(user, confirmation_url)
-            return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
+            # user.email_verification_token = user.username + pyotp.random_base32()
+            # user.save()
+            # uid = urlsafe_base64_encode(force_bytes(user.pk))
+            # confirmation_url = (
+            #     'http://localhost:8000/api/accounts/confirm-email/'
+            #     f'?uid={uid}&token={user.email_verification_token}'
+            # )
+            # send_email_verification(user, confirmation_url)
+            # return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
