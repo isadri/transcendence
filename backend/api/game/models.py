@@ -1,8 +1,8 @@
 from django.db import models
-from ..accounts.models import User
+from django.contrib.auth import get_user_model
+from django.utils.timezone import now, timedelta
 
-# Create your models here.
-
+User = get_user_model()
 
 
 class Game(models.Model):
@@ -25,6 +25,9 @@ class Game(models.Model):
     blank=True,
     null=True,
   )
+
+  def __str__(self) -> str:
+    return f"{self.pk} => {self.progress}:{self.player1} [{self.p1_score} vs {self.p2_score}] {self.player2}"
 
   def setAsStarted(self):
     if self.progress != 'P':
@@ -65,3 +68,45 @@ class Game(models.Model):
       pass
     self.winner = self.player1 if self.player1.username == winner else self.player2
     self.save()
+
+
+
+class GameInvite(models.Model):
+
+  INVITE_STATE = [
+        ('P', 'Pending'),
+        ('A', 'Accepted'),
+        ('D', 'Declined'),
+        ('E', 'Expired'),
+    ]
+
+  invited = models.ForeignKey(User, on_delete=models.CASCADE, related_name="invited")
+  inviter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="inviter")
+  status  = models.CharField(max_length=1, choices=INVITE_STATE, default="P")
+  sent_at = models.DateTimeField(auto_now_add=True)
+
+
+  def __str__(self) -> str:
+    return f'{self.pk} : {self.status} => {self.inviter} invites {self.invited}'
+
+  def accept(self, user : User): 
+    if self.isExpired() or self.status != 'P':
+      raise ValueError('the invite already been processed or its expired')
+    if user != self.invited:
+      raise ValueError('The invited user can prosses this invite')
+    self.status = 'A'
+    self.save()
+
+  def decline(self, user : User):
+    if self.isExpired() or self.status != 'P':
+      raise ValueError('the invite already been processed or its expired')
+    if user != self.invited:
+      raise ValueError('The invited user can prosses this invite')
+    self.status = 'D'
+    self.save()
+
+  def isExpired(self):
+    if now() > self.sent_at + timedelta(hours=1):
+      self.status = 'E'
+      return True
+    return False
