@@ -177,7 +177,7 @@ const ReadyContext = () => {
   }
 }
 
-const WarmUp = ({isRandom = true} : {isRandom?:boolean}) => {
+const WarmUp = ({isRandom = false} : {isRandom?:boolean}) => {
   let [socket, setSocket] = useState<WebSocket|null>(null)
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<EnemyUserData|null>(null)
@@ -189,7 +189,7 @@ const WarmUp = ({isRandom = true} : {isRandom?:boolean}) => {
           <div className="WarmUpVs">
             <PlayerCard />
             <img src={vsImage} className="WarmUpVsImage" />
-            <PlayerCard enemy isRandom/>
+            <PlayerCard enemy isRandom={isRandom}/>
           </div>
           {/* <div className="WarmUpBox">
             <WarmUpBox/>

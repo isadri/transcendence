@@ -5,24 +5,15 @@ import Profile from '../Pages/Profile/Profile';
 import Game from '../Pages/Game/Game';
 import Setting from '../Pages/Setting/Setting';
 
-// import BackGround from '../components/background/BackGround'
-// import SideNavbar from '../components/sideNavbar/SideNavbar';
-// import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
-// import NoPage from "../Pages/NoPage/NoPage";
-// import Friends from '../Pages/Friends/Friends';
-// import Play from '../Pages/Game/Play/Play';
-// import Tictactoe from '../Pages/TicTacToe/Tictactoe';
-// import { Children } from 'react';
+
 import SideNavbar from '../components/sideNavbar/SideNavbar';
 import Global from '../components/globalComponent/global';
-import { createBrowserRouter, Navigate, Outlet, /*useNavigate*/ } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
-// import { getContext, getUser } from '../context/getContextData';
-// import { useEffect } from 'react';
 
 
 // isLogged  routing table and layout
@@ -85,8 +76,17 @@ const mainRoutingTable = [
         element: <Remote />,
       },
       {
-        path: "/game/warmup/",
-        element: <WarmUp />,
+        path: "warmup",
+        children:[
+          {
+            path: "friends",
+            element: <WarmUp />,
+          },
+          {
+            path: "random",
+            element: <WarmUp isRandom/>,
+          },
+        ]
       },
     ]
   },
