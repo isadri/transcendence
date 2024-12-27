@@ -57,11 +57,6 @@ if [ ! -f config/certs/certs.zip ]; then
 	unzip config/certs/certs.zip -d config/certs
 fi
 
-if [ ! -f config/jdbc/postgresql-42.7.4.jar ]; then
-	apt update && apt install -y wget;
-	wget https://jdbc.postgresql.org/download/postgresql-42.7.4.jar -O config/jdbc/postgresql-42.7.4.jar
-fi;
-
 #echo "Setting file permissions"
 #chmod 664 config/certs/logstash/logstash.pkcs8.key
 #chown -R root:root config/certs
