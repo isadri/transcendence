@@ -75,7 +75,7 @@ def send_otp_email(user: User) -> None:
         subject='Email verification',
         message=('Your verification code is: '
                  f'{str(user.otp)}'),
-        from_email='issam.abk01@gmail.com'
+        from_email=settings.EMAIL_HOST_USER
     )
 
 
