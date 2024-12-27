@@ -1,0 +1,30 @@
+.GameModePopUpBox {
+  
+}
+
+
+.GameFriendsInviteBox{
+  width: 100%;
+}
+
+.GameFriendsInviteBox .FriendsSearch {
+  border: 1px solid white;
+  border-radius: 15px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  width: 80%;
+}
+
+.GameFriendsInviteBox .FriendsSearch input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: white;
+  margin-left: 8px;
+}
+
+.GameFriendsInviteBox .FriendsSearch i {
+  margin-left: 8px;
+}

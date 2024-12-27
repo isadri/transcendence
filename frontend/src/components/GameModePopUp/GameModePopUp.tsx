@@ -23,7 +23,7 @@ function GameModePopUp({mode, setter}:GameModePopUpProps) {
     <>
     <div className="GameModePopUpBlur">
       <div className="GameModePopUpBox">
-        <i className="fa-solid fa-circle-xmark fa-2xl" 
+        <i className="fa-solid fa-circle-xmark fa-2xl i-cross" 
         onClick={() => {setter(-1)}}>
 
         </i>
