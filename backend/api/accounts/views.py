@@ -8,26 +8,19 @@ from django.contrib.auth import (
 )
 from django.utils import timezone
 from rest_framework import (
-    generics,
     status,
     viewsets,
 )
-from rest_framework.permissions import AllowAny
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import (
     get_object_or_404,
 )
-from django.utils import timezone
 from django.utils.http import (
     urlsafe_base64_encode,
     urlsafe_base64_decode,
 )
 from django.utils.encoding import force_bytes
-from rest_framework import (
-    status,
-    viewsets
-)
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -457,7 +450,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
     """
     permission_classes = [AllowAny]
 
-    def send_email(self, user: User, reset_url: str) -> None:
+    def _send_email(self, user: User, reset_url: str) -> None:
         """
         Send the email to the user with the url for reseting the password.
         """
@@ -524,7 +517,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
                 'http://localhost:8000/api/accounts/password-reset-confirm/'
                 f'?uid={uid}&token={token}'
             )
-            self.send_email(user, reset_url)
+            self._send_email(user, reset_url)
             return Response({
                 'message': 'Password reset email sent'
             }, status=status.HTTP_200_OK)
