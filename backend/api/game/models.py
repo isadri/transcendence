@@ -110,3 +110,13 @@ class GameInvite(models.Model):
       self.status = 'E'
       return True
     return False
+
+class UserAchivments(models.Model):
+  name = models.CharField()
+
+class UserStates(models.Model):
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+  level = models.FloatField(default=0)
+  badge = models.IntegerField(default=0)
+  win = models.IntegerField(default=0)
+  lose = models.IntegerField(default=0)
