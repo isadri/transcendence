@@ -210,6 +210,7 @@
 
 
 .imgGlobal{
+    position: relative;
     display: flex;
     justify-content: flex-end;
     margin-left: 0px;
@@ -217,11 +218,18 @@
     width: 60px;
 }
 
- .imgGlobal .img{
+.imgGlobal .img{
     width: 40px;
     height: 40px;
 }
 
+.imgGlobal .globalCircle{
+    position: absolute;
+    top: 3px;
+    left: 21px;
+    width: 9px;
+    height: 9px;
+}
 /********************** Responsive *******************************/
 @media only screen and (max-width: 478px){
     .Home-Icons{

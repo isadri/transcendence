@@ -21,7 +21,9 @@ function Profile() {
           </Link>
           {
             isOnline &&
-            <div className="onlineCircle"></div>
+            <div className="ParentCircle">
+              <div className="onlineCircle"></div>
+            </div>
           }
           <Link to="/profile">
             <span>{user?.username}</span>
