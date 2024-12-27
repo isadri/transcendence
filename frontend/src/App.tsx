@@ -7,7 +7,7 @@ import mainRouter from './Routing/mainRouting';
 import landingRouter from './Routing/landingrouting';
 import axios from 'axios';
 
-import { loginContext } from './context/context';
+import { NotificationsData, loginContext } from './context/context';
 import { userDataType } from './context/context';
 import { getendpoint } from './context/getContextData';
 
@@ -17,7 +17,8 @@ const emptyUser = {
   email : "",
   avatar : "",
   register_complete: true,
-  from_remote_api: false
+  from_remote_api: false,
+  is_online: false
 }
 
 function App() {
@@ -25,6 +26,9 @@ function App() {
   let [user, setUser] = useState<userDataType | undefined>(emptyUser)
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
+
+  const [notifications, setNotifications] = useState<NotificationsData[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   useEffect(() => {
     axios.get(getendpoint('http', "/"), {withCredentials:true})
@@ -36,13 +40,41 @@ function App() {
       setIsLogged(false)
       setUser(emptyUser)
     })
-  },[setIsLogged])
+
+    if(isLogged && user)
+      {
+        const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
+        ws.onopen = () => {
+          user.is_online = true
+          console.log("WebSocket connected ", user?.is_online);
+          setUser(user)
+        }
+        ws.onclose = () => {
+          user.is_online = false
+          console.log("WebSocket disconnected ", user?.is_online);
+          
+          setUser(user)
+        }
+    
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          console.log("data =========> ", data)
+          setNotifications((prev) => [data, ...prev]);
+          setUnreadCount((prev) => prev + 1);
+        };
+        return () => {
+          ws.close();
+        };
+      }
+
+  },[setIsLogged, isLogged])
 
   if (isLogged == null)
     return <></>
   return (
     <loginContext.Provider value={{user, setUser, isLogged, setIsLogged,
-    createdAlert, setCreatedAlert, Displayed, setDisplayed}}>
+    createdAlert, setCreatedAlert, Displayed, setDisplayed, notifications,
+    setNotifications, setUnreadCount, unreadCount}}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={ isLogged ? mainRouter : landingRouter} />
       </BackGround>

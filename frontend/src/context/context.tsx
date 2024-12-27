@@ -38,8 +38,18 @@ interface userDataType {
     email : string,
     avatar : string
     register_complete: boolean,
-    from_remote_api: boolean
+    from_remote_api: boolean,
+    is_online: boolean
 }
+
+interface NotificationsData {
+    id: number;
+    message: string;
+    type: string;
+    created_at: string;
+    is_read: boolean;
+  }
+
 interface loginContextData {
     isLogged:boolean |null,
     setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
@@ -49,9 +59,15 @@ interface loginContextData {
     Displayed: number
     setCreatedAlert:  React.Dispatch<React.SetStateAction<string>>
     setDisplayed: React.Dispatch<React.SetStateAction<number>>
+
+    /******** Notifications **********/
+    notifications: NotificationsData[];
+    setNotifications: React.Dispatch<React.SetStateAction<NotificationsData[]>>;
+    unreadCount: number;
+    setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
  }
 
 export const loginContext = createContext<loginContextData | null>(null)
 
-export type {loginContextData}
+export type {loginContextData, NotificationsData}
 export type {userDataType}
