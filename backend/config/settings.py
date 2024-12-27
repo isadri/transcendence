@@ -1,6 +1,8 @@
 import os
 import time
 from datetime import timedelta
+from decouple import config
+import dj_database_url
 from pathlib import Path
 
 
@@ -8,10 +10,10 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&llk^3rmodi5^_#c+#w(&vb_ro^-=)u*@&3p9#d4+cwkcwy$)w'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # The initial time used for generating TOTP values
 INITIAL_TIME = time.time()
@@ -96,14 +98,7 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-		'NAME': os.getenv('POSTGRES_DB'),
-		'USER': os.getenv('POSTGRES_USER'),
-		'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-		'HOST': 'postgres',
-		'PORT': '5432',
-    }
+    'default': dj_database_url.config()
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -168,7 +163,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': '021AA___qq02passkey-',
+    'SIGNING_KEY': config('SIGNING_KEY'),
 }
 
 AUTH_COOKIE = 'access_token'
@@ -183,22 +178,22 @@ CSRF_COOKIE_HTTPONLY = True
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
+#OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = '587'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 
 #Intra 42
-INTRA_ID = os.getenv('INTRA_ID')
-INTRA_REDIRECT_URI = os.getenv('INTRA_REDIRECT_URI')
+INTRA_ID = config('INTRA_ID')
+INTRA_REDIRECT_URI = config('INTRA_REDIRECT_URI')
 
 #Google
-GOOGLE_ID = os.getenv('GOOGLE_ID')
-GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
+GOOGLE_ID = config('GOOGLE_ID')
+GOOGLE_REDIRECT_URI = config('GOOGLE_REDIRECT_URI')
 
 ASGI_APPLICATION = "config.asgi.application"
 
