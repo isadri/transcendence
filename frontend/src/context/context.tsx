@@ -53,8 +53,8 @@ interface NotificationsData {
 interface loginContextData {
     isLogged:boolean |null,
     setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
-    user: userDataType | undefined
-    setUser: React.Dispatch<React.SetStateAction<userDataType | undefined>>;
+    user: userDataType | null
+    setUser: React.Dispatch<React.SetStateAction<userDataType | null>>;
     createdAlert: string
     Displayed: number
     setCreatedAlert:  React.Dispatch<React.SetStateAction<string>>

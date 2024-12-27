@@ -7,74 +7,80 @@ import mainRouter from './Routing/mainRouting';
 import landingRouter from './Routing/landingrouting';
 import axios from 'axios';
 
-import { NotificationsData, loginContext } from './context/context';
-import { userDataType } from './context/context';
+import { loginContext } from './context/context';
+import { userDataType, NotificationsData } from './context/context';
 import { getendpoint } from './context/getContextData';
 
-const emptyUser = {
-  id : -1,
-  username : "",
-  email : "",
-  avatar : "",
-  register_complete: true,
-  from_remote_api: false,
-  is_online: false
-}
+// const emptyUser = {
+//   id : -1,
+//   username : "",
+//   email : "",
+//   avatar : "",
+//   register_complete: true,
+//   from_remote_api: false,
+//   is_online: false
+// }
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)
-  let [user, setUser] = useState<userDataType | undefined>(emptyUser)
+  let [user, setUser] = useState<userDataType | null>(null)
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
 
+  // Notifications state
   const [notifications, setNotifications] = useState<NotificationsData[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
   useEffect(() => {
     axios.get(getendpoint('http', "/"), {withCredentials:true})
     .then((response:any) => {
+      console.log("response.data => ", {...response.data, is_online:true})
+      setUser({...response.data, is_online:true})
       setIsLogged(true)
-      setUser(response.data)
     })
     .catch(() => {
       setIsLogged(false)
-      setUser(emptyUser)
+      setUser(null)
     })
-
-    if(isLogged && user)
-      {
-        const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
-        ws.onopen = () => {
+    
+    console.log("user => ", user)
+    if(isLogged)
+    {
+      const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
+      ws.onopen = () => {
+        if(user){
           user.is_online = true
           console.log("WebSocket connected ", user?.is_online);
           setUser(user)
         }
-        ws.onclose = () => {
+      }
+      ws.onclose = () => {
+        if(user)
+        {
           user.is_online = false
           console.log("WebSocket disconnected ", user?.is_online);
-          
           setUser(user)
         }
-    
-        ws.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          console.log("data =========> ", data)
-          setNotifications((prev) => [data, ...prev]);
-          setUnreadCount((prev) => prev + 1);
-        };
-        return () => {
-          ws.close();
-        };
       }
-
+  
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("data =========> ", data)
+        setNotifications((prev) => [data, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+      };
+      return () => {
+        ws.close();
+      };
+    }
   },[setIsLogged, isLogged])
 
   if (isLogged == null)
     return <></>
   return (
     <loginContext.Provider value={{user, setUser, isLogged, setIsLogged,
-    createdAlert, setCreatedAlert, Displayed, setDisplayed, notifications,
-    setNotifications, setUnreadCount, unreadCount}}>
+      createdAlert, setCreatedAlert, Displayed, setDisplayed, notifications,
+      setNotifications, setUnreadCount, unreadCount}}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={ isLogged ? mainRouter : landingRouter} />
       </BackGround>

@@ -21,6 +21,7 @@ import Play from '../Pages/Game/Play/Play';
 import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
+import { getUser } from '../context/getContextData';
 // import { getContext, getUser } from '../context/getContextData';
 // import { useEffect } from 'react';
 
@@ -98,7 +99,7 @@ const mainRoutingTable = [
 ]
 
 function MainLayout() {
-  // const user = getUser()
+  const user = getUser()
   // const context = getContext()
 
   // const navigate = useNavigate()
@@ -112,10 +113,11 @@ function MainLayout() {
   //     console.log("hello")
   //   }
   // }, [user])
+  if (!user)
+      return <></>
   return (
     <>
       <SideNavbar/>
-  
       <div className='mainContent'>
         <Global/>
         <Outlet/>
