@@ -15,5 +15,6 @@ urlpatterns = [
 
   path('invites/sent/', views.ListSentGameInvites.as_view(), name='list-sent-game-invites'),
   path('invites/received/', views.ListReceivedGameInvites.as_view(), name='list-received-game-invites'),
-
+  path('userAchievement/', views.UserAchievement.as_view(), name='user-achievement'),
+  path('userStats/', views.ListUserStats.as_view(), name='list-user-stats'),
 ]

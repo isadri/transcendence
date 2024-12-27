@@ -111,12 +111,18 @@ class GameInvite(models.Model):
       return True
     return False
 
-class UserAchivments(models.Model):
-  name = models.CharField()
+class UserAchiavements(models.Model):
+  name = models.CharField(max_length=255)
+  def __str__(self):
+        return self.name
 
-class UserStates(models.Model):
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+class UserStats(models.Model):
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_stats')
+  achievements = models.ManyToManyField(UserAchiavements, related_name='user_achievement', blank=True)
   level = models.FloatField(default=0)
   badge = models.IntegerField(default=0)
   win = models.IntegerField(default=0)
   lose = models.IntegerField(default=0)
+
+  def __str__(self):
+        return f"{self.user.username} - Level {self.level}"

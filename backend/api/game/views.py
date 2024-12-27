@@ -2,8 +2,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
-from .models import GameInvite, Game
-from .serializers import GameInviteSerializer
+from .models import GameInvite, Game, UserAchiavements, UserStats
+from .serializers import GameInviteSerializer, UserAchievementSerializer, UserStatsSerializer
 
 from rest_framework import status,viewsets
 from rest_framework.views import APIView
@@ -151,4 +151,19 @@ class ListReceivedGameInvites(APIView):
     inivtes = GameInvite.objects.filter(invited=user)
     serializer = GameInviteSerializer(inivtes, many=True)
     return Response(serializer.data)
-  
+
+# add by yasmine
+class UserAchievement(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    serializer = UserAchievementSerializer()
+    return Response(serializer.data)
+
+class ListUserStats(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    userStats = UserStats.objects.filter(user=request.user)
+    serializer = UserStatsSerializer(userStats)
+    return Response(serializer.data)
