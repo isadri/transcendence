@@ -1,13 +1,19 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import include, path
 
 from api.accounts import views
 
 
+def health(request):
+    return HttpResponse({}, status=200)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', health),
     path('', views.HomeView.as_view()),
     path('api/chat/', include('api.chat.urls')),
     path('api/game/', include('api.game.urls')),
