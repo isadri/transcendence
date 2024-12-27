@@ -1,9 +1,7 @@
 #!/bin/sh
 
-if [ ! -d /code/static ]; then
-	echo "Collect static files"
-	python manage.py collectstatic
-fi;
+echo "Collect static files"
+python manage.py collectstatic
 
 echo "Running database migrations"
 python manage.py makemigrations --noinput accounts chat friends game notifications
