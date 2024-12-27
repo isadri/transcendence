@@ -132,6 +132,8 @@ services:
       - ./elk/es01/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     env_file:
       - .env
+    environment:
+      - ES_JAVA_OPT:-Xms750m -Xmx750m
     networks:
       - app-network
     mem_limit: ${MEM_LIMIT}
@@ -159,6 +161,8 @@ services:
       - certs:/usr/share/elasticsearch/config/certs
       - es02data:/usr/share/elasticsearch/data
       - ./elk/es02/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      - ES_JAVA_OPT:-Xms750m -Xmx750m
     env_file:
       - .env
     networks:
