@@ -180,7 +180,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 #OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = config('EMAIL_BACKEND')
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
@@ -201,7 +201,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [("redis", 6379)],
+            "hosts": [("redis", config('REDIS_PORT', default=6379, cast=int))],
         },
     },
 }
