@@ -16,4 +16,5 @@ RUN pip install -r requirements.txt
 
 ENTRYPOINT [ "bash", "entrypoint.sh" ]
 
-CMD [ "daphne", "-p", "8000", "-b", "0.0.0.0", "config.asgi:application" ]
+#CMD [ "daphne", "-p", "8000", "-b", "0.0.0.0", "config.asgi:application" ]
+CMD [ "python", "manage.py", "runserver", "0:8000" ]

@@ -34,5 +34,5 @@ if not get_user_model().objects.filter(username=username).exists():
 
 EOF
 
-python manage.py runserver 0:8000
+exec "$@"
 
