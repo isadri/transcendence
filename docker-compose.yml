@@ -133,7 +133,7 @@ services:
     env_file:
       - .env
     environment:
-      - ES_JAVA_OPT:-Xms750m -Xmx750m
+      ES_JAVA_OPT: "-Xms750m -Xmx750m"
     networks:
       - app-network
     mem_limit: ${MEM_LIMIT}
@@ -162,7 +162,7 @@ services:
       - es02data:/usr/share/elasticsearch/data
       - ./elk/es02/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     environment:
-      - ES_JAVA_OPT:-Xms750m -Xmx750m
+      ES_JAVA_OPT: "-Xms750m -Xmx750m"
     env_file:
       - .env
     networks:
