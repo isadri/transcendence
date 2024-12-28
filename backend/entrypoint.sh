@@ -6,6 +6,7 @@ python manage.py collectstatic
 echo "Running database migrations"
 python manage.py makemigrations --noinput accounts chat friends game notifications
 python manage.py migrate
+python manage.py createTestingUsers # create many user for testing
 
 if [ -z "$DJANGO_SUPERUSER_USERNAME" ]; then
 	echo "DJANGO_SUPERUSER_USERNAME environment variable is not set";

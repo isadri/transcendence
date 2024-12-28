@@ -1,0 +1,95 @@
+.GameFriendPopUpBox {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  width: 30%;
+  height: 50%;
+  padding: 0 2%;
+}
+
+.GameFriendsInviteBoxTitle{
+  padding: 2%;
+  color: var(--primary);
+}
+.GameFriendsInviteBox{
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2%;
+}
+
+.GameFriendsInviteBox .listFriends{
+  width: 100%;
+  display: flex;
+  margin: 5% 0;
+  margin-top: 3%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: scroll;
+  overflow: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+      display: none;
+  }
+}
+
+.GameFriendsInviteBox  .friendItem {
+  background-color: var(--fade);
+  border-radius: 15px;
+  width: 87%;
+  height: 50px;
+  display: flex;
+  margin-bottom: 5%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.GameFriendsInviteBox  .friendItem .avatar_usernmae{
+  display: flex;
+  height: 100%;
+  display: flex;
+  align-items: center; 
+}
+
+.GameFriendsInviteBox  .friendItem span{
+  margin: 0 5%;
+}
+
+.GameFriendsInviteBox  .friendItem .avatar_usernmae img{
+  aspect-ratio: 1;
+  border-radius: 50%;
+  margin: 0 5%;
+  height: 85%;
+}
+
+
+
+.GameFriendsInviteBox .FriendsSearch {
+  border: 1px solid white;
+  border-radius: 15px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  height: 45px;
+  width: 80%;
+}
+
+.GameFriendsInviteBox .FriendsSearch input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: white;
+  height: 50px;
+  width: 100%;
+  margin-left: 8px;
+}
+
+.GameFriendsInviteBox .FriendsSearch i {
+  margin-left: 8px;
+}

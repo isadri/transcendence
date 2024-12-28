@@ -333,6 +333,7 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
+            print("otp===> ", user.otp)
             return Response({
                 'info': 'The verification code sent successfully',
                 'code': user.code

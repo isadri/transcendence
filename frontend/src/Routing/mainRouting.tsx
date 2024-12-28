@@ -5,22 +5,16 @@ import Profile from '../Pages/Profile/Profile';
 import Game from '../Pages/Game/Game';
 import Setting from '../Pages/Setting/Setting';
 
-// import BackGround from '../components/background/BackGround'
-// import SideNavbar from '../components/sideNavbar/SideNavbar';
-// import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
-// import NoPage from "../Pages/NoPage/NoPage";
-// import Friends from '../Pages/Friends/Friends';
-// import Play from '../Pages/Game/Play/Play';
-// import Tictactoe from '../Pages/TicTacToe/Tictactoe';
-// import { Children } from 'react';
+
 import SideNavbar from '../components/sideNavbar/SideNavbar';
 import Global from '../components/globalComponent/global';
-import { createBrowserRouter, Navigate, Outlet, /*useNavigate*/ } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
 import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
+import { getUser } from '../context/getContextData';
 // import { getContext, getUser } from '../context/getContextData';
 // import { useEffect } from 'react';
 
@@ -60,33 +54,42 @@ const mainRoutingTable = [
     path: "/game",
     children:[
       {
-        path: "/game/",
+        path: "",
         element: <Game />,
       },
       {
-        path: "/game/tournament/",
+        path: "tournament",
         children:[
           {
-            path: "/game/tournament/local",
+            path: "local",
             element: <Local />,
           },
           {
-            path: "/game/tournament/remote",
+            path: "remote",
             element: <Game />,
           },
         ]
       },
       {
-        path: "/game/local",
+        path: "local",
         element: <Play />,
       },
       {
-        path: "/game/remote/:id",
+        path: "remote/:id",
         element: <Remote />,
       },
       {
-        path: "/game/warmup/",
-        element: <WarmUp />,
+        path: "warmup",
+        children:[
+          {
+            path: "friends",
+            element: <WarmUp />,
+          },
+          {
+            path: "random",
+            element: <WarmUp isRandom/>,
+          },
+        ]
       },
     ]
   },
@@ -98,7 +101,7 @@ const mainRoutingTable = [
 ]
 
 function MainLayout() {
-  // const user = getUser()
+  const user = getUser()
   // const context = getContext()
 
   // const navigate = useNavigate()
@@ -112,10 +115,11 @@ function MainLayout() {
   //     console.log("hello")
   //   }
   // }, [user])
+  if (!user)
+      return <></>
   return (
     <>
       <SideNavbar/>
-  
       <div className='mainContent'>
         <Global/>
         <Outlet/>

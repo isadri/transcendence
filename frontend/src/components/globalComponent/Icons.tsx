@@ -1,21 +1,17 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { getUser, getendpoint } from "../../context/getContextData"
+import { getContext, getNotifications, getUnreadCount, getUser, getendpoint } from "../../context/getContextData"
 import { Link, useLocation } from "react-router-dom"
 
-interface NotificationsData{
-  id: number,
-  message : string,
-  type: string,
-  created_at : string,
-  is_read: boolean,
-}
-
-
 function Icons() {
+  const context = getContext()
+  const notificationList = getNotifications()
+  const UnreadNotif = getUnreadCount()
   const [isIconClicked, setIsIconClicked] = useState(false)
-  const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
-  const [UnreadNotif, setUnreadNotif] = useState(0)
+  const user = getUser()
+  const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
+  // const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
+  // const [UnreadNotif, setUnreadNotif] = useState(0)
 
   const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"
                         || useLocation().pathname === "/profile"
@@ -26,7 +22,7 @@ function Icons() {
       {withCredentials: true})
       .then((response) => {
         console.log("res => " , response.data);
-        setNotificationList(response.data)
+        context?.setNotifications(response.data)
       })
       .catch(error => {
         console.log(error.response)
@@ -39,8 +35,7 @@ function Icons() {
         withCredentials: true,
       })
       .then(() => {
-        setNotificationList([]);
-        setUnreadNotif(0);
+        context?.setUnreadCount(0);
       })
       .catch((error) => {
         console.log("Error clearing notifications:", error.response);
@@ -52,36 +47,20 @@ function Icons() {
       axios.post(getendpoint("http", "/api/notifications/mark-all-read/"),{},
       {withCredentials: true})
       .then(() => {
-        setUnreadNotif(0)
+        context?.setUnreadCount(0);
       })
     }
     axios.get(getendpoint("http", "/api/notifications/unreadNotifications/"),
     {withCredentials: true})
     .then(response => {
-      setUnreadNotif(response.data.unread_notifications_count)
+        context?.setUnreadCount(response.data.unread_notifications_count)
     })
     .catch(error => {
       console.log(error.response)
     })
-    const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
-		ws.onopen = () => console.log("WebSocket connected");
-		ws.onclose = () => console.log("WebSocket disconnected");
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      // console.log("data =========> ", data)
-      setNotificationList((prev) => [data, ...prev]);
-    };
-    ws.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    return () => {
-      ws.close();
-    };
-  }, [setNotificationList,notificationList, UnreadNotif, setUnreadNotif, isIconClicked]);
+    setIsOnline(user?.is_online || false)
+  }, [isIconClicked, user?.is_online]);
   // console.log("notf", notificationList)
-  const user = getUser()
   return (
     <>
       <span className="Home-Icons">
@@ -100,7 +79,7 @@ function Icons() {
              <span>Your Notifications</span>
            </div>
             {
-              notificationList.length > 0 ?
+              notificationList && notificationList.length > 0 ?
               <>
                 <div className="dropConntent">
                 {
@@ -131,10 +110,19 @@ function Icons() {
         }
         </div>
         { !hideProfileImg && 
-          <div className="Home-ProfImg imgGlobal">
-            <Link to="/profile" className="img">
-              {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
-            </Link>
+          <div className="userInfoGlobal">
+            <div className="Home-ProfImg imgGlobal">
+              <Link to="/profile" className="img">
+                {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
+              </Link>
+              {
+                isOnline &&
+                <div className="onlineCircle globalCircle"></div>
+              }
+            </div>
+            {/* <div className="userName">
+              <span>{user?.username}</span>
+            </div> */}
           </div>
         }
       </span>

@@ -462,11 +462,13 @@ const Play = () => {
 //   gameId
 // }
 
-const emptyUser = {
+const emptyUser:userDataType = {
   id: -1,
   username: "Enemy",
   email: "",
-  avatar: ""
+  avatar: "",
+  register_complete:true,
+  from_remote_api:false,
 }
 
 const Provider = ({ socket }: { socket: WebSocket }) => {
