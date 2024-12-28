@@ -2,28 +2,15 @@ import "../../../../components/GameModePopUp/GameModePopUp.css"
 import "./FriendsPopUp.css"
 import { userDataType } from "../../../../context/context";
 import { getUser, getendpoint } from "../../../../context/getContextData";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { WarmUpContext } from "../../WarmUp/WarmUp";
 
 interface FriendsPopUpData {
   setter: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-interface FriendItemData {
-  friend: userDataType
-}
 
-function FriendItem({ friend }: FriendItemData) {
-  return (
-    <div className="friendItem" key={friend.id}>
-      <div className="avatar_usernmae">
-        <img src={friend.avatar} className="friendInviteAvatar" />
-        <span>{friend.username}</span>
-      </div>
-      <span>7.5 lvl</span>
-    </div>
-  )
-}
 
 
 
@@ -33,11 +20,20 @@ function FriendsPopUp({ setter }: FriendsPopUpData) {
 
   useEffect(() => {
     axios.get(getendpoint('http', '/api/friends/friends'))
-    .then((response) => {
-      console.log(response.data);
-      setFriends(response.data.friends)
-    })
+      .then((response) => {
+        console.log(response.data);
+        setFriends(response.data.friends)
+      })
   }, [])
+
+  const warmUpContext = useContext(WarmUpContext)
+  const onSelect = (friend:userDataType) => {
+    if (warmUpContext) {
+      const { setEnemyUser } = warmUpContext
+      setEnemyUser(friend)
+      setter(false)
+    }
+  }
 
   if (!user)
     return <></>
@@ -60,8 +56,18 @@ function FriendsPopUp({ setter }: FriendsPopUpData) {
               {friends.length === 0 ? (
                 <p>Loading...</p>
               ) : (
-                friends.map((friend) => <FriendItem friend={friend}/>)
-              )}
+                friends.map((friend) => {
+                  console.log(friend.id, friend.avatar)
+                  return (
+                    <div className="friendItem" key={friend.id} onClick={() => onSelect(friend)}>
+                      <div className="avatar_usernmae">
+                        <img src={friend.avatar} className="friendInviteAvatar" />
+                        <span>{friend.username}</span>
+                      </div>
+                      <span>7.5 lvl</span>
+                    </div>
+                  )
+                }))}
             </div>
           </div>
         </div>
