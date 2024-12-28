@@ -412,7 +412,7 @@ class RegisterViewSet(viewsets.ViewSet):
             user.save()
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             confirmation_url = (
-                'http://localhost:8000/api/accounts/confirm-email/'
+                'http://localhost:5000/emailVerified'
                 f'?uid={uid}&token={user.email_verification_token}'
             )
             send_email_verification(user, confirmation_url)

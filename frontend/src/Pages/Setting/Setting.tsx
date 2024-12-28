@@ -162,11 +162,13 @@ const Setting = () => {
   // handel otp activation
   
   const disableOtp = () => {
-    const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
-    checkbox.checked = false
-    SetshowOtpAlert(false);
-    setIsOtpDisactive(true)
     axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: false}, {withCredentials: true})
+    .then(() =>{
+      const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
+      checkbox.checked = false
+      SetshowOtpAlert(false);
+      setIsOtpDisactive(true)
+    })
   }
   const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
