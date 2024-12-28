@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import './EmailVerified.css'
-import { getContext, getendpoint } from '../../context/getContextData';
+import { getendpoint } from '../../context/getContextData';
 import axios from 'axios';
 import { useState } from 'react';
-import { Color } from 'three';
 
 function EmailVerified() {
-  const authContext = getContext()
   const params = new URLSearchParams(window.location.search);
   let token = params.get('token');
   let uid = params.get('uid');
@@ -16,7 +14,7 @@ function EmailVerified() {
   if (token && uid) {
     axios.get(getendpoint("http", "/api/accounts/confirm-email/"),
       { params: { token: token, uid: uid }, withCredentials: true })
-      .then((response) => {
+      .then(() => {
         setIsConfirmed(1)
         token = '';
         uid = '';

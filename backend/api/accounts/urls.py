@@ -43,7 +43,8 @@ urlpatterns = [
     path('GetIntraLink/', views.GetIntraLink.as_view(), name='Get_Intra_Link'),
     path('GetGoogleLink/', views.GetGoogleLink.as_view(), name='Get_Google_Link'),
     path('SendOTPView/<str:username>/', views.SendOTPView.as_view(), name='Send_OTP_Email'),
-    path('checkValidOtp/', views.checkValidOtp.as_view(), name='check_Valid_Otp')
+    path('checkValidOtp/', views.checkValidOtp.as_view(), name='check_Valid_Otp'),
+    path('checkValidOtpEmail/', views.checkValidOtpEmail.as_view(), name='checkValidOtpEmail')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json'])
