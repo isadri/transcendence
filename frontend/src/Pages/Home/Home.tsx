@@ -8,7 +8,7 @@ import LastGame from './Components/LastGame'
 import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
-import './styles/SearchAndIcons.css'
+// import './styles/SearchAndIcons.css'
 
 function Home() {
 

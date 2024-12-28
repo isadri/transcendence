@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
                 'id', 'username', 'email', 'password', 'avatar', 'active_chat', 'open_chat',
-                'register_complete', 'from_remote_api', 'email_verified',
+                'register_complete', 'from_remote_api', 'email_verified', 'is_online'
             ]
         extra_kwargs = {
             'password': {'write_only': True},

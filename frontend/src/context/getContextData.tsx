@@ -1,7 +1,5 @@
 import { useContext } from "react";
 import { loginContext } from "./../App";
-import { context } from "@react-three/fiber";
-// import axios from "axios";
 
 export const getContext = () => {
 	return useContext(loginContext);
@@ -9,6 +7,14 @@ export const getContext = () => {
 
 export const getUser = () => {
 	return getContext()?.user;
+};
+
+export const getNotifications = () => {
+	return getContext()?.notifications;
+};
+
+export const getUnreadCount = () => {
+	return getContext()?.unreadCount;
 };
 
 export const setUser = (username: string, email: string,

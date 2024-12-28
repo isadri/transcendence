@@ -17,21 +17,25 @@ function BadgesList() {
 
 return (
     <div className='Home-BadgesList'>
-      <h2>Badges List</h2>
-      <div className='Home-badgesScroll'>
-        <div className='Home-chevron-left'>
-        <button onClick={ScrollLeft}><i className="fa-solid fa-chevron-left"></i></button>
+      <div className='contentBadge'>
+        <div className='titleBadge'>
+          <h2>Badges List</h2>
         </div>
-        <div className='Home-badgesList'>
-          <div className='Home-child'><img src={bg2} alt="" /></div>
-          <div className='Home-child'><img src={bg4} alt="" /></div>
-          <div className='Home-child'><img src={bg2} alt="" /></div>
-          <div className='Home-child'><img src={bg3} alt="" /></div>
-          <div className='Home-child'><img src={bg5} alt="" /></div>
-          <div className='Home-child'><img src={bg5} alt="" /></div>
-        </div>
-        <div className='Home-chevron-right'>
-        <button onClick={ScrollRight}><i className="fa-solid fa-chevron-right"></i></button>
+        <div className='Home-badgesScroll'>
+          <div className='Home-chevron-left'>
+          <button onClick={ScrollLeft}><i className="fa-solid fa-chevron-left"></i></button>
+          </div>
+          <div className='Home-badgesList'>
+            <div className='Home-child'><img src={bg2} alt="" /></div>
+            <div className='Home-child'><img src={bg4} alt="" /></div>
+            <div className='Home-child'><img src={bg2} alt="" /></div>
+            <div className='Home-child'><img src={bg3} alt="" /></div>
+            <div className='Home-child'><img src={bg5} alt="" /></div>
+            <div className='Home-child'><img src={bg5} alt="" /></div>
+          </div>
+          <div className='Home-chevron-right'>
+          <button onClick={ScrollRight}><i className="fa-solid fa-chevron-right"></i></button>
+          </div>
         </div>
       </div>
     </div>

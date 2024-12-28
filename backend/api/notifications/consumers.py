@@ -10,6 +10,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         self.room_group_name = f"user_{self.user.id}_notifications"
         if self.user.is_authenticated:
+            self.user.is_online = True
+            await self.user.asave(update_fields=['is_online'])
             await self.channel_layer.group_add(
                 self.room_group_name,
                 self.channel_name
@@ -20,6 +22,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave the notification group
+        self.user.is_online = False
+        await self.user.asave(update_fields=['is_online'])
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name

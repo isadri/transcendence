@@ -21,7 +21,7 @@ function CallBack() {
     })
     .catch(() => {
       authContext?.setIsLogged(false)
-      authContext?.setUser(undefined)
+      authContext?.setUser(null)
     })
   }
   const {from} = useParams()

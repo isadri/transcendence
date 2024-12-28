@@ -1,6 +1,6 @@
 .Home-ProfileUser{
     width: 55%;
-    height: 22vh;
+    height: 210px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -14,7 +14,7 @@
     /* align-items: center; */
     /* justify-content: center; */
     justify-content: space-around;
-    height: 19vh;
+    height: 190px;
 }
 
 .Home-ProfileUser .Home-Btn{
@@ -27,7 +27,7 @@
 .Home-ProfileUser .Home-Btn .proBtn{
     display: flex;
     margin-right: 5%;
-    height: 2.5vh;
+    height: 25px;
     width: 17%;
 }
 
@@ -37,7 +37,8 @@
     color: white;
     border: 1px solid var(--primary);
     border-radius: 20px;
-    font-size: 1vh;
+    /* font-size: 1vh; */
+    font-size: 1px;
     width: 100%;
     margin-left: 5%;
 }
@@ -48,7 +49,7 @@
     color: white;
     border: 1px solid var(--primary);
     border-radius: 20px;
-    font-size: 1vh;
+    /* font-size: 1vh; */
     width: 100%;
     margin-left: 5%;
     display: flex;
@@ -63,14 +64,15 @@
 .Home-ProfileUser h2{
     color: var(--primary);
     font-family: var(--sans);
-    margin-left: 5%;
-    font-size: 2vh;
+    margin-left: 18px;
+    /* font-size: 2vh; */
 }
 
 .Home-ProfileContent{
     /* height: 15vh; */
     display: flex;
     flex-direction: column;
+    align-items: center;
     margin-top: 1%;
 }
 
@@ -80,12 +82,13 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    margin-left: 4%;
+    width: 85%;
 }
 
 .Home-imgUser .Home-img{
-    width: 70px;
-    height: 70px;
+    width: 75px;
+    height: 75px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     overflow: hidden;
 }
@@ -97,7 +100,7 @@
 .Home-UserName{
     display: flex;
     flex-direction: column;
-    margin-left: 6%;
+    margin-left: 14px;
     font-family: var(--sans);
 }
 
@@ -106,27 +109,30 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    text-align: center;
+    justify-content: flex-start;
+    margin-top: 3%;
+    /* margin-left: 3px; */
 }
 
 .Home-UserName .Home-online .Home-Circle{
-    width: 8%;
-    height: 0.6vh;
-    background-color: #00ff00;
-    border:1px solid #00ff00;
+    width: 8px;
+    height: 8px;
+    background-color: #04de04;
+    border:1px solid #04de04;
     border-radius: 50%;
-    margin-right: 7px;
-    margin-top: 4px;
+    margin: 3px;
+    /* margin-top: 4px; */
 }
 
 .Home-UserName *:not(:nth-child(2)){
-    font-size: 2vh;
+    font-size: 22px;
     font-weight: 400;
 }
 
 .Home-UserName *:not(:nth-child(1)){
-    font-size: 1.5vh;
+    /* font-size: 1.5vh; */
     font-weight: 400;
-    margin-top: 4%;
     text-align: center;
     color: #00ff00;
 }
@@ -135,13 +141,15 @@
 .Home-ProfileContent .Home-ProfileLevel{
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .Home-XpClass{
     display: flex;
     justify-content: end;
     margin: 0 6% 1% 0;
-    font-size: 1.2vh;
+    /* font-size: 1.2vh; */
+    font-size: 12px;
     font-family: var(--sans);
 }
 
@@ -150,7 +158,7 @@
     background-color: var(--fade);
     border-radius: 20px;
     margin-left: 5%;
-    height: 2vh;
+    height: 17px;
     overflow: hidden;
     position:relative;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.Home-2);
@@ -171,7 +179,8 @@
     left: 50%;
     transform: translate(-50%, -50%); /* Center text horizontally and vertically */
     color: white; /* Text color */
-    font-size: 1.2vh;
+    /* font-size: 1.2vh; */
+    font-size: 12px;
     font-family: var(--sans);
 }
 

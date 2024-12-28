@@ -103,6 +103,7 @@
     margin-left: 14px;
     margin-top: 14px;
     width: 100%;
+    position: relative;
 }
 
 .Home-ProfImg .img{
@@ -110,11 +111,25 @@
     height: 60px;
     border-radius: 50%;
     overflow: hidden;
+    border: solid 1px white;
+    background-color: white;
 }
 
 .Home-ProfImg img{
     width: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    border: solid 1px white;
+}
+.Home-ProfImg .onlineCircle{
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    border-radius: 50%;
+    background-color: #04de04;
+    bottom: 6px;
+    left: 46px;
+    z-index: 10;
 }
 
 .Home-ProfImg  span{
