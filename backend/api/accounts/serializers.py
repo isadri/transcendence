@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
                 'id', 'username', 'email', 'password', 'avatar', 'active_chat', 'open_chat',
-                'register_complete', 'from_remote_api', 'email_verified', 'is_online'
+                'register_complete', 'from_remote_api', 'email_verified', 'is_online', 'tmp_email'
             ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -106,6 +106,7 @@ class UserSerializer(serializers.ModelSerializer):
         """
         self.fields['avatar'].required = False
         self.fields['password'].required = False
+        self.fields['tmp_email'].required = False
 
         password = validated_data.pop('password', None)
         if password:

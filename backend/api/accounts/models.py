@@ -138,6 +138,8 @@ class User(PermissionsMixin, AbstractBaseUser):
         )
     )
 
+    tmp_email = models.EmailField(blank=True, null=True)
+
     active_chat = models.IntegerField(default=-1)
     open_chat = models.BooleanField(default=False)
 
@@ -169,6 +171,13 @@ class User(PermissionsMixin, AbstractBaseUser):
         Send an email to this user.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def email_user_to_email(self, subject, message, from_email=None, to_email=None, **kwargs) -> None:
+        """
+        Send an email to this user to a customized email.
+        """
+        send_mail(subject, message, from_email, [to_email], **kwargs)
+
 
     def __str__(self):
         return self.username

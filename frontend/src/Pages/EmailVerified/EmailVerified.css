@@ -1,0 +1,82 @@
+.verifcationAlert{
+    width: 45%;
+    height: 35%;
+    max-width: 600px;
+    max-height: 700px;
+    min-height: 400px;
+    min-width: 320px;
+    background-color: var(--fade);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
+         0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.verifcationAlert .contentAlert{
+    width: 90%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.verifcationAlert .contentAlert .iconAlert{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: var(--primary);
+    font-size: 65px;
+}
+
+
+/* .verifcationAlert .contentAlert .iconAlert{
+} */
+
+.verifcationAlert .contentAlert .iconAlert span{
+    height: 2px;
+    width: 65%;
+    background-color: #cccccc;
+    background: linear-gradient(to right, var(--primary), #cccccc);
+    border-radius: 10px; 
+}
+
+.verifcationAlert .contentAlert .content-text{
+    display: flex;
+    flex-direction: column;
+    height: 40%;
+    align-items: center;
+    text-align: center;
+    /* margin-top: -8%; */
+    justify-content: space-around;
+    font-family: var(--mono);
+}
+
+.verifcationAlert .contentAlert .content-text h3{
+    font-weight: bolder;
+}
+
+.verifcationAlert .contentAlert .content-text span{
+    font-weight: 200;
+}
+
+.verifcationAlert .contentAlert  .buttonField {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 18%;
+}
+.verifcationAlert .contentAlert  .buttonField button{
+    width: 50%;
+    height: 70%;
+    border-radius: 10px;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    color: white;
+    cursor: pointer;
+}

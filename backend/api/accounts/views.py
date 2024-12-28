@@ -1,3 +1,4 @@
+from ..game.models import UserAchievement, UserStats
 import pyotp
 from typing import Optional
 from django.conf import settings
@@ -43,11 +44,15 @@ from .utils import (
     get_user,
     get_user_info,
     send_otp_email,
+    send_otp_to,
     get_response,
     generate_otp_for_user,
     reset_code,
     validate_token,
     check_otp_key,
+    add_level_achievement_to_user,
+    add_game_achievement_to_user,
+    add_milestone_achievement_to_user,
 )
 
 
@@ -61,10 +66,14 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        request.user.open_chat = False
         serializer =  UserSerializer(request.user)
         if request.user.is_authenticated:
+            request.user.open_chat = False
+            add_level_achievement_to_user(request.user)
+            add_game_achievement_to_user(request.user)
+            add_milestone_achievement_to_user(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+     
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -409,7 +418,7 @@ class RegisterViewSet(viewsets.ViewSet):
             user.save()
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             confirmation_url = (
-                'http://localhost:8000/api/accounts/confirm-email/'
+                'http://localhost:5000/emailVerified'
                 f'?uid={uid}&token={user.email_verification_token}'
             )
             send_email_verification(user, confirmation_url)
@@ -615,17 +624,26 @@ class UpdateUserDataView(APIView):
     def put(self, request):
         user = request.user
         data = request.data.copy()
+        response_data = {}
         data['avatar'] = None
         if 'isRemove' in data:
             if  data['isRemove'] == 'yes': del data['avatar']
             if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
                 data['avatar'] = request.FILES['avatar']
+        if data['email'] != user.email:
+            data['tmp_email'] = data['email']
+            del data['email']
+            print("data => ", data)
+            generate_otp_for_user(user)
+            send_otp_to(user, data['tmp_email'])
+            print(user.otp)
+            response_data['message'] = 'the code sent to your email'
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response_data['data'] = serializer.data
+            return Response(response_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UpdateUserPasswordView(APIView):
     """
@@ -793,3 +811,25 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
+
+class checkValidOtpEmail(APIView):
+    """
+     This view checks if the OTP entered by th user is valid(in setting)
+     to change the email of the user
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        otp = request.data['key']
+        print('send by user => ', otp)
+        print('otp real=> ', user.otp)
+        total_difference = timezone.now() - user.otp_created_at
+        if total_difference.total_seconds() > 60 or otp != str(user.otp):
+            return Response({'error': 'Key is invalid'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        print('tmp -> ', user.tmp_email)
+        user.email = user.tmp_email
+        user.tmp_email = None
+        user.save()
+        return Response (user.email, status=status.HTTP_200_OK)
