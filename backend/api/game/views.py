@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
-from .models import GameInvite, Game, UserAchiavements, UserStats
+from .models import GameInvite, Game, UserAchievement, UserStats
 from .serializers import GameInviteSerializer, UserAchievementSerializer, UserStatsSerializer
 
 from rest_framework import status,viewsets
@@ -157,7 +157,8 @@ class UserAchievement(APIView):
   permission_classes = [IsAuthenticated]
 
   def get(self, request):
-    serializer = UserAchievementSerializer()
+    userAch = UserAchievement.objects.filter(user=request.user)
+    serializer = UserAchievementSerializer(userAch)
     return Response(serializer.data)
 
 class ListUserStats(APIView):
