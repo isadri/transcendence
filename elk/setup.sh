@@ -102,11 +102,18 @@ curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_component_template/dev-settings -H "Content-Type: application/json" \
 -d '
 {
-	"template": {
-		"settings": {
-			"index.lifecycle.name": "dev-policy"
-		}
-	}
+    "template": {
+        "settings": {
+            "index.lifecycle.name": "dev-policy"
+        },
+        "mappings": {
+            "properties": {
+                "message": {
+                    "type": "text"
+                }
+            }
+        }
+    }
 }'
 
 echo -e "\nCreating index template"
