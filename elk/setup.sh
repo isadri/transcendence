@@ -75,7 +75,7 @@ https://es01:9200/_security/user/kibana_system/_password \
 
 echo -e "\nCreating index lifecycle policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_ilm/policy/dev-policy -H "Content-Type: application/json" -d '
+https://es01:9200/_ilm/policy/logs-policy -H "Content-Type: application/json" -d '
 {
 	"policy": {
 		"phases": {
@@ -99,12 +99,12 @@ https://es01:9200/_ilm/policy/dev-policy -H "Content-Type: application/json" -d 
 
 echo -e "\nCreating component template"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_component_template/dev-settings -H "Content-Type: application/json" \
+https://es01:9200/_component_template/logs-settings-component -H "Content-Type: application/json" \
 -d '
 {
     "template": {
         "settings": {
-            "index.lifecycle.name": "dev-policy"
+            "index.lifecycle.name": "logs-policy"
         },
         "mappings": {
             "properties": {
@@ -116,15 +116,36 @@ https://es01:9200/_component_template/dev-settings -H "Content-Type: application
     }
 }'
 
-echo -e "\nCreating index template"
+echo -e "\nCreating nginx-logs-template index template"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_index_template/dev-template -H "Content-Type: application/json" \
+https://es01:9200/_index_template/nginx-logs-template -H "Content-Type: application/json" \
 -d '
 {
-	"index_patterns": [ "server-logs-*", "django-logs-*" ],
+	"index_patterns": [ "nginx-logs-*" ],
 	"data_stream": { },
-	"composed_of": [ "dev-settings" ],
+    	"composed_of": [ "logs-settings-component" ],
+	"priority": 500
+}'
+
+echo -e "\nCreating django-logs-template index template"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_index_template/django-logs-template -H "Content-Type: application/json" \
+-d '
+{
+    "template": {
+        "mappings": {
+            "properties": {
+                "params": {
+                    "type": "text"
+                }
+            }
+        }
+    },
+	"index_patterns": [ "django-logs-*" ],
+	"data_stream": { },
+    	"composed_of": [ "logs-settings-component" ],
 	"priority": 500
 }'
 
 echo -e "\nAll done"
+
