@@ -1,4 +1,6 @@
 import io
+
+from django.db.models.query_utils import Q
 import pyotp
 import os
 import requests
@@ -11,6 +13,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from ..game.models import Game, UserAchievement, UserStats
 
 from .models import User
 
@@ -346,3 +350,123 @@ def check_otp_key(otp: str, user: User) -> bool:
         return False
     return True
 
+
+def add_level_achievement_to_user(user: User):
+    userStats, _ = UserStats.objects.get_or_create(user=user)
+    # user_achievements =  UserAchievement.objects.filter(user=user)
+    # userStats.level = 100
+    # userStats.save()
+    if userStats.level == 1:
+        if not UserAchievement.objects.filter(key='level_1').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="level",
+                key="level_1",
+                name="Beginner",
+                text="Reach level 1.",
+            )
+    elif userStats.level == 10:
+        if not UserAchievement.objects.filter(key='level_10').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="level",
+                key="level_10",
+                name="Intermediate",
+                text="Reach level 10.",
+            )
+    elif userStats.level == 25:
+        if not UserAchievement.objects.filter(key='level_25').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="level",
+                key="level_25",
+                name="Advanced Player",
+                text="Reach level 25.",
+            )
+    elif userStats.level == 50:
+        if not UserAchievement.objects.filter(key='level_50').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="level",
+                key="level_50",
+                name="Expert",
+                text="Reach level 50.",
+            )
+    elif userStats.level == 100:
+        if not UserAchievement.objects.filter(key='level_100').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="level",
+                key="level_100",
+                name="Grandmaster",
+                text="Reach level 100.",
+            )
+    # print(user_achievements)
+
+def add_game_achievement_to_user(user: User):
+    userStats, _ = UserStats.objects.get_or_create(user=user)
+    # user_achievements =  UserAchievement.objects.filter(user=user)
+    # userStats.win = 50
+    # userStats.save()
+    if userStats.win == 1:
+        if not UserAchievement.objects.filter(key='win_1').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="game",
+                key="win_1",
+                name="First Victory",
+                text="Win your first match.",
+            )
+    elif userStats.win == 20:
+        if not UserAchievement.objects.filter(key='win_20').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="game",
+                key="win_20",
+                name="Champion",
+                text="Win 20 matches overall.",
+            )
+    elif userStats.win == 50:
+        if not UserAchievement.objects.filter(key='win_50').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="game",
+                key="win_50",
+                name="Legend",
+                text="Win 50 matches overall.",
+            )
+    # print(user_achievements)
+
+def add_milestone_achievement_to_user(user: User):
+    userStats, _ = UserStats.objects.get_or_create(user=user)
+    user_achievements =  UserAchievement.objects.filter(user=user)
+    userStats.nbr_games = 50
+    userStats.save()
+    if userStats.nbr_games == 10:
+        if not UserAchievement.objects.filter(key='match_10').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="game",
+                key="match_10",
+                name="Rookie",
+                text="Play 10 matches.",
+            )
+    elif userStats.nbr_games == 50:
+        if not UserAchievement.objects.filter(key='match_50').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="game",
+                key="match_50",
+                name="Veteran",
+                text="Play 50 matches.",
+            )
+    elif userStats.nbr_games == 100:
+        if not UserAchievement.objects.filter(key='match_100').exists():
+            UserAchievement.objects.create(
+                user=user,
+                type="game",
+                key="match_50",
+                name="Marathon Player",
+                text="Play 100 matches.",
+            )
+    print(user_achievements)

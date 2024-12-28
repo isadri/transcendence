@@ -1,3 +1,4 @@
+from ..game.models import UserAchievement, UserStats
 import pyotp
 from typing import Optional
 from django.conf import settings
@@ -49,6 +50,9 @@ from .utils import (
     reset_code,
     validate_token,
     check_otp_key,
+    add_level_achievement_to_user,
+    add_game_achievement_to_user,
+    add_milestone_achievement_to_user,
 )
 
 
@@ -62,10 +66,14 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        request.user.open_chat = False
         serializer =  UserSerializer(request.user)
         if request.user.is_authenticated:
+            request.user.open_chat = False
+            add_level_achievement_to_user(request.user)
+            add_game_achievement_to_user(request.user)
+            add_milestone_achievement_to_user(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+     
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
