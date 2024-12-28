@@ -121,7 +121,7 @@ curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_index_template/dev-template -H "Content-Type: application/json" \
 -d '
 {
-	"index_patterns": [ "server-logs*" ],
+	"index_patterns": [ "server-logs-*", "django-logs-*" ],
 	"data_stream": { },
 	"composed_of": [ "dev-settings" ],
 	"priority": 500
