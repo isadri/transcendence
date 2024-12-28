@@ -1,22 +1,23 @@
 import "../../../../components/GameModePopUp/GameModePopUp.css"
 import "./FriendsPopUp.css"
-// import avatar from "../../../AboutUs/images/Your_profil_pict.png";
 import { userDataType } from "../../../../context/context";
 import { getUser, getendpoint } from "../../../../context/getContextData";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface FriendsPopUpData {
   setter: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-interface FriendItemData{
+interface FriendItemData {
   friend: userDataType
 }
 
-function FriendItem({friend}:FriendItemData) {
+function FriendItem({ friend }: FriendItemData) {
   return (
     <div className="friendItem" key={friend.id}>
       <div className="avatar_usernmae">
-        <img src={getendpoint("http", friend.avatar)} className="friendInviteAvatar" />
+        <img src={friend.avatar} className="friendInviteAvatar" />
         <span>{friend.username}</span>
       </div>
       <span>7.5 lvl</span>
@@ -28,6 +29,16 @@ function FriendItem({friend}:FriendItemData) {
 
 function FriendsPopUp({ setter }: FriendsPopUpData) {
   const user = getUser()
+  const [friends, setFriends] = useState<userDataType[]>([])
+
+  useEffect(() => {
+    axios.get(getendpoint('http', '/api/friends/friends'))
+    .then((response) => {
+      console.log(response.data);
+      setFriends(response.data.friends)
+    })
+  }, [])
+
   if (!user)
     return <></>
   return (
@@ -46,18 +57,11 @@ function FriendsPopUp({ setter }: FriendsPopUpData) {
               <input type="search" placeholder="Search..." />
             </div>
             <div className="listFriends">
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
-              <FriendItem friend={user}/>
+              {friends.length === 0 ? (
+                <p>Loading...</p>
+              ) : (
+                friends.map((friend) => <FriendItem friend={friend}/>)
+              )}
             </div>
           </div>
         </div>
