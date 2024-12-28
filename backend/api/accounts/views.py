@@ -507,8 +507,6 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
         """
         username = request.data.get('username')
         email = request.data.get('email')
-        print(username)
-        print(email)
         try:
             user = User.objects.get(username=username, email=email)
             token = PasswordResetTokenGenerator().make_token(user)
@@ -594,7 +592,6 @@ class UpdateUsernameView(APIView):
     permission_classes = [IsAuthenticated]
     def put(self, request):
         user = request.user
-        print("user =============> ", user)
         data = request.data.copy()
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
@@ -767,15 +764,12 @@ class SendOTPView(APIView):
             return Response({'message': 'otp '}, status=status.HTTP_200_OK)
         user.save()
         send_otp_email(user)
-        print(user.otp)
         return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
     def get(self, request, username):
         try:
             user = User.objects.get(username=username)
-            print(user)
             val = user.otp_active
-            print(val)
             return Response(val, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error' : e.args[0]}, status=status.HTTP_200_OK)
