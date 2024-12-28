@@ -2,9 +2,15 @@
 import Cbadge from "../images/CourentBadge.svg";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 // line 14 check emergncy
 function Profile() {
   const user = getUser()
+  const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
+
+  useEffect(() => {
+    setIsOnline(user?.is_online || false)
+  }, [user?.is_online])
   if (user)
   {
     return (
@@ -13,6 +19,12 @@ function Profile() {
           <Link to="/profile" className="img">
             <img src={getendpoint("http", user?.avatar)} alt="" />
           </Link>
+          {
+            isOnline &&
+            <div className="ParentCircle">
+              <div className="onlineCircle"></div>
+            </div>
+          }
           <Link to="/profile">
             <span>{user?.username}</span>
           </Link>

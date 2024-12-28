@@ -1,18 +1,31 @@
 .Home-BadgesList{
-    width: 40%;
+    width: 43%;
     background-color: var(--fade);
     border-radius: 20px;
-    height: 22vh;
+    height: 210px;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Home-BadgesList .contentBadge{
+    width: 95%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
     flex-direction: column;
 }
 
-.Home-BadgesList h2{
+.Home-BadgesList .titleBadge{
+    display: flex;
+    text-align: center;
+}
+.Home-BadgesList .titleBadge h2{
     color: var(--primary);
     font-family: var(--sans);
-    margin: 5% 0 0 5%;
-    font-size: 2vh;
+    /* font-size: 2vh; */
 }
+
 
 .Home-badgesList {
     display: flex;
@@ -25,8 +38,6 @@
     position: relative; 
     overflow-x: auto;
     scroll-behavior: smooth;
-    margin-left: 2%;
-    margin-right: 2%;
 }
 
 .Home-badgesScroll{
@@ -35,7 +46,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    height: 15vh;
+    height: 140px;
     width: 100%;
 }
 
@@ -44,11 +55,13 @@
 }
 
 .Home-badgesList .Home-child{
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 .Home-badgesList{
     display: flex;
+    flex-direction: row;
+
 }
 
 .Home-badgesList .Home-child img{
@@ -91,7 +104,7 @@
         margin-top: 2%;
     }
     .Home-BadgesList h2{
-        margin-top: 3%;
+        /* margin-top: 3%; */
     }
 }
 
