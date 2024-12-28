@@ -39,6 +39,13 @@
 	font-size: 16px;
 }
 
+.friends-container {
+	overflow: hidden;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #888 transparent;
+}
+
 .friendProfile {
 	display: flex;
 	flex-direction: row;
