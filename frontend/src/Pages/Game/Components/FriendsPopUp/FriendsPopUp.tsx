@@ -19,7 +19,7 @@ function FriendItem({friend}:FriendItemData) {
         <img src={getendpoint("http", friend.avatar)} className="friendInviteAvatar" />
         <span>{friend.username}</span>
       </div>
-      <span>7.5</span>
+      <span>7.5 lvl</span>
     </div>
   )
 }

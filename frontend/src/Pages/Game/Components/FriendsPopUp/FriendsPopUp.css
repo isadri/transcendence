@@ -24,6 +24,7 @@
   width: 100%;
   display: flex;
   margin: 5% 0;
+  margin-top: 3%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
