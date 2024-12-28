@@ -78,7 +78,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         """
         print("type ===> ", type)
         channel_layer = get_channel_layer()
-        # async_to_sync(channel_layer.group_send)(
         await channel_layer.group_send(
             f"user_{user_id}_notifications",
             {

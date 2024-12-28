@@ -69,7 +69,7 @@ function Authentication() {
       })
       .catch(() => {
         authContext?.setIsLogged(false)
-        authContext?.setUser(undefined)
+        authContext?.setUser(null)
       })
   }
   const handelVerifyCode = () => {
@@ -101,7 +101,7 @@ function Authentication() {
       .catch((error) => {
         console.log(error.response.data.error)
         SetshowOtpAlert(false)
-        authContext?.setDisplayed(2)
+        authContext?.setDisplayed(3)
         authContext?.setCreatedAlert(error.response.data.error);
       })
   }
@@ -111,7 +111,9 @@ function Authentication() {
     if (confirmPassword === password && (errors.username === '' && errors.email === '' && errors.password === '')) {
       axios.post(getendpoint("http", '/api/accounts/register/'), data_reg, { withCredentials: true })
         .then(() => {
-          setVal(true);
+          setVal(true)
+          authContext?.setCreatedAlert('Please confirm your email. Check your inbox')
+          authContext?.setDisplayed(4)
           setUsername('')
           setEmail('')
           setPassword('')
@@ -148,7 +150,7 @@ function Authentication() {
     {
       if (!data_login.password || !data_login.username)
       {
-        authContext?.setDisplayed(2)
+        authContext?.setDisplayed(3)
         authContext?.setCreatedAlert("Please fill in all required fields");
       }
       else
@@ -180,10 +182,11 @@ function Authentication() {
               const errors = error.response.data;
               for (const field in errors) {
                 if (errors[field].length > 0) {
-                  list.push([field, errors[field][0]])
+                  list.push([field, errors[field]])
                 }
               }
               setErrorList(list)
+              // console.log(list)
             }
             else if (error.request) {
               // authContext?.setDisplayed(2)
@@ -194,7 +197,7 @@ function Authentication() {
     } catch (error: any) {
       if (error.response) {
         if (error.response.data.detail){
-          authContext?.setDisplayed(2)
+          authContext?.setDisplayed(3)
           authContext?.setCreatedAlert(error.response.data.detail);
           console.log("Error response data:", error.response.data.detail);
         }
@@ -317,7 +320,7 @@ function Authentication() {
           <div className='form' >
             {
               Error && checkError("error") && checkError("error")[0] === "error" &&
-              <p className='errorSet'>Invalid username or password</p>
+              <p className='errorSet'>{checkError("error")[1]}</p>
             }
             <input type="text" name="username" id="UserName" placeholder='UserName or Email'
               value={username} onChange={(e) => setUsername(e.target.value)} required />

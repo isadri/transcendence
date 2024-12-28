@@ -78,6 +78,17 @@ def send_otp_email(user: User) -> None:
         from_email='issam.abk01@gmail.com'
     )
 
+def send_otp_to(user: User, toEmail: str) -> None: 
+    """
+    Send an email to the user containg the otp key to confirm email on setting
+    """
+    user.email_user_to_email(
+        subject='Email verification',
+        message=('Your verification code is: '
+                 f'{str(user.otp)}'),
+        from_email='issam.abk01@gmail.com',
+        to_email=toEmail
+    )
 
 def get_tokens_for_user(user: User) -> tuple[str, str]:
     """

@@ -2,7 +2,7 @@ import axios from "axios";
 import "./Setting.css";
 import ava from "./images/default.jpeg"
 import { useEffect, useState } from "react";
-import { getContext, getUser, getendpoint } from "../../context/getContextData";
+import { getContext, getUser, getendpoint} from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 
@@ -15,7 +15,7 @@ interface Data {
   confirmPassword: string;
 }
 
-
+axios.defaults.withCredentials = true
 const Setting = () => {
   const authContext = getContext()
   const user = getUser();
@@ -29,6 +29,7 @@ const Setting = () => {
   const [confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
   const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
   const [isOtpDisactive, setIsOtpDisactive] = useState(false)
+  const [confirmEmail, setConfirmEmail] = useState(false)
   const [errors, SetErrors] = useState<Data>({
     username: "",
     email: "",
@@ -45,7 +46,7 @@ const Setting = () => {
     password: "",
     confirmPassword: "",
   });
-
+  console.log("usr => ", user?.from_remote_api)
 
   // handel setting data changed username, email, password and avatar
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +60,7 @@ const Setting = () => {
       SetIsRemove(false);
       const previewUrl = URL.createObjectURL(file);
       SetDataUpdated((prevData) => {
-        const updatedData = {...prevData, avatar: previewUrl};
+        const updatedData = { ...prevData, avatar: previewUrl };
         return updatedData;
       });
     }
@@ -67,10 +68,9 @@ const Setting = () => {
 
   const UpdateUserData = () => {
     const formData = new FormData();
-    formData.append("username", dataUpdated.username || "");
+    formData.append("username", dataUpdated.username || "")
     formData.append("email", dataUpdated.email || "");
-
-    formData.append("isRemove", IsRemove ? "yes" : "no");
+    formData.append("isRemove", IsRemove ? "yes" : "no")
     if (dataUpdated.avatar) {
       const avatarFileInput = document.getElementById(
         "file-input"
@@ -79,17 +79,38 @@ const Setting = () => {
         formData.append("avatar", avatarFileInput.files[0]);
       }
     }
-    axios
-      .put(getendpoint("http", "/api/accounts/updateuserData/"), formData, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        authContext?.setUser(response.data);
-        SetErrors({ ...errors, username: "", email: "", avatar: "" });
-      })
-      .catch((error) => {
-        SetErrors(error.response.data);
-      });
+    if (formData.get("username") !== user?.username
+      || formData.get("email") !== user?.email
+      || (formData.get("avatar") || IsRemove))
+    {
+      // if (formData.get("email") !== user?.email) {
+      //   setConfirmEmail(true)
+      //   axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`), { val: true }, { withCredentials: true })
+      // }
+      axios
+        .put(getendpoint("http", "/api/accounts/updateuserData/"), formData, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          console.log("res => ", response.data.message)
+          if (response.data.message)
+          {
+            setConfirmEmail(true)
+          }
+          else
+          {
+            authContext?.setUser(response.data.data);
+            SetErrors({ ...errors, username: "", email: "", avatar: "" });
+            console.log("saved sacces")
+          }
+        })
+        .catch((error) => {
+          SetErrors(error.response.data);
+        });
+    }
+    else {
+      console.log("No changes deticted")
+    }
   };
 
   const UpdateUserPass = () => {
@@ -133,34 +154,33 @@ const Setting = () => {
       return updatedData;
     });
   };
-  
+
   //  delete account handling
-  const handelDeleteAccount = (state: string) =>{
+  const handelDeleteAccount = (state: string) => {
     setShowAlert(true)
-    if (state === "confirm")
-    {
+    if (state === "confirm") {
       authContext?.setDisplayed(2);
     }
     else
       SetConfirm(3)
-  axios
-    .delete(getendpoint("http", "/api/accounts/deleteUser/"), {
-      data: {confirm: state === "confirm" ?  "yes" : "no" },
-      withCredentials: true,
-    })
-    .then((response) =>{
-      authContext?.setCreatedAlert(response.data.detail);
-      authContext?.setIsLogged(false)
-      navigate('/')
-    })
-    .catch((error) => {
+    axios
+      .delete(getendpoint("http", "/api/accounts/deleteUser/"), {
+        data: { confirm: state === "confirm" ? "yes" : "no" },
+        withCredentials: true,
+      })
+      .then((response) => {
+        authContext?.setCreatedAlert(response.data.detail);
+        authContext?.setIsLogged(false)
+        navigate('/')
+      })
+      .catch((error) => {
         SetMyAlert(false)
         setcreatedAlert(error.response.data.detail)
-    })
+      })
   }
-  
+
   // handel otp activation
-  
+
   const disableOtp = () => {
     const checkbox = document.getElementById('otpToggle') as HTMLInputElement;
     checkbox.checked = false
@@ -168,6 +188,7 @@ const Setting = () => {
     setIsOtpDisactive(true)
     axios.post(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}/`),{val: false}, {withCredentials: true})
   }
+
   const handleOtpToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       SetshowOtpAlert(true);
@@ -176,9 +197,9 @@ const Setting = () => {
       disableOtp()
     }
   };
-  
+
   const handelVerifyCode = () => {
-    axios.post(getendpoint("http", "/api/accounts/checkValidOtp/"), {key : otpcode}, {withCredentials: true})
+    axios.post(getendpoint("http", "/api/accounts/checkValidOtp/"), { key: otpcode }, { withCredentials: true })
       .then(() => {
         setVerified(2)
       })
@@ -186,21 +207,43 @@ const Setting = () => {
         setVerified(1)
       })
   }
-  
+
+  const handelVerifyCodeOfEmail = () => {
+    axios.post(getendpoint("http", "/api/accounts/checkValidOtpEmail/"), {key: otpcode})
+      .then((response) => {
+        setVerified(2)
+        if(user)
+        {
+          user.email = response.data
+          authContext?.setUser(user)
+        }
+      })
+      .catch(() => {
+        setVerified(1)
+      })
+  }
+
   const handelActiveOTP = () => {
     SetshowOtpAlert(false)
     setVerified(0)
   }
+  const handelFailedEmailVer = () => {
+    setConfirmEmail(false)
+    setVerified(0)
+  }
 
   useEffect(() => {
-    axios.get(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}`), {withCredentials: true})
-    .then((response) => {
-      const checkbox = document.getElementById('otpToggle') as HTMLInputElement
-      if (response.data === true)
-        checkbox.checked = true
-      else
-        checkbox.checked = false
-    })
+    axios.get(getendpoint("http", `/api/accounts/SendOTPView/${user?.username}`), { withCredentials: true })
+      .then((response) => {
+        const checkbox = document.getElementById('otpToggle') as HTMLInputElement
+        if (response.data === true)
+          checkbox.checked = true
+        else
+        {
+          console.log("disable otp on relaoud")
+          checkbox.checked = false
+        }
+      })
     if (showAlert) {
       setTimeout(() => {
         SetConfirm(1);
@@ -210,17 +253,17 @@ const Setting = () => {
     setTimeout(() => {
       setIsOtpDisactive(false)
     }, 900);
-  }, [showAlert, Verified, setIsOtpDisactive, isOtpDisactive]);
+  }, [showAlert,Verified, setIsOtpDisactive, isOtpDisactive]);
 
   return (
     <>
       <div className={`alert-acountNotDeleted ${confirm === 3 ? "show" : "hide"}`}>
-          <i className="fa-solid fa-circle-exclamation"></i>
-          <span>{createdAlert}</span>
+        <i className="fa-solid fa-circle-exclamation"></i>
+        <span>{createdAlert}</span>
       </div>
       <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>
-          <i className="fa-solid fa-circle-exclamation"></i>
-          <span>Two-Factor Authentication disabled</span>
+        <i className="fa-solid fa-circle-exclamation"></i>
+        <span>Two-Factor Authentication disabled</span>
       </div>
       <div className="Par">
         <div className="settingPage">
@@ -228,31 +271,31 @@ const Setting = () => {
           <div className="settingContent">
             <div className="ProfileEdit">
               <h2 >Edit Profile</h2>
-            <div className="ChangeAvatar">
-              <div className="img">
-                <img
-                  src={IsRemove ? ava :
-                    dataUpdated.avatar || getendpoint("http", user?.avatar || "")
-                  }
-                  alt="Avatar"
-                />
+              <div className="ChangeAvatar">
+                <div className="img">
+                  <img
+                    src={IsRemove ? ava :
+                      dataUpdated.avatar || getendpoint("http", user?.avatar || "")
+                    }
+                    alt="Avatar"
+                  />
+                </div>
+                <div className="btns">
+                  <button type="submit" onClick={handelRemoveAvatar}>
+                    Remove
+                  </button>
+                  <button type="submit" onClick={handelChangeButton}>
+                    Change
+                  </button>
+                  <input
+                    type="file"
+                    name="avatar"
+                    onChange={handleFileChange}
+                    id="file-input"
+                    style={{ display: "none" }}
+                  />
+                </div>
               </div>
-              <div className="btns">
-                <button type="submit" onClick={handelRemoveAvatar}>
-                  Remove
-                </button>
-                <button type="submit" onClick={handelChangeButton}>
-                  Change
-                </button>
-                <input
-                  type="file"
-                  name="avatar"
-                  onChange={handleFileChange}
-                  id="file-input"
-                  style={{ display: "none" }}
-                />
-              </div>
-            </div>
               <form onSubmit={(e) => e.preventDefault()}>
                 <div className="ProfileEdit-C1">
                   <label htmlFor="username">Username</label>
@@ -298,6 +341,7 @@ const Setting = () => {
                     id="CurrentPassword"
                     value={dataUpdated.CurrentPassword}
                     onChange={handleInputChange}
+                    disabled={user?.from_remote_api}
                   />
                   {errors.CurrentPassword !== "" && (
                     <p className="SettingError">{errors.CurrentPassword}</p>
@@ -337,14 +381,14 @@ const Setting = () => {
             <div className="EnableOtp">
               <div className="check">
                 <label htmlFor="otpToggle">Enable Two-Factor Authentication (2FA)</label>
-                <input id="otpToggle" type="checkbox" onChange={handleOtpToggle}/>
+                <input id="otpToggle" type="checkbox" onChange={handleOtpToggle} />
               </div>
               <div className="content">
                 <span className="description">Secure your account by enabling 2FA. You will be required to enter a one-time password during login.</span>
               </div>
             </div>
             <div className="Setting-action">
-              <span onClick={() => {SetMyAlert(true)}}>
+              <span onClick={() => { SetMyAlert(true) }}>
                 <i className="fa-solid fa-trash-can"></i>
                 Delete Account
               </span>
@@ -354,78 +398,131 @@ const Setting = () => {
             myAlert &&
             <div className="GameModePopUpBlur">
               <div className="alertDeleteUser">
-                  <div className="content">
-                    <div className="content-text">
-                        <div className="iconborder">
-                          <i className="fa-solid fa-trash-can"></i>
-                        </div>
-                      <div className="alert-text">
-                        <h3>Are you sure you want to delete your account</h3>
-                        <span>This action cannot be undone. Once your account is deleted,
-                          all your data, including your profile, game history, and settings,
-                          will be permanently removed.
-                          If you wish to proceed, click <b>Confirm</b> . To cancel, click <b>Cancel</b>
-                        </span>
-                      </div>
+                <div className="content">
+                  <div className="content-text">
+                    <div className="iconborder">
+                      <i className="fa-solid fa-trash-can"></i>
                     </div>
-                    <div className="btns alert-btns">
-                        <button type="submit" onClick={() => {handelDeleteAccount("cancel")}}>Cancel</button>
-                        <button type="submit" onClick={() => {handelDeleteAccount("confirm")}}>Confirm</button>
+                    <div className="alert-text">
+                      <h3>Are you sure you want to delete your account</h3>
+                      <span>This action cannot be undone. Once your account is deleted,
+                        all your data, including your profile, game history, and settings,
+                        will be permanently removed.
+                        If you wish to proceed, click <b>Confirm</b> . To cancel, click <b>Cancel</b>
+                      </span>
                     </div>
                   </div>
+                  <div className="btns alert-btns">
+                    <button type="submit" onClick={() => { handelDeleteAccount("cancel") }}>Cancel</button>
+                    <button type="submit" onClick={() => { handelDeleteAccount("confirm") }}>Confirm</button>
+                  </div>
                 </div>
+              </div>
             </div>
           }
           {
-            showOtpAlert && 
+            confirmEmail &&
             <div className="GameModePopUpBlur">
               {
                 Verified === 0 ?
-                <div className="alertDeleteUser alertOTP">
-                  <div className="cancelIcon">
-                    <i className="fa-solid fa-xmark" onClick={disableOtp}></i>
-                  </div>
-                  <div className="contentOtp">
-                    <div className="iconEmail">
-                    <i className="fa-solid fa-envelope-open-text"></i>
-                    <span></span>
+                  <div className="alertDeleteUser alertOTP">
+                    <div className="cancelIcon">
+                    <i className="fa-solid fa-xmark" onClick={() => setConfirmEmail(false)}></i>
                     </div>
-                    <div className="content-text">
-                      <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
-                      <span>A verification code has been sent to your email. Please check your inbox.</span>
-                      <input type="text" placeholder="Enter Code" 
-                      value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
-                    </div>
-                    <div className="Codefiled">
-                      <button type="submit" onClick={handelVerifyCode}>Verify</button>
-                    </div>
-                  </div>
-                </div>
-               : ( Verified === 1 ? (
-                <div className="alertDeleteUser alertOTP">
-                  <div className="contentvalidate">
-                    <i className="fa-solid fa-circle-xmark"></i>
-                    <h2 className="fail">Oops!</h2>
-                    <h3>Two-factor authentication failed!</h3>
-                    <span>The code you entered is invalid. Please try again.</span>
-                    <div className="Codefiled">
-                      <button type="submit" className="failbutton" onClick={handelActiveOTP}>TRY AGAIN</button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="alertDeleteUser alertOTP">
-                  <div className="contentvalidate">
-                      <i className="fa-solid fa-circle-check"></i>
-                      <h2>SUCCESS!</h2>
-                      <h3>Two-factor authentication successfully activated!</h3>
-                      <span>Your account is now more secure.</span>
-                      <div className="Codefiled">
-                        <button type="submit" onClick={handelActiveOTP}>Done</button>
+                    <div className="contentOtp">
+                      <div className="iconEmail">
+                        <i className="fa-solid fa-envelope-open-text"></i>
+                        <span></span>
                       </div>
+                      <div className="content-text">
+                      <h3>Please enter the verification code to Confirm your new email</h3>
+                        <span>A verification code has been sent to your email. Please check your inbox.</span>
+                        <input type="text" placeholder="Enter Code"
+                          value={otpcode} onChange={e => setOtpCode(e.target.value)} />
+                      </div>
+                      <div className="Codefiled">
+                        <button type="submit" onClick={handelVerifyCodeOfEmail}>Verify</button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))
+                  : (Verified === 1 ? (
+                    <div className="alertDeleteUser alertOTP">
+                      <div className="contentvalidate">
+                        <i className="fa-solid fa-circle-xmark"></i>
+                        <h2 className="fail">Oops!</h2>
+                        <h3>Verification code failed!</h3>
+                        <span>The code you entered is invalid. Please try again.</span>
+                        <div className="Codefiled">
+                          <button type="submit" className="failbutton" onClick={handelFailedEmailVer}>TRY AGAIN</button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="alertDeleteUser alertOTP">
+                      <div className="contentvalidate">
+                        <i className="fa-solid fa-circle-check"></i>
+                        <h2>SUCCESS!</h2>
+                        <h3>Your email was successfully confirmed!</h3>
+                        <span>Your account is now more secure.</span>
+                        <div className="Codefiled">
+                          <button type="submit" onClick={handelFailedEmailVer}>Done</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              }
+            </div>
+          }
+          {
+            showOtpAlert &&
+            <div className="GameModePopUpBlur">
+              {
+                Verified === 0 ?
+                  <div className="alertDeleteUser alertOTP">
+                    <div className="cancelIcon">
+                      <i className="fa-solid fa-xmark" onClick={disableOtp}></i>
+                    </div>
+                    <div className="contentOtp">
+                      <div className="iconEmail">
+                        <i className="fa-solid fa-envelope-open-text"></i>
+                        <span></span>
+                      </div>
+                      <div className="content-text">
+                        <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
+                        <span>A verification code has been sent to your email. Please check your inbox.</span>
+                        <input type="text" placeholder="Enter Code"
+                          value={otpcode} onChange={e => setOtpCode(e.target.value)} />
+                      </div>
+                      <div className="Codefiled">
+                        <button type="submit" onClick={handelVerifyCode}>Verify</button>
+                      </div>
+                    </div>
+                  </div>
+                  : (Verified === 1 ? (
+                    <div className="alertDeleteUser alertOTP">
+                      <div className="contentvalidate">
+                        <i className="fa-solid fa-circle-xmark"></i>
+                        <h2 className="fail">Oops!</h2>
+                        <h3>Two-factor authentication failed!</h3>
+                        <span>The code you entered is invalid. Please try again.</span>
+                        <div className="Codefiled">
+                          <button type="submit" className="failbutton" onClick={handelActiveOTP}>TRY AGAIN</button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="alertDeleteUser alertOTP">
+                      <div className="contentvalidate">
+                        <i className="fa-solid fa-circle-check"></i>
+                        <h2>SUCCESS!</h2>
+                        <h3>Two-factor authentication successfully activated!</h3>
+                        <span>Your account is now more secure.</span>
+                        <div className="Codefiled">
+                          <button type="submit" onClick={handelActiveOTP}>Done</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
               }
             </div>
           }
