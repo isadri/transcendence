@@ -72,7 +72,9 @@ class HomeView(APIView):
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            data = serializer.data.copy()
+            data['usable_password'] = request.user.has_usable_password()
+            return Response(data, status=status.HTTP_200_OK)
      
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 

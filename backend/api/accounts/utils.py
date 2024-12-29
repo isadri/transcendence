@@ -243,6 +243,8 @@ def get_user(data: dict) -> User | None:
                 register_complete=register_state
             )
             set_avatar(user, data.get('avatar_url'))
+            user.set_unusable_password()
+            user.save()
     return user
 
 
