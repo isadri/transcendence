@@ -74,7 +74,7 @@ const FriendRequests = () => {
 	};
 
 	return (
-		<div>
+		<div className="requests-friends-page" >
 			{friendRequests.map((friend) => {
 				return (
 					<div className="friendProfile friendRequests" key={friend.id}>
