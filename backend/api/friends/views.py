@@ -269,7 +269,7 @@ class CancelFriendRequestsView(APIView):
             receivers = [request.receiver for request in pending_requests]
 
             serializer = FriendSerializer(
-                    receivers, many=True, context={"request": request}
+                    receivers, many=True, context={"user": request.user}
                 )
 
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -349,8 +349,8 @@ class FriendListView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            friend_list = FriendList.objects.get(user=self.request.user)
-            serializer = self.get_serializer(friend_list)
+            friend_list = FriendList.objects.get(user=request.user)
+            serializer = FriendListSerializer(friend_list, context={'user' : request.user})
             return Response(serializer.data)
         except FriendList.DoesNotExist:
             return Response({"friends": []})
@@ -401,7 +401,7 @@ class UserListView(APIView):
         users = User.objects.exclude(id=request.user.id).exclude(id__in=blocked_users_ids)
 
         # Pass the request context to the serializer
-        serializer = FriendSerializer(users, many=True, context={'request': request})
+        serializer = FriendSerializer(users, many=True, context={'user': request.user})
 
         # Serialize and return the data
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -423,7 +423,7 @@ class UserListUnfriendsView(APIView):
         users = User.objects.exclude(id=request.user.id).exclude(id__in=users_ids)
 
         # Pass the request context to the serializer
-        serializer = FriendSerializer(users, many=True, context={'request': request})
+        serializer = FriendSerializer(users, many=True, context={'user': request.user})
 
         # Serialize and return the data
         return Response(serializer.data, status=status.HTTP_200_OK)

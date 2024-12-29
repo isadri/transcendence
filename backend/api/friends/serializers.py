@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.http import request
 from rest_framework import serializers
 from django.db.models import Q
 
+from ..accounts.serializers import UserSerializer
 from .models import FriendList, FriendRequest
 
 
@@ -22,18 +22,18 @@ User = get_user_model()
 #             Q(sender=request_user, receiver=obj, status='blocked')
 #         ).exists()
 
-class FriendSerializer(serializers.ModelSerializer):
+class FriendSerializer(UserSerializer):
     is_blocked = serializers.SerializerMethodField()
 
-    class Meta:
+    class Meta(UserSerializer.Meta):
         model = User
-        fields = ['id', 'username', 'avatar', 'is_blocked']
+        fields = UserSerializer.Meta.fields + ['is_blocked']
 
     def get_is_blocked(self, obj):
         """
         Checks if the current user has blocked or is blocked by the given user (`obj`).
         """
-        request_user = self.context['request'].user
+        request_user = self.context['user']
         # Check if there is a blocked friend request in either direction
         return FriendRequest.objects.filter(
             Q(sender=request_user, receiver=obj, status='blocked') |

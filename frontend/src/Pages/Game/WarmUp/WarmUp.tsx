@@ -32,11 +32,11 @@ interface ContextData {
   setReady: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const socketContext = createContext<ContextData | null>(null)
+export const WarmUpContext = createContext<ContextData | null>(null)
 
 const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
   const user = getUser()
-  const context = useContext(socketContext)
+  const context = useContext(WarmUpContext)
   const navigator = useNavigate()
   if (context) {
     const { socket, setSocket, enemyUser, setEnemyUser, setReady,setDisplayFriends } = context
@@ -141,9 +141,11 @@ const WarmUpBox = () => {
 }
 
 const ReadyContext = () => {
-  const context = useContext(socketContext)
+  const context = useContext(WarmUpContext)
   if (context) {
-    let { socket, ready, setReady, setSocket, setEnemyUser, } = context
+    let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser} = context
+    console.log(enemyUser);
+    
     const onReady = () => {
       if (ready)
         return
@@ -190,7 +192,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<EnemyUserData | null>(null)
   return (
-    <socketContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>
+    <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>
       <div className="GameWarmUp">
         <h2>Warm Up</h2>
         <div className="WarmUpOther">
@@ -206,7 +208,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
         </div>
       </div>
       {displayFriends ? <FriendsPopUp setter={setDisplayFriends}/> : <></>}
-    </socketContext.Provider>
+    </WarmUpContext.Provider>
   );
 }
 
