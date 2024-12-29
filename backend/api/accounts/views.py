@@ -563,6 +563,9 @@ class ResetPasswordViewSet(viewsets.ViewSet):
             return Response({
                 'error': 'Invalid request'
             }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+                    'info': 'You can reset Your password'
+                }, status=status.HTTP_200_BAD_REQUEST)
 
     def create(self, request: Request) -> None:
         """
