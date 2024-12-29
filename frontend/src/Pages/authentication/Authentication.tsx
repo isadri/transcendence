@@ -61,6 +61,20 @@ function Authentication() {
     email
   }
 
+  const handleKeyDownLogin = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handelLoginSubmit(event)
+    }
+  };
+  
+  const handleKeyDownRegister = (event: any) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handelRegistringSubmit(event)
+    }
+  };
+
   const GetUserInfo = () => {
     axios.get(getendpoint('http', '/'), { withCredentials: true })
       .then((response: any) => {
@@ -73,15 +87,15 @@ function Authentication() {
       })
   }
   const handelVerifyCode = () => {
-    console.log("username => " ,username)
-    axios.post(getendpoint("http", "/api/accounts/verify-otp/"), 
-    {
-      username,
-      password,
-      code: userCode,
-      key: otpcode
-    },
-    {withCredentials: true})
+    console.log("username => ", username)
+    axios.post(getendpoint("http", "/api/accounts/verify-otp/"),
+      {
+        username,
+        password,
+        code: userCode,
+        key: otpcode
+      },
+      { withCredentials: true })
       .then((response) => {
         authContext?.setIsLogged(true);
         navigate('/');
@@ -107,54 +121,54 @@ function Authentication() {
   }
 
   const handelRegistringSubmit = async (e: any) => {
-    e.preventDefault();
-    if (confirmPassword === password && (errors.username === '' && errors.email === '' && errors.password === '')) {
-      axios.post(getendpoint("http", '/api/accounts/register/'), data_reg, { withCredentials: true })
-        .then(() => {
-          setVal(true)
-          authContext?.setCreatedAlert('Please confirm your email. Check your inbox')
-          authContext?.setDisplayed(4)
-          setUsername('')
-          setEmail('')
-          setPassword('')
-          // SetErrors({
-          //   username: '',
-          //   email: '',
-          //   password: '',
-          //   confirmPassword: ''
-          // })
-        })
-        .catch((error: any) => {
-          console.log(error.response.data)
-          setError(true)
-          if (error.response && error.response.data) {
-            const list = []
-            const errors = error.response.data;
-            for (const field in errors) {
-              if (errors[field].length > 0) {
-                list.push([field, errors[field][0]])
+    if (username !== '' && password !== '' || confirmPassword !== '' || email !== '')
+    {
+      e.preventDefault();
+      if (confirmPassword === password && (errors.username === '' && errors.email === '' && errors.password === '')) {
+        axios.post(getendpoint("http", '/api/accounts/register/'), data_reg, { withCredentials: true })
+          .then(() => {
+            setVal(true)
+            authContext?.setCreatedAlert('Please confirm your email. Check your inbox')
+            authContext?.setDisplayed(4)
+            setUsername('')
+            setEmail('')
+            setPassword('')
+            // SetErrors({
+            //   username: '',
+            //   email: '',
+            //   password: '',
+            //   confirmPassword: ''
+            // })
+          })
+          .catch((error: any) => {
+            console.log(error.response.data)
+            setError(true)
+            if (error.response && error.response.data) {
+              const list = []
+              const errors = error.response.data;
+              for (const field in errors) {
+                if (errors[field].length > 0) {
+                  list.push([field, errors[field][0]])
+                }
               }
+              setErrorList(list)
             }
-            setErrorList(list)
-          }
-          else if (error.request) {
-            //to do
-          }
-        });
+            else if (error.request) {
+              //to do
+            }
+          });
+      }
     }
   }
   const handelLoginSubmit = async (e: any) => {
     e.preventDefault();
     var url_login = getendpoint("http", '/api/accounts/login/')
-    try
-    {
-      if (!data_login.password || !data_login.username)
-      {
+    try {
+      if (!data_login.password || !data_login.username) {
         authContext?.setDisplayed(3)
         authContext?.setCreatedAlert("Please fill in all required fields");
       }
-      else
-      {
+      else {
         const otpResponse = await axios.get(getendpoint("http", `/api/accounts/SendOTPView/${data_login.username}`), { withCredentials: true })
         if (otpResponse.data === true) {
           url_login = getendpoint("http", '/api/accounts/login2fa/')
@@ -162,7 +176,7 @@ function Authentication() {
         axios.post(url_login, data_login, { withCredentials: true })
           .then((response) => {
             if (otpResponse.data) {
-              console.log( "code ===>  ",  response.data)
+              console.log("code ===>  ", response.data)
               setUserCode(response.data.code)
               SetshowOtpAlert(true)
             } else {
@@ -196,7 +210,7 @@ function Authentication() {
       }
     } catch (error: any) {
       if (error.response) {
-        if (error.response.data.detail){
+        if (error.response.data.detail) {
           authContext?.setDisplayed(3)
           authContext?.setCreatedAlert(error.response.data.detail);
           console.log("Error response data:", error.response.data.detail);
@@ -215,11 +229,30 @@ function Authentication() {
 
   const handelRegisterErorrs = (e: any, str: string) => {
     if (str === "username") {
-      if (!/^[a-zA-Z0-9._-]{3,15}$/.test(e.target.value))
+      if (e.target.value.length < 3 || e.target.value.length > 15) {
         SetErrors(prevState => ({
           ...prevState,
-          username: "Please enter a valid username. It must be at least 3 and 15 characters long ,can only contain letters, numbers, and '_', '-', '.'"
+          username: "Username must be between 3 and 15 characters long."
         }))
+      }
+      else if (!/[a-zA-Z]/.test(e.target.value)) {
+        SetErrors(prevState => ({
+          ...prevState,
+          username: "Username must contain at least one letter ."
+        }))
+      }
+      else if (/[^a-zA-Z0-9._-]/.test(e.target.value)) {
+        SetErrors(prevState => ({
+          ...prevState,
+          username: "Username contains invalid characters. Only '.', '_', and '-' are allowed."
+        }))
+      }
+      else if (!/^[a-z_]/.test(e.target.value)) {
+        SetErrors(prevState => ({
+          ...prevState,
+          username: "The username must begin with a lowercase character or an underscore (_)."
+        }))
+      }
       else
         SetErrors(prevstate => ({
           ...prevstate,
@@ -261,7 +294,7 @@ function Authentication() {
       setPassword(e.target.value)
     }
     else if (str === "email") {
-      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(e.target.value))
+      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(e.target.value))
         SetErrors(prevState => ({
           ...prevState,
           email: "Please enter a valid email."
@@ -324,10 +357,10 @@ function Authentication() {
             }
             <input type="text" name="username" id="UserName" placeholder='UserName or Email'
               value={username} onChange={(e) => setUsername(e.target.value)} required />
-            <input type="text" name="password" id="Pass" placeholder='Password'
-              value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input type="text" name="password" id="Pass" placeholder='Password' onKeyDown={e => handleKeyDownLogin(e)}
+              value={password} onChange={(e) => setPassword(e.target.value) } required />
             <Link to="">Forget your password?</Link>
-            <button type='submit' aria-label="Sign in" onClick={e => handelLoginSubmit(e)}>Sign in</button>
+            <button type='submit' id='submitBtn' onKeyDown={e => handleKeyDownLogin(e)} aria-label="Sign in" onClick={e => handelLoginSubmit(e)}>Sign in</button>
             <span className='RespSign'>Don't have an account? <Link to="" onClick={() => { setVal(false) }}>Sign Up</Link></span>
           </div>
           <div className='lines'>
@@ -362,7 +395,7 @@ function Authentication() {
               value={username} onChange={(e) => handelRegisterErorrs(e, "username")} required />
             {
               Error && checkError("username") && checkError("username")[0] === "username" &&
-               <p className='errorSet'>{checkError("username")[1]}</p>
+              <p className='errorSet'>{checkError("username")[1]}</p>
             }
             {
               errors.username !== '' && <p className='errorSet' >{errors.username}</p>
@@ -370,8 +403,8 @@ function Authentication() {
             <input type="text" name="Email" id="Email" placeholder="Email"
               value={email} onChange={(e) => handelRegisterErorrs(e, "email")} required />
             {
-               Error && checkError("email") && checkError("email")[0] === "email" &&
-               <p className='errorSet'>{checkError("email")[1]}</p>
+              Error && checkError("email") && checkError("email")[0] === "email" &&
+              <p className='errorSet'>{checkError("email")[1]}</p>
             }
             {
               errors.email !== '' && <p className='errorSet' >{errors.email}</p>
@@ -379,17 +412,18 @@ function Authentication() {
             <input type="text" name="password" id="Pass" placeholder='Password'
               value={password} onChange={(e) => handelRegisterErorrs(e, "password")} required />
             {
-               Error && checkError("password") && checkError("password")[0] === "password" &&
-               <p className='errorSet'>{checkError("password")[1]}</p>
+              Error && checkError("password") && checkError("password")[0] === "password" &&
+              <p className='errorSet'>{checkError("password")[1]}</p>
             }
             {
               errors.password !== '' && <p className='errorSet' >{errors.password}</p>
             }
-            <input type="text" placeholder="Confirm Password" value={confirmPassword} onChange={e => handelRegisterErorrs(e, "confirmPassword")} />
+            <input type="text" placeholder="Confirm Password" value={confirmPassword}
+            onKeyDown={e => handleKeyDownRegister(e)} onChange={e => handelRegisterErorrs(e, "confirmPassword")} />
             {
               errors.confirmPassword !== '' && <p className='errorSet' >{errors.confirmPassword}</p>
             }
-            <button type='submit' onClick={e => handelRegistringSubmit(e)}>Sign Up</button>
+            <button type='submit' onClick={e => handelRegistringSubmit(e)} onKeyDown={e => handleKeyDownRegister(e)} >Sign Up</button>
             <span className='RespSign'>Already have an account? <Link to="" onClick={() => { setVal(true) }}>Sign In</Link></span>
           </div>
           <div className='lines'>
@@ -444,56 +478,56 @@ function Authentication() {
           </div>
         </div>
       </div>
-        {
-          showOtpAlert && 
-          <div className="GameModePopUpBlur">
-            <div className="alertDeleteUser alertOTP">
-              <div className="cancelIcon">
-                <i className="fa-solid fa-xmark" onClick={() => SetshowOtpAlert(false)}></i>
-              </div>
-              <div className="contentOtp">
-                <div className="iconEmail">
+      {
+        showOtpAlert &&
+        <div className="GameModePopUpBlur">
+          <div className="alertDeleteUser alertOTP">
+            <div className="cancelIcon">
+              <i className="fa-solid fa-xmark" onClick={() => SetshowOtpAlert(false)}></i>
+            </div>
+            <div className="contentOtp">
+              <div className="iconEmail">
                 <i className="fa-solid fa-envelope-open-text"></i>
                 <span></span>
-                </div>
-                <div className="content-text">
-                  <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
-                  <span>A verification code has been sent to your email. Please check your inbox.</span>
-                  <input className='inputt' type="text" placeholder="Enter Code" 
-                    value={otpcode} onChange={e => setOtpCode(e.target.value)}/>
-                </div>
-                <div className="Codefiled">
-                  <button type="submit" onClick={handelVerifyCode}>Verify</button>
-                </div>
+              </div>
+              <div className="content-text">
+                <h3>Please enter the verification code to activate Two-Factor Authentication</h3>
+                <span>A verification code has been sent to your email. Please check your inbox.</span>
+                <input className='inputt' type="text" placeholder="Enter Code"
+                  value={otpcode} onChange={e => setOtpCode(e.target.value)} />
+              </div>
+              <div className="Codefiled">
+                <button type="submit" onClick={handelVerifyCode}>Verify</button>
               </div>
             </div>
           </div>
-        }
-        {
-          // <div className="GameModePopUpBlur">
-          //   <div className="alertDeleteUser alertOTP">
-          //     {/* <div className="cancelIcon">
-          //       <i className="fa-solid fa-xmark" onClick={() => SetshowOtpAlert(false)}></i>
-          //     </div> */}
-          //     <div className="contentOtp">
-          //       <div className="iconEmail">
-          //       <i className="fa-solid fa-user-pen"></i>
-          //       <span></span>
-          //       </div>
-          //       <div className="content-text auth-alert">
-          //         <h3>Update Your Username</h3>
-          //         <span>Please ensure your username complies with our policy. It must be
-          //           alphanumeric and between 3-15 characters. If valid, click "Confirm" to
-          //           continue.</span>
-          //         <input className='inputt' type="text" placeholder="Enter Username" />
-          //       </div>
-          //       <div className="Codefiled">
-          //         <button type="submit">Confirm</button>
-          //       </div>
-          //     </div>
-          //   </div>
-          // </div>
-        }
+        </div>
+      }
+      {
+        // <div className="GameModePopUpBlur">
+        //   <div className="alertDeleteUser alertOTP">
+        //     {/* <div className="cancelIcon">
+        //       <i className="fa-solid fa-xmark" onClick={() => SetshowOtpAlert(false)}></i>
+        //     </div> */}
+        //     <div className="contentOtp">
+        //       <div className="iconEmail">
+        //       <i className="fa-solid fa-user-pen"></i>
+        //       <span></span>
+        //       </div>
+        //       <div className="content-text auth-alert">
+        //         <h3>Update Your Username</h3>
+        //         <span>Please ensure your username complies with our policy. It must be
+        //           alphanumeric and between 3-15 characters. If valid, click "Confirm" to
+        //           continue.</span>
+        //         <input className='inputt' type="text" placeholder="Enter Username" />
+        //       </div>
+        //       <div className="Codefiled">
+        //         <button type="submit">Confirm</button>
+        //       </div>
+        //     </div>
+        //   </div>
+        // </div>
+      }
     </>
   )
 }
