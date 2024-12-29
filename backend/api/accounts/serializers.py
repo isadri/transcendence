@@ -4,6 +4,8 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import User
 
+from ..game.models import UserStats
+from ..game.serializers import UserStatsSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -12,17 +14,24 @@ class UserSerializer(serializers.ModelSerializer):
     Raises:
         serializers.ValidationError: If any of user fields are not valid.
     """
+    stats = serializers.SerializerMethodField() # game/level stats
     avatar = serializers.ImageField(default='default.jpeg', allow_null=True)
 
     class Meta:
         model = User
         fields = [
                 'id', 'username', 'email', 'password', 'avatar', 'active_chat', 'open_chat',
-                'register_complete', 'from_remote_api', 'email_verified', 'is_online', 'tmp_email'
+                'register_complete', 'from_remote_api', 'email_verified', 'is_online', 'tmp_email', 'stats'
             ]
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+
+    def get_stats(self, obj):
+        userStats = UserStats.objects.get(user=obj)
+        statsSerializer = UserStatsSerializer(userStats)
+        return statsSerializer.data
 
     def validate_username(self, value: str) -> str:
         """
