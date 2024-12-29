@@ -10,13 +10,13 @@
 	scrollbar-width: thin;
 	scrollbar-color: #888 transparent;
 	position: relative;
-	-ms-overflow-style: none; /* Hide scrollbars in IE and Edge */
-	scrollbar-width: none; /* Hide scrollbars in Firefox */
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 /* check if this work or not */
 .ChatList-friends::-webkit-scrollbar {
-	width: 8px;
+	display: none;
 }
 
 .ChatList-friends::-webkit-scrollbar-track {

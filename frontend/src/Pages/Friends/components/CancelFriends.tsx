@@ -40,7 +40,7 @@ const CancelFriends = () => {
 					{
 						withCredentials: true,
 					}
-				)
+				);
 				setPendingUsers(response.data);
 			} catch (err) {
 				console.log("Error fetching users:", err);
@@ -73,25 +73,25 @@ const CancelFriends = () => {
 	};
 
 	const handleCancelRequests = async (id: number) => {
-		const existingFriend = pendingUsers.find(
-			(friend) => friend.id === id
-		);
-		if (!existingFriend)
-			return;
+		const existingFriend = pendingUsers.find((friend) => friend.id === id);
+		if (!existingFriend) return;
 		try {
-			await axios.delete(
-				getendpoint("http", `/api/friends/cancel/${id}`),
-				{
+			await axios
+				.delete(getendpoint("http", `/api/friends/cancel/${id}`), {
 					withCredentials: true,
-				}
-			)
-			.then((response) => {
-				if (response.data.error == "Friend request not found or already processed.") {
-					authContext?.setCreatedAlert("Friend request not found or already processed.");
-					authContext?.setDisplayed(2);
-				}
-				setPendingUsers((prev) => prev.filter((user) => user.id !== id));
-			})
+				})
+				.then((response) => {
+					if (
+						response.data.error ==
+						"Friend request not found or already processed."
+					) {
+						authContext?.setCreatedAlert(
+							"Friend request not found or already processed."
+						);
+						authContext?.setDisplayed(2);
+					}
+					setPendingUsers((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error decline friend request:", error);
 		}
@@ -99,7 +99,7 @@ const CancelFriends = () => {
 
 	const friendsList = searchFriend ? results : pendingUsers;
 	return (
-		<div>
+		<div className="cancel-friends-page">
 			<>
 				<div className="searchFriend">
 					<div className="searchfrienContainer">
@@ -122,27 +122,29 @@ const CancelFriends = () => {
 						/>
 					</div>
 				</div>
-				{friendsList.map((friend) => {
-					return (
-						<div className="friendProfile" key={friend.id}>
-							<div className="imageNameFriend">
-								<img
-									src={friend.avatar}
-									alt=""
-									className="friendImage"
-									onClick={() => navigate(`/profile/${friend.username}`)}
-								/>
-								<span>{friend.username}</span>
+				<div className="cancel-friends">
+					{friendsList.map((friend) => {
+						return (
+							<div className="friendProfile" key={friend.id}>
+								<div className="imageNameFriend">
+									<img
+										src={friend.avatar}
+										alt=""
+										className="friendImage"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									/>
+									<span>{friend.username}</span>
+								</div>
+								<button
+									className="cancelFriend"
+									onClick={() => handleCancelRequests(friend.id)}
+								>
+									Decline Friend
+								</button>
 							</div>
-							<button
-								className="cancelFriend"
-								onClick={() => handleCancelRequests(friend.id)}
-							>
-								Decline Friend
-							</button>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
 			</>
 		</div>
 	);

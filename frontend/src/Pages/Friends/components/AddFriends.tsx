@@ -74,26 +74,29 @@ const AddFriends = () => {
 	};
 
 	const handleSendRequests = async (id: number) => {
-		const existingFriend = allUsers.find(
-			(friend) => friend.id === id
-		);
-		if (!existingFriend)
-			return;
+		const existingFriend = allUsers.find((friend) => friend.id === id);
+		if (!existingFriend) return;
 		try {
-			await axios.post(
-				getendpoint("http", "/api/friends/send/"),
-				{ receiver: id },
-				{
-					withCredentials: true,
-				}
-			)
-			.then((response) => {
-				if (response.data.error == "A friend request already exists between you and this user.") {
-					authContext?.setCreatedAlert("A friend request already exists between you and this user.");
-					authContext?.setDisplayed(2);
-				}
-				setAllUsers((prev) => prev.filter((user) => user.id !== id));
-			})
+			await axios
+				.post(
+					getendpoint("http", "/api/friends/send/"),
+					{ receiver: id },
+					{
+						withCredentials: true,
+					}
+				)
+				.then((response) => {
+					if (
+						response.data.error ==
+						"A friend request already exists between you and this user."
+					) {
+						authContext?.setCreatedAlert(
+							"A friend request already exists between you and this user."
+						);
+						authContext?.setDisplayed(2);
+					}
+					setAllUsers((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
@@ -102,7 +105,7 @@ const AddFriends = () => {
 	const friendsList = searchFriend ? results : allUsers;
 	// console.log(friendsList)
 	return (
-		<div>
+		<div className="add-friends-page">
 			<>
 				<div className="searchFriend">
 					<div className="searchfrienContainer">
@@ -125,27 +128,29 @@ const AddFriends = () => {
 						/>
 					</div>
 				</div>
-				{friendsList.map((friend) => {
-					return (
-						<div className="friendProfile" key={friend.id}>
-							<div className="imageNameFriend">
-								<img
-									src={friend.avatar}
-									alt=""
-									className="friendImage"
-									onClick={() => navigate(`/profile/${friend.username}`)}
-								/>
-								<span>{friend.username}</span>
+				<div className="add-friends">
+					{friendsList.map((friend) => {
+						return (
+							<div className="friendProfile" key={friend.id}>
+								<div className="imageNameFriend">
+									<img
+										src={friend.avatar}
+										alt=""
+										className="friendImage"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									/>
+									<span>{friend.username}</span>
+								</div>
+								<button
+									className="addFriend"
+									onClick={() => handleSendRequests(friend.id)}
+								>
+									Add Friend
+								</button>
 							</div>
-							<button
-								className="addFriend"
-								onClick={() => handleSendRequests(friend.id)}
-							>
-								Add Friend
-							</button>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
 			</>
 		</div>
 	);

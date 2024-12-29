@@ -87,7 +87,7 @@ const BlockedFriends = () => {
 	};
 
 	return (
-		<div>
+		<div className="blocked-friends-page" >
 			{blockedfriend.map((friend) => {
 				return (
 					<div className="friendProfile BlockedFriend" key={friend.id}>
