@@ -242,15 +242,22 @@ class FriendRequestUnblockView(APIView):
             return Response({'error': f'Failed to unblock the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class PendingFriendRequestsView(generics.ListAPIView):
+
+class PendingFriendRequestsView(APIView):
     """
     View to list all pending friend requests.
     """
-    serializer_class = FriendRequestReceiverSerializer
+    # serializer_class = FriendRequestReceiverSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return FriendRequest.objects.filter(receiver=self.request.user, status="pending")
+
+    def get(self, request, *args, **kwargs):
+        # Get pending friend requests for the authenticated user
+        pending_requests = FriendRequest.objects.filter(receiver=request.user, status="pending")
+        # Serialize the data
+        serializer = FriendRequestReceiverSerializer(pending_requests, many=True, context={'user': request.user})
+        # Return the response
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CancelFriendRequestsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -280,29 +287,31 @@ class CancelFriendRequestsView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-class AcceptedFriendRequestsView(generics.ListAPIView):
+class AcceptedFriendRequestsView(APIView):
     """
     View to list all accepted friend requests.
     """
-    serializer_class = FriendRequestReceiverSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
+    def get(self, request, *args, **kwargs):
+        accepted_requests = FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
+        serializer = FriendRequestReceiverSerializer(accepted_requests, many=True, context={'user': request.user})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-class BlockedFriendsRequestsView(generics.ListAPIView):
+class BlockedFriendsRequestsView(APIView):
     """
     View to list all blocked friend requests.
     """
     serializer_class = FriendRequestUnblockSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return FriendRequest.objects.filter(
-            # Q(receiver=self.request.user) | Q(sender=self.request.user),
+    def get(self, request, *args, **kwargs):
+        blocked_requests = FriendRequest.objects.filter(
             status="blocked",
             blocked_by=self.request.user
         )
+        serializer = FriendRequestUnblockSerializer(blocked_requests, many=True, context={'user': request.user})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class BlockedFriendRequestsView(APIView):

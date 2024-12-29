@@ -283,6 +283,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 	}) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(JSON.stringify(data));
+			console.log(JSON.stringify(data))
 		} else {
 			console.error("WebSocket is not open.");
 		}

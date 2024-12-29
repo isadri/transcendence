@@ -249,12 +249,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def handle_send_message(self, data):
         message = data.get('message')
         receiver_id = data.get('receiver')
+        if not message:
+            await self.send(text_data=json.dumps({'error': 'Invalid message.'}))
+            return
         try:
             receiver = await User.objects.aget(id=receiver_id)
         except User.DoesNotExist:
             await self.send(text_data=json.dumps({
                 'error': 'This user does not exist.'
             }))
+            return
+        if self.user.id == receiver_id:
+            await self.send(text_data=json.dumps({'error': 'You cannot send to yourself.'}))
             return
         chat = await Chat.objects.filter(
             Q(user1=self.user, user2=receiver) |
