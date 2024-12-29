@@ -546,6 +546,24 @@ class ResetPasswordViewSet(viewsets.ViewSet):
     """
     permission_classes = [AllowAny]
 
+    def list(self, request: Request) -> None:
+        """
+        This method get the uid and the token from the url. If the uid and
+        the token are valid.
+        """
+        try:
+            uid = urlsafe_base64_decode(request.GET.get('uid')).decode()
+            token = request.GET.get('token')
+            user = User.objects.get(pk=uid)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response({
+                    'error': 'Invalid token'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except (User.DoesNotExist, ValueError):
+            return Response({
+                'error': 'Invalid request'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
     def create(self, request: Request) -> None:
         """
         This method get the uid and the token from the url. If the uid and
