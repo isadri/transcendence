@@ -67,6 +67,7 @@ function App() {
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log("data =========> ", data)
+        console.log("data => ", data)
         setNotifications((prev) => [data, ...prev]);
         setUnreadCount((prev) => prev + 1);
       };
