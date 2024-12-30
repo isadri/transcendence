@@ -471,4 +471,3 @@ def add_milestone_achievement_to_user(user: User):
                 name="Marathon Player",
                 text="Play 100 matches.",
             )
-    print(user_achievements)

@@ -24,10 +24,20 @@ User = get_user_model()
 
 class FriendSerializer(UserSerializer):
     is_blocked = serializers.SerializerMethodField()
-
     class Meta(UserSerializer.Meta):
+        READ_ONLY = {'write_only': True}
         model = User
         fields = UserSerializer.Meta.fields + ['is_blocked']
+        extra_kwargs = {
+            'password': READ_ONLY,
+            'usable_password': READ_ONLY,
+            'tmp_email': READ_ONLY,
+            'email_verified': READ_ONLY,
+            'register_complete': READ_ONLY,
+            'from_remote_api': READ_ONLY,
+            'open_chat': READ_ONLY,
+            'active_chat': READ_ONLY,
+        }
 
     def get_is_blocked(self, obj):
         """
