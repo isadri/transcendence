@@ -6,18 +6,18 @@ interface GameFormProps {
 	players: string[];
 }
 
-interface TournamentPlayer {
+export interface TournamentPlayer {
 	alias: string,
 	score: number,
 }
 
-interface TournamentGameData {
+export interface TournamentGameData {
 	player1: TournamentPlayer,
 	player2: TournamentPlayer,
 	winner: TournamentPlayer | null
 }
 
-interface TournamentData {
+export interface TournamentData {
 	half1: TournamentGameData,
 	half2: TournamentGameData,
 	final: TournamentGameData | null,
@@ -62,8 +62,17 @@ const TournamentGragh = ({ data, setData }: TournamentGraghProps) => {
 	);
 };
 
+function shufflePlayers(players:string[]) {
+	for (let i = players.length - 1; i > 0; i--) {
+			const randomIndex = Math.floor(Math.random() * (i + 1));
+			[players[i], players[randomIndex]] = [players[randomIndex], players[i]];
+	}
+	return players;
+}
+
+
 function TournamentForm({ players }: GameFormProps) {
-	const shuffled: string[] = players.sort(() => Math.random() - 0.5);
+	const shuffled: string[] = shufflePlayers(players)
 	const [data, setData] = useState<TournamentData>({
 		half1: {
 			player1: { alias: shuffled[0], score: 0 },
