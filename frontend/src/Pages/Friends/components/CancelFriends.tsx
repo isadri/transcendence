@@ -128,7 +128,7 @@ const CancelFriends = () => {
 							<div className="friendProfile" key={friend.id}>
 								<div className="imageNameFriend">
 									<img
-										src={friend.avatar}
+										src={getendpoint("http", friend.avatar)}
 										alt=""
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}
@@ -139,7 +139,7 @@ const CancelFriends = () => {
 									className="cancelFriend"
 									onClick={() => handleCancelRequests(friend.id)}
 								>
-									Decline Friend
+									Cancel Friend
 								</button>
 							</div>
 						);

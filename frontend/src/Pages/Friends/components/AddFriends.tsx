@@ -134,7 +134,7 @@ const AddFriends = () => {
 							<div className="friendProfile" key={friend.id}>
 								<div className="imageNameFriend">
 									<img
-										src={friend.avatar}
+										src={getendpoint("http", friend.avatar)}
 										alt=""
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}

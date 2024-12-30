@@ -44,6 +44,8 @@ class FriendSerializer(UserSerializer):
         Checks if the current user has blocked or is blocked by the given user (`obj`).
         """
         request_user = self.context['user']
+        if not request_user:
+            return False 
         # Check if there is a blocked friend request in either direction
         return FriendRequest.objects.filter(
             Q(sender=request_user, receiver=obj, status='blocked') |
