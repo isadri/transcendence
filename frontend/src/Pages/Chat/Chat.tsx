@@ -68,7 +68,7 @@ const Chat = () => {
 			console.log('');
 		}
 
-		console.log('a');
+		// console.log('a');
 		setSelectedFriend({...friend});
 		activeChat({ chatid: friend.id });
 
