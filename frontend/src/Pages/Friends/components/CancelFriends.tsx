@@ -139,7 +139,7 @@ const CancelFriends = () => {
 									className="cancelFriend"
 									onClick={() => handleCancelRequests(friend.id)}
 								>
-									Decline Friend
+									Cancel Friend
 								</button>
 							</div>
 						);

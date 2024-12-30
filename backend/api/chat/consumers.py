@@ -19,10 +19,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"chat_room_of_{self.user.id}"
         self.isBlocked = False
         self.isBlockedPayload = None
-        # print("++++++++", self.user.open_chat)
         self.user.open_chat = True
         await self.user.asave()
-        # print("-------", self.user.open_chat)
 
         # Check if the user is authenticated
         if not self.user.is_authenticated:
@@ -188,37 +186,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'status': event['status']  # true if blocked, false otherwise
         }))
 
-
-
-
-        # elif (message_type == "delete_chat") :
-        #     print("-----hellloo")
-        #     if chat.id:
-        #         await self.handle_delete_chat(chat.id)
-
-    # async def handle_delete_chat(self, chat_id):
-    #     # Delete the chat from the database
-    #     try:
-    #         chat = Chat.objects.get(id=chat_id)
-    #         chat.delete()
-    #         # Broadcast to all connected clients
-    #         await self.channel_layer.group_send(
-    #             self.group_name,
-    #             {
-    #                 "type": "delete_chat",
-    #                 "chat_id": chat_id,
-    #             },
-    #         )
-    #     except Chat.DoesNotExist:
-    #         pass
-
-    # async def chat_deleted(self, event):
-    #     await self.send(text_data=json.dumps({
-    #         "type": "delete_chat",
-    #         "chat_id": event["chat_id"]
-    #     }))
-
-    # @database_sync_to_async
     async def reciver_blocked(self, receiver:User):
         try:
             blocked_request = await FriendRequest.objects.aget(
@@ -242,7 +209,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'blocked': blocked.id,
             'status': is_blocked
         }
-        return payload#(payload, blocker_room, blocked_room)
+        return payload
 
 
 

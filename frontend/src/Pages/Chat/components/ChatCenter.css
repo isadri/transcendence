@@ -3,12 +3,24 @@
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
-	overflow: hidden;
+	overflow-x: hidden;
 	overflow-y: auto;
 	scrollbar-width: thin;
-	padding: 2dvh 2dvh 0;
 	scrollbar-color: #888 transparent;
+	padding: 2dvh 2dvh 0;
 	font-family: var(--sans);
+}
+
+.center::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.center::-webkit-scrollbar {
+	width: 8px;
+}
+.center::-webkit-scrollbar-thumb {
+	background-color: #888;
+	border-radius: 5px;
 }
 
 .center .message {

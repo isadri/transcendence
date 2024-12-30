@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useReducer, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import "./ChatBottom.css";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import {
@@ -25,7 +25,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const closeEmoji = useRef<HTMLDivElement>(null);
 		const buttonRef = useRef<HTMLDivElement>(null);
 		const [text, setText] = useState("");
-		const { block, sendMessage, setBlock } = useChatContext();
+		const { block, sendMessage } = useChatContext();
 		const user = getUser();
 		const authContext = getContext();
 		const [update, setUpdate] = useState(false);
@@ -65,9 +65,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 			}
 			setSelectedFriend(selectedFriend);
 			setUpdate(block.status);
-			// const updatedFriend = { ...selectedFriend, is_blocked: block.status };
-			// setSelectedFriend(updatedFriend);
-			// forceReRender()
+			setText("")
 		}, [block, selectedFriend.is_blocked]);
 
 		const handleSendMessage = async () => {
@@ -127,75 +125,6 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 			}
 		};
 
-		// const fetchBlockedFriend : () => Number =  () => {
-		// 	let friend_id;
-		// 	if (user?.id === selectedFriend.user1.id) {
-		// 		friend_id = selectedFriend.user2.id;
-		// 	} else {
-		// 		friend_id = selectedFriend.user1.id;
-		// 	}
-		// 	// console.log("1")
-		// 	// try {
-		// 		// console.log("2")
-		// 		axios.get(
-		// 			getendpoint("http", `/api/friends/blockedfriend/${friend_id}`),
-		// 			{
-		// 				withCredentials: true,
-		// 			}
-		// 		).then((response) => {
-		// 			// console.log("3")
-		// 			if (response.data.status === true) {
-		// 				console.log("6")
-		// 				console.log("is block: ",response.data, '-----selectide: ', friend_id, 'user id', user?.id)
-		// 				// setBlock(response.data);
-		// 				return 1
-		// 			}
-		// 			console.log("not block: ",response.data, '-----selectide: ', friend_id, 'user id', user?.id)
-		// 			return 0
-		// 		}).catch(() => {
-		// 			return -1
-		// 		})
-		// 	// } catch (err) {
-		// 	// 	console.log("4")
-		// 	// 	console.log("Error in fetching chats", err);
-		// 	// }
-		// 	// console.log("5")
-		// 	return -2
-		// };
-
-		// const fetchBlockedFriend = async (): Promise<number> => {
-		// 	try {
-		// 	  let friend_id;
-		// 	  if (user?.id === selectedFriend.user1.id) {
-		// 		friend_id = selectedFriend.user2.id;
-		// 	  } else {
-		// 		friend_id = selectedFriend.user1.id;
-		// 	  }
-
-		// 	  // Perform the API call and wait for the response
-		// 	  const response = await axios.get(
-		// 		getendpoint("http", `/api/friends/blockedfriend/${friend_id}`),
-		// 		{
-		// 		  withCredentials: true,
-		// 		}
-		// 	  );
-
-		// 	  // Check the response and return the appropriate value
-		// 	  if (response.data.status === true) {
-		// 		console.log("is block: ", response.data, "-----selected: ", friend_id, "user id", user?.id);
-		// 		return 1;
-		// 	  } else {
-		// 		console.log("not block: ", response.data, "-----selected: ", friend_id, "user id", user?.id);
-		// 		return 0;
-		// 	  }
-		// 	} catch (err) {
-		// 	  console.error("Error in fetching blocked friend:", err);
-		// 	  return -1; // Return -1 on error
-		// 	}
-		//   };
-
-		// console.log("here :", fetchBlockedFriend(), selectedFriend)
-
 		return (
 			<div className="bottom">
 				{!selectedFriend.is_blocked ? (
@@ -227,7 +156,6 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 								}}
 								onKeyDown={handleKeyDown}
 								ref={ref}
-								// rows={3}
 							></textarea>
 						</div>
 						<button
@@ -239,7 +167,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 						</button>
 					</>
 				) : (
-					<div className="block">Can't send a message to blocked contact.</div>
+					<div className="block">Can't send a message to this contact (block).</div>
 				)}
 			</div>
 		);
