@@ -74,13 +74,13 @@ const FriendRequests = () => {
 	};
 
 	return (
-		<div>
+		<div className="requests-friends-page" >
 			{friendRequests.map((friend) => {
 				return (
 					<div className="friendProfile friendRequests" key={friend.id}>
 						<div className="imageNameFriend">
 							<img
-								src={friend.avatar}
+								src={getendpoint("http", friend.avatar)}
 								alt=""
 								className="friendImage"
 								onClick={() => navigate(`/profile/${friend.username}`)}

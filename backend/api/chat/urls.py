@@ -9,5 +9,4 @@ router.register(r'messages', MessageView, basename='message')
 urlpatterns = [
     path('', include(router.urls)),
     path('chatuser/<int:chat_id>/', ChatConversationView.as_view(), name='user-chat'),
-    # path('chatslist/', ChatListView.as_view(), name='chat-list'),
 ]

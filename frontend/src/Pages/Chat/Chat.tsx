@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import "./Chat.css";
 import ChatBody from "./components/ChatBody";
 import ListChat from "./components/List";
-// import moment from "moment";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
 import axios from "axios";
-import { getContext, getUser, getendpoint } from "../../context/getContextData";
+import { getUser, getendpoint } from "../../context/getContextData";
 import {
 	ChatProvider,
 	GetFriends,
@@ -31,7 +30,6 @@ const Chat = () => {
 						withCredentials: true,
 					}
 				);
-				// console.log("here we are users: ",response.data)
 				setGetFriends(response.data || []);
 			} catch (err) {
 				console.error("Error fetching friends:", err);
@@ -70,7 +68,7 @@ const Chat = () => {
 			console.log('');
 		}
 
-		console.log('a');
+		// console.log('a');
 		setSelectedFriend({...friend});
 		activeChat({ chatid: friend.id });
 

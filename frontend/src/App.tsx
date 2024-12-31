@@ -31,8 +31,9 @@ function App() {
   const [notifications, setNotifications] = useState<NotificationsData[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
+  axios.defaults.withCredentials = true
   useEffect(() => {
-    axios.get(getendpoint('http', "/"), {withCredentials:true})
+    axios.get(getendpoint('http', "/"))
     .then((response:any) => {
       console.log("response.data => ", {...response.data, is_online:true})
       setUser({...response.data, is_online:true})
@@ -66,6 +67,7 @@ function App() {
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log("data =========> ", data)
+        console.log("data => ", data)
         setNotifications((prev) => [data, ...prev]);
         setUnreadCount((prev) => prev + 1);
       };

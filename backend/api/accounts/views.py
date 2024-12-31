@@ -66,13 +66,15 @@ class HomeView(APIView):
         Return HTTP_200_OK response if the user is authenticated,
         HTTP_402_UNAUTHORIZED response otherwise.
         """
-        serializer =  UserSerializer(request.user)
         if request.user.is_authenticated:
             request.user.open_chat = False
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer =  UserSerializer(request.user)
+            data = serializer.data.copy()
+            data['usable_password'] = request.user.has_usable_password()
+            return Response(data, status=status.HTTP_200_OK)
      
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -540,6 +542,27 @@ class ResetPasswordViewSet(viewsets.ViewSet):
     A viewset for reseting the password.
     """
     permission_classes = [AllowAny]
+
+    def list(self, request: Request) -> None:
+        """
+        This method get the uid and the token from the url. If the uid and
+        the token are valid.
+        """
+        try:
+            uid = urlsafe_base64_decode(request.GET.get('uid')).decode()
+            token = request.GET.get('token')
+            user = User.objects.get(pk=uid)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response({
+                    'error': 'Invalid token'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except (User.DoesNotExist, ValueError):
+            return Response({
+                'error': 'Invalid request'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+                    'info': 'You can reset your password'
+                }, status=status.HTTP_200_BAD_REQUEST)
 
     def create(self, request: Request) -> None:
         """

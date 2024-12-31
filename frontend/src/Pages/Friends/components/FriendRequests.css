@@ -1,3 +1,9 @@
+.requests-friends-page {
+	overflow-x: hidden;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #888 transparent;
+}
 
 .bodyFriends .friendRequests:first-child {
 	margin-top: 4vh;

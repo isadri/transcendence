@@ -36,27 +36,6 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 		};
 	}, []);
 
-	// const handleDeleteChat = async () => {
-	// 	try {
-	// 		await axios.delete(
-	// 			getendpoint("http", `/api/chat/chatuser/${selectedFriend.id}`),
-	// 			// `http://0.0.0.0:8000/api/chat/chats/?id=${chatId}`,
-	// 			{
-	// 				withCredentials: true,
-	// 			}
-	// 		);
-	// 		setChats((prevChats) =>
-	// 			prevChats.filter((chat) => chat.id !== selectedFriend.id)
-	// 		);
-	// 		deleteChat({ chatId: selectedFriend.id, message_type: MessageType.DeleteChat})
-	// 		setMessages((prevMessages) => prevMessages.filter((msg) => msg.chat !== selectedFriend.id));
-	// 		setSelectedFriend(null);
-	// 		setOpenMenu(false);
-	// 	} catch (err) {
-	// 		console.log("Error in fetching chats", err);
-	// 	}
-	// };
-
 	const handleBlock = async () => {
 		if (!user) return;
 		let friend_id;
@@ -95,27 +74,6 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					status: true,
 				});
 			}
-			// // addded by jhamza
-			// try {
-			// 	let friend_id;
-			// 	if (user?.id === selectedFriend?.user1.id) {
-			// 		friend_id = selectedFriend?.user2.id;
-			// 	} else {
-			// 		friend_id = selectedFriend?.user1.id;
-			// 	}
-			// 	const response = await axios.get(
-			// 		getendpoint("http", `/api/friends/blockedfriend/${friend_id}`),
-			// 		{
-			// 			withCredentials: true,
-			// 		}
-			// 	);
-			// 	selectedFriend.is_blocked = response.data.status;
-			// } catch (err) {
-			// 	console.log("Error in fetching chats", err);
-			// 	selectedFriend.is_blocked = false;
-			// }
-			// setSelectedFriend({...selectedFriend});
-			// // addded by jhamza
 			setOpenMenu(false);
 		} catch (err) {
 			console.log("Error in handling block/unblock: ", err);
@@ -155,7 +113,6 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					<ul className="menu-list">
 						<li>Invite to play</li>
 						<li>Friend profile</li>
-						{/* <li onClick={handleDeleteChat}>Delete chat</li> */}
 						<li
 							onClick={() => {
 								setSelectedFriend(null);

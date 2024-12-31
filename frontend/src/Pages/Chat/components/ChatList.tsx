@@ -134,7 +134,7 @@ const ChatList = ({
 		);
 
 	return (
-		<div className="ChatList">
+		<div className="ChatList-friends">
 			{listAllFriends
 				? friends.map((friend) => (
 						<div
