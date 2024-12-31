@@ -79,7 +79,7 @@ https://es01:9200/_security/user/kibana_system/_password \
 
 echo "Creating snapshot repository"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_snapshot/app_snapshot_repo -H "Content-Type: application/json" -d '
+https://es01:9200/_snapshot/app_snapshots_repo -H "Content-Type: application/json" -d '
 {
 	"type": "fs",
 	"settings": {
@@ -87,6 +87,27 @@ https://es01:9200/_snapshot/app_snapshot_repo -H "Content-Type: application/json
 		"compress": true
 	}
 }'
+
+echo -e "\nCreating SLM policy"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_slm/policy/app-snapshots -H "Content-Type: application/json" -d '
+{
+	"schedule": "0 0 * * * ?",
+	"name": "<app-snap-{now/d}>",
+	"repository": "app_snapshots_repo",
+	"config": {
+		"indices": [ "django-logs-*", "nginx-logs-*" ]
+	},
+	"retention": {
+		"expire_after": "7m",
+		"min_count": 5,
+		"max_count": 10
+	}
+}'
+
+#echo -e "\nCreating snapshot"
+#curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+#https://es01:9200/_snapshot/app_snapshots_repo/app_snapshot
 
 echo -e "\nCreating index lifecycle policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
