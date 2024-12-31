@@ -8,17 +8,17 @@ interface TournamentGameProps {
 
 function TournamentGame({ game }: TournamentGameProps) {
   return (
-    <div className="GameHistoryItem">
-      <div className="GameHistoryItemLeft">
+    <div className="TournamentGame">
+      <div className="TournamentGameLeft">
         {/* <img src={avatar}/> */}
         <span>{game ? game.player1.alias : "-----------------"}</span>
       </div>
-      <div className="GameHistoryItemResult">
+      <div className="TournamentGameResult">
         <div> {game ? game.player1.score : "0"} </div>
         <img src={vs} />
         <div> {game ? game.player2.score : "0"} </div>
       </div>
-      <div className="GameHistoryItemRight">
+      <div className="TournamentGameRight">
         <span>{game ? game.player2.alias : "-----------------"}</span>
         {/* <img src={avatar}/> */}
       </div>

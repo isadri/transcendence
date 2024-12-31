@@ -1,4 +1,4 @@
-.GameHistoryItem {
+.TournamentGame {
   /* width: 80%; */
   display: flex;
   margin-top: 20px;
@@ -11,47 +11,47 @@
   max-width: 400px;
 }
 
-.GameHistoryItem div {
+.TournamentGame div {
   display: flex;
   align-items: center;
   
 }
 
-.GameHistoryItem div img {
+.TournamentGame div img {
   width: 50px;
   border-radius:  50%;
 }
-.GameHistoryItemRight
+.TournamentGameRight
 {
   display: flex;
   justify-content: end;
 }
-.GameHistoryItemLeft {
+.TournamentGameLeft {
   /* margin-left: 5%;
   margin-right: 5%; */
   /* display: flex;
   justify-content: end; */
 }
 
-.GameHistoryItemRight img{
+.TournamentGameRight img{
   margin-left: 5%;
   margin-right: 5%;
 }
-.GameHistoryItemLeft img{
+.TournamentGameLeft img{
   margin-right: 5%;
   margin-left: 5%;
 }
 
-.GameHistoryItemResult {
+.TournamentGameResult {
   justify-content: center;
 }
 
-.GameHistoryItemResult img {
+.TournamentGameResult img {
   padding-right: 10px;
 }
 
 @media screen and (max-width: 530px) {
-  .GameHistoryItem {
+  .TournamentGame {
     width: 85dvw;
     display: flex;
     flex-direction: column;
@@ -59,7 +59,7 @@
 }
 
 @media screen and (max-width: 800px){
-  .GameHistoryItem {
+  .TournamentGame {
     width: 85dvw;
     display: flex;
     flex-direction: column;
