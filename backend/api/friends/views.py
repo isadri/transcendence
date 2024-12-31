@@ -484,3 +484,13 @@ class MutualFriendsView(generics.ListAPIView):
             return Response(serializer.data, status=200)
         except FriendList.DoesNotExist:
             return Response([], status=200)
+        
+
+
+class UserRankListlView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        users = User.objects.exclude(id=request.user.id)
+        serializer = FriendSerializer(users, many=True, context={'user': request.user})
+        sorted_data = sorted(serializer.data, key=lambda x: x.get('stats', {}).get('level', 0), reverse=True)
+        return Response(sorted_data, status=status.HTTP_200_OK)
