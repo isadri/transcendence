@@ -61,12 +61,6 @@ if [ ! -f config/certs/certs.zip ]; then
 	unzip config/certs/certs.zip -d config/certs
 fi
 
-#echo "Setting file permissions"
-#chmod 664 config/certs/logstash/logstash.pkcs8.key
-#chown -R root:root config/certs
-#find . -type d -exec chmod 750 {} \;
-#find . -type f -exec chmod 640 {} \;
-
 echo "Waiting for Elasticsearch availability"
 until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | \
 grep -q "missing authentication credentials"; do sleep 10; done
@@ -104,10 +98,6 @@ https://es01:9200/_slm/policy/app-snapshots -H "Content-Type: application/json" 
 		"max_count": 10
 	}
 }'
-
-#echo -e "\nCreating snapshot"
-#curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-#https://es01:9200/_snapshot/app_snapshots_repo/app_snapshot
 
 echo -e "\nCreating index lifecycle policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
