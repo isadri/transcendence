@@ -55,6 +55,11 @@ function ProfileUser({userData}:Prop) {
 			console.error("Error decline friend request:", error);
 		}
 	};
+
+  if (!user)
+    return
+  const fractionalPart = user.stats.level - Math.floor(user.stats.level);
+  const percentage = fractionalPart * 100;
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>
@@ -124,8 +129,8 @@ function ProfileUser({userData}:Prop) {
             <span>15000px / 12000xp </span>
           </div>
           <div className="Home-level-bar">
-            <div className="Home-level-bar-fill"></div>
-            <span className="Home-level-text">level 7 - 70%</span>
+            <div className="Home-level-bar-fill" style={{ width: `${percentage}%` }}></div>
+            <span className="Home-level-text">Level {Math.floor(user.stats.level)} - {Math.round(percentage)}%</span>
           </div>
         </div>
       </div>

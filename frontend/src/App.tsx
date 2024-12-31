@@ -11,15 +11,6 @@ import { loginContext } from './context/context';
 import { userDataType, NotificationsData } from './context/context';
 import { getendpoint } from './context/getContextData';
 
-// const emptyUser = {
-//   id : -1,
-//   username : "",
-//   email : "",
-//   avatar : "",
-//   register_complete: true,
-//   from_remote_api: false,
-//   is_online: false
-// }
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean| null>(null)

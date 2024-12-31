@@ -12,7 +12,7 @@
     font-weight: 800;
 } 
 
-.userStats .stats-contents{
+.userStats .stats-contents, .userStats .stats-content{
     width: 100%;
     height: 93%;
     background-color: var(--fade);
@@ -67,9 +67,43 @@
     margin-left: 10px;
 }
 
+
+.Nostats{
+    height: 60%;
+    width: 85%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+.Nostats .stats-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+    height: 30%;
+}
+
+.Nostats .stats-icon i{
+    font-size: 150px;
+    color: #ffffff1c;
+}
+
+.Nostats .NoStats-msg {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 45px;
+}
+
 @media only screen and (max-width: 850px) {
     .userStats{
         width: 100%;
         margin-top: 5px;
+    }
+    .userStats .stats-content{
+        align-items: center;
+        justify-content: center;
     }
 }
