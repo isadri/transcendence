@@ -84,16 +84,16 @@ https://es01:9200/_snapshot/app_snapshots_repo -H "Content-Type: application/jso
 
 echo -e "\nCreating SLM policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_slm/policy/app-snapshots -H "Content-Type: application/json" -d '
+https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application/json" -d '
 {
 	"schedule": "0 0 * * * ?",
 	"name": "<app-snap-{now/d}>",
 	"repository": "app_snapshots_repo",
 	"config": {
-		"indices": [ "django-logs-*", "nginx-logs-*" ]
+		"indices": "django-logs-*,nginx-logs-*"
 	},
 	"retention": {
-		"expire_after": "7m",
+		"expire_after": "3d",
 		"min_count": 5,
 		"max_count": 10
 	}
