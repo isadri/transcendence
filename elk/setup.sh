@@ -83,7 +83,8 @@ https://es01:9200/_snapshot/app_snapshot_repo -H "Content-Type: application/json
 {
 	"type": "fs",
 	"settings": {
-		"location": "/mnt/backups/app_backups"
+		"location": "/mnt/backups/app_backups",
+		"compress": true
 	}
 }'
 
