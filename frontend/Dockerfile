@@ -4,7 +4,7 @@ COPY . /code/
 
 WORKDIR  /code
 
-RUN npm install && npm install axios chart.js @types/chart.js react-chartjs-2 chartjs-plugin-datalabels
+RUN npm install
 
 
-CMD [ "npm", "run" , "dev"]
+CMD npm install ; npm run dev
