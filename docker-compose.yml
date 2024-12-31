@@ -39,7 +39,7 @@ services:
         ]
       interval: 5s
       timeout: 5s
-      retries: 15
+      retries: 50
     restart: on-failure
 
   front-end:
