@@ -19,13 +19,13 @@ class GameSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
   def get_player1(self, obj):
-    from ..accounts.serializers import UserSerializer
-    serializer = UserSerializer(obj.player1)
+    from ..friends.serializers import FriendSerializer
+    serializer = FriendSerializer(obj.player1, context={'user' : self.context['user']})
     return serializer.data
 
   def get_player2(self, obj):
-    from ..accounts.serializers import UserSerializer
-    serializer = UserSerializer(obj.player2)
+    from ..friends.serializers import FriendSerializer
+    serializer = FriendSerializer(obj.player2, context={'user' : self.context['user']})
     return serializer.data
 
 class GameInviteSerializer(serializers.ModelSerializer):

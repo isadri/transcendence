@@ -177,5 +177,5 @@ class GamesList(APIView):
   def get(self, request):
     user = request.user
     userStats = Game.objects.filter(Q(player1=user) | Q(player2=user))
-    serializer = GameSerializer(userStats, many=True)
+    serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
     return Response(serializer.data)
