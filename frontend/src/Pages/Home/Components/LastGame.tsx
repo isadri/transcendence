@@ -5,7 +5,6 @@ import Group from '../images/Group.svg'
 function LastGame() {
   return (
     <div className='Home-LastGame'>
-      <h2>Last Game</h2>
       <div className='Home-RowEle'>
         <div className='Home-Row1'>
             <img src={photo} alt="" />
