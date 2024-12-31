@@ -1,7 +1,7 @@
 import { useState } from "react";
-import PlayersList from "./Components/PlayersList";
-import TournamentForm from "./Components/TournamentForm";
+import TournamentForm from "./Components/TournamentForm/TournamentForm";
 import "./Local.css";
+import PlayersList from "./Components/PlayersList/PlayersList";
 
 const Local = () => {
 	const [players, setPlayers] = useState<string[]>([]);

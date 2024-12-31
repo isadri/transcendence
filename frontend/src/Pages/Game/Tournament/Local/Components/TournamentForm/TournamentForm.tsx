@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./TournamentForm.css";
-import Play from "../../../Play/Play";
+import Play from "../../../../Play/Play";
+import TournamentGame from "../TournamentGame/TournamentGame";
 
 interface GameFormProps {
 	players: string[];
@@ -27,33 +28,21 @@ export interface TournamentData {
 interface TournamentGraghProps {
 	data: TournamentData;
 	setPlay: React.Dispatch<React.SetStateAction<boolean>>;
-	setData: React.Dispatch<React.SetStateAction<TournamentData>>;
 }
 
 
 
-const TournamentGragh = ({ data, setData, setPlay}: TournamentGraghProps) => {
+const TournamentGragh = ({ data, setPlay}: TournamentGraghProps) => {
 	return (
 		<div className="tournament-list">
 			<h2>Tournament Local</h2>
 			<div className="tournament-players">
 				<div className="first-two-match">
-					<div className="tournament-match">
-						<div>{data.half1.player1.alias}</div>
-						<img src="/../Group.png" alt="" />
-						<div>{data.half1.player2.alias}</div>
-					</div>
-					<div className="tournament-match">
-						<div>{data.half2.player1.alias}</div>
-						<img src="/../Group.png" alt="" />
-						<div>{data.half2.player2.alias}</div>
-					</div>
+					<TournamentGame game={data.half1}/>
+					<TournamentGame game={data.half2}/>
 				</div>
-				<div className="tournament-match">
-					<div>{data.final ? data.final.player1.alias : '-'}</div>
-					<img src="/../Group.png" alt="" />
-					<div>{data.final ? data.final.player2.alias : '-'}</div>
-				</div>
+
+				<TournamentGame game={data.final}/>
 				<div className="tournament-match">
 					<div>{data.winner ? data.winner.alias : '-'}</div>
 				</div>
@@ -116,7 +105,7 @@ function TournamentForm({ players }: GameFormProps) {
 	return (
 		<>
 			{!play ?
-				<TournamentGragh data={data} setData={setData} setPlay={setPlay} />
+				<TournamentGragh data={data} setPlay={setPlay} />
 				:
 				<Play switcher={setPlay} game={game} setGame={setGame} />
 			}

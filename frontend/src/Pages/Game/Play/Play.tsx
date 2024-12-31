@@ -17,7 +17,7 @@ import { Material } from 'cannon-es';
 import React, { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useState } from "react";
 import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
 import { Link } from "react-router-dom";
-import { TournamentGameData } from "../Tournament/Local/Components/TournamentForm";
+import { TournamentGameData } from "../Tournament/Local/Components/TournamentForm/TournamentForm";
 const tableUrl = new URL("../../../assets/glb/tableLwa3ra.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
 
@@ -254,11 +254,11 @@ function GameTable() {
     </>
   );
 }
-const MAX_SCORE = 1
+const MAX_SCORE = 7
 interface PlayProps {
   switcher?: React.Dispatch<React.SetStateAction<boolean>>;
   game: TournamentGameData | null;
-  setGame: React.Dispatch<React.SetStateAction<TournamentGameData | null>>;
+  setGame: React.Dispatch<React.SetStateAction<TournamentGameData>>;
 }
 
 const Play = ({ switcher, game, setGame }: PlayProps) => {
@@ -335,7 +335,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
               <div className="winnerBtns">
                 {
                   switcher ?
-                    <div onClick={() => { switcher(true) }}><i className="fa-solid fa-house"></i></div>
+                    <div onClick={() => { switcher(true) }}><i className="fa-solid fa-arrow-left"></i></div>
                     :
                     <>
                       <Link to={"/"}><i className="fa-solid fa-house"></i></Link>
