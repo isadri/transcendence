@@ -3,10 +3,8 @@ import "./ChatBody.css";
 import ChatTop from "./ChatTop";
 import ChatCenter from "./ChatCenter";
 import ChatBottom from "./ChatBottom";
-// import moment from "moment";
 import axios from "axios";
 import {
-	// getContext,
 	getUser,
 	getendpoint,
 } from "../../../context/getContextData";

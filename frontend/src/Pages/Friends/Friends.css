@@ -18,6 +18,10 @@
 	display: flex;
 	flex-direction: column;
 	font-size: 18px;
+	overflow: hidden;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #888 transparent;
 }
 
 .friendsMenuFriends ul {
@@ -53,6 +57,10 @@
 	background-color: #d9d9d91C;
 	display: flex;
 	flex-direction: column;
+	/* overflow: hidden;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #888 transparent; */
 }
 
 @media (max-width: 478px) {

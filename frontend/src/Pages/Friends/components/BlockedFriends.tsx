@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./BlockedFriends.css";
 import axios from "axios";
-import { getContext, getUser, getendpoint } from "../../../context/getContextData.tsx";
+import {
+	getContext,
+	getUser,
+	getendpoint,
+} from "../../../context/getContextData.tsx";
 import { useNavigate } from "react-router-dom";
 
 interface BlockedFriend {
@@ -11,9 +15,9 @@ interface BlockedFriend {
 }
 
 const BlockedFriends = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
-	const user = getUser()
+	const user = getUser();
 	const authContext = getContext();
 
 	useEffect(() => {
@@ -31,17 +35,17 @@ const BlockedFriends = () => {
 						user?.id === request.sender.id
 							? request.receiver.id
 							: request.sender.id;
-		
+
 					const username =
 						user?.id === request.sender.id
 							? request.receiver.username
 							: request.sender.username;
-		
+
 					const avatar =
 						user?.id === request.sender.id
 							? request.receiver.avatar
 							: request.sender.avatar;
-		
+
 					return {
 						id: friend_id,
 						username: username,
@@ -65,34 +69,37 @@ const BlockedFriends = () => {
 	}, []);
 
 	const handleUnblockRequests = async (id: number) => {
-		const existingFriend = blockedfriend.find(
-			(friend) => friend.id === id
-		);
-		if (!existingFriend)
-			return;
+		const existingFriend = blockedfriend.find((friend) => friend.id === id);
+		if (!existingFriend) return;
 		try {
-			await axios.post(getendpoint("http", `/api/friends/unblock/${id}`), null, {
-				withCredentials: true,
-			})
-			.then((response) => {
-				if (response.data.error == "No blocked request found.") {
-					authContext?.setCreatedAlert("No blocked request found.");
-					authContext?.setDisplayed(2);
-				}
-				setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
-			})
+			await axios
+				.post(getendpoint("http", `/api/friends/unblock/${id}`), null, {
+					withCredentials: true,
+				})
+				.then((response) => {
+					if (response.data.error == "No blocked request found.") {
+						authContext?.setCreatedAlert("No blocked request found.");
+						authContext?.setDisplayed(2);
+					}
+					setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
 	};
 
 	return (
-		<div>
+		<div className="blocked-friends-page">
 			{blockedfriend.map((friend) => {
 				return (
-					<div className="friendProfile BlockedFriend" key={friend.id}>
+					<div className="friendProfile" key={friend.id}>
 						<div className="imageNameFriend">
-							<img src={friend.avatar} alt="" className="friendImage" onClick={() => navigate(`/profile/${friend.username}`)}/>
+							<img
+								src={getendpoint("http", friend.avatar)}
+								alt=""
+								className="friendImage"
+								onClick={() => navigate(`/profile/${friend.username}`)}
+							/>
 							<span>{friend.username}</span>
 						</div>
 						<button

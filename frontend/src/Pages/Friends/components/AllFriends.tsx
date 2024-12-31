@@ -73,39 +73,43 @@ const AllFriends = () => {
 	};
 
 	const handleRemoveRequests = async (id: number) => {
-		const existingFriend = getFriends.find(
-			(friend) => friend.id === id
-		);
-		if (!existingFriend)
-			return;
+		const existingFriend = getFriends.find((friend) => friend.id === id);
+		if (!existingFriend) return;
 		try {
-			await axios.post(getendpoint("http", `/api/friends/remove/${id}`), null, {
-				withCredentials: true,
-			})
-			.then((response) => {
-				if (response.data.error === "Friend request not found or already processed.") {
-					authContext?.setCreatedAlert("Friend request not found or already processed.");
-					authContext?.setDisplayed(2);
-				}
-				setGetFriends((prev) => prev.filter((user) => user.id !== id));
-			})
+			await axios
+				.post(getendpoint("http", `/api/friends/remove/${id}`), null, {
+					withCredentials: true,
+				})
+				.then((response) => {
+					if (
+						response.data.error ===
+						"Friend request not found or already processed."
+					) {
+						authContext?.setCreatedAlert(
+							"Friend request not found or already processed."
+						);
+						authContext?.setDisplayed(2);
+					}
+					setGetFriends((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
 	};
 	const handleBlockRequests = async (id: number) => {
 		try {
-			await axios.post(getendpoint("http", `/api/friends/block/${id}`), null, {
-				withCredentials: true,
-			})
-			.then((response) => {
-				// console.log(response.data)
-				if (response.data.error === "You can not block this user.") {
-					authContext?.setCreatedAlert("You can not block this user.");
-					authContext?.setDisplayed(2);
-				}
-				setGetFriends((prev) => prev.filter((user) => user.id !== id));
-			})
+			await axios
+				.post(getendpoint("http", `/api/friends/block/${id}`), null, {
+					withCredentials: true,
+				})
+				.then((response) => {
+					// console.log(response.data)
+					if (response.data.error === "You can not block this user.") {
+						authContext?.setCreatedAlert("You can not block this user.");
+						authContext?.setDisplayed(2);
+					}
+					setGetFriends((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
@@ -113,7 +117,7 @@ const AllFriends = () => {
 
 	const friendsList = searchFriend ? results : getFriends;
 	return (
-		<div>
+		<div className="all-friends-page">
 			<>
 				<div className="searchFriend">
 					<div className="searchfrienContainer">
@@ -136,37 +140,39 @@ const AllFriends = () => {
 						/>
 					</div>
 				</div>
-				{friendsList.map((friend) => {
-					return (
-						<div className="friendProfile" key={friend.id}>
-							<div className="imageNameFriend">
-								<img
-									src={friend.avatar}
-									alt=""
-									className="friendImage"
-									onClick={() => navigate(`/profile/${friend.username}`)}
-								/>
-								<span>{friend.username}</span>
-							</div>
-							<div className="iconFriend">
-								<button
-									className="block"
-									onClick={() => handleBlockRequests(friend.id)}
-								>
-									Block
-								</button>
-								<button
-									className="remove"
-									onClick={() => handleRemoveRequests(friend.id)}
-								>
-									Remove
-								</button>
-								{/* <i className="fa-solid fa-user user"></i>
+				<div className="all-friends">
+					{friendsList.map((friend) => {
+						return (
+							<div className="friendProfile" key={friend.id}>
+								<div className="imageNameFriend">
+									<img
+										src={getendpoint("http", friend.avatar)}
+										alt=""
+										className="friendImage"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									/>
+									<span>{friend.username}</span>
+								</div>
+								<div className="iconFriend">
+									<button
+										className="block"
+										onClick={() => handleBlockRequests(friend.id)}
+									>
+										Block
+									</button>
+									<button
+										className="remove"
+										onClick={() => handleRemoveRequests(friend.id)}
+									>
+										Remove
+									</button>
+									{/* <i className="fa-solid fa-user user"></i>
 								<i className="fa-solid fa-comment-dots chat"></i> */}
+								</div>
 							</div>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
 			</>
 		</div>
 	);
