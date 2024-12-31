@@ -5,10 +5,15 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-from .models import GameInvite, UserAchievement, UserStats
+from .models import GameInvite, UserAchievement, UserStats, Game
 
 User = get_user_model()
 
+
+class GameSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Game
+    fields = '__all__'
 
 class GameInviteSerializer(serializers.ModelSerializer):
   sent_at = serializers.DateTimeField(read_only=True)
