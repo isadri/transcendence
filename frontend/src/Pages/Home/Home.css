@@ -11,7 +11,6 @@
 	display: none;
 }
 
-
 .Home-welcome {
 	display: flex;
 	flex-direction: row;
@@ -34,11 +33,15 @@
 	width: 90%;
 }
 
-.Home-gameStatis {
+.Home-gameStats {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+    margin-top: 20px;
+	/* height: 640px; */
 }
+
+
 .Home-modeChat .Home-ChatRev {
 	display: none;
 }
@@ -55,12 +58,17 @@
 		flex-direction: row;
 		width: 100%;
 	}
-	.Home-gameStatis {
-		display: flex;
-		flex-direction: column;
-	}
 	.Home-game {
 		width: 100%;
+	}
+}
+
+@media only screen and (max-width: 850px) {
+
+	.Home-gameStats {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start
 	}
 }
 

@@ -3,8 +3,8 @@
 import Welcome from './Components/Welcome'
 import Profile from './Components/Profile'
 import GameModes from './Components/GameModes'
-import GameRank from './Components/GameRank'
-import LastGame from './Components/LastGame'
+import GameStats from './Components/GameStats'
+import GameHighlights from './Components/gameHighlights'
 import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
@@ -12,6 +12,7 @@ import './styles/welcomeAndProfile.css'
 
 function Home() {
 
+  
   return (
     <div className='Home-homePage'>
       {/* <div className='Home-searchAndIcons'>
@@ -28,9 +29,9 @@ function Home() {
             <GameModes/>
             <Chat/>
           </div>
-          <div className='Home-gameStatis'>
-            <GameRank/>
-            <LastGame/>
+          <div className='Home-gameStats'>
+            <GameHighlights/>
+            <GameStats/>
           </div>
         </div>
         <Chat/>
