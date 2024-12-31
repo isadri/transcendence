@@ -11,6 +11,7 @@ volumes:
   kibconfig:
   nginx_logs:
   static_files:
+  snapshot_repo:
 
 services:
   back-end:
@@ -108,6 +109,8 @@ services:
     container_name: setup
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
+      - ./elk/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - snapshot_repo:/mnt/backups
     env_file:
       - .env
     user: "0"
@@ -130,10 +133,11 @@ services:
       - certs:/usr/share/elasticsearch/config/certs
       - es01data:/usr/share/elasticsearch/data
       - ./elk/es01/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - snapshot_repo:/mnt/backups
     env_file:
       - .env
-    environment:
-      ES_JAVA_OPT: "-Xms750m -Xmx750m"
+    #environment:
+    #  ES_JAVA_OPT: "-Xms750m -Xmx750m"
     networks:
       - app-network
     mem_limit: ${MEM_LIMIT}
@@ -161,8 +165,9 @@ services:
       - certs:/usr/share/elasticsearch/config/certs
       - es02data:/usr/share/elasticsearch/data
       - ./elk/es02/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    environment:
-      ES_JAVA_OPT: "-Xms750m -Xmx750m"
+      - snapshot_repo:/mnt/backups
+    #environment:
+    #  ES_JAVA_OPT: "-Xms750m -Xmx750m"
     env_file:
       - .env
     networks:
