@@ -355,9 +355,6 @@ def check_otp_key(otp: str, user: User) -> bool:
 
 def add_level_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    # user_achievements =  UserAchievement.objects.filter(user=user)
-    # userStats.level = 100
-    # userStats.save()
     if userStats.level == 1:
         if not UserAchievement.objects.filter(key='level_1').exists():
             UserAchievement.objects.create(
@@ -407,9 +404,6 @@ def add_level_achievement_to_user(user: User):
 
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    # user_achievements =  UserAchievement.objects.filter(user=user)
-    # userStats.win = 50
-    # userStats.save()
     if userStats.win == 1:
         if not UserAchievement.objects.filter(key='win_1').exists():
             UserAchievement.objects.create(
@@ -441,9 +435,6 @@ def add_game_achievement_to_user(user: User):
 
 def add_milestone_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    user_achievements =  UserAchievement.objects.filter(user=user)
-    userStats.nbr_games = 50
-    userStats.save()
     if userStats.nbr_games == 10:
         if not UserAchievement.objects.filter(key='match_10').exists():
             UserAchievement.objects.create(
