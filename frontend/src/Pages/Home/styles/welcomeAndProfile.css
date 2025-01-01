@@ -2,7 +2,7 @@
 .Home-content {
     position: relative;
     width: 68%;
-    height: 260px;
+    height: auto;
     background-color: var(--fade);
     border-radius: 20px;
     font-family: var(--mono);
@@ -51,7 +51,7 @@
     }
 }
 
-@media only screen and (max-width: 750px){
+@media only screen and (max-width: 850px){
     .Home-content {
         width: 100%;
     }
@@ -89,6 +89,7 @@
     justify-content: center;
     background-color: var(--fade);
     width: 28%;
+    height: 200px;
     margin-left: auto;
     border-radius: 20px;
     margin-top: 25px;
@@ -206,16 +207,25 @@
 }
 
 
+@media only screen and (max-width: 1090px){
+    .Home-user{
+        display: none;
+    }
+    
+}
 @media only screen and (max-width: 800px){
     .Home-comstats-containe .Home-state{
         font-size: 10px;
     }
 
 }
-@media only screen and (max-width: 750px){
+@media only screen and (max-width: 850px){
 
     .Home-profile{
         width: 100%;
         margin-left: 0;
+    }
+    .Home-user{
+        display: flex;
     }
 }
