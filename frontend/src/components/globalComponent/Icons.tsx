@@ -11,7 +11,7 @@ function Icons() {
   const user = getUser()
   const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
   // const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
-  const [unread, setUnread] = useState(0)
+  // const [unread, setUnread] = useState(0)
   const closeMenuRef = useRef<HTMLDivElement>(null);
   const buttonMenuRef = useRef<HTMLDivElement>(null);
   const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"

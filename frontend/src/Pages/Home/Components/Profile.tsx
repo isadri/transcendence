@@ -35,7 +35,7 @@ function Profile() {
           <img src={Cbadge} alt="" />
         </div>
         <div className="Home-states">
-          <div className="Home-level-bar">
+          <div className="Home-level-bar leve-dashbord">
             <div className="Home-level-bar-fill" style={{width: `${percentage}%`}}></div>
             <span className="Home-level-text">Level {Math.floor(user.stats.level)} - {Math.round(percentage)}%</span>
           </div>
