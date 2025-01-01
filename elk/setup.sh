@@ -16,6 +16,10 @@ if [ ! -f config/certs/ca.zip ]; then
 	unzip config/certs/ca.zip -d config/certs
 fi;
 
+echo "Setting permissions for /mnt/backups"
+chown -R elasticsearch:elasticsearch /mnt/backups
+chmod 750 /mnt/backups
+
 if [ ! -f config/certs/certs.zip ]; then
 	echo "Generating certs"
 	echo -e \
@@ -57,12 +61,6 @@ if [ ! -f config/certs/certs.zip ]; then
 	unzip config/certs/certs.zip -d config/certs
 fi
 
-#echo "Setting file permissions"
-#chmod 664 config/certs/logstash/logstash.pkcs8.key
-#chown -R root:root config/certs
-#find . -type d -exec chmod 750 \{\} \;
-#find . -type f -exec chmod 640 \{\} \;
-
 echo "Waiting for Elasticsearch availability"
 until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | \
 grep -q "missing authentication credentials"; do sleep 10; done
@@ -72,6 +70,34 @@ until curl -s -X POST --cacert config/certs/ca/ca.crt \
 -u elastic:$ELASTIC_PASSWORD -H "Content-Type: application/json" \
 https://es01:9200/_security/user/kibana_system/_password \
 -d "{\"password\": \"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done
+
+echo "Creating snapshot repository"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_snapshot/app_snapshots_repo -H "Content-Type: application/json" -d '
+{
+	"type": "fs",
+	"settings": {
+		"location": "/mnt/backups/app_backups",
+		"compress": true
+	}
+}'
+
+echo -e "\nCreating SLM policy"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application/json" -d '
+{
+	"schedule": "0 0 * * * ?",
+	"name": "<app-snap-{now/d}>",
+	"repository": "app_snapshots_repo",
+	"config": {
+		"indices": "django-logs-*,nginx-logs-*"
+	},
+	"retention": {
+		"expire_after": "3d",
+		"min_count": 5,
+		"max_count": 10
+	}
+}'
 
 echo -e "\nCreating index lifecycle policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
@@ -123,7 +149,7 @@ https://es01:9200/_index_template/nginx-logs-template -H "Content-Type: applicat
 {
 	"index_patterns": [ "nginx-logs-*" ],
 	"data_stream": { },
-    	"composed_of": [ "logs-settings-component" ],
+    "composed_of": [ "logs-settings-component" ],
 	"priority": 500
 }'
 
@@ -143,7 +169,7 @@ https://es01:9200/_index_template/django-logs-template -H "Content-Type: applica
     },
 	"index_patterns": [ "django-logs-*" ],
 	"data_stream": { },
-    	"composed_of": [ "logs-settings-component" ],
+    "composed_of": [ "logs-settings-component" ],
 	"priority": 500
 }'
 

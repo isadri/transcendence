@@ -21,3 +21,7 @@ xpack.license.self_generated.type: ${LICENSE}
 xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.key: certs/es01/es01.key
 xpack.security.http.ssl.certificate: certs/es01/es01.crt
+
+path:
+  repo:
+    - /mnt/backups
