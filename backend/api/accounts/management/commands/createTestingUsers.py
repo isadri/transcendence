@@ -28,7 +28,9 @@ class Command(BaseCommand):
                     username=user_data['username'],
                     email=user_data['email'],
                     password=user_data['password'],
-                    email_verified=True
+                    email_verified=True,
+                    is_staff=user_data['is_staff'],
+                    is_superuser=user_data['is_staff'],
                 )
                 userStats, _ = UserStats.objects.get_or_create(user=user)
                 self.stdout.write(self.style.SUCCESS(f"User {user_data['username']} created."))

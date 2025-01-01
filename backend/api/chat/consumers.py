@@ -136,10 +136,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user1, user2 = await self.get_users_from_chat(chat)
 
             if status == True:
-                if (user1.id == blocked):
+                if (user1.id == blocked and chat.blocke_state_user1 != "blocker" ):
                     chat.blocke_state_user1 = "blocked"
                     chat.blocke_state_user2 = "blocker"
-                else:
+                elif (user1.id == blocker and chat.blocke_state_user1 != "blocked" ): 
                     chat.blocke_state_user1 = "blocker"
                     chat.blocke_state_user2 = "blocked"
             elif status == False:
@@ -149,6 +149,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.isBlockedPayload = None
             await chat.asave()
 
+            if ((user1.id == blocked and chat.blocke_state_user1 != "blocker")
+                or (user1.id == blocker and chat.blocke_state_user1 != "blocked" ) ):
+                y = blocker
+                blocker = blocked
+                blocked = y
             blocker_room = f"chat_room_of_{blocker}"
             blocked_room = f"chat_room_of_{blocked}"
             relation_status = self.is_blocked(chat)
