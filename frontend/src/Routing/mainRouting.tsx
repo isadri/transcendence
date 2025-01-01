@@ -15,8 +15,7 @@ import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
 import { getUser } from '../context/getContextData';
-// import { getContext, getUser } from '../context/getContextData';
-// import { useEffect } from 'react';
+import TournamentRemote from '../Pages/Game/Tournament/Remote/TournamentRemote';
 
 
 // isLogged  routing table and layout
@@ -66,7 +65,12 @@ const mainRoutingTable = [
           },
           {
             path: "remote",
-            element: <Game />,
+            children: [
+              {
+                path: "random",
+                element: <TournamentRemote isRanom={true}/>,
+              }
+            ]
           },
         ]
       },
