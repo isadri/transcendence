@@ -135,8 +135,8 @@ function Icons() {
         </div>
         {!hideProfileImg &&
           <div className="userInfoGlobal">
-            <div className="Home-ProfImg imgGlobal">
-              <Link to="/profile" className="img">
+            <div className=" imgGlobal">
+              <Link to="/profile" className="imag">
                 {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
               </Link>
               {

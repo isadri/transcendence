@@ -211,25 +211,43 @@
 
 
 .imgGlobal{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
     position: relative;
     display: flex;
     justify-content: flex-end;
-    margin-left: 0px;
-    margin-top: 0px;
+    /* margin-left: 0px;
+    margin-top: 0px; */
     width: 60px;
 }
 
-.imgGlobal .img{
+.imgGlobal .imag{
     width: 40px;
     height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: solid 1px white;
+    background-color: white;
+}
+.imgGlobal img{
+    width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: solid 1px white;
 }
 
 .imgGlobal .globalCircle{
     position: absolute;
+    border-radius: 50%;
+    background-color: #04de04;
+    bottom: 6px;
     top: 3px;
     left: 21px;
     width: 9px;
     height: 9px;
+    z-index: 1;
 }
 /********************** Responsive *******************************/
 @media only screen and (max-width: 478px){
