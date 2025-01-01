@@ -6,7 +6,6 @@ import "./../Components/gameHistoryItem/GameHistoryitem.css"
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GameModePopUp from "../../../components/GameModePopUp/GameModePopUp";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
 
 
@@ -39,7 +38,7 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
   const navigator = useNavigate()
   if (context) {
-    const { socket, setSocket, enemyUser, setEnemyUser, setReady,setDisplayFriends } = context
+    const { socket, setSocket, enemyUser, setEnemyUser, setReady, setDisplayFriends } = context
     useEffect(() => {
       if (socket)
         socket.onmessage = (e) => {
@@ -94,20 +93,28 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
             enemy ?
               <>
                 {
+                  enemyUser ?
+                    <>
+                      <h4>{enemyUser.username}</h4>
+                      <h4>4.5 lvl</h4>
+                    </>
+                    :
+                    (
+                      isRandom ?
+                        <h4>waiting ...</h4>
+                        :
+                        <h4>Invite a friend</h4>
+                    )
+
+                }
+                {/* {
                   isRandom
                     ?
                     (
                       enemyUser ?
-                        <>
-                          <h4>{enemyUser.username}</h4>
-                          <h4>4.5 lvl</h4>
-                        </>
-                        :
-                        <h4>waiting ...</h4>
                     )
                     :
-                    <h4>Invite a friend</h4>
-                }
+                } */}
               </>
               :
               <>
@@ -140,18 +147,23 @@ const WarmUpBox = () => {
   )
 }
 
-const ReadyContext = () => {
+const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
   if (context) {
-    let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser} = context
+    let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser } = context
     console.log(enemyUser);
-    
+
     const onReady = () => {
       if (ready)
         return
-      const newSocket = new WebSocket(getendpoint('ws', '/ws/game/random/'))
+      console.log('isRandom', isRandom)
+      const newSocket = new WebSocket(isRandom ? 
+            getendpoint('ws', '/ws/game/random/'):
+            getendpoint('ws', '/ws/game/friend/')
+          )
       setSocket(newSocket)
       newSocket.onopen = () => {
+        
         newSocket.send(JSON.stringify({
           "event": "READY",
         }))
@@ -187,7 +199,7 @@ const ReadyContext = () => {
 }
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
-  const [ displayFriends, setDisplayFriends ] = useState<boolean>(false)
+  const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<EnemyUserData | null>(null)
@@ -197,7 +209,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
         <h2>Warm Up</h2>
         <div className="WarmUpOther">
           <div className="WarmUpVs">
-            <PlayerCard />
+            <PlayerCard isRandom={isRandom} />
             <img src={vsImage} className="WarmUpVsImage" />
             <PlayerCard enemy isRandom={isRandom} />
           </div>
@@ -207,7 +219,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
           <ReadyContext />
         </div>
       </div>
-      {displayFriends ? <FriendsPopUp setter={setDisplayFriends}/> : <></>}
+      {displayFriends ? <FriendsPopUp setter={setDisplayFriends} /> : <></>}
     </WarmUpContext.Provider>
   );
 }

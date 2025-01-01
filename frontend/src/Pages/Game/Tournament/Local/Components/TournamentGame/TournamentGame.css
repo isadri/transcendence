@@ -1,0 +1,67 @@
+.TournamentGame {
+  /* width: 80%; */
+  display: flex;
+  margin-top: 20px;
+  padding: 10px 0;
+  border-radius: 18px;
+  padding:10px 15px;
+  /* background-color: var(--fade); */
+  background-color: #665c5e;
+  justify-content: space-between;
+  max-width: 400px;
+}
+
+.TournamentGame div {
+  display: flex;
+  align-items: center;
+  
+}
+
+.TournamentGame div img {
+  width: 50px;
+  border-radius:  50%;
+}
+.TournamentGameRight
+{
+  display: flex;
+  justify-content: end;
+}
+.TournamentGameLeft {
+  /* margin-left: 5%;
+  margin-right: 5%; */
+  /* display: flex;
+  justify-content: end; */
+}
+
+.TournamentGameRight img{
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.TournamentGameLeft img{
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.TournamentGameResult {
+  justify-content: center;
+}
+
+.TournamentGameResult img {
+  padding-right: 10px;
+}
+
+@media screen and (max-width: 530px) {
+  .TournamentGame {
+    width: 85dvw;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 800px){
+  .TournamentGame {
+    width: 85dvw;
+    display: flex;
+    flex-direction: column;
+  }
+}
