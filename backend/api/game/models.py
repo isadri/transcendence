@@ -130,3 +130,22 @@ class UserStats(models.Model):
 
   def __str__(self):
         return f"{self.user.username} - Level {self.level}"
+      
+
+
+class Tournament(models.Model):
+  player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_1")
+  player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_2")
+  player3 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_3")
+  player4 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_4")
+  game_half1 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_half1", null=True)
+  game_half2 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_half2", null=True)
+  game_final = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_final", null=True)
+
+  def get_half1(self):
+    self.game_half1 = Game.objects.create(player1=self.player1, player2=self.player2)
+    return (self.game_half1)
+
+  def get_half2(self):
+    self.game_half2 = Game.objects.create(player1=self.player1, player2=self.player2)
+    return (self.game_half2)
