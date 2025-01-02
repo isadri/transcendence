@@ -29,7 +29,8 @@ function Icons() {
         console.log(error.response)
       })
   }
-
+  console.log("unread notif => ", UnreadNotif)
+  console.log("unread  => ", context?.unreadCount)
   const handelClearAll = () => {
     axios
       .delete(getendpoint("http", "/api/notifications/clear-all-notif/"), {
@@ -90,7 +91,7 @@ function Icons() {
       <span  className="Home-Icons">
         <div ref={closeMenuRef} className="notifIcon">
           {
-            UnreadNotif !== 0 && !context?.unreadCount &&
+            UnreadNotif !== 0 &&
             <div className="unreadNotif">
               <span>{UnreadNotif}</span>
             </div>

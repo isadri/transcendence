@@ -58,6 +58,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    position: relative;
 }
 /* .Home-FriensList .Home-friend .Home-friendInfo .Home-friendsImg{
     width: 60px;
@@ -66,11 +67,23 @@
     overflow: hidden;
 } */
 
-.Home-FriensList .Home-friend .Home-friendInfo img{
+.Home-FriensList .Home-friend .Home-friendInfo .img{
     width: 28%;
     border-radius: 50%;
     cursor: pointer;
 }
+.Home-FriensList .Home-friend .Home-friendInfo  .onlineCircle-friend{
+    width: 9px;
+    height: 9px;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid #04de04;
+    background-color: #04de04;
+    top: 20px;
+    left: 22px;
+}
+
+
 
 .Home-FriensList .Home-friend .Home-friendName{
     display: flex;

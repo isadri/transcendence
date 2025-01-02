@@ -116,11 +116,26 @@ function ProfileUser({userData}:Prop) {
           <div className='Home-UserName'>
             <span>{userData?.username}</span>
             {
-              isOnline && 
+             user?.username === userData.username && isOnline && 
               <div className='Home-online'>
                 <div className='Home-Circle'></div>
                 <span>Online</span>
               </div>
+            }
+            {
+             user?.username !== userData.username && userData.is_online && 
+              <div className='Home-online'>
+                <div className='Home-Circle'></div>
+                <span>Online</span>
+              </div>
+            }
+            {
+             user?.username !== userData.username && !userData.is_online &&
+              <div className='Home-online'>
+                <div className='Home-Circle' style={{backgroundColor: "rgb(119 118 118)", borderColor:"rgb(119 118 118)"}}></div>
+                <span style={{color: "rgb(119 118 118)"}}>Offline</span>
+              </div>
+
             }
           </div>
         </div>

@@ -35,7 +35,6 @@ function App() {
       setUser(null)
     })
     
-    console.log("user => ", user)
     if(isLogged)
     {
       const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));

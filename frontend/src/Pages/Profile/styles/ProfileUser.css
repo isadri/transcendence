@@ -38,7 +38,7 @@
     border: 1px solid var(--primary);
     border-radius: 20px;
     /* font-size: 1vh; */
-    font-size: 1px;
+    /* font-size: 1px; */
     width: 100%;
     margin-left: 5%;
 }

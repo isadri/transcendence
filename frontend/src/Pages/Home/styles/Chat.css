@@ -34,13 +34,23 @@
 
 .Home-friends-item{
     cursor: pointer;
-
-}
-
-.Home-friends-item {
+    position: relative;
     margin-top: 12.5px;
-    
 }
+
+.Home-friends-item .onlineCircle-friend{
+    width: 13px;
+    height: 13px;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid #04de04;
+    background-color: #04de04;
+    top: 40px;
+    right: 14px;
+}
+
+
+
 .Home-ChatRev .Home-friends-item img {
     width: 55px;
     height: 55px;

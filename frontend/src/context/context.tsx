@@ -49,6 +49,7 @@ interface userDataType {
     register_complete: boolean,
     from_remote_api: boolean,
     is_online: boolean,
+    usable_password: boolean,
     stats: stats
 }
 

@@ -306,7 +306,7 @@ function Authentication() {
           ...prevstate,
           username: "",
         }));
-      setUsername(e.target.value);
+      setUsername(e.target.value.toLowerCase());
     } else if (str === "password") {
       if (e.target.value.length < 8)
         SetErrors((prevState) => ({
@@ -381,7 +381,6 @@ function Authentication() {
           zIndex: 5,
         }
     : { transform: "translateX(-100%)" };
-
   return (
     <>
       <div className="SingInParent curve">
@@ -410,7 +409,7 @@ function Authentication() {
               id="UserName"
               placeholder="UserName or Email"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value.toLowerCase())}
               required
             />
             <input
@@ -718,7 +717,7 @@ function Authentication() {
                       type="text"
                       placeholder="Enter your username"
                       value={usernameReset}
-                      onChange={(e) => setUsernameReset(e.target.value)}
+                      onChange={(e) => setUsernameReset(e.target.value.toLowerCase())}
                     />
                     <input
                       type="text"

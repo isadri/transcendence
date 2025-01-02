@@ -7,6 +7,7 @@ import License from '../Pages/License/License';
 import AboutUs from '../Pages/AboutUs/AboutUs';
 import CallBack from '../Pages/CallBack/CallBack';
 import EmailVerified from '../Pages/EmailVerified/EmailVerified';
+import ResetPassword from '../Pages/ResetPassword/ResetPassword';
 
 // not Logged  routing table and layout
 
@@ -39,6 +40,10 @@ const landingRoutingTable = [
   {
     path: "/emailVerified",
     element: <EmailVerified />
+  },
+  {
+    path: "/resetPassword",
+    element: <ResetPassword />
   }
 ]
 
