@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def get_stats(self, obj):
-        userStats = UserStats.objects.get(user=obj)
+        userStats, _ = UserStats.objects.get_or_create(user=obj)
         statsSerializer = UserStatsSerializer(userStats)
         return statsSerializer.data
 
