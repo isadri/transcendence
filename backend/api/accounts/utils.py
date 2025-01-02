@@ -240,7 +240,8 @@ def get_user(data: dict) -> User | None:
                 remote_id=remote_id,
                 username=username,
                 email=email,
-                register_complete=register_state
+                register_complete=register_state,
+                email_verified=True
             )
             set_avatar(user, data.get('avatar_url'))
             user.set_unusable_password()
