@@ -149,3 +149,8 @@ class Tournament(models.Model):
   def get_half2(self):
     self.game_half2 = Game.objects.create(player1=self.player1, player2=self.player2)
     return (self.game_half2)
+
+  def ready_to_start_final(self):
+    if not self.game_half1 or not self.game_half2:
+      return False
+    return self.game_half1.progress == 'E' and  self.game_half2.progress == 'E'
