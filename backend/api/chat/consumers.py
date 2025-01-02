@@ -134,26 +134,54 @@ class ChatConsumer(AsyncWebsocketConsumer):
             chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
 
             user1, user2 = await self.get_users_from_chat(chat)
+            blocker_user = await database_sync_to_async(User.objects.get)(id=blocker)
+            blocked_user = await database_sync_to_async(User.objects.get)(id=blocked)
 
+            if (status == True and chat.blocke_state_user1 != 'none' and chat.blocke_state_user2 != 'none'):
+                await self.send(text_data=json.dumps({'error': 'You cannot block this user.'}))
+                return
+
+            friend_request = await FriendRequest.objects.filter(
+            Q(sender_id=blocker, receiver_id=blocked) |
+            Q(sender_id=blocked, receiver_id=blocker)
+            ).afirst()
+
+
+
+            friend_request_unblock = await FriendRequest.objects.filter(
+                    Q(sender_id=blocker, receiver_id=blocked) |
+                    Q(sender_id=blocked, receiver_id=blocker),
+                    status='blocked',
+                    blocked_by=blocker_user,
+                    ).afirst()
             if status == True:
-                if (user1.id == blocked and chat.blocke_state_user1 != "blocker" ):
+                if (user1.id == blocked):
                     chat.blocke_state_user1 = "blocked"
                     chat.blocke_state_user2 = "blocker"
-                elif (user1.id == blocker and chat.blocke_state_user1 != "blocked" ): 
+                elif (user1.id == blocker): 
                     chat.blocke_state_user1 = "blocker"
                     chat.blocke_state_user2 = "blocked"
+                if friend_request:
+                    await friend_request.block_async(blocker_user)
+                else:
+                    await FriendRequest.objects.acreate(
+                        sender=blocker_user,
+                        receiver=blocked_user,
+                        status='blocked',
+                        blocked_by=blocker_user
+                    )
             elif status == False:
+                if not friend_request_unblock:
+                    await self.send(text_data=json.dumps({'error': 'No blocked request found.'}))
+                    return
+                await friend_request_unblock.unblock_async(blocker_user)
+                await database_sync_to_async(friend_request_unblock.delete)()
                 chat.blocke_state_user1 = "none"
                 chat.blocke_state_user2 = "none"
                 self.isBlocked = False
                 self.isBlockedPayload = None
             await chat.asave()
 
-            if ((user1.id == blocked and chat.blocke_state_user1 != "blocker")
-                or (user1.id == blocker and chat.blocke_state_user1 != "blocked" ) ):
-                y = blocker
-                blocker = blocked
-                blocked = y
             blocker_room = f"chat_room_of_{blocker}"
             blocked_room = f"chat_room_of_{blocked}"
             relation_status = self.is_blocked(chat)

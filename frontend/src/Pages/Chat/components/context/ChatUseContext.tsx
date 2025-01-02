@@ -121,6 +121,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		ws.onmessage = (event) => {
 			try {
 				const data = JSON.parse(event.data);
+
 				if (data.type === "block_status_update") {
 					setBlock({
 						chatid: data.chat_id,

@@ -46,13 +46,13 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 		}
 		try {
 			if (block?.status) {
-				await axios.post(
-					getendpoint("http", `/api/friends/unblock/${friend_id}`),
-					null,
-					{
-						withCredentials: true,
-					}
-				);
+				// await axios.post(
+				// 	getendpoint("http", `/api/friends/unblock/${friend_id}`),
+				// 	null,
+				// 	{
+				// 		withCredentials: true,
+				// 	}
+				// );
 				blockUnblockFriend({
 					chatid: selectedFriend.id,
 					blocker: user?.id,
@@ -60,13 +60,13 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					status: false,
 				});
 			} else {
-				await axios.post(
-					getendpoint("http", `/api/friends/block/${friend_id}`),
-					null,
-					{
-						withCredentials: true,
-					}
-				);
+				// await axios.post(
+				// 	getendpoint("http", `/api/friends/block/${friend_id}`),
+				// 	null,
+				// 	{
+				// 		withCredentials: true,
+				// 	}
+				// );
 				blockUnblockFriend({
 					chatid: selectedFriend.id,
 					blocker: user?.id,

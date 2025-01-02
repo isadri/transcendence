@@ -28,7 +28,7 @@ async def send_messages(ws_url, session_id, access_token, interval=5):
                 # Example message payload
                 message_payload = {
                     "message_type": "block_friend",
-                    "chat_id": 6,
+                    "chat_id": 12,
                     "blocker": 3,
                     "blocked": 2,
                     "status": True
