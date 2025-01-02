@@ -93,9 +93,9 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
 		"indices": "django-logs-*,nginx-logs-*"
 	},
 	"retention": {
-		"expire_after": "3d",
+		"expire_after": "12h",
 		"min_count": 5,
-		"max_count": 10
+		"max_count": 8
 	}
 }'
 
