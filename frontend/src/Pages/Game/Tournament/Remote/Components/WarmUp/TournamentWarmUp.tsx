@@ -27,7 +27,6 @@ interface ContextData {
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>,
   enemys: EnemysUserData
   setEnemys: React.Dispatch<React.SetStateAction<EnemysUserData>>,
-  setDisplayFriends: React.Dispatch<React.SetStateAction<boolean>>,
   ready: boolean,
   setReady: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -39,7 +38,7 @@ const PlayerCard = ({ enemy = false, isRandom = false, enemyIndex=0 }: PlayerCar
   const context = useContext(WarmUpContext)
   const navigator = useNavigate()
   if (context) {
-    const { socket, setSocket, enemys, setEnemys, setReady, setDisplayFriends } = context
+    const { socket, setSocket, enemys, setEnemys, setReady } = context
     useEffect(() => {
       if (socket)
         socket.onmessage = (e) => {
