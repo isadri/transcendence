@@ -106,11 +106,11 @@ https://es01:9200/_ilm/policy/logs-policy -H "Content-Type: application/json" -d
 	"policy": {
 		"phases": {
 			"hot": {
-				"min_age": "3m",
+				"min_age": "10m",
 				"actions": {
 					"rollover": {
-						"max_age": "1h",
-						"max_docs": 200
+						"max_age": "2h",
+						"max_docs": 20000
 					}
 				}
 			},
