@@ -4,7 +4,7 @@ import random
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import Game
+from .models import Game, Tournament
 from ..accounts.serializers import UserSerializer
 from channels.layers import get_channel_layer
 channel_layer = get_channel_layer()
@@ -28,7 +28,7 @@ X_PADDLE_BALL_R = PADDLE_Z/2 + BALL_R
 
 class RandomGame(AsyncWebsocketConsumer):
 
-  qeuee = {}
+  queue = {}
   connected = {}
   async def connect(self):
     self.user = self.scope["user"]
@@ -39,8 +39,8 @@ class RandomGame(AsyncWebsocketConsumer):
 
   async def disconnect(self, code):
     username = self.user.username
-    if username in self.qeuee:
-      del self.qeuee[username]
+    if username in self.queue:
+      del self.queue[username]
     if username in self.connected:
       del self.connected[username]
     if self.room_name:
@@ -56,10 +56,10 @@ class RandomGame(AsyncWebsocketConsumer):
   async def receive(self, text_data):
     data = json.loads(text_data)
     if data["event"] == "READY":
-      self.qeuee[self.user.username] = self
-      print(self.qeuee)
-      if len(self.qeuee) >= 2:
-        iterator = iter(iter(self.qeuee.items()))
+      self.queue[self.user.username] = self
+      print(self.queue)
+      if len(self.queue) >= 2:
+        iterator = iter(iter(self.queue.items()))
         key1 , player1 = next(iterator)
         key2 , player2 = next(iterator)
         self.gameMatch = await self.create_game(player1.user, player2.user)
@@ -101,17 +101,17 @@ class RandomGame(AsyncWebsocketConsumer):
 
   async def handshaking(self, key1, key2):
     """
-      notify the players that a game inisialied
+      notify the players that a game initialed
     """
     await self.handshake(key1, key2)
     await self.handshake(key2, key1)
 
   def setAsConnected(self, key1, key2):
-    # delet them from the qeuee and set them as connected
-    self.connected[key1] = self.qeuee[key1]
-    del self.qeuee[key1]
-    self.connected[key2] = self.qeuee[key2]
-    del self.qeuee[key2]
+    # delete them from the queue and set them as connected
+    self.connected[key1] = self.queue[key1]
+    del self.queue[key1]
+    self.connected[key2] = self.queue[key2]
+    del self.queue[key2]
 
   async def player_disconnected(self, event):
     """
@@ -247,8 +247,7 @@ class GameData:
     paddle_RIGHT  = px + PADDLE_X/2
     paddle_TOP    = pz - PADDLE_Z/2
     paddle_BOTTOM = pz + PADDLE_Z/2
-    if ball_LEFT <= paddle_RIGHT and ball_TOP <= paddle_BOTTOM :
-      if ball_RIGHT >= paddle_LEFT and ball_BOTTOM >= paddle_TOP:
+    if ball_LEFT <= paddle_RIGHT and ball_TOP <= paddle_BOTTOM and ball_RIGHT >= paddle_LEFT and ball_BOTTOM >= paddle_TOP:
         horizontal_overlap = min(ball_RIGHT - paddle_LEFT, paddle_RIGHT - ball_LEFT)
         vertical_overlap = min(ball_BOTTOM - paddle_TOP, paddle_BOTTOM - ball_TOP)
         if vertical_overlap < horizontal_overlap:
