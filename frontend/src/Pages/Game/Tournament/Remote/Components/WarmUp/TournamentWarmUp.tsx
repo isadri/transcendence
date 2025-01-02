@@ -12,8 +12,8 @@ interface PlayerCardData {
   enemyIndex?: number,
   isRandom?: boolean,
 }
-type EnemysUserData = [ EnemyUserData | null, EnemyUserData | null, EnemyUserData | null]
-const emptyEnemys:EnemysUserData = [null, null, null]
+type EnemiesUserData = [ EnemyUserData | null, EnemyUserData | null, EnemyUserData | null]
+const emptyEnemies:EnemiesUserData = [null, null, null]
 
 interface EnemyUserData {
   username: string,
@@ -25,8 +25,8 @@ interface EnemyUserData {
 interface ContextData {
   socket: WebSocket | null,
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>,
-  enemys: EnemysUserData
-  setEnemys: React.Dispatch<React.SetStateAction<EnemysUserData>>,
+  enemies: EnemiesUserData
+  setEnemies: React.Dispatch<React.SetStateAction<EnemiesUserData>>,
   ready: boolean,
   setReady: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -38,35 +38,30 @@ const PlayerCard = ({ enemy = false, isRandom = false, enemyIndex=0 }: PlayerCar
   const context = useContext(WarmUpContext)
   const navigator = useNavigate()
   if (context) {
-    const { socket, setSocket, enemys, setEnemys, setReady } = context
+    const { socket, setSocket, enemies, setEnemies, setReady } = context
     useEffect(() => {
       if (socket)
         socket.onmessage = (e) => {
           const data = JSON.parse(e.data)
           console.log(data);
           if (data.event == "HANDSHAKING") {
-            setTimeout(() => { setEnemys([data.enemy, null, null]) }, 2000);
+            setTimeout(() => { setEnemies(data.enemies) }, 2000);
             setTimeout(() => { navigator(`/game/remote/${data.game_id}`) }, 5000);
           }
           if (data.event == "ABORT") {
-            setEnemys(emptyEnemys)
+            setEnemies(emptyEnemies)
             setReady(false)
             socket.close()
           }
         }
-    }, [setEnemys, setSocket, socket])
-
-    const inviteFriend = () => {
-      console.log('here');
-      setDisplayFriends(true)
-    }
+    }, [setEnemies, setSocket, socket])
 
     return (
       <div className="TournamentWarmUpVsPlayer" >
         <div className="TournamentWarmUpVsImageDiv">
           {
-            enemy && !enemys[enemyIndex] ?
-              <div className="TournamentWarmUpVsPlus" onClick={inviteFriend}>
+            enemy && !enemies[enemyIndex] ?
+              <div className="TournamentWarmUpVsPlus" >
                 <div>
                   <i className={`fa-solid ${isRandom ? "fa-hourglass-start" : "fa-plus"} fa-2xl`}></i>
                 </div>
@@ -74,9 +69,9 @@ const PlayerCard = ({ enemy = false, isRandom = false, enemyIndex=0 }: PlayerCar
               </div>
               :
               (
-                enemy && enemys[enemyIndex] ?
+                enemy && enemies[enemyIndex] ?
                   <>
-                    <img src={getendpoint("http",enemys[enemyIndex]?.avatar || "")} className="TournamentWarmUpVsAvatar" />
+                    <img src={getendpoint("http",enemies[enemyIndex]?.avatar || "")} className="TournamentWarmUpVsAvatar" />
                     <img src={badge} className="TournamentWarmUpVsBadge" />
                   </>
                   :
@@ -93,9 +88,9 @@ const PlayerCard = ({ enemy = false, isRandom = false, enemyIndex=0 }: PlayerCar
             enemy ?
               <>
                 {
-                  enemys[enemyIndex] ?
+                  enemies[enemyIndex] ?
                     <>
-                      <h4>{enemys[enemyIndex]?.username}</h4>
+                      <h4>{enemies[enemyIndex]?.username}</h4>
                       <h4>4.5 lvl</h4>
                     </>
                     :
@@ -131,8 +126,7 @@ const PlayerCard = ({ enemy = false, isRandom = false, enemyIndex=0 }: PlayerCar
 const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
   if (context) {
-    let { socket, ready, setReady, setSocket, setEnemys, enemys } = context
-    console.log(enemys);
+    let { socket, ready, setReady, setSocket, setEnemies, enemies } = context
 
     const onReady = () => {
       if (ready)
@@ -141,16 +135,13 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
       const newSocket = new WebSocket(getendpoint('ws', '/ws/game/tournament/random'))
       setSocket(newSocket)
       newSocket.onopen = () => {
-        
         newSocket.send(JSON.stringify({
           "event": "READY",
         }))
       }
       newSocket.onclose = () => {
-        console.log('s: closed');
-        
         setReady(false)
-        setEnemys([null, null, null])
+        setEnemies([null, null, null])
       }
       setReady(true)
     }
@@ -184,22 +175,22 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
 const TournamentWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
-  const [enemys, setEnemys] = useState<EnemysUserData>(emptyEnemys)
+  const [enemies, setEnemies] = useState<EnemiesUserData>(emptyEnemies)
   return (
-    <WarmUpContext.Provider value={{ socket, setSocket, enemys, setEnemys, ready, setReady }}>
+    <WarmUpContext.Provider value={{ socket, setSocket, enemies, setEnemies, ready, setReady }}>
       <div className="TournamentGameWarmUp">
         <h2>Warm Up</h2>
         <div className="TournamentWarmUpOther">
           <div className="TournamentWarmUpVs">
             <PlayerCard isRandom={isRandom} />
-            <PlayerCard enemy isRandom={isRandom} />
+            <PlayerCard enemy enemyIndex={0} isRandom={isRandom} />
           </div>
           <div className="TournamentWarmUp TournamentVsOnly">
             <img src={vsImage} className="TournamentWarmUpVsImage" />
           </div>
           <div className="TournamentWarmUpVs">
-            <PlayerCard enemy isRandom={isRandom} />
-            <PlayerCard enemy isRandom={isRandom} />
+            <PlayerCard enemy enemyIndex={1} isRandom={isRandom} />
+            <PlayerCard enemy enemyIndex={2} isRandom={isRandom} />
           </div>
           <ReadyContext />
         </div>

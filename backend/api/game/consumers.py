@@ -521,9 +521,13 @@ class RandomTournament(AsyncWebsocketConsumer):
     for player in players:
       username = player.get('username')
       if username != self.user.username:
-        enemies.append(player)
+        enemies.append({
+          'avatar': player['avatar'],
+          'username': player['username'],
+          'stats': player['stats'],
+        })
     await self.send(text_data=json.dumps({
-      'event': 'HANDSHAKE',
+      'event': 'HANDSHAKING',
       'enemies': enemies,
       'tournament': event['tournament']
     }))
