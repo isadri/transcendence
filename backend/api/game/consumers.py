@@ -461,3 +461,99 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   def getUsername(self):
     return self.username
+
+
+
+
+class RandomTournament(AsyncWebsocketConsumer):
+  queue = {}
+  connected = {}
+  async def connect(self):
+    self.user = self.scope["user"]
+    self.room_name = None
+    if self.user.is_authenticated:
+      await self.accept()
+    else:
+      await self.close()
+
+  async def receive(self, text_data):
+    data = json.loads(text_data)
+    if data["event"] == "READY":
+      self.queue[self.user.username] = self
+      if len(self.queue) >= 4:
+        iterator = iter(iter(self.queue.items()))
+        key1 , player1 = next(iterator)
+        key2 , player2 = next(iterator)
+        key3 , player3 = next(iterator)
+        key4 , player4 = next(iterator)
+        
+        self.tournament = await self.create_tournament(
+          player1.user,
+          player2.user,
+          player3.user,
+          player4.user
+        )
+        print(self.tournament)
+        self.room_name = f"room_{self.tournament.id}"
+        await player1.channel_layer.group_add(self.room_name, player1.channel_name)
+        await player2.channel_layer.group_add(self.room_name, player2.channel_name)
+        await player3.channel_layer.group_add(self.room_name, player3.channel_name)
+        await player4.channel_layer.group_add(self.room_name, player4.channel_name)
+        await self.handshaking(
+          player1.user,
+          player2.user,
+          player3.user,
+          player4.user
+        )
+
+
+
+  async def handshaking(self, p1, p2, p3, p4):
+    await self.channel_layer.group_send(self.room_name, {
+      'type': 'handshake',
+      'tournament': self.tournament.id,
+      'players': await self.serializing_data([p1, p2, p3, p4]),
+    })
+
+  async def handshake(self, event):
+    enemies = []
+    players = event.get('players')
+    for player in players:
+      username = player.get('username')
+      if username != self.user.username:
+        enemies.append(player)
+    await self.send(text_data=json.dumps({
+      'event': 'HANDSHAKE',
+      'enemies': enemies,
+      'tournament': event['tournament']
+    }))
+
+  @database_sync_to_async
+  def serializing_data(self, users):
+    serializer = UserSerializer(users, many=True)
+    return serializer.data
+  
+  @database_sync_to_async
+  def create_tournament(self, p1, p2, p3, p4):
+    return Tournament.objects.create(
+      player1=p1,
+      player2=p2,
+      player3=p3,
+      player4=p4,
+    )
+
+  async def disconnect(self, code):
+    username = self.user.username
+    if username in self.queue:
+      del self.queue[username]
+    if username in self.connected:
+      del self.connected[username]
+    if self.room_name:
+      await self.channel_layer.group_send(
+        self.room_name,
+        {
+            "type": "player_disconnected",
+            "username": self.user.username,
+        },
+      )
+
