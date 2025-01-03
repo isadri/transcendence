@@ -84,14 +84,17 @@
     aspect-ratio: 1;
     border-radius: 50%;
     width: 45px;
+    cursor: pointer;
 }
 
 .Home-Row1 span{
     margin-left: 10px;
+    cursor: pointer;
 }
 
 .Home-Row3 span{
     margin-right: 10px;
+    cursor: pointer;
 }
 
 .Home-score1{

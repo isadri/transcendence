@@ -35,7 +35,7 @@ function LastGame() {
   }
 
   const GetUserGames = () =>{
-    axios.get(getendpoint("http", "/api/game/History/"))
+    axios.get(getendpoint("http", `/api/game/History/${authUser?.username}`))
       .then((response) =>{
         setUserGames(response.data)
         console.log(response.data)
@@ -56,7 +56,7 @@ function LastGame() {
               <div className="Home-Row1">
                 <img src={getendpoint("http",usergame.player2.avatar)} alt="" 
                 onClick={() => usersProfile(usergame.player2)}/>
-                <span>{usergame.player2.username}</span>
+                <span onClick={() => usersProfile(usergame.player2)}>{usergame.player2.username}</span>
               </div>
               <div>
                 <div className="Home-Row2">
@@ -66,7 +66,7 @@ function LastGame() {
                 </div>
               </div>
               <div className="Home-Row3">
-                <span>{usergame.player1.username}</span>
+                <span onClick={() => usersProfile(usergame.player1)}>{usergame.player1.username}</span>
                 <img src={getendpoint("http", usergame.player1.avatar)} alt="" 
                 onClick={() => usersProfile(usergame.player1)}/>
               </div>
