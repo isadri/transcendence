@@ -141,6 +141,7 @@ class Tournament(models.Model):
   half1 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="half1", null=True)
   half2 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="half2", null=True)
   final = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="final", null=True)
+  winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tournament_winner", null=True)
 
   def init(self):
     self.get_or_create_half1()
