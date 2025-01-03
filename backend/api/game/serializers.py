@@ -59,9 +59,9 @@ class GameInviteSerializer(serializers.ModelSerializer):
 class UserAchievementSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserAchievement
-    fields =['user', 'type', 'name', 'key', 'text']
+    fields = '__all__'
 
 class UserStatsSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserStats
-    fields =['user', 'level', 'badge', 'win', 'lose', 'nbr_games']
+    fields ='__all__'
