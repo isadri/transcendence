@@ -19,4 +19,5 @@ urlpatterns = [
   path('userStats/', views.ListUserStats.as_view(), name='list-user-stats'),
 
   path('games/', views.GamesList.as_view(), name='list-user-games'),
+  path('tournaments/', views.TournamentList.as_view(), name='list-user-tournaments'),
 ]

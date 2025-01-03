@@ -2,8 +2,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
-from .models import GameInvite, Game, UserAchievement, UserStats
-from .serializers import GameInviteSerializer, UserAchievementSerializer, UserStatsSerializer,GameSerializer
+from .models import *
+from .serializers import *
 
 from rest_framework import status,viewsets
 from rest_framework.views import APIView
@@ -52,7 +52,7 @@ class CancelGameInvite(APIView):
       invite.delete()
       return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except:
-       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
 
 
 class GetGameInvite(APIView):
@@ -178,4 +178,13 @@ class GamesList(APIView):
     user = request.user
     userStats = Game.objects.filter(Q(player1=user) | Q(player2=user))
     serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
+    return Response(serializer.data)
+
+class TournamentList(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    user = request.user
+    tournaments = Tournament.objects.filter(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user))
+    serializer = TournamentSerializer(tournaments, many=True, context={'user' : request.user})
     return Response(serializer.data)
