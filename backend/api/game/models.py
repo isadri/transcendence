@@ -142,13 +142,27 @@ class Tournament(models.Model):
   game_half2 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_half2", null=True)
   game_final = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_final", null=True)
 
-  def get_half1(self):
-    self.game_half1 = Game.objects.create(player1=self.player1, player2=self.player2)
+  def init(self):
+    self.get_or_create_half1()
+    self.get_or_create_half2()
+
+  def get_or_create_half1(self):
+    if not self.game_half1:
+      self.game_half1 = Game.objects.create(player1=self.player1, player2=self.player2)
+      self.save(update_fields=['game_half1'])
     return (self.game_half1)
 
-  def get_half2(self):
-    self.game_half2 = Game.objects.create(player1=self.player1, player2=self.player2)
+  def get_or_create_half2(self):
+    if not self.game_half2:
+      self.game_half2 = Game.objects.create(player1=self.player3, player2=self.player4)
+      self.save(update_fields=['game_half2'])
     return (self.game_half2)
+
+  def get_or_create_final(self):
+    if not self.game_half2:
+      self.game_final = Game.objects.create(player1=self.game_half1.winner, player2=self.game_half2.winner)
+      self.save(update_fields=['game_final'])
+    return (self.game_final)
 
   def ready_to_start_final(self):
     if not self.game_half1 or not self.game_half2:
