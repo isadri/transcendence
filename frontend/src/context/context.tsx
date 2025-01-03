@@ -38,8 +38,20 @@ interface stats{
   badge: number,
   win: number,
   lose: number,
-  nbr_games: number
+  nbr_games: number,
+  xp: number
 }
+
+interface FriendDataType{
+  id: number,
+  username: string,
+  email: string,
+  avatar: string,
+  is_online: boolean,
+  is_blocked: boolean,
+  stats: stats,
+  rank: number
+}  
 
 interface userDataType {
     id : number,
@@ -82,3 +94,4 @@ export const loginContext = createContext<loginContextData | null>(null)
 
 export type {loginContextData, NotificationsData}
 export type {userDataType}
+export type {FriendDataType}
