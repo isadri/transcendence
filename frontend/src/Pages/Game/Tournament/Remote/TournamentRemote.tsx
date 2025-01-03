@@ -1,16 +1,23 @@
+import TournamentGames from "./Components/TournamentGames/TournamentGames";
 import TournamentWarmUp from "./Components/WarmUp/TournamentWarmUp"
 
 
 type TournamentRemote = {
-  isRanom?: boolean;
+  isRandom?: boolean,
+  ready?: boolean;
 }
 
 
 
-const TournamentRemote = ({ isRanom = true }: TournamentRemote) => {
+const TournamentRemote = ({ isRandom = true, ready = false }: TournamentRemote) => {
   return (
     <>
-      <TournamentWarmUp isRandom={isRanom} />
+      {
+        !ready?
+          <TournamentWarmUp isRandom={isRandom} />
+          :
+          <>hello</>
+      }
     </>
   )
 }
