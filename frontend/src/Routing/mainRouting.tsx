@@ -67,7 +67,7 @@ const mainRoutingTable = [
             path: "remote",
             children: [
               {
-                path: "",
+                path: ":id",
                 element: <TournamentRemote isRandom={true} ready={true}/>,
               },
               {
