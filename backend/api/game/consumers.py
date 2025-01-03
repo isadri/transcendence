@@ -515,6 +515,7 @@ class RandomTournament(AsyncWebsocketConsumer):
       'players': await self.serializing_data([p1, p2, p3, p4]),
     })
 
+
   async def handshake(self, event):
     enemies = []
     players = event.get('players')
@@ -532,6 +533,10 @@ class RandomTournament(AsyncWebsocketConsumer):
       'tournament': event['tournament']
     }))
 
+  # @database_sync_to_async
+  # def setup_half_games(self, tournament: Tournament):
+  #   tournament.get_half1()
+
   @database_sync_to_async
   def serializing_data(self, users):
     serializer = UserSerializer(users, many=True)
@@ -539,12 +544,14 @@ class RandomTournament(AsyncWebsocketConsumer):
   
   @database_sync_to_async
   def create_tournament(self, p1, p2, p3, p4):
-    return Tournament.objects.create(
+    tournament = Tournament.objects.create(
       player1=p1,
       player2=p2,
       player3=p3,
       player4=p4,
     )
+    tournament.init()
+    return tournament
 
   async def disconnect(self, code):
     username = self.user.username
