@@ -19,7 +19,7 @@ const TournamentRemote = ({ isRandom = true, ready = false }: TournamentRemote) 
         !ready?
           <TournamentWarmUp isRandom={isRandom} />
           :
-          <>hello {id}</>
+          <TournamentGames tournament={id}/>
       }
     </>
   )
