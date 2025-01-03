@@ -189,3 +189,17 @@ class TournamentList(APIView):
     tournaments = Tournament.objects.filter(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user))
     serializer = TournamentSerializer(tournaments, many=True, context={'user' : request.user})
     return Response(serializer.data)
+
+
+
+class GetTournament(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request, pk):
+    user = request.user
+    try:
+      tournament = Tournament.objects.get(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user), pk=pk)
+      serializer = TournamentSerializer(tournament, context={'user' : request.user})
+      return Response(serializer.data)
+    except:
+      return Response({"error" : "No tournament exist or you dont have access."}, status=status.HTTP_404_NOT_FOUND)

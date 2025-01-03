@@ -20,4 +20,5 @@ urlpatterns = [
 
   path('games/', views.GamesList.as_view(), name='list-user-games'),
   path('tournaments/', views.TournamentList.as_view(), name='list-user-tournaments'),
+  path('tournament/<int:pk>', views.GetTournament.as_view(), name='get-tournament'),
 ]
