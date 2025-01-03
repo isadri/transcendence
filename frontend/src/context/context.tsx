@@ -32,6 +32,15 @@
 
 import { createContext } from "react";
 
+interface stats{
+  user: number,
+  level: number,
+  badge: number,
+  win: number,
+  lose: number,
+  nbr_games: number
+}
+
 interface userDataType {
     id : number,
     username : string,
@@ -39,7 +48,9 @@ interface userDataType {
     avatar : string
     register_complete: boolean,
     from_remote_api: boolean,
-    is_online: boolean
+    is_online: boolean,
+    usable_password: boolean,
+    stats: stats
 }
 
 interface NotificationsData {

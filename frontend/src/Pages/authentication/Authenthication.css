@@ -137,8 +137,6 @@
 }
 
 .SecondContainer{
-    /* border: 1px solid white; */
-    /* border-radius: 15%  0  0 30%; */
     position: absolute;
     top: 0;
     left: 50%;
@@ -253,6 +251,133 @@
     height: 20%;
     color: #ffffff;
 }
+
+.forgetPass{
+    width: 35%;
+    height: 60%;
+    min-width: 450px;
+    min-height: 390px;
+    background-color: var(--fade);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 10px;
+}
+
+.forgetPass .cancelIcon{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 98%;
+    height: 35px;
+}
+.forgetPass .cancelIcon i{
+    font-size: 25px;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.forgetPass .content-parent{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 90%;
+    align-items: center;
+    justify-content: space-evenly
+}
+.forgetPass .content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 70%;
+    width: 90%;
+}
+
+.content-parent .iconEmail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.content-parent .iconEmail i{
+    color: var(--primary);
+    font-size: 65px;
+}
+
+.content-parent .iconEmail  span{
+    height: 2px;
+    width: 65%;
+    background-color: #cccccc;
+    background: linear-gradient(to right, var(--primary), #cccccc);
+    border-radius: 10px; 
+}
+
+.content .content-text{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    text-align: center;
+    height: 70%;
+    font-family: var(--sans);
+}
+
+.content .content-text .inputs-filed{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 90%;
+    height: 60%;
+}
+.content .content-text .inputs-filed  input {
+    font-size: 16px;
+    width: 80%;
+    border: 1px solid white;
+    border-radius: 10px;
+    box-sizing: border-box;
+    outline: none;
+    background-color: transparent;
+    transition: border-color 0.3s;
+    padding-left: 10px;
+    /* text-align: center; */
+    height: 30px;
+    color: white;
+}
+.content .content-text .inputs-filed input::placeholder {
+    font-weight: 100;
+    font-size: 15px;
+    color: rgb(161, 154, 154);
+    padding-left: 2px;
+    /* text-align: center; */
+    font-family: var(--mono);
+}
+  
+.content .content-text .inputs-filed input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px var(--primary);
+  }
+
+.content .actionField{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: 20%;
+}
+
+.content .actionField  button{
+    width: 50%;
+    height: 60%;
+    border-radius: 10px;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    color: white;
+    cursor: pointer;
+}
+
+
 
 @media only screen and (max-width: 720px){
     .SecondContainer{

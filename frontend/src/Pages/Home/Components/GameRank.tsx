@@ -1,139 +1,92 @@
 import "../styles/GameRank.css";
 import photo from "../images/profile.svg";
 import bg1 from "../images/badge1.svg";
+import { useEffect, useState } from "react";
+
+// interface stats{
+//   level: number,
+//   badge: number,
+//   win: number,
+//   lose: number,
+//   nbr_games: number
+// }
+
+
+// interface UsersData{
+//   id: number,
+//   username: string,
+//   email: string,
+//   avatar: string,
+//   is_online: boolean,
+//   is_blocked: boolean,
+//   stats: stats
+// }  
 
 function GameRank() {
+  const [there_is_rank, setThere_is_rank] = useState(false)
+  // const [usersRanking, setUseresRanking] = useState<UsersData[]>([])
+  
   return (
     <div className="Home-GameRank">
-      {/* <h2>Game Rank</h2> */}
-      {/* <div className="Home-gameRankEle"> */}
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
+      {
+        there_is_rank &&
+        <>
+          <div className="Home-RowEle">
+            <div className="Home-row1">
+              <span>1</span>
+              <img src={bg1} alt="" />
+              <div className="Home-ProfileRev">
+                <img src={photo} alt="" />
+                <span>User1dfgdfgdfg</span>
+              </div>
+            </div>
+            <div className="Home-row2">
+              <span>1452 xp</span>
+              <span>5.22 lvl</span>
             </div>
           </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
+          <div className="Home-RowEle">
+            <div className="Home-row1">
+              <span>1</span>
+              <img src={bg1} alt="" />
+              <div className="Home-ProfileRev">
+                <img src={photo} alt="" />
+                <span>User1dfgdfgdfg</span>
+              </div>
+            </div>
+            <div className="Home-row2">
+              <span>1452 xp</span>
+              <span>5.22 lvl</span>
             </div>
           </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
+          <div className="Home-RowEle">
+            <div className="Home-row1">
+              <span>1</span>
+              <img src={bg1} alt="" />
+              <div className="Home-ProfileRev">
+                <img src={photo} alt="" />
+                <span>User1dfgdfgdfg</span>
+              </div>
+            </div>
+            <div className="Home-row2">
+              <span>1452 xp</span>
+              <span>5.22 lvl</span>
             </div>
           </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
+        </>
+      }
+      {
+        !there_is_rank &&
+        <div className='Nostats game-NoStats'>
+            <div className='stats-icon'>
+            <i className="fa-solid fa-ranking-star"></i>
+            </div>
+            <div className='NoStats-msg'>
+              <h3>No rankings available</h3>
+              <span>No games have been played yet across all users</span>
             </div>
           </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
-            </div>
-          </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
-            </div>
-          </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
-            </div>
-          </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
-            </div>
-          </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-        <div className="Home-RowEle">
-          <div className="Home-row1">
-            <span>1</span>
-            <img src={bg1} alt="" />
-            <div className="Home-ProfileRev">
-              <img src={photo} alt="" />
-              <span>User1dfgdfgdfg</span>
-            </div>
-          </div>
-          <div className="Home-row2">
-            <span>1452 xp</span>
-            <span>5.22 lvl</span>
-          </div>
-        </div>
-      {/* </div> */}
+      }
     </div>
   );
 }

@@ -8,6 +8,7 @@ interface GetFriends {
 	id: number;
 	username: string;
 	avatar: string;
+	is_online: boolean
 }
 
 const AllFriends = () => {
@@ -151,6 +152,12 @@ const AllFriends = () => {
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}
 									/>
+									{
+           							  	friend.is_online ?
+           							 	  <div className="onlineCircle-friend"></div>
+           							 	  :
+           							 	  <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)', borderColor:'rgb(119 118 118)'}}></div>
+           							}
 									<span>{friend.username}</span>
 								</div>
 								<div className="iconFriend">

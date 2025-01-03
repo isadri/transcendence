@@ -76,6 +76,8 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 30px;
+
+	position: relative; /* add by naima for online user*/
 }
 
 .friendProfile .friendImage {
@@ -83,6 +85,17 @@
 	width: 40px;
 	border-radius: 50%;
 	object-fit: cover;
+}
+
+.imageNameFriend .onlineCircle-friend{ /* add by naima for online user*/
+	width: 9px;
+    height: 9px;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid #04de04;
+    background-color: #04de04;
+    top: 28px;
+	left: 30px;
 }
 
 .friendProfile .iconFriend {

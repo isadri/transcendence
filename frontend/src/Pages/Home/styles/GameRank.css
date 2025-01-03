@@ -100,6 +100,10 @@
     font-size: 16px;
 }
 
+.game-NoStats{
+    margin-top: 50px;
+}
+
 @media only screen and (max-width: 1073px){
     
     .Home-GameRank

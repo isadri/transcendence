@@ -464,7 +464,7 @@ class FriendshipStatusView(APIView):
 
 
 
-class MutualFriendsView(generics.ListAPIView):
+class MutualFriendsView(APIView):
     """
     View to get mutual friends between the authenticated user and a specific user.
     """
@@ -477,10 +477,11 @@ class MutualFriendsView(generics.ListAPIView):
         try:
             authenticated_user_friends = FriendList.objects.get(user=authenticated_user).friends.all()
             specific_user_friends = FriendList.objects.get(user=specific_user).friends.all()
-
             mutual_friends = authenticated_user_friends.filter(id__in=specific_user_friends)
-            serializer = FriendSerializer(mutual_friends, many=True)
-
+            print("data => ", mutual_friends)
+            
+            serializer = FriendSerializer(mutual_friends, many=True, context={'user' : request.user})
+            print("data => ", serializer.data)
             return Response(serializer.data, status=200)
         except FriendList.DoesNotExist:
             return Response([], status=200)

@@ -159,7 +159,7 @@ function CallBack() {
                     alphanumeric and between 3-15 characters. If valid, click "Confirm" to
                     continue.</span>
                   <input className='inputt' type="text" placeholder="Enter Username"
-                        value={username} onChange={e => setUsername(e.target.value)}/>
+                        value={username} onChange={e => setUsername(e.target.value.toLowerCase())}/>
                 </div>
                 <div className="Codefiled">
                   <button type="submit" onClick={hadelSaveUsername}>Confirm</button>

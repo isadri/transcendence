@@ -13,7 +13,7 @@ function GameHighlights() {
           {/* Game Rank Tab */}
           <div className="first-tab" onClick={() => setType('GameRank')}>
             <div className={`gameRank-btn ${type === 'GameRank' ? 'rank-tab' : ''}`} >
-              <span>Game Rank</span>
+              <span>Leaderboard</span>
             </div>
           </div>
           {/* Last Games Tab */}

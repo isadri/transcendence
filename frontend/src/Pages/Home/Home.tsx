@@ -8,17 +8,12 @@ import GameHighlights from './Components/gameHighlights'
 import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
-// import './styles/SearchAndIcons.css'
 
 function Home() {
 
   
   return (
     <div className='Home-homePage'>
-      {/* <div className='Home-searchAndIcons'>
-        <Search/>
-        <Icons/>
-      </div> */}
       <div className='Home-welcome'>
         <Welcome/>
         <Profile/>

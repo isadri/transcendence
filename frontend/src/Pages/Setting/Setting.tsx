@@ -51,7 +51,8 @@ const Setting = () => {
   // handel setting data changed username, email, password and avatar
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    SetDataUpdated({ ...dataUpdated, [name]: value });
+    const updateVal = name === 'username' ? value.toLowerCase() : value
+    SetDataUpdated({ ...dataUpdated, [name]: updateVal });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,6 +100,7 @@ const Setting = () => {
           }
           else
           {
+            console.log("dataaa=> ", response.data.data)
             authContext?.setUser(response.data.data);
             SetErrors({ ...errors, username: "", email: "", avatar: "" });
             console.log("saved sacces")
@@ -254,7 +256,8 @@ const Setting = () => {
       setIsOtpDisactive(false)
     }, 900);
   }, [showAlert,Verified, setIsOtpDisactive, isOtpDisactive]);
-
+  console.log("usable pass => ", user?.usable_password);
+  
   return (
     <>
       <div className={`alert-acountNotDeleted ${confirm === 3 ? "show" : "hide"}`}>
@@ -341,7 +344,7 @@ const Setting = () => {
                     id="CurrentPassword"
                     value={dataUpdated.CurrentPassword}
                     onChange={handleInputChange}
-                    disabled={user?.from_remote_api}
+                    disabled={!user?.usable_password}
                   />
                   {errors.CurrentPassword !== "" && (
                     <p className="SettingError">{errors.CurrentPassword}</p>
