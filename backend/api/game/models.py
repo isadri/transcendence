@@ -138,33 +138,33 @@ class Tournament(models.Model):
   player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_2")
   player3 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_3")
   player4 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_4")
-  game_half1 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_half1", null=True)
-  game_half2 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_half2", null=True)
-  game_final = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="game_final", null=True)
+  half1 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="half1", null=True)
+  half2 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="half2", null=True)
+  final = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="final", null=True)
 
   def init(self):
     self.get_or_create_half1()
     self.get_or_create_half2()
 
   def get_or_create_half1(self):
-    if not self.game_half1:
-      self.game_half1 = Game.objects.create(player1=self.player1, player2=self.player2)
-      self.save(update_fields=['game_half1'])
-    return (self.game_half1)
+    if not self.half1:
+      self.half1 = Game.objects.create(player1=self.player1, player2=self.player2)
+      self.save(update_fields=['half1'])
+    return (self.half1)
 
   def get_or_create_half2(self):
-    if not self.game_half2:
-      self.game_half2 = Game.objects.create(player1=self.player3, player2=self.player4)
-      self.save(update_fields=['game_half2'])
-    return (self.game_half2)
+    if not self.half2:
+      self.half2 = Game.objects.create(player1=self.player3, player2=self.player4)
+      self.save(update_fields=['half2'])
+    return (self.half2)
 
   def get_or_create_final(self):
-    if not self.game_half2:
-      self.game_final = Game.objects.create(player1=self.game_half1.winner, player2=self.game_half2.winner)
-      self.save(update_fields=['game_final'])
-    return (self.game_final)
+    if not self.half2:
+      self.final = Game.objects.create(player1=self.half1.winner, player2=self.half2.winner)
+      self.save(update_fields=['final'])
+    return (self.final)
 
   def ready_to_start_final(self):
-    if not self.game_half1 or not self.game_half2:
+    if not self.half1 or not self.half2:
       return False
-    return self.game_half1.progress == 'E' and  self.game_half2.progress == 'E'
+    return self.half1.progress == 'E' and  self.half2.progress == 'E'

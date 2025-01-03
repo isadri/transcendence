@@ -77,26 +77,26 @@ class TournamentSerializer(serializers.ModelSerializer):
   player3 = serializers.SerializerMethodField()
   player4 = serializers.SerializerMethodField()
   
-  game_half1 = serializers.SerializerMethodField()
-  game_half2 = serializers.SerializerMethodField()
-  game_final = serializers.SerializerMethodField()
+  half1 = serializers.SerializerMethodField()
+  half2 = serializers.SerializerMethodField()
+  final = serializers.SerializerMethodField()
   class Meta:
     model = Tournament
     fields = '__all__'
 
-  def get_game_half1(self, obj):
-    if obj.game_half1:
-      return GameSerializer(obj.game_half1).data
+  def get_half1(self, obj):
+    if obj.half1:
+      return GameSerializer(obj.half1).data
     return None
 
-  def get_game_half2(self, obj):
-    if obj.game_half2:
-      return GameSerializer(obj.game_half2).data
+  def get_half2(self, obj):
+    if obj.half2:
+      return GameSerializer(obj.half2).data
     return None
 
-  def get_game_final(self, obj):
-    if obj.game_final:
-      return GameSerializer(obj.game_final).data
+  def get_final(self, obj):
+    if obj.final:
+      return GameSerializer(obj.final).data
     return None
 
   def get_player1(self, obj):
