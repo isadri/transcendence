@@ -5,8 +5,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-
-from .models import GameInvite, UserAchievement, UserStats, Game
+from .models import GameInvite, UserAchievement, UserStats, Game, Tournament
 
 User = get_user_model()
 
@@ -20,12 +19,16 @@ class GameSerializer(serializers.ModelSerializer):
 
   def get_player1(self, obj):
     from ..friends.serializers import FriendSerializer
-    serializer = FriendSerializer(obj.player1, context={'user' : self.context['user']})
+    if not 'user' in self.context:
+      return obj.player1.id
+    serializer = FriendSerializer(obj.player1, context=self.context)
     return serializer.data
 
   def get_player2(self, obj):
     from ..friends.serializers import FriendSerializer
-    serializer = FriendSerializer(obj.player2, context={'user' : self.context['user']})
+    if not 'user' in self.context:
+      return obj.player2.id
+    serializer = FriendSerializer(obj.player2, context=self.context)
     return serializer.data
 
 class GameInviteSerializer(serializers.ModelSerializer):
@@ -65,3 +68,49 @@ class UserStatsSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserStats
     fields =['user', 'level', 'badge', 'win', 'lose', 'nbr_games']
+
+
+
+class TournamentSerializer(serializers.ModelSerializer):
+  player1 = serializers.SerializerMethodField()
+  player2 = serializers.SerializerMethodField()
+  player3 = serializers.SerializerMethodField()
+  player4 = serializers.SerializerMethodField()
+  
+  game_half1 = serializers.SerializerMethodField()
+  game_half2 = serializers.SerializerMethodField()
+  game_final = serializers.SerializerMethodField()
+  class Meta:
+    model = Tournament
+    fields = '__all__'
+
+  def get_game_half1(self, obj):
+    if obj.game_half1:
+      return GameSerializer(obj.game_half1).data
+    return None
+
+  def get_game_half2(self, obj):
+    if obj.game_half2:
+      return GameSerializer(obj.game_half2).data
+    return None
+
+  def get_game_final(self, obj):
+    if obj.game_final:
+      return GameSerializer(obj.game_final).data
+    return None
+
+  def get_player1(self, obj):
+    from ..friends.serializers import FriendSerializer
+    return FriendSerializer(obj.player1, context=self.context).data
+
+  def get_player2(self, obj):
+    from ..friends.serializers import FriendSerializer
+    return FriendSerializer(obj.player2, context=self.context).data
+
+  def get_player3(self, obj):
+    from ..friends.serializers import FriendSerializer
+    return FriendSerializer(obj.player3, context=self.context).data
+
+  def get_player4(self, obj):
+    from ..friends.serializers import FriendSerializer
+    return FriendSerializer(obj.player4, context=self.context).data
