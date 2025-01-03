@@ -27,11 +27,19 @@ async def send_messages(ws_url, session_id, access_token, interval=5):
             while True:
                 # Example message payload
                 message_payload = {
-                    "message_type": "block_friend",
-                    "chat_id": 12,
-                    "blocker": 3,
-                    "blocked": 2,
-                    "status": True
+                    # "message_type": "send_message",
+                    # "message": "uuu",
+                    # # "sender": "",
+                    # "receiver": "2",
+
+                    # "message_type": "block_friend",
+                    # "chat_id": "12",
+                    # "blocker": 3,
+                    # "blocked": 2,
+                    # "status": ""
+
+                    "message_type": "mark_is_read",
+                    "chat_id": "",
                 }
 
                 # Send the message
