@@ -3,5 +3,4 @@ cluster.name: ${CLUSTER_NAME}
 node.name: setup
 
 path:
-  repo:
-    - /mnt/backups
+  repo: /mnt/backups

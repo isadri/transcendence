@@ -23,5 +23,4 @@ xpack.security.http.ssl.key: certs/es02/es02.key
 xpack.security.http.ssl.certificate: certs/es02/es02.crt
 
 path:
-  repo:
-    - /mnt/backups
+  repo: /mnt/backups
