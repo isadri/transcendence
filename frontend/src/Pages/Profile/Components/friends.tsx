@@ -23,7 +23,8 @@ function friends({FriendsLst, username}: Props) {
         FriendsLst.length > 0 ?  FriendsLst.map((friend) => (
           <div className='Home-friend' key={friend.id}>
             <div className="Home-friendInfo">
-                <img className='img' src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
+              <div className='img'>
+                <img  src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
                 onClick={() => navigate(`/profile/${friend.username}`)}/>
                 {
                   friend.is_online ?
@@ -31,6 +32,7 @@ function friends({FriendsLst, username}: Props) {
                   :
                   <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)', borderColor:'rgb(119 118 118)'}}></div>
                 }
+              </div>
               <div className="Home-friendName">
                 <span> {friend.username} </span>
                 <span> level 10 </span>

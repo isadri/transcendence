@@ -3,12 +3,13 @@ import ProfileUser from "./Components/ProfileUser"
 import Friends from "./Components/friends"
 import GameHestory from "./Components/GameHestory"
 import LastAchievement from "./Components/LastAchievement"
+import StatsProfile from "./Components/StatsProfile"
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import './Profile.css'
 import { useEffect, useState } from "react"
 import { getendpoint, getUser } from "../../context/getContextData"
-import friends from "./Components/friends"
+// import friends from "./Components/friends"
 
 interface FriendsData{
   id : number,
@@ -89,7 +90,10 @@ const Profile = () => {
           <LastAchievement/>
         </div>
         <LastAchievement/>
-        {FriendsLst && <Friends FriendsLst={FriendsLst} username={username || ''}/>}
+        <div className="stats-friends">
+          <StatsProfile/>
+          {FriendsLst && <Friends FriendsLst={FriendsLst} username={username || ''}/>}
+        </div>
       </div>
     </div>
   )

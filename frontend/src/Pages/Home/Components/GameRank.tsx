@@ -1,10 +1,31 @@
 import "../styles/GameRank.css";
 import photo from "../images/profile.svg";
 import bg1 from "../images/badge1.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// interface stats{
+//   level: number,
+//   badge: number,
+//   win: number,
+//   lose: number,
+//   nbr_games: number
+// }
+
+
+// interface UsersData{
+//   id: number,
+//   username: string,
+//   email: string,
+//   avatar: string,
+//   is_online: boolean,
+//   is_blocked: boolean,
+//   stats: stats
+// }  
 
 function GameRank() {
   const [there_is_rank, setThere_is_rank] = useState(false)
+  // const [usersRanking, setUseresRanking] = useState<UsersData[]>([])
+  
   return (
     <div className="Home-GameRank">
       {
