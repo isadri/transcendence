@@ -24,11 +24,11 @@ class CreateGameInvite(APIView):
     print(request.data.get('invited'))
     invited_id = request.data.get('invited')
     if inviter and invited_id:
-      serialzer = GameInviteSerializer(data=request.data, context={'request' : request})
-      if serialzer.is_valid():
-        serialzer.save()
-        return Response(serialzer.data, status=status.HTTP_201_CREATED)
-    errors = serialzer.errors['invited'][0]
+      serializer = GameInviteSerializer(data=request.data, context={'request' : request})
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    errors = serializer.errors['invited'][0]
     return Response({'error':errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -87,7 +87,7 @@ class AcceptGameInvite(APIView):
       invite = GameInvite.objects.get(pk=pk)
       try:
         invite.accept(user)
-        return Response({'detials' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+        return Response({'details' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
       except ValueError as e:
         return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
     except GameInvite.DoesNotExist:
@@ -113,7 +113,7 @@ class DeclineGameInvite(APIView):
       invite = GameInvite.objects.get(pk=pk)
       try:
         invite.decline(user)
-        return Response({'detials' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+        return Response({'details' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
       except ValueError as e:
         return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
     except GameInvite.DoesNotExist:
@@ -126,8 +126,8 @@ class ListGameInvites(APIView):
 
   def get(self, request):
     user = request.user
-    inivtes = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
-    serializer = GameInviteSerializer(inivtes, many=True)
+    invites = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
+    serializer = GameInviteSerializer(invites, many=True)
     return Response(serializer.data)
 
 
@@ -137,8 +137,8 @@ class ListSentGameInvites(APIView):
 
   def get(self, request):
     user = request.user
-    inivtes = GameInvite.objects.filter(inviter=user)
-    serializer = GameInviteSerializer(inivtes, many=True)
+    invites = GameInvite.objects.filter(inviter=user)
+    serializer = GameInviteSerializer(invites, many=True)
     return Response(serializer.data)
 
 
@@ -148,11 +148,12 @@ class ListReceivedGameInvites(APIView):
 
   def get(self, request):
     user = request.user
-    inivtes = GameInvite.objects.filter(invited=user)
-    serializer = GameInviteSerializer(inivtes, many=True)
+    invites = GameInvite.objects.filter(invited=user)
+    serializer = GameInviteSerializer(invites, many=True)
     return Response(serializer.data)
 
-# add by yasmine
+
+
 class UserAchievement(APIView):
   permission_classes = [IsAuthenticated]
 
@@ -176,8 +177,8 @@ class GamesList(APIView):
 
   def get(self, request):
     user = request.user
-    userStats = Game.objects.filter(Q(player1=user) | Q(player2=user))
-    serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
+    games = Game.objects.filter(Q(player1=user) | Q(player2=user))
+    serializer = GameSerializer(games, many=True, context={'user' : request.user})
     return Response(serializer.data)
 
 class TournamentList(APIView):
