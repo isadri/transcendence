@@ -397,7 +397,7 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def game_start(self, event):
     await self.send(json.dumps({
       "event": "START",
-      "enemy": await serializing_data(self.enemy),
+      "enemy": await self.serializing_data(self.enemy),
       event['player1']:'player1',
       event['player2']:'player2',
     }))
@@ -596,10 +596,26 @@ class RemoteTournament(AsyncWebsocketConsumer):
         self.abort('This tournament does not exist!')
       if not self.is_part_of_tournament(self.tournament):
         self.abort('You dont have the permissions to access this tournament!')
-      data = await self.serializing_data(self.tournament)
-      await self.send(text_data=json.dumps(data))
+      self.task = await asyncio.create_task(self.update_data())
     else:
       self.abort('Something went wrong!')
+
+  async def update_data(self):
+    self.data = None
+    while True:
+      self.tournament = await self.get_tournament(self.tournament_id)
+      await self.check_for_final()
+      data = await self.serializing_data(self.tournament)
+      if self.data != data:
+        self.data = data
+        await self.send(text_data=json.dumps(self.data))
+        if self.data['final'] and self.data['final']['winner']:
+          break
+      await asyncio.sleep(1)
+
+  @database_sync_to_async
+  def check_for_final(self):
+    return self.tournament.get_or_create_final()
 
   @database_sync_to_async
   def serializing_data(self, tournament: Tournament):

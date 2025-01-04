@@ -76,6 +76,7 @@ class TournamentSerializer(serializers.ModelSerializer):
   player2 = serializers.SerializerMethodField()
   player3 = serializers.SerializerMethodField()
   player4 = serializers.SerializerMethodField()
+  winner = serializers.SerializerMethodField()
   
   half1 = serializers.SerializerMethodField()
   half2 = serializers.SerializerMethodField()
@@ -98,6 +99,10 @@ class TournamentSerializer(serializers.ModelSerializer):
     if obj.final:
       return GameSerializer(obj.final).data
     return None
+
+  def get_winner(self, obj):
+    from ..friends.serializers import FriendSerializer
+    return FriendSerializer(obj.winner, context=self.context).data
 
   def get_player1(self, obj):
     from ..friends.serializers import FriendSerializer

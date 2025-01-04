@@ -111,7 +111,7 @@ function TournamentGames({ tournament }: TournamentGamesProps) {
 
     socket.onmessage = (e) => {
       const data = JSON.parse(e.data)
-      console.log("tournament=> ", e);
+      console.log("tournament=> ", data);
       setData(data)
     }
     socket.onopen = () => console.log("tournament socket opened")

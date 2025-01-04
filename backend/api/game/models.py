@@ -169,7 +169,7 @@ class Tournament(models.Model):
     return (self.half2)
 
   def get_or_create_final(self):
-    if not self.half2:
+    if not self.final and self.ready_to_start_final():
       self.final = Game.objects.create(player1=self.half1.winner, player2=self.half2.winner)
       self.send_notification(self.half1.winner)
       self.send_notification(self.half2.winner)
@@ -180,3 +180,10 @@ class Tournament(models.Model):
     if not self.half1 or not self.half2:
       return False
     return self.half1.progress == 'E' and  self.half2.progress == 'E'
+
+  def has_a_winner(self):
+    if self.final and self.final.progress == 'E':
+      self.winner = self.final.winner
+      self.save(update_fields=['tournament_winner'])
+      return True
+    return False
