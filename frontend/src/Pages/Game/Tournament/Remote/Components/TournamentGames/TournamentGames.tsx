@@ -87,13 +87,23 @@ function TournamentGames({ tournament }: TournamentGamesProps) {
           setData(response.data)
         })
     }
-    if (data) {
-      console.log("tournament=> ", data);
-      
-      // setSocket(getendpoint())
-    }
   }, [])
 
+
+  useEffect(()=>{
+    if (data) {
+      console.log("tournament=> ", data);
+      setSocket(new WebSocket(getendpoint('ws', `/ws/game/tournament/${tournament}`)))
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (!socket)
+      return
+    socket.onopen = () => console.log("tournament socket opened")
+    socket.onclose = () => console.log("tournament socket closed")
+    socket.onerror = () => console.log("tournament socket error")
+  }, [socket])
   return (
     <>
       {
