@@ -11,8 +11,7 @@ type TournamentRemote = {
 
 
 const TournamentRemote = ({ isRandom = true, ready = false }: TournamentRemote) => {
-  const {id} = useParams();
-  
+  const {id} = useParams(); // protect later
   return (
     <>
       {

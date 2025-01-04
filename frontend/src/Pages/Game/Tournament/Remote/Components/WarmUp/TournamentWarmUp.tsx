@@ -46,7 +46,7 @@ const PlayerCard = ({ enemy = false, isRandom = false, enemyIndex=0 }: PlayerCar
           console.log(data);
           if (data.event == "HANDSHAKING") {
             setTimeout(() => { setEnemies(data.enemies) }, 2000);
-            // setTimeout(() => { navigator(`/game/remote/${data.game_id}`) }, 5000);
+            setTimeout(() => { navigator(`/game/tournament/remote/${data.tournament}`) }, 5000);
           }
           if (data.event == "ABORT") {
             setEnemies(emptyEnemies)
