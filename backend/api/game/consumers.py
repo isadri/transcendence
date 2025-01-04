@@ -7,6 +7,7 @@ from channels.db import database_sync_to_async
 from .models import Game, Tournament
 from ..accounts.serializers import UserSerializer
 from channels.layers import get_channel_layer
+from django.db.models import Q
 channel_layer = get_channel_layer()
 
 TABLE_Z = 8.65640
@@ -573,8 +574,34 @@ class RandomTournament(AsyncWebsocketConsumer):
 
 class RemoteTournament(AsyncWebsocketConsumer):
 
+  tournaments = {}
   async def connect(self):
-    pass
+    self.user = self.scope.get('user')
+    self.tournament_id = self.scope["url_route"]["kwargs"]['id']
+    self.room_name = f'tournament_{self.tournament_id}'
+    if self.user or self.user.is_authenticated:
+      self.username = self.user.username
+      await self.accept()
+      await self.channel_layer.group_add(self.room_name, self.channel_name)
+      self.tournaments.setdefault(self.tournament_id, {})
+      self.tournaments[self.tournament_id].setdefault('players', {})
+      self.tournaments[self.tournament_id]['players'].setdefault(self.username, self)
+      self.tournament = await self.get_tournament(self.tournament_id)
+      if self.tournament and self.is_part_of_tournament(self.tournament):
+        pass
+
+
+  @database_sync_to_async
+  def is_part_of_tournament(self, tournament: Tournament):
+    return self.user in [tournament.player1, tournament.player2, tournament.player3, tournament.player4]
+
+  @database_sync_to_async
+  def get_tournament(self, pk:int) -> Tournament:
+    try:
+      tournament = Tournament.objects.get(pk=pk)
+      return tournament
+    except:
+      return None
 
   async def disconnect(self, code):
     pass
