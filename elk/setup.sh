@@ -73,7 +73,7 @@ https://es01:9200/_security/user/kibana_system/_password \
 
 echo "Creating snapshot repository"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_snapshot/app_snapshots_repo -H "Content-Type: application/json" -d '
+https://es01:9200/_snapshot/app-snapshots-repo -H "Content-Type: application/json" -d '
 {
 	"type": "fs",
 	"settings": {
@@ -86,16 +86,16 @@ echo -e "\nCreating SLM policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application/json" -d '
 {
-	"schedule": "0 0 * * * ?",
+	"schedule": "0 */15 * * * ?",
 	"name": "<app-snap-{now/d}>",
-	"repository": "app_snapshots_repo",
+	"repository": "app-snapshots-repo",
 	"config": {
 		"indices": "logs-nginx*,logs-django*"
 	},
 	"retention": {
-		"expire_after": "12h",
-		"min_count": 5,
-		"max_count": 8
+		"expire_after": "20m",
+		"min_count": 1,
+		"max_count": 1
 	}
 }'
 
@@ -106,15 +106,16 @@ https://es01:9200/_ilm/policy/logs-policy -H "Content-Type: application/json" -d
 	"policy": {
 		"phases": {
 			"hot": {
-				"min_age": "3m",
+				"min_age": "1m",
 				"actions": {
 					"rollover": {
-						"max_age": "2h",
+						"max_age": "20m",
 						"max_docs": 20000
 					}
 				}
 			},
 			"delete": {
+                "min_age": "5m",
 				"actions": {
 					"delete": {}
 				}
