@@ -571,11 +571,11 @@ class RandomTournament(AsyncWebsocketConsumer):
 
 
 
-class RandomTournament(AsyncWebsocketConsumer):
+class RemoteTournament(AsyncWebsocketConsumer):
 
   async def connect(self):
     pass
 
-  async def disconnect(self):
+  async def disconnect(self, code):
     pass
 
