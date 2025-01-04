@@ -130,7 +130,8 @@ https://es01:9200/_component_template/logs-settings-component -H "Content-Type: 
 {
     "template": {
         "settings": {
-            "index.lifecycle.name": "logs-policy"
+            "index.lifecycle.name": "logs-policy",
+            "index.mode": "logsdb"
         },
         "mappings": {
             "properties": {
