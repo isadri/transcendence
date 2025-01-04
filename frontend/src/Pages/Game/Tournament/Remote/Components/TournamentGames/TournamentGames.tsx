@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import "./TournamentGames.css";
 import axios from "axios";
-import { getendpoint } from "../../../../../../context/getContextData";
-import { FriendDataType } from "../../../../../../context/context";
+import { getUser, getendpoint } from "../../../../../../context/getContextData";
+import { FriendDataType, userDataType } from "../../../../../../context/context";
 import RemoteGame from "../RemoteGame/RemoteGame";
+import { useNavigate } from "react-router-dom";
 
 interface TournamentGamesProps {
   tournament: number
@@ -56,7 +57,30 @@ const getGamePlayers: (game: string, data: TournamentRemoteData) => FriendDataTy
   return null
 }
 
+function getMyGame(data: TournamentRemoteData, user: userDataType) {
+  if (data.half1 && data.half1.progress === 'P' && (user?.id === data.half1.player1 || user?.id === data.half1.player2))
+    return data.half1
+  if (data.half2 && data.half2.progress === 'P' && (user?.id === data.half2.player1 || user?.id === data.half2.player2))
+    return data.half2
+  if (data.final && data.final.progress === 'P' && (user?.id === data.final.player1 || user?.id === data.final.player2))
+    return data.final
+  return null
+}
+
+
 const TournamentGraph = ({ data }: TournamentGraphProps) => {
+  const user = getUser()
+  const navigator = useNavigate()
+
+  const playYourGame = () => {
+    if (!user)
+      return
+    const myGame = getMyGame(data, user)
+    console.log(myGame);
+
+    if (myGame)
+      navigator(`/game/remote/${myGame.id}`)
+  }
   return (
     <div className="TournamentGames">
       <h2>Tournament Local</h2>
@@ -68,42 +92,34 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 
         <RemoteGame game={data.final} players={getGamePlayers('final', data)} />
         <div className="tournament-match">
-          <div>{data.winner ? data.winner.username : 'waiting'}</div>
+          <div className="first-two-match">
+            {data.winner ? data.winner.username : 'waiting'}
+          </div>
         </div>
       </div>
-      <button className="start-btn" onClick={() => { }}>start</button>
+      <button className="start-btn" onClick={playYourGame}>Play</button>
     </div>
   );
 };
 
 function TournamentGames({ tournament }: TournamentGamesProps) {
   const [data, setData] = useState<TournamentRemoteData | null>(null)
-  const [socket, setSocket] = useState<WebSocket | null>(null)
 
+  // console.log("tournament=> ", data);
   useEffect(() => {
-    if (!data) {
-      axios.get(getendpoint("http", `/api/game/tournament/${tournament}`))
-        .then((response) => {
-          setData(response.data)
-        })
+    const socket = new WebSocket(getendpoint('ws', `/ws/game/tournament/${tournament}`))
+
+    socket.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+      console.log("tournament=> ", e);
+      setData(data)
     }
-  }, [])
-
-
-  useEffect(()=>{
-    if (data) {
-      console.log("tournament=> ", data);
-      setSocket(new WebSocket(getendpoint('ws', `/ws/game/tournament/${tournament}`)))
-    }
-  }, [data])
-
-  useEffect(() => {
-    if (!socket)
-      return
     socket.onopen = () => console.log("tournament socket opened")
     socket.onclose = () => console.log("tournament socket closed")
     socket.onerror = () => console.log("tournament socket error")
-  }, [socket])
+    return () => socket.close()
+  }, [])
+
   return (
     <>
       {

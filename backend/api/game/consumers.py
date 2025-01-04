@@ -5,6 +5,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Game, Tournament
+from ..game.serializers import TournamentSerializer
 from ..accounts.serializers import UserSerializer
 from channels.layers import get_channel_layer
 from django.db.models import Q
@@ -396,11 +397,15 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def game_start(self, event):
     await self.send(json.dumps({
       "event": "START",
-      "enemy": UserSerializer(self.enemy).data,
+      "enemy": await serializing_data(self.enemy),
       event['player1']:'player1',
       event['player2']:'player2',
     }))
 
+  @database_sync_to_async
+  def serializing_data(self, users):
+    serializer = UserSerializer(users)
+    return serializer.data
 
   @database_sync_to_async
   def setGameAsStarted(self):
@@ -587,9 +592,26 @@ class RemoteTournament(AsyncWebsocketConsumer):
       self.tournaments[self.tournament_id].setdefault('players', {})
       self.tournaments[self.tournament_id]['players'].setdefault(self.username, self)
       self.tournament = await self.get_tournament(self.tournament_id)
-      if self.tournament and self.is_part_of_tournament(self.tournament):
-        pass
+      if not self.tournament:
+        self.abort('This tournament does not exist!')
+      if not self.is_part_of_tournament(self.tournament):
+        self.abort('You dont have the permissions to access this tournament!')
+      data = await self.serializing_data(self.tournament)
+      await self.send(text_data=json.dumps(data))
+    else:
+      self.abort('Something went wrong!')
 
+  @database_sync_to_async
+  def serializing_data(self, tournament: Tournament):
+    serializer = TournamentSerializer(tournament, context={'user' : self.user})
+    return serializer.data
+
+  async def abort(self, message):
+    await self.send(text_data=json.dumps({
+      'event': 'ABORT',
+      'message': message
+    }))
+    self.close()
 
   @database_sync_to_async
   def is_part_of_tournament(self, tournament: Tournament):
