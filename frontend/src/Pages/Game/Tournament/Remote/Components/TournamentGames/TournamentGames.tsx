@@ -1,85 +1,104 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./TournamentGames.css";
-import TournamentGame from "../../../Local/Components/TournamentGame/TournamentGame";
-import { TournamentData } from "../../../Local/Components/TournamentForm/TournamentForm";
 import axios from "axios";
 import { getendpoint } from "../../../../../../context/getContextData";
+import { FriendDataType } from "../../../../../../context/context";
+import RemoteGame from "../RemoteGame/RemoteGame";
 
 interface TournamentGamesProps {
   tournament: number
 }
 
-interface TournamentGraghProps {
-  data: TournamentData;
-  setPlay?: React.Dispatch<React.SetStateAction<boolean>>;
+interface TournamentRemoteGameData {
+  id: number,
+  player1: number,
+  player2: number,
+  start_at: string,
+  progress: string,
+  p1_score: number,
+  p2_score: number,
+  winner: number | null,
 }
 
+interface TournamentRemoteData {
+  id: number,
+  winner: FriendDataType,
+  player1: FriendDataType,
+  player2: FriendDataType,
+  player3: FriendDataType,
+  player4: FriendDataType,
+  half1: TournamentRemoteGameData,
+  half2: TournamentRemoteGameData,
+  final: TournamentRemoteGameData | null,
+}
 
+interface TournamentGraphProps {
+  data: TournamentRemoteData;
+}
 
-const TournamentGragh = ({ data }: TournamentGraghProps) => {
+const getGamePlayers: (game: string, data: TournamentRemoteData) => FriendDataType[] | null = (game, data) => {
+  const getPlayerById = (id: number) => {
+    if (data.player1.id === id)
+      return data.player1
+    else if (data.player2.id === id)
+      return data.player2
+    else if (data.player3.id === id)
+      return data.player3
+    else
+      return data.player4
+  }
+  if (game === 'half1')
+    return [getPlayerById(data.half1.player1), getPlayerById(data.half1.player2)]
+  if (game === 'half2')
+    return [getPlayerById(data.half2.player1), getPlayerById(data.half2.player2)]
+  if (game === 'final' && data.final)
+    return [getPlayerById(data.final.player1), getPlayerById(data.final.player2)]
+  return null
+}
+
+const TournamentGraph = ({ data }: TournamentGraphProps) => {
   return (
-    <div className="tournament-list">
+    <div className="TournamentGames">
       <h2>Tournament Local</h2>
       <div className="tournament-players">
         <div className="first-two-match">
-          <TournamentGame game={data.half1} />
-          <TournamentGame game={data.half2} />
+          <RemoteGame game={data.half1} players={getGamePlayers('half1', data)} />
+          <RemoteGame game={data.half2} players={getGamePlayers('half2', data)} />
         </div>
 
-        <TournamentGame game={data.final} />
+        <RemoteGame game={data.final} players={getGamePlayers('final', data)} />
         <div className="tournament-match">
-          <div>{data.winner ? data.winner.alias : '-'}</div>
+          <div>{data.winner ? data.winner.username : 'waiting'}</div>
         </div>
       </div>
-      <button className="start-btn" onClick={() => {  }}>start</button>
+      <button className="start-btn" onClick={() => { }}>start</button>
     </div>
   );
 };
 
 function TournamentGames({ tournament }: TournamentGamesProps) {
-  // const [data, setData] = useState<TournamentData>({
-  //   half1: {
-  //     player1: { alias: shuffled[0], score: 0 },
-  //     player2: { alias: shuffled[1], score: 0 },
-  //     winner: null
-  //   },
-  //   half2: {
-  //     player1: { alias: shuffled[2], score: 0 },
-  //     player2: { alias: shuffled[3], score: 0 },
-  //     winner: null
-  //   },
-  //   final: null,
-  //   winner: null
-  // })
-  // const [game, setGame] = useState<TournamentGameData>(data.half1)
+  const [data, setData] = useState<TournamentRemoteData | null>(null)
 
-
-  // console.log("hello: ", data)
-  // useEffect(() => {
-  //   if (!game) return
-  //   if (!data.half2.winner && game.winner)
-  //     setGame(data.half2)
-  //   else if (data.half1.winner && data.half2.winner) {
-  //     const newgame: TournamentGameData = {
-  //       player1: { alias: data.half1.winner.alias, score: 0 },
-  //       player2: { alias: data.half2.winner.alias, score: 0 },
-  //       winner: null
-  //     }
-  //     setGame(newgame)
-  //     setData({ ...data, final: newgame })
-  //   }
-  //   if (data.final && data.final.winner)
-  //     setData({ ...data, winner: data.final.winner })
-
-  // }, [game?.winner])
-
-  // useEffect(() => {
-  //   axios.get(getendpoint("http", '/api/'))
-  // })
+  console.log(data);
+  
+  useEffect(() => {
+    if (!data) {
+      axios.get(getendpoint("http", `/api/game/tournament/${tournament}`))
+        .then((response) => {
+          setData(response.data)
+        })
+    }
+  }, [])
   return (
-    // <TournamentGragh data={data} />
-    <>hello {tournament}</>
-	)
+    <>
+      {
+        data ?
+          <TournamentGraph data={data} /> :
+          <>waiting</>
+      }
+    </>
+  )
 }
 
+export type { TournamentRemoteGameData }
 export default TournamentGames;

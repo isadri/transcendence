@@ -1,4 +1,4 @@
-.TournamentGame {
+.RemoteGame {
   width: 80%;
   display: flex;
   margin-top: 20px;
@@ -10,47 +10,47 @@
   max-width: 400px;
 }
 
-.TournamentGame div {
+.RemoteGame div {
   display: flex;
   align-items: center;
   
 }
 
-.TournamentGame div img {
+.RemoteGame div img {
   width: 50px;
   border-radius:  50%;
 }
-.TournamentGameRight
+.RemoteGameRight
 {
   display: flex;
   justify-content: end;
 }
-.TournamentGameLeft {
+.RemoteGameLeft {
   /* margin-left: 5%;
   margin-right: 5%; */
   /* display: flex;
   justify-content: end; */
 }
 
-.TournamentGameRight img{
+.RemoteGameRight img{
   margin-left: 5%;
   margin-right: 5%;
 }
-.TournamentGameLeft img{
+.RemoteGameLeft img{
   margin-right: 5%;
   margin-left: 5%;
 }
 
-.TournamentGameResult {
+.RemoteGameResult {
   justify-content: center;
 }
 
-.TournamentGameResult img {
+.RemoteGameResult img {
   padding-right: 10px;
 }
 
 @media screen and (max-width: 530px) {
-  .TournamentGame {
+  .RemoteGame {
     width: 85dvw;
     display: flex;
     flex-direction: column;
@@ -58,7 +58,7 @@
 }
 
 @media screen and (max-width: 800px){
-  .TournamentGame {
+  .RemoteGame {
     width: 85dvw;
     display: flex;
     flex-direction: column;
