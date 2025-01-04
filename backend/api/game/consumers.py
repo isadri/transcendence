@@ -568,3 +568,14 @@ class RandomTournament(AsyncWebsocketConsumer):
         },
       )
 
+
+
+
+class RandomTournament(AsyncWebsocketConsumer):
+
+  async def connect(self):
+    pass
+
+  async def disconnect(self):
+    pass
+

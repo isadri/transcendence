@@ -78,9 +78,8 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 
 function TournamentGames({ tournament }: TournamentGamesProps) {
   const [data, setData] = useState<TournamentRemoteData | null>(null)
+  const [socket, setSocket] = useState<WebSocket | null>(null)
 
-  console.log(data);
-  
   useEffect(() => {
     if (!data) {
       axios.get(getendpoint("http", `/api/game/tournament/${tournament}`))
@@ -88,7 +87,13 @@ function TournamentGames({ tournament }: TournamentGamesProps) {
           setData(response.data)
         })
     }
+    if (data) {
+      console.log("tournament=> ", data);
+      
+      // setSocket(getendpoint())
+    }
   }, [])
+
   return (
     <>
       {
