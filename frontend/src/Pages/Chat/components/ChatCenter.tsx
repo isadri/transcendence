@@ -24,10 +24,10 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 	}, [messagesUpdate]);
 
 	useEffect(() => {
-		const lastMessag = messages[messages.length - 1];
-		if (lastMessag?.chat == selectedFriend.id)
-			setMessagesUpdate([...messagesUser, ...messages]);
-		else setMessagesUpdate([...messagesUser]);
+		const chatMessages = messages.filter(
+			(message) => message.chat === selectedFriend.id
+		);
+		setMessagesUpdate([...messagesUser, ...chatMessages]);
 	}, [messages, messagesUser, selectedFriend]);
 
 	const formatTimes = (time: string) => {
