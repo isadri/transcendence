@@ -82,7 +82,7 @@ Generating a random key for xpack.security.encryptionKey. To prevent sessions fr
 
 ---
 
-* `xpack.reporting.roles.enabled: false`: (from documentation)[https://www.elastic.co/guide/en/kibana/current/reporting-settings-kb.html#reporting-advanced-settings].
+* `xpack.reporting.roles.enabled: false`: [from documentation](https://www.elastic.co/guide/en/kibana/current/reporting-settings-kb.html#reporting-advanced-settings).
 
 ```bash
 The default mechanism for Reporting privileges will work differently in future versions, which will affect the behavior of this cluster. Set "xpack.reporting.roles.enabled" to "false" to adopt the future behavior before upgrading.
@@ -113,7 +113,7 @@ xpack.monitoring.enabled has not been defined, but found elasticsearch configura
 
 ### index lifecycle
 
-#### (Phase execution)[https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-index-lifecycle.html#ilm-phase-execution]
+#### [Phase execution](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-index-lifecycle.html#ilm-phase-execution)
 
 ILM runs periodically, checks to see if an index meets policy criteria, and executes whatever steps are needed. To avoid race conditions, ILM might need to run more than once to execute all of the steps required to complete an action. For example, if ILM determines that an index has met the rollover criteria, it begins executing the steps required to complete the rollover action. If it reaches a point where it is not safe to advance to the next step, execution stops. The next time ILM runs, ILM picks up execution where it left off. This means that even if indices.lifecycle.poll_interval is set to 10 minutes and an index meets the rollover criteria, it could be 20 minutes before the rollover is complete.
 
