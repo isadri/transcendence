@@ -29,7 +29,20 @@
     display: none;
 }
 
+.Home-SecondRaw .stats-friends{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 25%;
+    height: 970px;
+}
+
 @media only screen and (max-width: 1150px){
+    .Home-SecondRaw .stats-friends{
+        width: 25%;
+        height: 750px;
+    }
+
     .Home-Profile{
         overflow-y: auto;
         -ms-overflow-style: none;

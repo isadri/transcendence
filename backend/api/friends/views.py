@@ -467,7 +467,7 @@ class FriendshipStatusView(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class MutualFriendsView(generics.ListAPIView):
+class MutualFriendsView(APIView):
     """
     View to get mutual friends between the authenticated user and a specific user.
     """
@@ -480,10 +480,11 @@ class MutualFriendsView(generics.ListAPIView):
         try:
             authenticated_user_friends = FriendList.objects.get(user=authenticated_user).friends.all()
             specific_user_friends = FriendList.objects.get(user=specific_user).friends.all()
-
             mutual_friends = authenticated_user_friends.filter(id__in=specific_user_friends)
-            serializer = FriendSerializer(mutual_friends, many=True)
-
+            print("data => ", mutual_friends)
+            
+            serializer = FriendSerializer(mutual_friends, many=True, context={'user' : request.user})
+            print("data => ", serializer.data)
             return Response(serializer.data, status=200)
         except FriendList.DoesNotExist:
             return Response([], status=200)
@@ -492,7 +493,7 @@ class MutualFriendsView(generics.ListAPIView):
 class UserRankListlView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        users = User.objects.exclude(id=request.user.id)
+        users = User.objects.all()
         serializer = FriendSerializer(users, many=True, context={'user': request.user})
         sorted_data = sorted(serializer.data, key=lambda x: x.get('stats', {}).get('level', 0), reverse=True)
         return Response(sorted_data, status=status.HTTP_200_OK)

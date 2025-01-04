@@ -32,6 +32,27 @@
 
 import { createContext } from "react";
 
+interface stats{
+  user: number,
+  level: number,
+  badge: number,
+  win: number,
+  lose: number,
+  nbr_games: number,
+  xp: number
+}
+
+interface FriendDataType{
+  id: number,
+  username: string,
+  email: string,
+  avatar: string,
+  is_online: boolean,
+  is_blocked: boolean,
+  stats: stats,
+  rank: number
+}  
+
 interface userDataType {
     id : number,
     username : string,
@@ -39,7 +60,9 @@ interface userDataType {
     avatar : string
     register_complete: boolean,
     from_remote_api: boolean,
-    is_online: boolean
+    is_online: boolean,
+    usable_password: boolean,
+    stats: stats
 }
 
 interface NotificationsData {
@@ -71,3 +94,4 @@ export const loginContext = createContext<loginContextData | null>(null)
 
 export type {loginContextData, NotificationsData}
 export type {userDataType}
+export type {FriendDataType}

@@ -1,5 +1,5 @@
 .Home-GameHestory{
-    height: 72vh;
+    height: 970px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -70,8 +70,15 @@
     color: #ff0000;
 }
 
+@media only screen and (max-width: 1150px){
+    .Home-GameHestory{
+        height: 750px;
+    }
+}
+
 @media only screen and (max-width: 800px){
     .Home-GameHestory{
         height: 35vh;
+        width: 98%;
     }
 }

@@ -72,8 +72,7 @@ class HomeView(APIView):
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
             serializer =  UserSerializer(request.user)
-            data = serializer.data.copy()
-            data['usable_password'] = request.user.has_usable_password()
+            data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
      
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -524,7 +523,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
             token = PasswordResetTokenGenerator().make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             reset_url = (
-                'http://localhost:8000/api/accounts/password-reset-confirm/'
+                'http://localhost:5000/resetPassword'
                 f'?uid={uid}&token={token}'
             )
             self._send_email(user, reset_url)
@@ -562,7 +561,7 @@ class ResetPasswordViewSet(viewsets.ViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         return Response({
                     'info': 'You can reset your password'
-                }, status=status.HTTP_200_BAD_REQUEST)
+                }, status=status.HTTP_200_OK)
 
     def create(self, request: Request) -> None:
         """
@@ -570,8 +569,8 @@ class ResetPasswordViewSet(viewsets.ViewSet):
         the token are valid, a new password will be set for the user.
         """
         try:
-            uid = urlsafe_base64_decode(request.GET.get('uid')).decode()
-            token = request.GET.get('token')
+            uid = urlsafe_base64_decode(request.data.get('uid')).decode()
+            token = request.data.get('token')
             user = User.objects.get(pk=uid)
             if not PasswordResetTokenGenerator().check_token(user, token):
                 return Response({
@@ -588,11 +587,13 @@ class ResetPasswordViewSet(viewsets.ViewSet):
             return Response({
                 'error': 'Password cannot be empty'
             }, status=status.HTTP_400_BAD_REQUEST)
-        user.set_password(new_password)
-        user.save()
-        return Response({
-            'message': 'Password reset successful'
-        }, status=status.HTTP_200_OK)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': 'Password reset successful'
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutViewSet(viewsets.ViewSet):
@@ -676,28 +677,30 @@ class UpdateUserPasswordView(APIView):
 
     def put(self, request):
         user = request.user
-        required_fields = ['CurrentPassword', 'password', 'confirmPassword']
         data = request.data.copy()
-
+        # print("==============> ", data)
+        if user.has_usable_password():
+            required_fields = ['CurrentPassword', 'password', 'confirmPassword']
+        else:
+            required_fields = [ 'password', 'confirmPassword']
         missing_fields = [field for field in required_fields if not data.get(field)]
         if missing_fields:
             return Response(
                 {field: "This field may not be blank." for field in missing_fields},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        if not check_password(data['CurrentPassword'], user.password):
-            return Response(
-                {"CurrentPassword": "Current password is incorrect."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        if user.has_usable_password():
+            if not check_password(data['CurrentPassword'], user.password):
+                return Response(
+                    {"CurrentPassword": "Current password is incorrect."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         if data['password'] != data['confirmPassword']:
             return Response(
                 {"confirmPassword": "Passwords do not match."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()

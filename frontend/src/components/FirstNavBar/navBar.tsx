@@ -13,6 +13,7 @@ function navBar() {
                   || useLocation().pathname === "/callBack/google"
                   || useLocation().pathname === "/callBack/intra"
                   || useLocation().pathname === "/emailVerified"
+                  || useLocation().pathname === "/resetPassword"
   return (
     <>
       {!hideNavBar &&

@@ -11,7 +11,7 @@ function Icons() {
   const user = getUser()
   const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
   // const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
-  const [unread, setUnread] = useState(0)
+  // const [unread, setUnread] = useState(0)
   const closeMenuRef = useRef<HTMLDivElement>(null);
   const buttonMenuRef = useRef<HTMLDivElement>(null);
   const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"
@@ -29,7 +29,8 @@ function Icons() {
         console.log(error.response)
       })
   }
-
+  console.log("unread notif => ", UnreadNotif)
+  console.log("unread  => ", context?.unreadCount)
   const handelClearAll = () => {
     axios
       .delete(getendpoint("http", "/api/notifications/clear-all-notif/"), {
@@ -90,7 +91,7 @@ function Icons() {
       <span  className="Home-Icons">
         <div ref={closeMenuRef} className="notifIcon">
           {
-            UnreadNotif !== 0 && !context?.unreadCount &&
+            UnreadNotif !== 0 &&
             <div className="unreadNotif">
               <span>{UnreadNotif}</span>
             </div>
@@ -135,8 +136,8 @@ function Icons() {
         </div>
         {!hideProfileImg &&
           <div className="userInfoGlobal">
-            <div className="Home-ProfImg imgGlobal">
-              <Link to="/profile" className="img">
+            <div className=" imgGlobal">
+              <Link to="/profile" className="imag">
                 {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
               </Link>
               {
