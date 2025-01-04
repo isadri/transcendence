@@ -90,7 +90,7 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
 	"name": "<app-snap-{now/d}>",
 	"repository": "app_snapshots_repo",
 	"config": {
-		"indices": "django-logs-*,nginx-logs-*"
+		"indices": "logs-nginx*,logs-django*"
 	},
 	"retention": {
 		"expire_after": "12h",
@@ -106,7 +106,7 @@ https://es01:9200/_ilm/policy/logs-policy -H "Content-Type: application/json" -d
 	"policy": {
 		"phases": {
 			"hot": {
-				"min_age": "10m",
+				"min_age": "3m",
 				"actions": {
 					"rollover": {
 						"max_age": "2h",
@@ -147,7 +147,7 @@ curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_index_template/nginx-logs-template -H "Content-Type: application/json" \
 -d '
 {
-	"index_patterns": [ "logs-nginx.access-*" ],
+	"index_patterns": [ "logs-nginx*" ],
 	"data_stream": { },
     "composed_of": [ "logs-settings-component" ],
 	"priority": 500
@@ -167,7 +167,7 @@ https://es01:9200/_index_template/django-logs-template -H "Content-Type: applica
             }
         }
     },
-	"index_patterns": [ "logs-django-*" ],
+	"index_patterns": [ "logs-django*" ],
 	"data_stream": { },
     "composed_of": [ "logs-settings-component" ],
 	"priority": 500
