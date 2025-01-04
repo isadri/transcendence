@@ -17,6 +17,10 @@
 	gap: 30px;
 }
 
+.profileInfo .friend-online {
+	color: #00ff00;
+}
+
 .profileInfo .image {
 	height: 40px;
 	width: 40px;
