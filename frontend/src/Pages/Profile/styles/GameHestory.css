@@ -10,7 +10,7 @@
     color: var(--primary);
     font-family: var(--sans);
     margin: 5% 0 2% 5%;
-    font-size: 2vh;
+    /* font-size: 2vh; */
 }
 
 
@@ -29,6 +29,7 @@
     overflow-y: auto;
     -ms-overflow-style: none;  
     scrollbar-width: none;
+    margin-top: 10px;
 }
 
 .Home-GameHestory .Home-tableRows::-webkit-scrollbar {
@@ -37,14 +38,14 @@
 
 .Home-GameHestory .Home-tableRows .Home-rows{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
-    width: 80%;
+    width: 90%;
     text-align: center;
     background-color: var(--fade);
     border-radius: 20px;
-    height: 55vh;
-    padding: 3% 5% 3% 5%;
+    height: 55px;
+    /* padding: 3% 5% 3% 5%; */
     font-size: 14px;
     margin-bottom: 4%;
 }
@@ -58,15 +59,20 @@
     margin-left: 6%;
 }
 
+.Home-GameHestory .Home-tableRows .Home-rows .time-game{
+    display: flex;
+    align-items: start;
+}
 .Home-GameHestory .Home-tableRows .Home-rows *:nth-child(3){
     color: #DE8F9E;
+    width: 35%;
 }
 
-.Home-GameHestory .Home-tableRows .Home-win *:not(:nth-child(3)){
+.Home-GameHestory .Home-tableRows .Home-win .fa-arrow-up-long{
     color: #00ff00;
 }
 
-.Home-GameHestory .Home-tableRows .Home-Lose *:not(:nth-child(3)){
+.Home-GameHestory .Home-tableRows .Home-win .fa-arrow-down-long{
     color: #ff0000;
 }
 

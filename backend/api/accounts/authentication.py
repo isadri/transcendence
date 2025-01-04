@@ -46,3 +46,15 @@ class TokenAuthentication(JWTAuthentication):
         if not user:
             raise AuthenticationFailed
         return user, validated_token
+
+    def socket_authenticate(self, access_token):
+        """
+            authentication by access token for sockets and consumers
+        """
+        validated_token = self.get_validated_token(access_token)
+        if not validated_token:
+            raise AuthenticationFailed
+        user = self.get_user(validated_token)
+        if not user:
+            raise AuthenticationFailed
+        return user, validated_token

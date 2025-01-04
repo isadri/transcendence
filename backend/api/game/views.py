@@ -9,6 +9,9 @@ from rest_framework import status,viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import (
+    get_object_or_404,
+)
 
 User = get_user_model()
 
@@ -183,8 +186,11 @@ class GamesList(APIView):
 class GameHistory(APIView):
   permission_classes = [IsAuthenticated]
 
-  def get(self, request):
-    user = request.user
-    userStats = Game.objects.filter((Q(player1=user) | Q(player2=user)) & Q(progress='E'))
-    serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
-    return Response(serializer.data)
+  def get(self, request, username):
+    try:
+      user = get_object_or_404(User, username=username)
+      userStats = Game.objects.filter((Q(player1=user) | Q(player2=user)) & Q(progress='E'))
+      serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
+      return Response(serializer.data)
+    except User.DoesNotExist:
+      return Response({'error': 'No such user'}, status=status.HTTP_400_BAD_REQUEST)
