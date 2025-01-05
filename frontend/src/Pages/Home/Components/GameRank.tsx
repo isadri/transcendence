@@ -55,6 +55,7 @@ function GameRank() {
   useEffect(() => {
     GetUsersRank()
   }, [])
+  
   return (
     <div className="Home-GameRank">
         {

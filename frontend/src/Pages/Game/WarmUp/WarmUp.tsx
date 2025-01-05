@@ -1,6 +1,6 @@
 import vsImage from "../../Home/images/Group.svg";
 import avatar from "../../AboutUs/images/Your_profil_pict.png";
-import badge from "../../Profile/images/badge1.svg";
+import badge from "../../Profile/images/badges/bg1.svg";
 import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
 import { getUser, getendpoint } from "../../../context/getContextData";
