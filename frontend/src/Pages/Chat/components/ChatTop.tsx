@@ -84,7 +84,11 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 				<img src={friend_user.avatar} alt="profile" className="image" />
 				<div className="textInfo">
 					<span>{friend_user.username}</span>
-					<p>Last seen today 00:56</p>
+					{friend_user.is_online ? (
+						<p className="friend-online">Online</p>
+					) : (
+						<p className="friend-offline">Offline</p>
+					)}
 				</div>
 			</div>
 			<div ref={buttonMenuRef}>
