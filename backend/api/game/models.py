@@ -127,6 +127,7 @@ class UserStats(models.Model):
   badge = models.IntegerField(default=0)
   win = models.IntegerField(default=0)
   lose = models.IntegerField(default=0)
+  xp = models.IntegerField(default=0)
   nbr_games = models.IntegerField(default=0)
 
   def __str__(self):

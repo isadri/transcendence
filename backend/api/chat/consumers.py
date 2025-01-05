@@ -16,17 +16,17 @@ User = get_user_model()
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
-        self.room_group_name = f"chat_room_of_{self.user.id}"
         self.isBlocked = False
         self.isBlockedPayload = None
-        self.user.open_chat = True
-        await self.user.asave()
 
         # Check if the user is authenticated
-        if not self.user.is_authenticated:
+        if not self.user or not self.user.is_authenticated:
             await self.close()
             return
 
+        self.room_group_name = f"chat_room_of_{self.user.id}"
+        self.user.open_chat = True
+        await self.user.asave()
         # Join the chat room group
         await self.channel_layer.group_add( # Adds the WebSocket connection to a group named chat_<user_id>.
             self.room_group_name,
@@ -36,6 +36,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave the chat room group
+        if not self.user:
+            return
         self.user.open_chat = False
         await self.user.asave()
         await self.handle_reset_active_chat()
@@ -68,12 +70,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.handle_block_friend(data)
         if (message_type == "active_chat"):
             chat_id = data.get('chat_id')
+            if not chat_id:
+                await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+                return
             if chat_id == -1:
                 await self.handle_reset_active_chat()
             else:
                 await self.handle_active_chat(chat_id)
         if (message_type == "mark_is_read"):
             chat_id = data.get('chat_id')
+            if not chat_id:
+                await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+                return
             await self.handle_mark_is_read(chat_id)
 
     async def handle_mark_is_read(self, chat_id):
@@ -131,18 +139,52 @@ class ChatConsumer(AsyncWebsocketConsumer):
         blocked = data.get('blocked')
         status = data.get('status')
         try:
+            if (not chat_id or not blocked or not blocker):
+                await self.send(text_data=json.dumps({'error': 'Invalid'}))
+                return
             chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
 
             user1, user2 = await self.get_users_from_chat(chat)
+            blocker_user = await database_sync_to_async(User.objects.get)(id=blocker)
+            blocked_user = await database_sync_to_async(User.objects.get)(id=blocked)
 
+            if (status == True and chat.blocke_state_user1 != 'none' and chat.blocke_state_user2 != 'none'):
+                await self.send(text_data=json.dumps({'error': 'You cannot block this user.'}))
+                return
+
+            friend_request = await FriendRequest.objects.filter(
+            Q(sender_id=blocker, receiver_id=blocked) |
+            Q(sender_id=blocked, receiver_id=blocker)
+            ).afirst()
+
+            friend_request_unblock = await FriendRequest.objects.filter(
+                    Q(sender_id=blocker, receiver_id=blocked) |
+                    Q(sender_id=blocked, receiver_id=blocker),
+                    status='blocked',
+                    blocked_by=blocker_user,
+                    ).afirst()
             if status == True:
                 if (user1.id == blocked):
                     chat.blocke_state_user1 = "blocked"
                     chat.blocke_state_user2 = "blocker"
-                else:
+                elif (user1.id == blocker): 
                     chat.blocke_state_user1 = "blocker"
                     chat.blocke_state_user2 = "blocked"
+                if friend_request:
+                    await friend_request.block_async(blocker_user)
+                else:
+                    await FriendRequest.objects.acreate(
+                        sender=blocker_user,
+                        receiver=blocked_user,
+                        status='blocked',
+                        blocked_by=blocker_user
+                    )
             elif status == False:
+                if not friend_request_unblock:
+                    await self.send(text_data=json.dumps({'error': 'No blocked request found.'}))
+                    return
+                await friend_request_unblock.unblock_async(blocker_user)
+                await database_sync_to_async(friend_request_unblock.delete)()
                 chat.blocke_state_user1 = "none"
                 chat.blocke_state_user2 = "none"
                 self.isBlocked = False
@@ -169,7 +211,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
 
     async def get_users_from_chat(self, chat):
-        # Wrap user access in async-safe method
         user1 = await database_sync_to_async(lambda: chat.user1)()
         user2 = await database_sync_to_async(lambda: chat.user2)()
         return user1, user2
@@ -183,7 +224,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'chat_id': event['chat_id'],
             'blocker': event['blocker'],
             'blocked': event['blocked'],
-            'status': event['status']  # true if blocked, false otherwise
+            'status': event['status']
         }))
 
     async def reciver_blocked(self, receiver:User):
@@ -192,7 +233,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 Q(sender=self.user, receiver=receiver, status='blocked') |  # User blocked target
                 Q(sender=receiver, receiver=self.user, status='blocked')   # Target blocked user
             )
-
             return (blocked_request , True)
         except:
             return (None, False)
@@ -201,7 +241,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def send_block_status(self, chat, blocked_req, is_blocked):
         blocker = blocked_req.blocked_by
         blocked = blocked_req.sender if blocked_req.blocked_by != blocked_req.sender else blocked_req.receiver
-
 
         payload = {
             'chat_id': chat.id,
@@ -219,6 +258,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not message:
             await self.send(text_data=json.dumps({'error': 'Invalid message.'}))
             return
+        if isinstance(receiver_id, int):
+            pass
+        elif receiver_id and receiver_id.isdigit():
+            receiver_id = int(receiver_id)
+        else:
+            await self.send(text_data=json.dumps({'error': 'Invalid receiver_id.'}))
+            return
         try:
             receiver = await User.objects.aget(id=receiver_id)
         except User.DoesNotExist:
@@ -232,13 +278,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         chat = await Chat.objects.filter(
             Q(user1=self.user, user2=receiver) |
             Q(user1=receiver, user2=self.user)
-        ).afirst()  # Fetch the first match asynchronously
+        ).afirst()
 
         if not chat:
             chat = await Chat.objects.acreate(
                 user1=self.user,
                 user2=receiver
             )
+
+        if self.is_blocked(chat):
+            await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
+            return
         blocked_req , is_blocked= await self.reciver_blocked(receiver)
         if  blocked_req and is_blocked:
             self.isBlockedPayload = await self.send_block_status(chat ,blocked_req, is_blocked)
@@ -247,13 +297,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not is_blocked:
             self.isBlocked = False
             self.isBlockedPayload = None
-        # else:
-        #     self.isBlockedPayload = await self.send_block_status(chat ,blocked_req, is_blocked)
-        #     self.isBlocked = False
 
-        if self.is_blocked(chat):
-            await self.send(text_data=json.dumps({"error": "You can't send message to that user."}))
-            return
 
         new_message = await Message.objects.acreate(
             chat=chat,
@@ -297,7 +341,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_id=receiver_id,
                 message=msg,
                 type= "Message",
-                created_at=timezone.now(),
                 is_read=False
             )
             await NotificationConsumer.send_friend_request_notificationChat(receiver_id, msg, notification.id, notification.type, notification.created_at)

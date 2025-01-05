@@ -1,7 +1,7 @@
 .Home-friendsProfile{
-    width: 22%;
+    width: 100%;
     background-color: var(--fade);
-    height: 72vh;
+    height: 57%;
     border-radius: 20px;
 }
 
@@ -9,9 +9,8 @@
     color: var(--primary);
     font-family: var(--sans);
     margin: 8.5% 0 5.5% 5%;
-    color: var(--primary);
     font-family: var(--sans);
-    font-size: 2vh;
+    /* font-size: 2vh; */
 }
 
 .Home-friendProfile .Home-title{
@@ -28,7 +27,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-height: 86%;
+    max-height: 70%;
     height: 100%;
     overflow-y: auto;
     -ms-overflow-style: none;  
@@ -46,11 +45,11 @@
     justify-content: space-between;
     width: 90%;
     font-size: 14px;
-    padding: 0 4% 3% 0;
+    /* padding: 0 4% 3% 0; */
 }
 
 .Home-FriensList .Home-friend:not(:nth-child(1)){
-    padding: 3% 4% 3% 0;
+    padding: 4% 0 0 0;
 }
 
 .Home-FriensList .Home-friend .Home-friendInfo{
@@ -66,11 +65,29 @@
     overflow: hidden;
 } */
 
-.Home-FriensList .Home-friend .Home-friendInfo img{
-    width: 28%;
+.Home-FriensList .Home-friend .Home-friendInfo .img{
+    display: flex;
+    align-items: center;
+    width: 50px;
+    position: relative;
+}
+.Home-FriensList .Home-friend .Home-friendInfo .img img{
+    width: 100%;
     border-radius: 50%;
     cursor: pointer;
 }
+.Home-FriensList .Home-friend .Home-friendInfo  .onlineCircle-friend{
+    width: 9px;
+    height: 9px;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid #04de04;
+    background-color: #04de04;
+    top: 34px;
+    left: 34px;
+}
+
+
 
 .Home-FriensList .Home-friend .Home-friendName{
     display: flex;
@@ -112,7 +129,7 @@
 }
 
 
-.Home-noFriends{
+/* .Home-noFriends{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -138,15 +155,21 @@
 }
 
 .Home-noFriends .Content .title{
-    font-size: 1.2vw;
-}
+    /* font-size: 1.2vw; */
+/* } */
 
-.Home-noFriends .Content .paragraph{
-    font-size: 1vw;
-    font-weight: 100;
-}
+/* .Home-noFriends .Content .paragraph{ */
+    /* font-size: 1vw; */
+    /* font-weight: 100; */
+/* } */
 
 @media only screen and (max-width: 1150px){
+
+    .stats-iconFriend i {
+        font-size: 110px !important;
+    }
+
+
     .Home-FriensList .Home-friend .Home-friendProfile{
         justify-content: end;
     }
@@ -165,7 +188,7 @@
 
 @media only screen and (max-width: 800px){
     .Home-friendsProfile{
-        width: 8%;
+        width: 100%;
     }
     .Home-friendsProfile  .Home-title *:nth-child(1) {
         color: var(--primary);
@@ -177,20 +200,32 @@
     .Home-noFriends{
         display: none;
     }
-
+    
     .Home-friendsProfile h2{
         display: none;
     }
-    .Home-friendProfile *:nth-child(2){
+    
+    .Home-FriensList .Home-friend .Home-friendInfo img{
+        /* margin-left: 3%; */
+        /* margin-top: 20%; */
+        width: 99%;
+    }
+    .Home-FriensList .Home-friend .Home-friendName,
+    .Home-FriensList .Home-friend .Home-friendProfile{
         display: none;
     }
     
-     .Home-FriensList .Home-friend *:nth-child(2){
-        display: none;
+    .Home-FriensList .Home-friend .Home-friendInfo .img{
+        width: 45px;
+        padding-top: 6px;
     }
-    .Home-FriensList .Home-friend .Home-friendInfo img{
-        margin-left: 3%;
-        margin-top: 20%;
-        width: 99%;
+    
+    .Home-FriensList .Home-friend{
+        width: 100%;
+        display: flex;
+        justify-content: center
+    }
+    .Home-FriensList .Home-friend .Home-friendInfo  .onlineCircle-friend{
+        top: 38px;
     }
 }

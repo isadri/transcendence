@@ -1,5 +1,5 @@
 import "./TournamentGame.css"
-import vs from "../../../../../home/images/Group.svg"
+import vs from "../../../../../Home/images/Group.svg"
 import { TournamentGameData } from "../TournamentForm/TournamentForm";
 
 interface TournamentGameProps {

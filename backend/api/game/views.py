@@ -9,6 +9,9 @@ from rest_framework import status,viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import (
+    get_object_or_404,
+)
 
 User = get_user_model()
 
@@ -153,14 +156,18 @@ class ListReceivedGameInvites(APIView):
     return Response(serializer.data)
 
 
+class UserAchievementView(APIView):
 
-class UserAchievement(APIView):
   permission_classes = [IsAuthenticated]
 
-  def get(self, request):
-    userAch = UserAchievement.objects.filter(user=request.user)
-    serializer = UserAchievementSerializer(userAch)
-    return Response(serializer.data)
+  def get(self, request, username):
+    try:
+      user = get_object_or_404(User, username=username)
+      userAch = UserAchievement.objects.filter(user=user)
+      serializer = UserAchievementSerializer(userAch, many=True)
+      return Response(serializer.data)
+    except User.DoesNotExist:
+      return Response({'error': 'No such user'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ListUserStats(APIView):
   permission_classes = [IsAuthenticated]
@@ -171,12 +178,12 @@ class ListUserStats(APIView):
     return Response(serializer.data)
 
 
-
 class GamesList(APIView):
   permission_classes = [IsAuthenticated]
 
   def get(self, request):
     user = request.user
+
     games = Game.objects.filter(Q(player1=user) | Q(player2=user))
     serializer = GameSerializer(games, many=True, context={'user' : request.user})
     return Response(serializer.data)
@@ -203,3 +210,17 @@ class GetTournament(APIView):
       return Response(serializer.data)
     except:
       return Response({"error" : "No tournament exist or you dont have access."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GameHistory(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request, username):
+    try:
+      user = get_object_or_404(User, username=username)
+      userStats = Game.objects.filter((Q(player1=user) | Q(player2=user)) & Q(progress='E'))
+      serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
+      return Response(serializer.data)
+    except User.DoesNotExist:
+      return Response({'error': 'No such user'}, status=status.HTTP_400_BAD_REQUEST)
+

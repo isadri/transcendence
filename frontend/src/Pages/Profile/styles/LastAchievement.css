@@ -1,6 +1,6 @@
 .Home-LastAchievement{
     width: 33%;
-    height: 72vh;
+    height: 970px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -10,8 +10,8 @@
 .Home-LastAchievement h2{
     color: var(--primary);
     font-family: var(--sans);
-    margin: 6% 0 3% 5%;
-    font-size: 2vh;
+    margin: 6% 0 6% 5%;
+    /* font-size: 2vh; */
 }
 
 .Home-AchivementRows{
@@ -24,7 +24,7 @@
     font-family: var(--sans);
     overflow-y: auto;
     -ms-overflow-style: none;  
-    scrollbar-width: none; 
+    scrollbar-width: none;
 }
 
 .Home-AchivementRows::-webkit-scrollbar {
@@ -34,8 +34,9 @@
 .Home-Achivement{
     display: flex;
     flex-direction: row;
-    width: 80%;
+    width: 90%;
     align-items: center;
+    justify-content: flex-start;
     background-color: var(--fade);
     border-radius: 10px;
     margin-bottom: 6%;
@@ -46,30 +47,58 @@
 .Home-AchivementImg{
     width: 10%;
 }
+.Home-AchivementImg img{
+    width: 25px;
+    height: 25px;
+    color: white;
+    font-size: 50px;
+}
+
+.game-NoStatsprofile{
+    margin-top: 70px;
+}
+
+.NoStats-msgProfile{
+    padding-top: 15px;
+}
 
 .Home-AchivementInfo{
     display: flex;
     flex-direction: column;
-    margin-left: 3%;
+    margin-left: 10px;
+    /* margin-left: 3%; */
 }
 
+.Home-AchivementInfo *:nth-child(1){
+    font-size: 15px;
+}
 .Home-AchivementInfo *:nth-child(2){
-    font-size: 10px;
+    font-size: 12px;
     margin-top: 2%;
+    font-weight: 200;
 }
 
 @media only screen and (max-width: 1150px){
-    
+    .Home-LastAchievement{
+        height: 750px;
+    }
     .Home-AchivementInfo{
-        margin-left: 7%;
+        /* margin-left: 7%; */
+    }
+
+    .stats-iconFriend i {
+        font-size: 110px !important;
     }
 }
 
 
 @media only screen and (max-width: 800px){
+    .game-NoStatsprofile{
+        margin-top: 50px;
+    }
     .Home-LastAchievement{
-        height: 35vh;
-        width: 100%;
+        height: 370px;
+        width: 98%;
         margin-top: 2vh;
     }
 }

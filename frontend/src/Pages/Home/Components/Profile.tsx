@@ -13,6 +13,8 @@ function Profile() {
   }, [user?.is_online])
   if (user)
   {
+    const fractionalPart = user.stats.level - Math.floor(user.stats.level);
+    const percentage = fractionalPart * 100;
     return (
       <div className="Home-profile">
         <div className="Home-ProfImg">
@@ -33,23 +35,24 @@ function Profile() {
           <img src={Cbadge} alt="" />
         </div>
         <div className="Home-states">
-          <div className="Home-level">
-            <div className="Home-levelUp">level 1</div>
+          <div className="Home-level-bar leve-dashbord">
+            <div className="Home-level-bar-fill" style={{width: `${percentage}%`}}></div>
+            <span className="Home-level-text">Level {Math.floor(user.stats.level)} - {Math.round(percentage)}%</span>
           </div>
           <div className="Home-comstats-containe">
             <div className="Home-state">
-              <div>5</div>
+              <div>{user.stats.win}</div>
               <div>Wins</div>
             </div>
             <div className="Home-state">
-              <div>0</div>
+              <div>{user.stats.lose}</div>
               <div>Loss</div>
             </div>
             <div className="Home-state">
-              <div>10</div>
-              <div>Rank</div>
+              <div>{user.stats.nbr_games}</div>
+              <div>Total</div>  
             </div>
-          </div>
+         </div>
         </div>
       </div>
     );

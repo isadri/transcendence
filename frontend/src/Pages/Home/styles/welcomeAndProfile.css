@@ -51,7 +51,7 @@
     }
 }
 
-@media only screen and (max-width: 750px){
+@media only screen and (max-width: 850px){
     .Home-content {
         width: 100%;
     }
@@ -89,21 +89,23 @@
     justify-content: center;
     background-color: var(--fade);
     width: 28%;
+    height: 200px;
     margin-left: auto;
     border-radius: 20px;
     margin-top: 25px;
     margin-bottom: 25px;
     font-family: var(--mono);
+    position: relative;
 }
 
 .Home-ProfImg{
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 14px;
-    margin-top: 14px;
     width: 100%;
-    position: relative;
+    position: absolute;
+    top: 15px;
+    left: 12px;
 }
 
 .Home-ProfImg .img{
@@ -140,26 +142,27 @@
     font-family: var(--mono);
     color: white;
     font-size: 14px;
-
     width: 80%;
 }
 
 .Home-user{
     display: flex;
     justify-content: end;
-    margin-right: 15px;
-    position: relative;
-    bottom: 10px;
+    /* margin-right: 15px; */
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    /* bottom: 10px; */
 }
 
 .Home-states{
     display: flex;
     flex-direction: column;
     position: relative;
-    bottom: 10px;
+    bottom: 1px;
 }
 
-.Home-level{
+/* .Home-level{
     background-color: var(--fade);
     font-family: var(--mono);
     font-size: 10px;
@@ -173,17 +176,24 @@
     background-color: var(--primary);
     border-radius: 20px;
     padding-left: 30px;
+} */
+.leve-dashbord{
+    position: absolute;
+    top: 7px;
 }
 
 
 .Home-comstats-containe{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     background-color: var(--fade);
-    margin: 20px 40px 0 40px;
     border-radius: 10px;
-    padding-left: 5px;
-    padding-right: 5px;
+    width: 90%;
+    position: absolute;
+    margin-left: 5%;
+    top: 37px;
+    /* right: 10px; */
+
 }
 
 .Home-comstats-containe .Home-state{
@@ -197,17 +207,25 @@
 }
 
 
+@media only screen and (max-width: 1090px){
+    .Home-user{
+        display: none;
+    }
+    
+}
 @media only screen and (max-width: 800px){
     .Home-comstats-containe .Home-state{
         font-size: 10px;
-
     }
 
 }
-@media only screen and (max-width: 750px){
+@media only screen and (max-width: 850px){
 
     .Home-profile{
         width: 100%;
         margin-left: 0;
+    }
+    .Home-user{
+        display: flex;
     }
 }

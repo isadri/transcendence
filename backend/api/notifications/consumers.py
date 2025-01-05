@@ -8,8 +8,8 @@ from django.utils import timezone
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
-        self.room_group_name = f"user_{self.user.id}_notifications"
-        if self.user.is_authenticated:
+        if self.user and self.user.is_authenticated:
+            self.room_group_name = f"user_{self.user.id}_notifications"
             self.user.is_online = True
             await self.user.asave(update_fields=['is_online'])
             await self.channel_layer.group_add(
@@ -22,6 +22,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave the notification group
+        if not self.user:
+            return
         self.user.is_online = False
         await self.user.asave(update_fields=['is_online'])
         await self.channel_layer.group_discard(
@@ -59,6 +61,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             is_read=False
         )
         channel_layer = get_channel_layer()
+        created_at_iso = notification.created_at.isoformat()
         async_to_sync(channel_layer.group_send)(
             f"user_{user_id}_notifications",
             {
@@ -67,7 +70,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "message": message,
                     "type" : type,
                     "notification_id": notification.id,
-                    "notification_created_at": notification.created_at.strftime('%b %d, %Y at %H:%M')
+                    "notification_created_at": created_at_iso,
                 },
             }
         )
@@ -77,6 +80,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         Sends a friend request notification to the user.
         """
         print("type ===> ", type)
+        created_at_iso = created_at.isoformat()
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
             f"user_{user_id}_notifications",
@@ -86,7 +90,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "message": message,
                     "type" : type,
                     "notification_id": notification_id,
-                    "notification_created_at": created_at.strftime('%b %d, %Y at %H:%M')
+                    "notification_created_at": created_at_iso,
                 },
             }
         )

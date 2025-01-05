@@ -8,35 +8,36 @@ import GameHighlights from './Components/gameHighlights'
 import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
-// import './styles/SearchAndIcons.css'
+import Alert from '../../components/Alert/Alert'
+import { getContext } from '../../context/getContextData'
 
 function Home() {
-
-  
+  const account = getContext()
   return (
-    <div className='Home-homePage'>
-      {/* <div className='Home-searchAndIcons'>
-        <Search/>
-        <Icons/>
-      </div> */}
-      <div className='Home-welcome'>
-        <Welcome/>
-        <Profile/>
-      </div>
-      <div className='Home-userInfo'>
-        <div className='Home-game'>
-          <div className='Home-modeChat'>
-            <GameModes/>
-            <Chat/>
-          </div>
-          <div className='Home-gameStats'>
-            <GameHighlights/>
-            <GameStats/>
-          </div>
+    <>
+      <Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
+          <span>{account?.createdAlert}</span>
+      </Alert>
+      <div className='Home-homePage'>
+        <div className='Home-welcome'>
+          <Welcome/>
+          <Profile/>
         </div>
-        <Chat/>
+        <div className='Home-userInfo'>
+          <div className='Home-game'>
+            <div className='Home-modeChat'>
+              <GameModes/>
+              <Chat/>
+            </div>
+            <div className='Home-gameStats'>
+              <GameHighlights/>
+              <GameStats/>
+            </div>
+          </div>
+          <Chat/>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

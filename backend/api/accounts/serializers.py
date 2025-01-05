@@ -15,18 +15,22 @@ class UserSerializer(serializers.ModelSerializer):
         serializers.ValidationError: If any of user fields are not valid.
     """
     stats = serializers.SerializerMethodField() # game/level stats
+    usable_password = serializers.SerializerMethodField() # usable password for settings
     avatar = serializers.ImageField(default='default.jpeg', allow_null=True)
 
     class Meta:
         model = User
         fields = [
                 'id', 'username', 'email', 'password', 'avatar', 'active_chat', 'open_chat',
-                'register_complete', 'from_remote_api', 'email_verified', 'is_online', 'tmp_email', 'stats'
+                'register_complete', 'from_remote_api', 'email_verified', 'is_online', 'tmp_email',
+                'stats', 'usable_password'
             ]
         extra_kwargs = {
             'password': {'write_only': True},
         }
 
+    def get_usable_password(self, obj):
+        return obj.has_usable_password()
 
     def get_stats(self, obj):
         userStats, _ = UserStats.objects.get_or_create(user=obj)
@@ -117,10 +121,11 @@ class UserSerializer(serializers.ModelSerializer):
         self.fields['password'].required = False
         self.fields['tmp_email'].required = False
 
+        print("=====> ",validated_data)
         password = validated_data.pop('password', None)
         if password:
             instance.password = make_password(password)
-        if not 'avatar' in validated_data:
+        if 'username' in validated_data and not 'avatar' in validated_data:
             validated_data['avatar'] = 'default.jpeg'
 
         for attr, value in validated_data.items():

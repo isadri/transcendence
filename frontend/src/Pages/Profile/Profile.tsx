@@ -3,23 +3,38 @@ import ProfileUser from "./Components/ProfileUser"
 import Friends from "./Components/friends"
 import GameHestory from "./Components/GameHestory"
 import LastAchievement from "./Components/LastAchievement"
+import StatsProfile from "./Components/StatsProfile"
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import './Profile.css'
 import { useEffect, useState } from "react"
 import { getendpoint, getUser } from "../../context/getContextData"
-import friends from "./Components/friends"
 
 interface FriendsData{
   id : number,
   username: string,
   avatar : string
+  is_online: boolean,
+  is_blocked: boolean,
+  stats: stats
 }
+
+interface stats{
+  level: number,
+  badge: number,
+  win: number,
+  lose: number,
+  nbr_games: number
+}
+
 interface UserData {
-  id: number;
-  username: string;
-  email: string;
-  avatar: string;
+  id: number,
+  username: string,
+  email: string,
+  avatar: string,
+  is_online: boolean,
+  is_blocked: boolean,
+  stats: stats
 }
 
 
@@ -50,7 +65,7 @@ const Profile = () => {
     else{
       if (user)
       {
-        setUserData(user)
+        setUserData({...user, is_blocked: false});
         axios.get(getendpoint("http", "/api/friends/friends"),{withCredentials:true})
           .then((response) =>{
             setFriendsLst(response.data.friends)
@@ -62,19 +77,24 @@ const Profile = () => {
     }
   }, [username]);
 
+  if (!userData)
+      return
   return (
     <div className="Home-Profile">
       <div className="Home-firstRaw">
-        {userData && <ProfileUser userData={userData}/>}
+        <ProfileUser userData={userData} username={username || ''}/>
         <BadgesList/>
       </div>
       <div className="Home-SecondRaw">
         <div className="Home-AddRaw">
-          <GameHestory/>
-          <LastAchievement/>
+          <GameHestory userData={userData} username={username || ''}/>
+          <LastAchievement userData={userData} username={username || ''}/>
         </div>
-        <LastAchievement/>
-        {FriendsLst && <Friends FriendsLst={FriendsLst} username={username || ''}/>}
+        <LastAchievement userData={userData} username={username || ''}/>
+        <div className="stats-friends">
+          <StatsProfile userData={userData}/>
+          {FriendsLst && <Friends FriendsLst={FriendsLst} username={username || ''}/>}
+        </div>
       </div>
     </div>
   )

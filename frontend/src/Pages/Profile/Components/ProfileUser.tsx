@@ -8,12 +8,13 @@ import axios from 'axios'
 
 interface Prop{
   userData: UserData
+  username: string
 }
 
-function ProfileUser({userData}:Prop) {
+function ProfileUser({userData, username}:Prop) {
   const user = getUser()
   const [frindshipStatus, setfrindshipStatus] = useState("")
-  const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
+  const [isOnline, setIsOnline] = useState<boolean>(userData?.is_online || false)
 
   useEffect(() => {
     axios.get(getendpoint('http', `/api/friends/friendship-status/${userData.id}`), {withCredentials:true})
@@ -24,8 +25,8 @@ function ProfileUser({userData}:Prop) {
     .catch(() => {
       console.log("Error fetching user data:");
     });
-    setIsOnline(user?.is_online || false)
-  }, [userData.id, user?.is_online]);
+    setIsOnline(userData?.is_online || false)
+  }, [userData.id, userData?.is_online]);
   const handleSendRequests = async (id: number) => {
 			axios.post(getendpoint("http", "/api/friends/send/"),
 				{ receiver: id },
@@ -55,6 +56,11 @@ function ProfileUser({userData}:Prop) {
 			console.error("Error decline friend request:", error);
 		}
 	};
+
+  if (!userData)
+    return
+  const fractionalPart = userData.stats.level - Math.floor(userData.stats.level);
+  const percentage = fractionalPart * 100;
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>
@@ -111,11 +117,26 @@ function ProfileUser({userData}:Prop) {
           <div className='Home-UserName'>
             <span>{userData?.username}</span>
             {
-              isOnline && 
+             user?.username === userData.username && isOnline && 
               <div className='Home-online'>
                 <div className='Home-Circle'></div>
                 <span>Online</span>
               </div>
+            }
+            {
+             user?.username !== userData.username && userData.is_online && 
+              <div className='Home-online'>
+                <div className='Home-Circle'></div>
+                <span>Online</span>
+              </div>
+            }
+            {
+             user?.username !== userData.username && !userData.is_online &&
+              <div className='Home-online'>
+                <div className='Home-Circle' style={{backgroundColor: "rgb(119 118 118)", borderColor:"rgb(119 118 118)"}}></div>
+                <span style={{color: "rgb(119 118 118)"}}>Offline</span>
+              </div>
+
             }
           </div>
         </div>
@@ -124,8 +145,8 @@ function ProfileUser({userData}:Prop) {
             <span>15000px / 12000xp </span>
           </div>
           <div className="Home-level-bar">
-            <div className="Home-level-bar-fill"></div>
-            <span className="Home-level-text">level 7 - 70%</span>
+            <div className="Home-level-bar-fill" style={{ width: `${percentage}%` }}></div>
+            <span className="Home-level-text">Level {Math.floor(userData.stats.level)} - {Math.round(percentage)}%</span>
           </div>
         </div>
       </div>

@@ -240,7 +240,8 @@ def get_user(data: dict) -> User | None:
                 remote_id=remote_id,
                 username=username,
                 email=email,
-                register_complete=register_state
+                register_complete=register_state,
+                email_verified=True
             )
             set_avatar(user, data.get('avatar_url'))
             user.set_unusable_password()
@@ -355,9 +356,6 @@ def check_otp_key(otp: str, user: User) -> bool:
 
 def add_level_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    # user_achievements =  UserAchievement.objects.filter(user=user)
-    # userStats.level = 100
-    # userStats.save()
     if userStats.level == 1:
         if not UserAchievement.objects.filter(key='level_1').exists():
             UserAchievement.objects.create(
@@ -407,14 +405,11 @@ def add_level_achievement_to_user(user: User):
 
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    # user_achievements =  UserAchievement.objects.filter(user=user)
-    # userStats.win = 50
-    # userStats.save()
     if userStats.win == 1:
         if not UserAchievement.objects.filter(key='win_1').exists():
             UserAchievement.objects.create(
                 user=user,
-                type="game",
+                type="win",
                 key="win_1",
                 name="First Victory",
                 text="Win your first match.",
@@ -423,7 +418,7 @@ def add_game_achievement_to_user(user: User):
         if not UserAchievement.objects.filter(key='win_20').exists():
             UserAchievement.objects.create(
                 user=user,
-                type="game",
+                type="win",
                 key="win_20",
                 name="Champion",
                 text="Win 20 matches overall.",
@@ -432,7 +427,7 @@ def add_game_achievement_to_user(user: User):
         if not UserAchievement.objects.filter(key='win_50').exists():
             UserAchievement.objects.create(
                 user=user,
-                type="game",
+                type="win",
                 key="win_50",
                 name="Legend",
                 text="Win 50 matches overall.",
@@ -441,9 +436,6 @@ def add_game_achievement_to_user(user: User):
 
 def add_milestone_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    user_achievements =  UserAchievement.objects.filter(user=user)
-    userStats.nbr_games = 50
-    userStats.save()
     if userStats.nbr_games == 10:
         if not UserAchievement.objects.filter(key='match_10').exists():
             UserAchievement.objects.create(

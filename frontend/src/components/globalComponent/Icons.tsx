@@ -4,14 +4,14 @@ import { getContext, getNotifications, getUnreadCount, getUser, getendpoint } fr
 import { Link, useLocation } from "react-router-dom"
 
 function Icons() {
-  const context = getContext()
+  const contxt = getContext()
   const notificationList = getNotifications()
   const UnreadNotif = getUnreadCount()
   const [isIconClicked, setIsIconClicked] = useState(false)
   const user = getUser()
   const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
   // const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
-  const [unread, setUnread] = useState(0)
+  // const [unread, setUnread] = useState(0)
   const closeMenuRef = useRef<HTMLDivElement>(null);
   const buttonMenuRef = useRef<HTMLDivElement>(null);
   const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"
@@ -23,13 +23,14 @@ function Icons() {
         { withCredentials: true })
       .then((response) => {
         console.log("res => ", response.data);
-        context?.setNotifications(response.data)
+        contxt?.setNotifications(response.data)
       })
       .catch(error => {
         console.log(error.response)
       })
   }
-
+  // console.log("unread notif => ", UnreadNotif)
+  // console.log("unread  => ", contxt?.unreadCount)
   const handelClearAll = () => {
     axios
       .delete(getendpoint("http", "/api/notifications/clear-all-notif/"), {
@@ -37,13 +38,25 @@ function Icons() {
       })
       .then(() => {
         console.log("hello")
-        context?.setUnreadCount(0);
-        context?.setNotifications([])
-        console.log("sosi => ",notificationList)
+        contxt?.setUnreadCount(0);
+        contxt?.setNotifications([])
+        // console.log("sosi => ",notificationList)
       })
       .catch((error) => {
         console.log("Error clearing notifications:", error.response);
       });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date).replace(",", "");
   };
 
   useEffect(() => {
@@ -52,19 +65,19 @@ function Icons() {
         { withCredentials: true })
         .then(() => {
           console.log("clicked")
-          context?.setUnreadCount(0);
+          contxt?.setUnreadCount(0);
         })
     }
     axios.get(getendpoint("http", "/api/notifications/unreadNotifications/"),
       { withCredentials: true })
       .then(response => {
-        context?.setUnreadCount(response.data.unread_notifications_count)
+        contxt?.setUnreadCount(response.data.unread_notifications_count)
       })
       .catch(error => {
         console.log(error.response)
       })
     setIsOnline(user?.is_online || false)
-  }, [isIconClicked, user?.is_online, context?.unreadCount]);
+  }, [isIconClicked, user?.is_online, contxt?.unreadCount]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -84,13 +97,12 @@ function Icons() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  // console.log("notf", notificationList)
   return (
     <>
       <span  className="Home-Icons">
         <div ref={closeMenuRef} className="notifIcon">
           {
-            UnreadNotif !== 0 && !context?.unreadCount &&
+            UnreadNotif !== 0 &&
             <div className="unreadNotif">
               <span>{UnreadNotif}</span>
             </div>
@@ -111,7 +123,7 @@ function Icons() {
                           <div key={notif.id} className="notification-ele">
                             <div className="Notif-info">
                               <span>{notif.type}</span>
-                              <span>{notif.created_at}</span>
+                              <span>{formatDateTime(notif.created_at)}</span>
                             </div>
                             <div className="Notif-msg">
                               <span>{notif.message}</span>
@@ -135,8 +147,8 @@ function Icons() {
         </div>
         {!hideProfileImg &&
           <div className="userInfoGlobal">
-            <div className="Home-ProfImg imgGlobal">
-              <Link to="/profile" className="img">
+            <div className=" imgGlobal">
+              <Link to="/profile" className="imag">
                 {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
               </Link>
               {

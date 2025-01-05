@@ -32,7 +32,7 @@
 
 .Home-Mode:hover{
     border: 1px solid var(--primary);
-    transform: translateY(-10px);
+    transform: scale(1.01);
     box-shadow: 0 10px 20px var(--primary);
 }
 

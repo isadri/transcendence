@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import GameRank from './GameRank';
 import LastGame from './LastGame';
 import '../styles/GameHighlights.css';
@@ -10,13 +10,11 @@ function GameHighlights() {
       <h2>Games Highlights</h2>
       <div className="highlights-types">
         <div className="choisesParent">
-          {/* Game Rank Tab */}
           <div className="first-tab" onClick={() => setType('GameRank')}>
             <div className={`gameRank-btn ${type === 'GameRank' ? 'rank-tab' : ''}`} >
-              <span>Game Rank</span>
+              <span>Leaderboard</span>
             </div>
           </div>
-          {/* Last Games Tab */}
           <div className="second-tab" onClick={() => setType('LastGame')}>
             <div className={`LastGame-btn ${type === 'LastGame' ? 'lastgame-tab' : ''}`} >
               <span>Last Games</span>
