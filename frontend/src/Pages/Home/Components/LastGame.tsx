@@ -6,7 +6,7 @@ import { getContext, getUser, getendpoint } from "../../../context/getContextDat
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-interface GameDataType{
+interface GameDataType {
   id: number,
   player1: FriendDataType,
   player2: FriendDataType,
@@ -23,8 +23,8 @@ function LastGame() {
   const authUser = getUser()
   const contxt = getContext()
   const navigate = useNavigate();
-  const usersProfile = (user : FriendDataType) => {
-    if (user.is_blocked){
+  const usersProfile = (user: FriendDataType) => {
+    if (user.is_blocked) {
       contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
       contxt?.setDisplayed(3)
     }
@@ -44,13 +44,13 @@ function LastGame() {
     }).format(date).replace(",", "");
   };
 
-  const GetUserGames = () =>{
+  const GetUserGames = () => {
     axios.get(getendpoint("http", `/api/game/History/${authUser?.username}`))
-      .then((response) =>{
+      .then((response) => {
         setUserGames(response.data)
         console.log(response.data)
       })
-      .catch ((error) =>{
+      .catch((error) => {
         console.error("Error fetching friends list:", error);
       })
   }
@@ -59,14 +59,14 @@ function LastGame() {
   }, [])
   return (
     <div className="Home-LastGame">
-        {
-          userGames.length !== 0 &&
-          userGames.map((usergame) => (
-            <div key={usergame.id} className="lastgames-ele">
+      {
+        userGames.length !== 0 &&
+        userGames.map((usergame) => (
+          <div key={usergame.id} className="lastgames-ele">
             <div className="Home-RowEle">
               <div className="Home-Row1">
-                <img src={getendpoint("http",usergame.player2.avatar)} alt="" 
-                onClick={() => usersProfile(usergame.player2)}/>
+                <img src={getendpoint("http", usergame.player2.avatar)} alt=""
+                  onClick={() => usersProfile(usergame.player2)} />
                 <span onClick={() => usersProfile(usergame.player2)}>{usergame.player2.username}</span>
               </div>
               <div>
@@ -83,27 +83,27 @@ function LastGame() {
               </div>
               <div className="Home-Row3">
                 <span onClick={() => usersProfile(usergame.player1)}>{usergame.player1.username}</span>
-                <img src={getendpoint("http", usergame.player1.avatar)} alt="" 
-                onClick={() => usersProfile(usergame.player1)}/>
+                <img src={getendpoint("http", usergame.player1.avatar)} alt=""
+                  onClick={() => usersProfile(usergame.player1)} />
               </div>
             </div>
-            </div>
-          ))
-        }
-        {
-           userGames.length === 0 &&
-           <div className='Nostats game-NoStats'>
-               <div className='stats-icon'>
-               <i className="fa-solid fa-table-tennis-paddle-ball"></i>
-               </div>
-               <div className='NoStats-msg'>
-                 <h3>No games played yet</h3>
-                 <span>You haven't played any games so far.
-                  Once you start playing,
-                  your game history will appear here!</span>
-               </div>
-             </div>
-        }
+          </div>
+        ))
+      }
+      {
+        userGames.length === 0 &&
+        <div className='Nostats game-NoStats'>
+          <div className='stats-icon'>
+            <i className="fa-solid fa-table-tennis-paddle-ball"></i>
+          </div>
+          <div className='NoStats-msg'>
+            <h3>No games played yet</h3>
+            <span>You haven't played any games so far.
+              Once you start playing,
+              your game history will appear here!</span>
+          </div>
+        </div>
+      }
     </div>
   );
 }

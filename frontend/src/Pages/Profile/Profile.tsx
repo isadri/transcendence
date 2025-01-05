@@ -83,7 +83,7 @@ const Profile = () => {
     <div className="Home-Profile">
       <div className="Home-firstRaw">
         <ProfileUser userData={userData} username={username || ''}/>
-        <BadgesList/>
+        <BadgesList userData={userData}/>
       </div>
       <div className="Home-SecondRaw">
         <div className="Home-AddRaw">
