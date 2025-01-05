@@ -2,6 +2,9 @@ from django.conf import settings
 from django.db import models
 from django.db import transaction
 from django.db.models.deletion import SET_NULL
+from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async
+
 
 from . import friends
 
@@ -154,6 +157,63 @@ class FriendRequest(models.Model):
         except Exception as e:
             raise ValueError(f"Failed to block the friend request: {str(e)}")
 
+    async def block_async(self, blocker_user):
+        """
+        Asynchronous version of the block method.
+        Block a user from the friend request.
+        The blocker_user must be either the sender or the receiver.
+        """
+        # Access the sender and receiver asynchronously using sync_to_async
+        sender = await database_sync_to_async(lambda: self.sender)()
+        receiver = await database_sync_to_async(lambda: self.receiver)()
+
+        if blocker_user not in [sender, receiver]:
+            raise ValueError("The blocker_user must be either the sender or the receiver.")
+
+        # Determine the user being blocked
+        user_to_block = receiver if blocker_user == sender else sender
+
+        try:
+            # Perform the database operations within a sync-to-async block
+            # Wrap all database operations within a synchronous transaction block
+            await database_sync_to_async(self._block_async_db_operations)(blocker_user, user_to_block)()
+
+            # Update the FriendRequest status and record who blocked whom
+            self.status = 'blocked'
+            self.blocked_by = blocker_user
+            await database_sync_to_async(self.save)()
+
+        except Exception as e:
+            raise ValueError(f"Failed to block the friend request: {str(e)}")
+
+
+    @sync_to_async
+    def _block_async_db_operations(self, blocker_user, user_to_block):
+        """
+        Perform the database operations within a synchronous context (to use transaction.atomic)
+        """
+        with transaction.atomic():
+            # Check if they are friends
+            is_friend = FriendList.objects.filter(
+                user=blocker_user, friends=user_to_block
+            ).exists()
+
+            if is_friend:
+                # Remove the friend from both user lists
+                blocker_user_friend_list, _ = FriendList.objects.get_or_create(user=blocker_user)
+                blocker_user_friend_list.remove_friend(user_to_block)
+
+                user_to_block_friend_list, _ = FriendList.objects.get_or_create(user=user_to_block)
+                user_to_block_friend_list.remove_friend(blocker_user)
+
+                # Mark both users as not friends
+                blocker_user.is_friend = False
+                user_to_block.is_friend = False
+
+                # Save both users' changes
+                blocker_user.save()
+                user_to_block.save()
+
     def remove(self, remover_user):
         """
         remove a user from the friend request.
@@ -204,6 +264,39 @@ class FriendRequest(models.Model):
         
                 # Update the FriendRequest status and clear block information
                 # self.status = 'accepted'
+                self.blocked_by = None
+                self.save()
+        
+                # Save the changes to both users
+                unblocker_user.save()
+                blocked_user.save()
+        
+        except Exception as e:
+            raise ValueError(f"Failed to unblock the friend request: {str(e)}")
+
+    @sync_to_async
+    def unblock_async(self, unblocker_user):
+        """
+        Unblock a user from the friend request.
+        The unblocker_user must be either the sender or receiver.
+        """
+        try:
+            if unblocker_user not in [self.sender, self.receiver]:
+                raise ValueError("The unblocker_user must be either the sender or the receiver.")
+        
+            # Determine the blocked user
+            blocked_user = self.receiver if unblocker_user == self.sender else self.sender
+        
+            with transaction.atomic():
+                # Ensure the request is blocked and unblocker_user is the one who blocked
+                if self.status != 'blocked' or self.blocked_by != unblocker_user:
+                    raise ValueError("This friend request is not blocked.")
+        
+                # Reset block status for both users
+                unblocker_user.is_blocked = False
+                blocked_user.is_blocked = False
+        
+                # Update the FriendRequest status and clear block information
                 self.blocked_by = None
                 self.save()
         

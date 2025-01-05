@@ -10,6 +10,7 @@ interface GameFormProps {
 export interface TournamentPlayer {
 	alias: string,
 	score: number,
+	avatar?:string,
 }
 
 export interface TournamentGameData {

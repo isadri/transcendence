@@ -1,0 +1,66 @@
+.RemoteGame {
+  width: 80%;
+  display: flex;
+  margin-top: 20px;
+  border-radius: 18px;
+  padding:10px 15px;
+  /* background-color: var(--fade); */
+  background-color: #665c5e;
+  justify-content: space-between;
+  max-width: 400px;
+}
+
+.RemoteGame div {
+  display: flex;
+  align-items: center;
+  
+}
+
+.RemoteGame div img {
+  width: 50px;
+  border-radius:  50%;
+}
+.RemoteGameRight
+{
+  display: flex;
+  justify-content: end;
+}
+.RemoteGameLeft {
+  /* margin-left: 5%;
+  margin-right: 5%; */
+  /* display: flex;
+  justify-content: end; */
+}
+
+.RemoteGameRight img{
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.RemoteGameLeft img{
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.RemoteGameResult {
+  justify-content: center;
+}
+
+.RemoteGameResult img {
+  padding-right: 10px;
+}
+
+@media screen and (max-width: 530px) {
+  .RemoteGame {
+    width: 85dvw;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 800px){
+  .RemoteGame {
+    width: 85dvw;
+    display: flex;
+    flex-direction: column;
+  }
+}

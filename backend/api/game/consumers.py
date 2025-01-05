@@ -4,9 +4,11 @@ import random
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import Game
+from .models import Game, Tournament
+from ..game.serializers import TournamentSerializer
 from ..accounts.serializers import UserSerializer
 from channels.layers import get_channel_layer
+from django.db.models import Q
 channel_layer = get_channel_layer()
 
 TABLE_Z = 8.65640
@@ -28,19 +30,22 @@ X_PADDLE_BALL_R = PADDLE_Z/2 + BALL_R
 
 class RandomGame(AsyncWebsocketConsumer):
 
-  qeuee = {}
+  queue = {}
   connected = {}
   async def connect(self):
     self.user = self.scope["user"]
     self.room_name = None
-    await self.accept()
+    if self.user and self.user.is_authenticated:
+      await self.accept()
 
 
 
   async def disconnect(self, code):
+    if not self.user or not self.user.is_authenticated:
+      return
     username = self.user.username
-    if username in self.qeuee:
-      del self.qeuee[username]
+    if username in self.queue:
+      del self.queue[username]
     if username in self.connected:
       del self.connected[username]
     if self.room_name:
@@ -56,10 +61,10 @@ class RandomGame(AsyncWebsocketConsumer):
   async def receive(self, text_data):
     data = json.loads(text_data)
     if data["event"] == "READY":
-      self.qeuee[self.user.username] = self
-      print(self.qeuee)
-      if len(self.qeuee) >= 2:
-        iterator = iter(iter(self.qeuee.items()))
+      self.queue[self.user.username] = self
+      print(self.queue)
+      if len(self.queue) >= 2:
+        iterator = iter(iter(self.queue.items()))
         key1 , player1 = next(iterator)
         key2 , player2 = next(iterator)
         self.gameMatch = await self.create_game(player1.user, player2.user)
@@ -101,17 +106,17 @@ class RandomGame(AsyncWebsocketConsumer):
 
   async def handshaking(self, key1, key2):
     """
-      notify the players that a game inisialied
+      notify the players that a game initialed
     """
     await self.handshake(key1, key2)
     await self.handshake(key2, key1)
 
   def setAsConnected(self, key1, key2):
-    # delet them from the qeuee and set them as connected
-    self.connected[key1] = self.qeuee[key1]
-    del self.qeuee[key1]
-    self.connected[key2] = self.qeuee[key2]
-    del self.qeuee[key2]
+    # delete them from the queue and set them as connected
+    self.connected[key1] = self.queue[key1]
+    del self.queue[key1]
+    self.connected[key2] = self.queue[key2]
+    del self.queue[key2]
 
   async def player_disconnected(self, event):
     """
@@ -247,8 +252,7 @@ class GameData:
     paddle_RIGHT  = px + PADDLE_X/2
     paddle_TOP    = pz - PADDLE_Z/2
     paddle_BOTTOM = pz + PADDLE_Z/2
-    if ball_LEFT <= paddle_RIGHT and ball_TOP <= paddle_BOTTOM :
-      if ball_RIGHT >= paddle_LEFT and ball_BOTTOM >= paddle_TOP:
+    if ball_LEFT <= paddle_RIGHT and ball_TOP <= paddle_BOTTOM and ball_RIGHT >= paddle_LEFT and ball_BOTTOM >= paddle_TOP:
         horizontal_overlap = min(ball_RIGHT - paddle_LEFT, paddle_RIGHT - ball_LEFT)
         vertical_overlap = min(ball_BOTTOM - paddle_TOP, paddle_BOTTOM - ball_TOP)
         if vertical_overlap < horizontal_overlap:
@@ -303,6 +307,9 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def connect(self):
     self.game: Game = None
     self.user = self.scope["user"]
+
+    if not self.user or not self.user.is_authenticated:
+      return
     self.username = self.user.username
     self.game_id = self.scope["url_route"]["kwargs"]['game_id']
     self.room_name = f"game_{self.game_id}"
@@ -331,7 +338,6 @@ class RemoteGame(AsyncWebsocketConsumer):
       if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
         self.task = asyncio.create_task(self.game_loop())
         self.task.add_done_callback(self.handle_task)
-        print(self.task)
     else:
       await self.abort("You are not allowed to join this game")
 
@@ -366,6 +372,8 @@ class RemoteGame(AsyncWebsocketConsumer):
       self.game_data.setPlayerPos(data["username"], data["direction"])
 
   async def disconnect(self, code):
+    if not self.user or not self.user.is_authenticated:
+      return
     await self.channel_layer.group_send(self.room_name, {
       'type': 'player_disconnected',
     })
@@ -396,11 +404,15 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def game_start(self, event):
     await self.send(json.dumps({
       "event": "START",
-      "enemy": UserSerializer(self.enemy).data,
+      "enemy": await self.serializing_data(self.enemy),
       event['player1']:'player1',
       event['player2']:'player2',
     }))
 
+  @database_sync_to_async
+  def serializing_data(self, users):
+    serializer = UserSerializer(users)
+    return serializer.data
 
   @database_sync_to_async
   def setGameAsStarted(self):
@@ -462,3 +474,180 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   def getUsername(self):
     return self.username
+
+
+
+
+class RandomTournament(AsyncWebsocketConsumer):
+  queue = {}
+  connected = {}
+  async def connect(self):
+    self.user = self.scope["user"]
+    self.room_name = None
+    if self.user.is_authenticated:
+      await self.accept()
+    else:
+      await self.close()
+
+  async def receive(self, text_data):
+    data = json.loads(text_data)
+    if data["event"] == "READY":
+      self.queue[self.user.username] = self
+      if len(self.queue) >= 4:
+        iterator = iter(iter(self.queue.items()))
+        key1 , player1 = next(iterator)
+        key2 , player2 = next(iterator)
+        key3 , player3 = next(iterator)
+        key4 , player4 = next(iterator)
+        
+        self.tournament = await self.create_tournament(
+          player1.user,
+          player2.user,
+          player3.user,
+          player4.user
+        )
+        print(self.tournament)
+        self.room_name = f"room_{self.tournament.id}"
+        await player1.channel_layer.group_add(self.room_name, player1.channel_name)
+        await player2.channel_layer.group_add(self.room_name, player2.channel_name)
+        await player3.channel_layer.group_add(self.room_name, player3.channel_name)
+        await player4.channel_layer.group_add(self.room_name, player4.channel_name)
+        await self.handshaking(
+          player1.user,
+          player2.user,
+          player3.user,
+          player4.user
+        )
+
+
+
+  async def handshaking(self, p1, p2, p3, p4):
+    await self.channel_layer.group_send(self.room_name, {
+      'type': 'handshake',
+      'tournament': self.tournament.id,
+      'players': await self.serializing_data([p1, p2, p3, p4]),
+    })
+
+
+  async def handshake(self, event):
+    enemies = []
+    players = event.get('players')
+    for player in players:
+      username = player.get('username')
+      if username != self.user.username:
+        enemies.append({
+          'avatar': player['avatar'],
+          'username': player['username'],
+          'stats': player['stats'],
+        })
+    await self.send(text_data=json.dumps({
+      'event': 'HANDSHAKING',
+      'enemies': enemies,
+      'tournament': event['tournament']
+    }))
+
+  # @database_sync_to_async
+  # def setup_half_games(self, tournament: Tournament):
+  #   tournament.get_half1()
+
+  @database_sync_to_async
+  def serializing_data(self, users):
+    serializer = UserSerializer(users, many=True)
+    return serializer.data
+  
+  @database_sync_to_async
+  def create_tournament(self, p1, p2, p3, p4):
+    tournament = Tournament.objects.create(
+      player1=p1,
+      player2=p2,
+      player3=p3,
+      player4=p4,
+    )
+    tournament.init()
+    return tournament
+
+  async def disconnect(self, code):
+    username = self.user.username
+    if username in self.queue:
+      del self.queue[username]
+    if username in self.connected:
+      del self.connected[username]
+    if self.room_name:
+      await self.channel_layer.group_send(
+        self.room_name,
+        {
+            "type": "player_disconnected",
+            "username": self.user.username,
+        },
+      )
+
+
+
+
+class RemoteTournament(AsyncWebsocketConsumer):
+
+  tournaments = {}
+  async def connect(self):
+    self.user = self.scope.get('user')
+    self.tournament_id = self.scope["url_route"]["kwargs"]['id']
+    self.room_name = f'tournament_{self.tournament_id}'
+    if self.user or self.user.is_authenticated:
+      self.username = self.user.username
+      await self.accept()
+      await self.channel_layer.group_add(self.room_name, self.channel_name)
+      self.tournaments.setdefault(self.tournament_id, {})
+      self.tournaments[self.tournament_id].setdefault('players', {})
+      self.tournaments[self.tournament_id]['players'].setdefault(self.username, self)
+      self.tournament = await self.get_tournament(self.tournament_id)
+      if not self.tournament:
+        self.abort('This tournament does not exist!')
+      if not self.is_part_of_tournament(self.tournament):
+        self.abort('You dont have the permissions to access this tournament!')
+      self.task = await asyncio.create_task(self.update_data())
+    else:
+      self.abort('Something went wrong!')
+
+  async def update_data(self):
+    self.data = None
+    while True:
+      self.tournament = await self.get_tournament(self.tournament_id)
+      await self.check_for_final()
+      data = await self.serializing_data(self.tournament)
+      if self.data != data:
+        self.data = data
+        await self.send(text_data=json.dumps(self.data))
+        if self.data['final'] and self.data['final']['winner']:
+          break
+      await asyncio.sleep(1)
+
+  @database_sync_to_async
+  def check_for_final(self):
+    return self.tournament.get_or_create_final()
+
+  @database_sync_to_async
+  def serializing_data(self, tournament: Tournament):
+    serializer = TournamentSerializer(tournament, context={'user' : self.user})
+    return serializer.data
+
+  async def abort(self, message):
+    await self.send(text_data=json.dumps({
+      'event': 'ABORT',
+      'message': message
+    }))
+    self.close()
+
+  @database_sync_to_async
+  def is_part_of_tournament(self, tournament: Tournament):
+    return self.user in [tournament.player1, tournament.player2, tournament.player3, tournament.player4]
+
+  @database_sync_to_async
+  def get_tournament(self, pk:int) -> Tournament:
+    try:
+      tournament = Tournament.objects.get(pk=pk)
+      return tournament
+    except:
+      return None
+
+  async def disconnect(self, code):
+    pass
+

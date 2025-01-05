@@ -9,8 +9,8 @@
 .Home-GameHestory h2{
     color: var(--primary);
     font-family: var(--sans);
-    margin: 5% 0 2% 5%;
-    font-size: 2vh;
+    margin: 5% 0 6% 5%;
+    /* font-size: 2vh; */
 }
 
 
@@ -19,13 +19,24 @@
 }
 
 .Home-GameHestory .Home-tableRows{
-    font-family: var(--sans);
+    /* font-family: var(--sans);
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     max-height: 86%;
     height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none;  
+    scrollbar-width: none; */
+    /* margin-top: 10px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+    max-height: 86%;
+    font-family: var(--sans);
     overflow-y: auto;
     -ms-overflow-style: none;  
     scrollbar-width: none;
@@ -36,17 +47,27 @@
 }
 
 .Home-GameHestory .Home-tableRows .Home-rows{
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
     align-items: center;
-    width: 80%;
+    width: 90%;
     text-align: center;
     background-color: var(--fade);
     border-radius: 20px;
-    height: 55vh;
-    padding: 3% 5% 3% 5%;
+    height: 55px;
     font-size: 14px;
-    margin-bottom: 4%;
+    margin-bottom: 4%; */
+    /* padding: 3% 5% 3% 5%; */
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    align-items: center;
+    justify-content: space-evenly;
+    /* justify-content: flex-start; */
+    background-color: var(--fade);
+    border-radius: 10px;
+    margin-bottom: 6%;
+    font-size: 14px;
+    padding: 3% 4% 3% 4%;
 }
 
 .Home-GameHestory .Home-tableRows .Home-rows .Home-xp{
@@ -58,15 +79,19 @@
     margin-left: 6%;
 }
 
+.Home-GameHestory .Home-tableRows .Home-rows .time-game{
+    display: flex;
+    align-items: start;
+}
 .Home-GameHestory .Home-tableRows .Home-rows *:nth-child(3){
     color: #DE8F9E;
 }
 
-.Home-GameHestory .Home-tableRows .Home-win *:not(:nth-child(3)){
+.Home-GameHestory .Home-tableRows .Home-win .fa-arrow-up-long{
     color: #00ff00;
 }
 
-.Home-GameHestory .Home-tableRows .Home-Lose *:not(:nth-child(3)){
+.Home-GameHestory .Home-tableRows .Home-win .fa-arrow-down-long{
     color: #ff0000;
 }
 
@@ -74,11 +99,14 @@
     .Home-GameHestory{
         height: 750px;
     }
+    .stats-iconFriend i {
+        font-size: 110px !important;
+    }
 }
 
 @media only screen and (max-width: 800px){
     .Home-GameHestory{
-        height: 35vh;
+        height: 370px;
         width: 98%;
     }
 }

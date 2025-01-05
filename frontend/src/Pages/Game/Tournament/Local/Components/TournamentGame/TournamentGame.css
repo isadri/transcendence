@@ -1,8 +1,7 @@
 .TournamentGame {
-  /* width: 80%; */
+  width: 80%;
   display: flex;
   margin-top: 20px;
-  padding: 10px 0;
   border-radius: 18px;
   padding:10px 15px;
   /* background-color: var(--fade); */

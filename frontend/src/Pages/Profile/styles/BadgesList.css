@@ -23,7 +23,6 @@
 .Home-BadgesList .titleBadge h2{
     color: var(--primary);
     font-family: var(--sans);
-    /* font-size: 2vh; */
 }
 
 
@@ -54,9 +53,9 @@
     width: 0;
 }
 
-.Home-badgesList .Home-child{
+/* .Home-badgesList .Home-child{ */
     /* cursor: pointer; */
-}
+/* } */
 
 .Home-badgesList{
     display: flex;
@@ -70,14 +69,23 @@
 }
 
 
-.Home-badgesList .Home-child:not(:nth-child(2)){
+/* .Home-badgesList .Home-child:not(:nth-child(2)){
     opacity: 0.3;
-}
+} */
 
-.Home-badgesList .Home-child:nth-child(1){
+.Home-badgesList .Home-child:nth-child(1),
+.Home-badgesList .Home-child:nth-child(7){
     filter:brightness(0);
     opacity: 0.1;
 }
+.showBadge{
+    opacity: 1;
+}
+
+.hadeBadge{
+    opacity: 0.27;
+}
+
 .Home-badgesScroll button{
     background-color: #ff000000;
     border: none;
@@ -103,9 +111,9 @@
         width: 100%;
         margin-top: 2%;
     }
-    .Home-BadgesList h2{
+    /* .Home-BadgesList h2{ */
         /* margin-top: 3%; */
-    }
+    /* } */
 }
 
 @media only screen and (max-width: 800px){

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now, timedelta
+from ..notifications.consumers import NotificationConsumer
 
 User = get_user_model()
 
@@ -131,3 +132,62 @@ class UserStats(models.Model):
 
   def __str__(self):
         return f"{self.user.username} - Level {self.level}"
+      
+
+
+class Tournament(models.Model):
+  player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_1")
+  player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_2")
+  player3 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_3")
+  player4 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_4")
+  half1 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="half1", null=True)
+  half2 = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="half2", null=True)
+  final = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="final", null=True)
+  winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tournament_winner", null=True)
+
+  def init(self):
+    self.get_or_create_half1()
+    self.get_or_create_half2()
+
+  def send_notification(self, player):
+    message = f"Are you ready to play!"
+    NotificationConsumer.send_friend_request_notification(player.id, message, "Tournament")
+
+  def get_or_create_half1(self):
+    if not self.half1:
+      self.half1 = Game.objects.create(player1=self.player1, player2=self.player2)
+      self.save(update_fields=['half1'])
+      self.send_notification(self.player1)
+      self.send_notification(self.player2)
+    return (self.half1)
+
+  def get_or_create_half2(self):
+    if not self.half2:
+      self.half2 = Game.objects.create(player1=self.player3, player2=self.player4)
+      self.send_notification(self.player3)
+      self.send_notification(self.player4)
+      self.save(update_fields=['half2'])
+    return (self.half2)
+
+  def get_or_create_final(self):
+    if not self.final and self.ready_to_start_final():
+      self.final = Game.objects.create(player1=self.half1.winner, player2=self.half2.winner)
+      self.send_notification(self.half1.winner)
+      self.send_notification(self.half2.winner)
+      self.save(update_fields=['final'])
+    self.has_a_winner()
+    return (self.final)
+
+  def ready_to_start_final(self):
+    if not self.half1 or not self.half2:
+      return False
+    return self.half1.progress == 'E' and  self.half2.progress == 'E'
+
+  def has_a_winner(self):
+    if self.final and self.final.progress == 'E':
+      if self.winner:
+        return True
+      self.winner = self.final.winner
+      self.save(update_fields=['winner'])
+      return True
+    return False

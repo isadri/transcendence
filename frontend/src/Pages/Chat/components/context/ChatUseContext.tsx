@@ -21,6 +21,7 @@ export interface GetFriends {
 	id: number;
 	username: string;
 	avatar: string;
+	is_online: boolean;
 }
 
 export interface GetChats {

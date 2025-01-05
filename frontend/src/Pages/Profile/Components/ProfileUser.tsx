@@ -8,12 +8,13 @@ import axios from 'axios'
 
 interface Prop{
   userData: UserData
+  username: string
 }
 
-function ProfileUser({userData}:Prop) {
+function ProfileUser({userData, username}:Prop) {
   const user = getUser()
   const [frindshipStatus, setfrindshipStatus] = useState("")
-  const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
+  const [isOnline, setIsOnline] = useState<boolean>(userData?.is_online || false)
 
   useEffect(() => {
     axios.get(getendpoint('http', `/api/friends/friendship-status/${userData.id}`), {withCredentials:true})
@@ -24,8 +25,8 @@ function ProfileUser({userData}:Prop) {
     .catch(() => {
       console.log("Error fetching user data:");
     });
-    setIsOnline(user?.is_online || false)
-  }, [userData.id, user?.is_online]);
+    setIsOnline(userData?.is_online || false)
+  }, [userData.id, userData?.is_online]);
   const handleSendRequests = async (id: number) => {
 			axios.post(getendpoint("http", "/api/friends/send/"),
 				{ receiver: id },
@@ -56,9 +57,9 @@ function ProfileUser({userData}:Prop) {
 		}
 	};
 
-  if (!user)
+  if (!userData)
     return
-  const fractionalPart = user.stats.level - Math.floor(user.stats.level);
+  const fractionalPart = userData.stats.level - Math.floor(userData.stats.level);
   const percentage = fractionalPart * 100;
   return (
     <div className='Home-ProfileUser'>
@@ -145,7 +146,7 @@ function ProfileUser({userData}:Prop) {
           </div>
           <div className="Home-level-bar">
             <div className="Home-level-bar-fill" style={{ width: `${percentage}%` }}></div>
-            <span className="Home-level-text">Level {Math.floor(user.stats.level)} - {Math.round(percentage)}%</span>
+            <span className="Home-level-text">Level {Math.floor(userData.stats.level)} - {Math.round(percentage)}%</span>
           </div>
         </div>
       </div>

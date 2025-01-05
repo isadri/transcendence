@@ -17,6 +17,10 @@
 	gap: 30px;
 }
 
+.profileInfo .friend-online {
+	color: #00ff00;
+}
+
 .profileInfo .image {
 	height: 40px;
 	width: 40px;
@@ -84,6 +88,12 @@
 	cursor: pointer;
 }
 
+@media (max-height: 800px) {
+	.profileInfo .image {
+		height: 30px;
+		width: 30px;
+	}
+}
 @media (max-width: 478px) {
 	.top {
 		height: 4.5dvh;

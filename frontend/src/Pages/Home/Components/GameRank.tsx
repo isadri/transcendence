@@ -55,6 +55,7 @@ function GameRank() {
   useEffect(() => {
     GetUsersRank()
   }, [])
+  
   return (
     <div className="Home-GameRank">
         {
@@ -70,7 +71,7 @@ function GameRank() {
                     onClick={() => usersProfile(user)} />
                   </div>
                   <div className="rank-username">
-                    <span>{user.username}</span>
+                    <span onClick={() => usersProfile(user)} >{user.username}</span>
                   </div>
                 </div>
                 <div className="Home-row2">

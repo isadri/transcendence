@@ -9,7 +9,6 @@ import axios from 'axios'
 import './Profile.css'
 import { useEffect, useState } from "react"
 import { getendpoint, getUser } from "../../context/getContextData"
-// import friends from "./Components/friends"
 
 interface FriendsData{
   id : number,
@@ -78,20 +77,22 @@ const Profile = () => {
     }
   }, [username]);
 
+  if (!userData)
+      return
   return (
     <div className="Home-Profile">
       <div className="Home-firstRaw">
-        {userData && <ProfileUser userData={userData}/>}
-        <BadgesList/>
+        <ProfileUser userData={userData} username={username || ''}/>
+        <BadgesList userData={userData}/>
       </div>
       <div className="Home-SecondRaw">
         <div className="Home-AddRaw">
-          <GameHestory/>
-          <LastAchievement/>
+          <GameHestory userData={userData} username={username || ''}/>
+          <LastAchievement userData={userData} username={username || ''}/>
         </div>
-        <LastAchievement/>
+        <LastAchievement userData={userData} username={username || ''}/>
         <div className="stats-friends">
-          <StatsProfile/>
+          <StatsProfile userData={userData}/>
           {FriendsLst && <Friends FriendsLst={FriendsLst} username={username || ''}/>}
         </div>
       </div>
