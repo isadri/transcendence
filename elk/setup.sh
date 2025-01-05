@@ -90,12 +90,14 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
 	"name": "<app-snap-{now/d}>",
 	"repository": "logs-backups-repo",
 	"config": {
-		"indices": "logs-nginx*,logs-django*"
+		"indices": "logs-nginx.access-dev,logs-django-dev",
+        "ignore_available": true,
+        "include_global_state": false
 	},
 	"retention": {
-		"expire_after": "20m",
+		"expire_after": "10m",
 		"min_count": 1,
-		"max_count": 1
+		"max_count": 10
 	}
 }'
 
@@ -149,7 +151,7 @@ curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_index_template/nginx-logs-template -H "Content-Type: application/json" \
 -d '
 {
-	"index_patterns": [ "logs-nginx*" ],
+	"index_patterns": [ "logs-nginx.access-dev" ],
 	"data_stream": { },
     "composed_of": [ "logs-settings-component" ],
 	"priority": 500
@@ -169,7 +171,7 @@ https://es01:9200/_index_template/django-logs-template -H "Content-Type: applica
             }
         }
     },
-	"index_patterns": [ "logs-django*" ],
+	"index_patterns": [ "logs-django-dev" ],
 	"data_stream": { },
     "composed_of": [ "logs-settings-component" ],
 	"priority": 500
