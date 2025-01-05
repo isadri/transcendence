@@ -129,7 +129,7 @@
 }
 
 
-.Home-noFriends{
+/* .Home-noFriends{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -155,15 +155,21 @@
 }
 
 .Home-noFriends .Content .title{
-    font-size: 1.2vw;
-}
+    /* font-size: 1.2vw; */
+/* } */
 
-.Home-noFriends .Content .paragraph{
-    font-size: 1vw;
-    font-weight: 100;
-}
+/* .Home-noFriends .Content .paragraph{ */
+    /* font-size: 1vw; */
+    /* font-weight: 100; */
+/* } */
 
 @media only screen and (max-width: 1150px){
+
+    .stats-iconFriend i {
+        font-size: 110px !important;
+    }
+
+
     .Home-FriensList .Home-friend .Home-friendProfile{
         justify-content: end;
     }
@@ -182,7 +188,7 @@
 
 @media only screen and (max-width: 800px){
     .Home-friendsProfile{
-        width: 12%;
+        width: 100%;
     }
     .Home-friendsProfile  .Home-title *:nth-child(1) {
         color: var(--primary);

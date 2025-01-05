@@ -74,7 +74,6 @@ class HomeView(APIView):
             serializer =  UserSerializer(request.user)
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
-     
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 

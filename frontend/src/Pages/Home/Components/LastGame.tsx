@@ -1,5 +1,4 @@
 import "../styles/LastGame.css";
-import photo from "../images/profile.svg";
 import Group from "../images/Group.svg";
 import { useEffect, useState } from "react";
 import { FriendDataType } from "../../../context/context";
@@ -19,7 +18,6 @@ interface GameDataType{
 
 
 function LastGame() {
-  // const [there_is_rank, setThere_is_rank] = useState(false) 
   const [userGames, setUserGames] = useState<GameDataType[]>([])
 
   const authUser = getUser()
@@ -33,6 +31,18 @@ function LastGame() {
     else
       navigate(`/profile/${user.username}`)
   }
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date).replace(",", "");
+  };
 
   const GetUserGames = () =>{
     axios.get(getendpoint("http", `/api/game/History/${authUser?.username}`))
@@ -52,7 +62,8 @@ function LastGame() {
         {
           userGames.length !== 0 &&
           userGames.map((usergame) => (
-            <div key={usergame.id} className="Home-RowEle">
+            <div key={usergame.id} className="lastgames-ele">
+            <div className="Home-RowEle">
               <div className="Home-Row1">
                 <img src={getendpoint("http",usergame.player2.avatar)} alt="" 
                 onClick={() => usersProfile(usergame.player2)}/>
@@ -60,9 +71,14 @@ function LastGame() {
               </div>
               <div>
                 <div className="Home-Row2">
-                  <span className="Home-score1">{usergame.p2_score}</span>
-                  <img src={Group} alt="" />
-                  <span className="Home-score2">{usergame.p1_score}</span>
+                  <div className="Home-Row2-content">
+                    <span className="Home-score1">{usergame.p2_score}</span>
+                    <img src={Group} alt="" />
+                    <span className="Home-score2">{usergame.p1_score}</span>
+                  </div>
+                  <div className="date">
+                    <span>{formatDateTime(usergame.start_at)}</span>
+                  </div>
                 </div>
               </div>
               <div className="Home-Row3">
@@ -70,6 +86,7 @@ function LastGame() {
                 <img src={getendpoint("http", usergame.player1.avatar)} alt="" 
                 onClick={() => usersProfile(usergame.player1)}/>
               </div>
+            </div>
             </div>
           ))
         }

@@ -91,9 +91,10 @@
 }
 
 .Nostats .NoStats-msg {
+    font-family: var(--mono);
     display: flex;
-    align-items: center;
     flex-direction: column;
+    width: 90%;
     margin-top: 45px;
 }
 

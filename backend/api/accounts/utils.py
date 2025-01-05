@@ -409,7 +409,7 @@ def add_game_achievement_to_user(user: User):
         if not UserAchievement.objects.filter(key='win_1').exists():
             UserAchievement.objects.create(
                 user=user,
-                type="game",
+                type="win",
                 key="win_1",
                 name="First Victory",
                 text="Win your first match.",
@@ -418,7 +418,7 @@ def add_game_achievement_to_user(user: User):
         if not UserAchievement.objects.filter(key='win_20').exists():
             UserAchievement.objects.create(
                 user=user,
-                type="game",
+                type="win",
                 key="win_20",
                 name="Champion",
                 text="Win 20 matches overall.",
@@ -427,7 +427,7 @@ def add_game_achievement_to_user(user: User):
         if not UserAchievement.objects.filter(key='win_50').exists():
             UserAchievement.objects.create(
                 user=user,
-                type="game",
+                type="win",
                 key="win_50",
                 name="Legend",
                 text="Win 50 matches overall.",

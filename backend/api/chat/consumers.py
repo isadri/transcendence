@@ -339,7 +339,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_id=receiver_id,
                 message=msg,
                 type= "Message",
-                created_at=timezone.now(),
                 is_read=False
             )
             await NotificationConsumer.send_friend_request_notificationChat(receiver_id, msg, notification.id, notification.type, notification.created_at)

@@ -59,6 +59,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             is_read=False
         )
         channel_layer = get_channel_layer()
+        created_at_iso = notification.created_at.isoformat()
         async_to_sync(channel_layer.group_send)(
             f"user_{user_id}_notifications",
             {
@@ -67,7 +68,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "message": message,
                     "type" : type,
                     "notification_id": notification.id,
-                    "notification_created_at": notification.created_at.strftime('%b %d, %Y at %H:%M')
+                    "notification_created_at": created_at_iso,
                 },
             }
         )
@@ -77,6 +78,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         Sends a friend request notification to the user.
         """
         print("type ===> ", type)
+        created_at_iso = created_at.isoformat()
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
             f"user_{user_id}_notifications",
@@ -86,7 +88,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "message": message,
                     "type" : type,
                     "notification_id": notification_id,
-                    "notification_created_at": created_at.strftime('%b %d, %Y at %H:%M')
+                    "notification_created_at": created_at_iso,
                 },
             }
         )
