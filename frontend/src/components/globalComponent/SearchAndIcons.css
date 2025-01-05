@@ -338,6 +338,25 @@
     height: 9px;
     z-index: 1;
 }
+
+.hover-on-user {
+    font-family: var(--sans);
+    /* background-color: #B7B7B7; */
+    background-color: #727D73;
+    padding: 10px;
+    position: absolute;
+    top: 41px;
+    left: -2px;
+    z-index: 100;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    border-radius: 5px;
+}
+
+.userInfoGlobal:hover .hover-on-user {
+    opacity: 1;
+}
+
 /********************** Responsive *******************************/
 @media only screen and (max-width: 478px){
     .Home-Icons{

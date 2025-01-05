@@ -151,6 +151,7 @@ function Icons() {
               <Link to="/profile" className="imag">
                 {user && <img src={getendpoint("http", user?.avatar)} alt="" />}
               </Link>
+              <div className="hover-on-user" >{user?.username}</div>
               {
                 isOnline &&
                 <div className="onlineCircle globalCircle"></div>
