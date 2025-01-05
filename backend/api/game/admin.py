@@ -5,4 +5,5 @@ from .models import *
 admin.site.register(Game)
 admin.site.register(UserStats)
 admin.site.register(GameInvite)
+admin.site.register(Tournament)
 admin.site.register(UserAchievement)

@@ -17,7 +17,8 @@ urlpatterns = [
   path('invites/received/', views.ListReceivedGameInvites.as_view(), name='list-received-game-invites'),
   path('userAchievement/<str:username>', views.UserAchievementView.as_view(), name='user-achievement'),
   path('userStats/', views.ListUserStats.as_view(), name='list-user-stats'),
-
   path('games/', views.GamesList.as_view(), name='list-user-games'),
+  path('tournaments/', views.TournamentList.as_view(), name='list-user-tournaments'),
+  path('tournament/<int:pk>', views.GetTournament.as_view(), name='get-tournament'),
   path('History/<str:username>', views.GameHistory.as_view(), name='list-user-games'),
 ]

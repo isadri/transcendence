@@ -57,7 +57,7 @@ function GameModes() {
                     })}
                 </div>
             </div>
-            <div style={(mode === 3 || mode === 1  ? {display:"flex"} : {display: "none"})}>
+            <div style={(mode !== -1 ? {display:"flex"} : {display: "none"})}>
                 <GameModePopUp mode={mode} setter={setMode}/>
             </div>
         </>

@@ -2,8 +2,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 
-from .models import GameInvite, Game, UserAchievement, UserStats
-from .serializers import GameInviteSerializer, UserAchievementSerializer, UserStatsSerializer,GameSerializer
+from .models import *
+from .serializers import *
 
 from rest_framework import status,viewsets
 from rest_framework.views import APIView
@@ -27,11 +27,11 @@ class CreateGameInvite(APIView):
     print(request.data.get('invited'))
     invited_id = request.data.get('invited')
     if inviter and invited_id:
-      serialzer = GameInviteSerializer(data=request.data, context={'request' : request})
-      if serialzer.is_valid():
-        serialzer.save()
-        return Response(serialzer.data, status=status.HTTP_201_CREATED)
-    errors = serialzer.errors['invited'][0]
+      serializer = GameInviteSerializer(data=request.data, context={'request' : request})
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    errors = serializer.errors['invited'][0]
     return Response({'error':errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -55,7 +55,7 @@ class CancelGameInvite(APIView):
       invite.delete()
       return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except:
-       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
 
 
 class GetGameInvite(APIView):
@@ -90,7 +90,7 @@ class AcceptGameInvite(APIView):
       invite = GameInvite.objects.get(pk=pk)
       try:
         invite.accept(user)
-        return Response({'detials' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+        return Response({'details' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
       except ValueError as e:
         return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
     except GameInvite.DoesNotExist:
@@ -116,7 +116,7 @@ class DeclineGameInvite(APIView):
       invite = GameInvite.objects.get(pk=pk)
       try:
         invite.decline(user)
-        return Response({'detials' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+        return Response({'details' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
       except ValueError as e:
         return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
     except GameInvite.DoesNotExist:
@@ -129,8 +129,8 @@ class ListGameInvites(APIView):
 
   def get(self, request):
     user = request.user
-    inivtes = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
-    serializer = GameInviteSerializer(inivtes, many=True)
+    invites = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
+    serializer = GameInviteSerializer(invites, many=True)
     return Response(serializer.data)
 
 
@@ -140,8 +140,8 @@ class ListSentGameInvites(APIView):
 
   def get(self, request):
     user = request.user
-    inivtes = GameInvite.objects.filter(inviter=user)
-    serializer = GameInviteSerializer(inivtes, many=True)
+    invites = GameInvite.objects.filter(inviter=user)
+    serializer = GameInviteSerializer(invites, many=True)
     return Response(serializer.data)
 
 
@@ -151,12 +151,13 @@ class ListReceivedGameInvites(APIView):
 
   def get(self, request):
     user = request.user
-    inivtes = GameInvite.objects.filter(invited=user)
-    serializer = GameInviteSerializer(inivtes, many=True)
+    invites = GameInvite.objects.filter(invited=user)
+    serializer = GameInviteSerializer(invites, many=True)
     return Response(serializer.data)
 
-# add by yasmine
+
 class UserAchievementView(APIView):
+
   permission_classes = [IsAuthenticated]
 
   def get(self, request, username):
@@ -182,9 +183,34 @@ class GamesList(APIView):
 
   def get(self, request):
     user = request.user
-    userStats = Game.objects.filter(Q(player1=user) | Q(player2=user))
-    serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
+
+    games = Game.objects.filter(Q(player1=user) | Q(player2=user))
+    serializer = GameSerializer(games, many=True, context={'user' : request.user})
     return Response(serializer.data)
+
+class TournamentList(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    user = request.user
+    tournaments = Tournament.objects.filter(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user))
+    serializer = TournamentSerializer(tournaments, many=True, context={'user' : request.user})
+    return Response(serializer.data)
+
+
+
+class GetTournament(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request, pk):
+    user = request.user
+    try:
+      tournament = Tournament.objects.get(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user), pk=pk)
+      serializer = TournamentSerializer(tournament, context={'user' : request.user})
+      return Response(serializer.data)
+    except:
+      return Response({"error" : "No tournament exist or you dont have access."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class GameHistory(APIView):
   permission_classes = [IsAuthenticated]
@@ -197,3 +223,4 @@ class GameHistory(APIView):
       return Response(serializer.data)
     except User.DoesNotExist:
       return Response({'error': 'No such user'}, status=status.HTTP_400_BAD_REQUEST)
+
