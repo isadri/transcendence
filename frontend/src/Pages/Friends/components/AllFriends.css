@@ -85,6 +85,11 @@
 	width: 40px;
 	border-radius: 50%;
 	object-fit: cover;
+	cursor: pointer;
+}
+
+.friendProfile .friendName {
+	cursor: pointer;
 }
 
 .imageNameFriend .onlineCircle-friend{ /* add by naima for online user*/

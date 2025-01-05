@@ -6,7 +6,6 @@ import {
 	getUser,
 	getendpoint,
 } from "../../../context/getContextData.tsx";
-import { useNavigate } from "react-router-dom";
 
 interface BlockedFriend {
 	id: number;
@@ -15,7 +14,6 @@ interface BlockedFriend {
 }
 
 const BlockedFriends = () => {
-	const navigate = useNavigate();
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
 	const user = getUser();
 	const authContext = getContext();
@@ -97,8 +95,7 @@ const BlockedFriends = () => {
 							<img
 								src={getendpoint("http", friend.avatar)}
 								alt=""
-								className="friendImage"
-								onClick={() => navigate(`/profile/${friend.username}`)}
+								className="blockedImage"
 							/>
 							<span>{friend.username}</span>
 						</div>
