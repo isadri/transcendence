@@ -22,11 +22,10 @@ function RemoteGame({ game, players }: RemoteGameProps) {
           <div className="RemoteGameResult">waiting</div>
       }
       <div className="RemoteGameResult">
-        <div> {game ? game.p1_score : ""} </div>
+        <div> {game && game.progress != 'P' ? game.p1_score : ""} </div>
         <img src={vs} />
-        <div> {game ? game.p2_score : ""} </div>
+        <div> {game && game.progress != 'P' ? game.p2_score : ""} </div>
       </div>
-
       {
         game ?
           <div className="RemoteGameRight">
