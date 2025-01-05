@@ -14,7 +14,7 @@ import {
 // import Alert from "../../components/Alert/Alert";
 
 const Chat = () => {
-	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
+	const isSmallDevice = useMediaQuery("only screen and (max-width : 700px)");
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
