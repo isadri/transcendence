@@ -71,9 +71,9 @@ until curl -s -X POST --cacert config/certs/ca/ca.crt \
 https://es01:9200/_security/user/kibana_system/_password \
 -d "{\"password\": \"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done
 
-echo "Creating snapshot repository"
+echo "Creating snapshot repository (type: filesystem)"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
-https://es01:9200/_snapshot/app-snapshots-repo -H "Content-Type: application/json" -d '
+https://es01:9200/_snapshot/logs-backups-repo -H "Content-Type: application/json" -d '
 {
 	"type": "fs",
 	"settings": {
@@ -88,7 +88,7 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
 {
 	"schedule": "0 */15 * * * ?",
 	"name": "<app-snap-{now/d}>",
-	"repository": "app-snapshots-repo",
+	"repository": "logs-backups-repo",
 	"config": {
 		"indices": "logs-nginx*,logs-django*"
 	},
