@@ -23,29 +23,30 @@ function App() {
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
   axios.defaults.withCredentials = true
+  const getUserInfo = () => {
+    axios.get(getendpoint('http', "/"))
+        .then((response: any) => {
+          console.log("response.data => ", { ...response.data, is_online: true })
+  
+          setUser({ ...response.data, is_online: true })
+          setIsLogged(true)
+        })
+        .catch(() => {
+          setIsLogged(false)
+          setUser(null)
+        })
+  }
   useEffect(() => {
 
     // if (isLogged) {
       console.log("hello, ", user)
       const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
       ws.onopen = () => {
-        axios.get(getendpoint('http', "/"))
-        .then((response: any) => {
-          console.log("response.data => ", { ...response.data, is_online: true })
-          console.log(1, user);
-  
-          setUser({ ...response.data, is_online: true })
-          console.log(2, user);
-          setIsLogged(true)
-          console.log(3, user);
-        })
-        .catch(() => {
-          setIsLogged(false)
-          setUser(null)
-        })
+        getUserInfo()
         console.log("WebSocket connected ", user?.is_online);
       }
       ws.onclose = () => {
+        getUserInfo()
         console.log("WebSocket disconnected ", user?.is_online);
       }
 

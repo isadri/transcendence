@@ -33,11 +33,14 @@ class RandomGame(AsyncWebsocketConsumer):
   async def connect(self):
     self.user = self.scope["user"]
     self.room_name = None
-    await self.accept()
+    if self.user and self.user.is_authenticated:
+      await self.accept()
 
 
 
   async def disconnect(self, code):
+    if not self.user or not self.user.is_authenticated:
+      return
     username = self.user.username
     if username in self.qeuee:
       del self.qeuee[username]
@@ -303,6 +306,9 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def connect(self):
     self.game: Game = None
     self.user = self.scope["user"]
+
+    if not self.user or not self.user.is_authenticated:
+      return
     self.username = self.user.username
     self.game_id = self.scope["url_route"]["kwargs"]['game_id']
     self.room_name = f"game_{self.game_id}"
@@ -366,6 +372,8 @@ class RemoteGame(AsyncWebsocketConsumer):
       self.game_data.setPlayerPos(data["username"], data["direction"])
 
   async def disconnect(self, code):
+    if not self.user or not self.user.is_authenticated:
+      return
     await self.channel_layer.group_send(self.room_name, {
       'type': 'player_disconnected',
     })

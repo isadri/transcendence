@@ -8,8 +8,8 @@ from django.utils import timezone
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
-        self.room_group_name = f"user_{self.user.id}_notifications"
-        if self.user.is_authenticated:
+        if self.user and self.user.is_authenticated:
+            self.room_group_name = f"user_{self.user.id}_notifications"
             self.user.is_online = True
             await self.user.asave(update_fields=['is_online'])
             await self.channel_layer.group_add(
@@ -22,6 +22,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave the notification group
+        if not self.user:
+            return
         self.user.is_online = False
         await self.user.asave(update_fields=['is_online'])
         await self.channel_layer.group_discard(
