@@ -156,13 +156,17 @@ class ListReceivedGameInvites(APIView):
     return Response(serializer.data)
 
 # add by yasmine
-class UserAchievement(APIView):
+class UserAchievementView(APIView):
   permission_classes = [IsAuthenticated]
 
-  def get(self, request):
-    userAch = UserAchievement.objects.filter(user=request.user)
-    serializer = UserAchievementSerializer(userAch)
-    return Response(serializer.data)
+  def get(self, request, username):
+    try:
+      user = get_object_or_404(User, username=username)
+      userAch = UserAchievement.objects.filter(user=user)
+      serializer = UserAchievementSerializer(userAch, many=True)
+      return Response(serializer.data)
+    except User.DoesNotExist:
+      return Response({'error': 'No such user'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ListUserStats(APIView):
   permission_classes = [IsAuthenticated]
@@ -171,7 +175,6 @@ class ListUserStats(APIView):
     userStats = UserStats.objects.filter(user=request.user)
     serializer = UserStatsSerializer(userStats)
     return Response(serializer.data)
-
 
 
 class GamesList(APIView):

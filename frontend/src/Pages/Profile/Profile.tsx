@@ -82,17 +82,17 @@ const Profile = () => {
   return (
     <div className="Home-Profile">
       <div className="Home-firstRaw">
-        <ProfileUser userData={userData}/>
+        <ProfileUser userData={userData} username={username || ''}/>
         <BadgesList/>
       </div>
       <div className="Home-SecondRaw">
         <div className="Home-AddRaw">
-          <GameHestory userData={userData}/>
-          <LastAchievement/>
+          <GameHestory userData={userData} username={username || ''}/>
+          <LastAchievement userData={userData} username={username || ''}/>
         </div>
-        <LastAchievement/>
+        <LastAchievement userData={userData} username={username || ''}/>
         <div className="stats-friends">
-          <StatsProfile/>
+          <StatsProfile userData={userData}/>
           {FriendsLst && <Friends FriendsLst={FriendsLst} username={username || ''}/>}
         </div>
       </div>
