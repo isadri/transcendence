@@ -102,6 +102,8 @@ class TournamentSerializer(serializers.ModelSerializer):
 
   def get_winner(self, obj):
     from ..friends.serializers import FriendSerializer
+    if not obj.winner:
+      return None
     return FriendSerializer(obj.winner, context=self.context).data
 
   def get_player1(self, obj):

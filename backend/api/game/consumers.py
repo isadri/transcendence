@@ -332,7 +332,6 @@ class RemoteGame(AsyncWebsocketConsumer):
       if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
         self.task = asyncio.create_task(self.game_loop())
         self.task.add_done_callback(self.handle_task)
-        print(self.task)
     else:
       await self.abort("You are not allowed to join this game")
 

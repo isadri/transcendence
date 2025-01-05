@@ -174,6 +174,7 @@ class Tournament(models.Model):
       self.send_notification(self.half1.winner)
       self.send_notification(self.half2.winner)
       self.save(update_fields=['final'])
+    self.has_a_winner()
     return (self.final)
 
   def ready_to_start_final(self):
@@ -183,7 +184,9 @@ class Tournament(models.Model):
 
   def has_a_winner(self):
     if self.final and self.final.progress == 'E':
+      if self.winner:
+        return True
       self.winner = self.final.winner
-      self.save(update_fields=['tournament_winner'])
+      self.save(update_fields=['winner'])
       return True
     return False
