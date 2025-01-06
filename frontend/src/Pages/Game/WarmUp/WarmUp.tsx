@@ -155,21 +155,27 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
     const onReady = () => {
       if (ready)
         return
-      console.log('isRandom', isRandom)
-      const newSocket = new WebSocket(isRandom ? 
-            getendpoint('ws', '/ws/game/random/'):
-            getendpoint('ws', '/ws/game/friend/')
-          )
-      setSocket(newSocket)
+      console.log('isRandom', isRandom, enemyUser)
+      const newSocket = new WebSocket(isRandom ?
+        getendpoint('ws', '/ws/game/random') :
+        getendpoint('ws', '/ws/game/friend')
+      )
+      console.log("here");
+
       newSocket.onopen = () => {
-        
+        if (!enemyUser)return
+        console.log("friend sock open", enemyUser);
+
         newSocket.send(JSON.stringify({
           "event": "READY",
+          "userId": enemyUser?.id
         }))
       }
       newSocket.onclose = () => {
+        console.log("friend sock closed", enemyUser);
         setEnemyUser(null)
       }
+      setSocket(newSocket)
       setReady(true)
     }
     const onAbort = () => {
