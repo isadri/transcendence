@@ -5,7 +5,7 @@ import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
 
 
@@ -204,10 +204,15 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
 }
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
+  const {inviteID} = useParams()
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<EnemyUserData | null>(null)
+  if (inviteID){
+    console.log(inviteID);
+    
+  }
   return (
     <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>
       <div className="GameWarmUp">

@@ -94,6 +94,10 @@ const mainRoutingTable = [
             element: <WarmUp />,
           },
           {
+            path: "friends/:inviteID",
+            element: <WarmUp />,
+          },
+          {
             path: "random",
             element: <WarmUp isRandom/>,
           },

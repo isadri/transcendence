@@ -134,7 +134,7 @@ function Icons() {
                                       <span>{data.message}</span>
                                     </div>
                                     <div className="Notif-msg">
-                                      <Link to={`/game/remote/friend/${data.inviteId}`}> Accept</Link>
+                                      <Link to={`/game/warmup/friends/${data.inviteId}`}>Accept</Link>
                                     </div>
                                   </>
                                   :
