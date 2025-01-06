@@ -165,7 +165,9 @@ const ChatList = ({
 								onClick={() => navigate(`/profile/${friend.username}`)}
 							/>
 							<div className="text">
-								<span>{friend.username}</span>
+								<span onClick={() => navigate(`/profile/${friend.username}`)}>
+									{friend.username}
+								</span>
 							</div>
 						</div>
 				  ))

@@ -133,7 +133,12 @@ const CancelFriends = () => {
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}
 									/>
-									<span>{friend.username}</span>
+									<span
+										className="friendName"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									>
+										{friend.username}
+									</span>
 								</div>
 								<button
 									className="cancelFriend"

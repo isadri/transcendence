@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface ChatTopProps {
 	selectedFriend: GetChats;
@@ -16,6 +17,7 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 	const { block, blockUnblockFriend, activeChat, setActiveChatId } =
 		useChatContext();
 	const user = getUser();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -81,9 +83,16 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 						setActiveChatId(null);
 					}}
 				></i>
-				<img src={friend_user.avatar} alt="profile" className="image" />
+				<img
+					src={friend_user.avatar}
+					alt="profile"
+					className="image"
+					onClick={() => navigate(`/profile/${friend_user.username}`)}
+				/>
 				<div className="textInfo">
-					<span>{friend_user.username}</span>
+					<span onClick={() => navigate(`/profile/${friend_user.username}`)}>
+						{friend_user.username}
+					</span>
 					{friend_user.is_online ? (
 						<p className="friend-online">Online</p>
 					) : (
@@ -102,7 +111,9 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 				{openMenu && (
 					<ul className="menu-list">
 						<li>Invite to play</li>
-						<li>Friend profile</li>
+						<li onClick={() => navigate(`/profile/${friend_user.username}`)}>
+							Friend profile
+						</li>
 						<li
 							onClick={() => {
 								setSelectedFriend(null);
