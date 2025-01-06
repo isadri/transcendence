@@ -27,7 +27,7 @@ class CreateGameInvite(APIView):
     print(request.data.get('invited'))
     invited_id = request.data.get('invited')
     if inviter and invited_id:
-      serializer = GameInviteSerializer(data=request.data, context={'request' : request})
+      serializer = GameInviteSerializer(data=request.data, context={'user' : request.user})
       if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -43,7 +43,7 @@ class CancelGameInvite(APIView):
     user = request.user
     try:
       invite = GameInvite.objects.get(pk=pk ,inviter=user)
-      serializer = GameInviteSerializer(invite)
+      serializer = GameInviteSerializer(invite, context={'user' : request.user})
       return Response(serializer.data, status=status.HTTP_200_OK)
     except GameInvite.DoesNotExist:
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
@@ -65,7 +65,7 @@ class GetGameInvite(APIView):
     user = request.user
     try:
       invite = GameInvite.objects.get(Q(pk=pk) & (Q(inviter=user) | Q(invited=user)))
-      serializer = GameInviteSerializer(invite)
+      serializer = GameInviteSerializer(invite, context={'user' : request.user})
       return Response(serializer.data, status=status.HTTP_200_OK)
     except GameInvite.DoesNotExist:
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
@@ -79,7 +79,7 @@ class AcceptGameInvite(APIView):
     user = request.user
     try:
       invite = GameInvite.objects.get(pk=pk ,invited=user)
-      serializer = GameInviteSerializer(invite)
+      serializer = GameInviteSerializer(invite, context={'user' : request.user})
       return Response(serializer.data, status=status.HTTP_200_OK)
     except GameInvite.DoesNotExist:
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
@@ -105,7 +105,7 @@ class DeclineGameInvite(APIView):
     user = request.user
     try:
       invite = GameInvite.objects.get(pk=pk ,invited=user)
-      serializer = GameInviteSerializer(invite)
+      serializer = GameInviteSerializer(invite, context={'user' : request.user})
       return Response(serializer.data, status=status.HTTP_200_OK)
     except GameInvite.DoesNotExist:
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
@@ -130,7 +130,7 @@ class ListGameInvites(APIView):
   def get(self, request):
     user = request.user
     invites = GameInvite.objects.filter(Q(inviter = user) | Q(invited = user))
-    serializer = GameInviteSerializer(invites, many=True)
+    serializer = GameInviteSerializer(invites, many=True, context={'user' : request.user})
     return Response(serializer.data)
 
 
@@ -141,7 +141,7 @@ class ListSentGameInvites(APIView):
   def get(self, request):
     user = request.user
     invites = GameInvite.objects.filter(inviter=user)
-    serializer = GameInviteSerializer(invites, many=True)
+    serializer = GameInviteSerializer(invites, many=True, context={'user' : request.user})
     return Response(serializer.data)
 
 
@@ -152,7 +152,7 @@ class ListReceivedGameInvites(APIView):
   def get(self, request):
     user = request.user
     invites = GameInvite.objects.filter(invited=user)
-    serializer = GameInviteSerializer(invites, many=True)
+    serializer = GameInviteSerializer(invites, many=True, context={'user' : request.user})
     return Response(serializer.data)
 
 

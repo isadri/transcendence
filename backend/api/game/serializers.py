@@ -34,14 +34,29 @@ class GameSerializer(serializers.ModelSerializer):
 class GameInviteSerializer(serializers.ModelSerializer):
   sent_at = serializers.DateTimeField(read_only=True)
   status = serializers.ChoiceField(choices=GameInvite.INVITE_STATE, default='P',read_only=True)
-  inviter = serializers.PrimaryKeyRelatedField(read_only=True)
-  invited = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+  # inviter = serializers.PrimaryKeyRelatedField(read_only=True)
+  # invited = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+  inviter = serializers.SerializerMethodField()
+  invited = serializers.SerializerMethodField()
 
   class Meta:
     model = GameInvite
     fields = '__all__'
     read_only_fields = ['invited', 'inviter', 'sent_at'] 
 
+  def get_inviter(self, obj):
+    from ..friends.serializers import FriendSerializer
+    if not 'user' in self.context:
+      return obj.inviter
+    serializer = FriendSerializer(obj.inviter, context=self.context)
+    return serializer.data
+
+  def get_invited(self, obj):
+    from ..friends.serializers import FriendSerializer
+    if not 'user' in self.context:
+      return obj.invited
+    serializer = FriendSerializer(obj.invited, context=self.context)
+    return serializer.data
 
   def validate_invited(self, invited):
     inviter = self.context['request'].user

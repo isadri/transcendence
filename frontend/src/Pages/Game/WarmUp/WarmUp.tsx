@@ -7,11 +7,20 @@ import { getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
+import { FriendDataType } from "../../../context/context";
 
 
 interface PlayerCardData {
   enemy?: boolean,
   isRandom?: boolean,
+}
+
+interface GameInviteData{
+  sent_at: string,
+  status : string,
+  inviter: FriendDataType,
+  invited: FriendDataType,
+
 }
 
 interface EnemyUserData {
