@@ -661,26 +661,3 @@ class FriendGame(AsyncWebsocketConsumer):
     if not self.user or self.user.is_authenticated:
       self.close()
     await self.accept()
-
-  async def receive(self, text_data):
-    data = json.loads(text_data)
-    event = data.get('event')
-    userId = data.get('userId')
-    if not event or not userId:
-      return
-    self.invite = await self.invite_friend(userId)
-    print(self.invite)
-
-  @database_sync_to_async
-  def invite_friend(self, userId):
-    try:
-      friend = User.objects.get(pk=userId)
-      invite = GameInvite.objects.create(invited=friend, inviter=self.user)
-      message = {
-        'inviteId': invite.id,
-        'message' : f"{self.user} sent you game invite!"
-      }
-      NotificationConsumer.send_friend_request_notification(friend.id, json.dumps(message), "Game invite")
-      return invite
-    except Exception as e:
-      return None

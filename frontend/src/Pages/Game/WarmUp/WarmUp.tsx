@@ -8,33 +8,28 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
 import { FriendDataType } from "../../../context/context";
+import axios from "axios";
 
 
 interface PlayerCardData {
   enemy?: boolean,
   isRandom?: boolean,
+  inviteId?: string | undefined,
 }
 
-interface GameInviteData{
+interface GameInviteData {
+  id: number,
   sent_at: string,
-  status : string,
+  status: string,
   inviter: FriendDataType,
   invited: FriendDataType,
-
-}
-
-interface EnemyUserData {
-  username: string,
-  avatar: string,
-  email: string,
-  id: number,
 }
 
 interface ContextData {
   socket: WebSocket | null,
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>,
-  enemyUser: EnemyUserData | null
-  setEnemyUser: React.Dispatch<React.SetStateAction<EnemyUserData | null>>,
+  enemyUser: FriendDataType | null
+  setEnemyUser: React.Dispatch<React.SetStateAction<FriendDataType | null>>,
   setDisplayFriends: React.Dispatch<React.SetStateAction<boolean>>,
   ready: boolean,
   setReady: React.Dispatch<React.SetStateAction<boolean>>
@@ -155,8 +150,9 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 //   )
 // }
 
-const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
+const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
+  const navigator = useNavigate()
   if (context) {
     let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser } = context
     console.log(enemyUser);
@@ -164,28 +160,39 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
     const onReady = () => {
       if (ready)
         return
-      console.log('isRandom', isRandom, enemyUser)
-      const newSocket = new WebSocket(isRandom ?
-        getendpoint('ws', '/ws/game/random') :
-        getendpoint('ws', '/ws/game/friend')
-      )
-      console.log("here");
-
-      newSocket.onopen = () => {
-        if (!enemyUser)return
-        console.log("friend sock open", enemyUser);
-
-        newSocket.send(JSON.stringify({
-          "event": "READY",
-          "userId": enemyUser?.id
-        }))
+      let newSocket = null;
+      if (isRandom) {
+        newSocket = new WebSocket(getendpoint('ws', '/ws/game/random'))
       }
-      newSocket.onclose = () => {
-        console.log("friend sock closed", enemyUser);
-        setEnemyUser(null)
+      else {
+        if (inviteId)
+          newSocket = new WebSocket(getendpoint('ws', `/ws/game/friend/${inviteId}`))
+        else if (enemyUser) {
+          axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
+            .then((response) => {
+              console.log('created ', response.data);
+
+              navigator(`/game/warmup/friends/${response.data.id}`)
+            })
+            .catch((error) => console.log(error.response.data)
+            )
+        }
       }
-      setSocket(newSocket)
-      setReady(true)
+      if (newSocket) {
+        newSocket.onopen = () => {
+          if (!enemyUser) return
+          console.log("friend sock open", enemyUser);
+          newSocket.send(JSON.stringify({
+            "event": "READY"
+          }))
+        }
+        newSocket.onclose = () => {
+          console.log("friend sock closed", enemyUser);
+          // setEnemyUser(null)
+        }
+        setSocket(newSocket)
+        setReady(true)
+      }
     }
     const onAbort = () => {
       if (socket) {
@@ -197,30 +204,41 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
         setReady(false)
       }
     }
+    console.log(inviteId)
     return (
       <div className="WarmUpReadyContext">
-        {/* <div className="WarmupReady"> */}
         <button className="WarmUpReadyBtn" onClick={onReady}>
-          {ready ? "Wait" : "Ready"}
+          {ready ? "Wait" : (
+            !isRandom && !inviteId ? "invite" : "Ready"
+          )}
         </button>
         <button className="WarmUpAbortBtn" onClick={onAbort}>
           Abort
         </button>
-        {/* </div> */}
       </div>
     )
   }
 }
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
-  const {inviteID} = useParams()
+  const { inviteID } = useParams()
+  const user = getUser()
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
-  const [enemyUser, setEnemyUser] = useState<EnemyUserData | null>(null)
-  if (inviteID){
-    console.log(inviteID);
-    
+  const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null)
+  console.log('a');
+  
+  if (inviteID && !enemyUser) {
+    axios.get(getendpoint("http", `/api/game/invite/${inviteID}`))
+      .then((response) => {
+        if (user) {
+          if (user.id === response.data.invited.id)
+            setEnemyUser(response.data.invited)
+          else
+            setEnemyUser(response.data.inviter)
+        }
+      })
   }
   return (
     <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>
@@ -235,7 +253,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
           {/* <div className="WarmUpBox">
             <WarmUpBox/>
           </div> */}
-          <ReadyContext />
+          <ReadyContext inviteId={inviteID}/>
         </div>
       </div>
       {displayFriends && <FriendsPopUp setter={setDisplayFriends} />}

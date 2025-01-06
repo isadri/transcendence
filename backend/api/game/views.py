@@ -19,19 +19,18 @@ NO_INV_NO_ACCESS = {'error' : 'You dont have access or the invite does not exist
 
 
 class CreateGameInvite(APIView):
-  serializer_class = GameInviteSerializer
   permission_classes = [IsAuthenticated]
 
   def post(self, request):
     inviter = request.user
-    print(request.data.get('invited'))
+    errors = 'Something went wrong'
     invited_id = request.data.get('invited')
     if inviter and invited_id:
       serializer = GameInviteSerializer(data=request.data, context={'user' : request.user})
       if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    errors = serializer.errors['invited'][0]
+      errors = serializer.errors.get('invited', ['something went wrong'])[0]
     return Response({'error':errors}, status=status.HTTP_400_BAD_REQUEST)
 
 

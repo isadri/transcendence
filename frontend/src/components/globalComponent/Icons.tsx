@@ -120,7 +120,9 @@ function Icons() {
                     <div className="dropConntent">
                       {
                         notificationList.map((notif) => {
-                          const data = JSON.parse(notif.message)
+                          let data = null
+                          if (notif.type === "Game invite")
+                            data = JSON.parse(notif.message)
                           return (
                             <div key={notif.id} className="notification-ele">
                               <div className="Notif-info">

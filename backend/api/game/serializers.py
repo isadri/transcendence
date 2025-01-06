@@ -1,3 +1,5 @@
+
+import json
 from django.db import models
 from django.db.models import fields
 from django.utils.timezone import now, timedelta
@@ -6,6 +8,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import GameInvite, UserAchievement, UserStats, Game, Tournament
+from ..notifications.consumers import NotificationConsumer
 
 User = get_user_model()
 
@@ -36,13 +39,13 @@ class GameInviteSerializer(serializers.ModelSerializer):
   status = serializers.ChoiceField(choices=GameInvite.INVITE_STATE, default='P',read_only=True)
   # inviter = serializers.PrimaryKeyRelatedField(read_only=True)
   # invited = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-  inviter = serializers.SerializerMethodField()
-  invited = serializers.SerializerMethodField()
+  # inviter = serializers.SerializerMethodField(read_only=True)
+  # invited = serializers.SerializerMethodField()
 
   class Meta:
     model = GameInvite
     fields = '__all__'
-    read_only_fields = ['invited', 'inviter', 'sent_at'] 
+    read_only_fields = ['inviter', 'sent_at'] 
 
   def get_inviter(self, obj):
     from ..friends.serializers import FriendSerializer
@@ -59,7 +62,7 @@ class GameInviteSerializer(serializers.ModelSerializer):
     return serializer.data
 
   def validate_invited(self, invited):
-    inviter = self.context['request'].user
+    inviter = self.context['user']
     if invited == inviter:
       raise serializers.ValidationError("You cannot invite yourself.")
     if GameInvite.objects.filter(inviter=inviter, invited=invited, status='P').exists():
@@ -69,9 +72,14 @@ class GameInviteSerializer(serializers.ModelSerializer):
   
 
   def create(self, validated_data: dict) -> GameInvite:
-    inviter = self.context['request'].user
+    inviter = self.context['user']
     invited = validated_data.get('invited')
     invite = GameInvite.objects.create(inviter=inviter, invited=invited)
+    message = {
+      'inviteId': invite.id,
+      'message' : f"{inviter} sent you game invite!"
+    }
+    NotificationConsumer.send_friend_request_notification(invited.id, json.dumps(message), "Game invite")
     return invite
 
 class UserAchievementSerializer(serializers.ModelSerializer):
