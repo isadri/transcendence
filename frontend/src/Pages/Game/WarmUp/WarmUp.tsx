@@ -57,7 +57,6 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
     }, [setEnemyUser, setSocket, socket])
 
     const inviteFriend = () => {
-      console.log('here');
       setDisplayFriends(true)
     }
 
@@ -129,23 +128,23 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 }
 
 
-const WarmUpBox = () => {
-  return (
-    <div className="GameHistoryItem">
-      <div className="GameHistoryItemLeft">
-        <img src={avatar} />
-        <span>user56789012345</span>
-      </div>
-      <div className="GameHistoryItemResult">
-        <img src={vsImage} />
-      </div>
-      <div className="GameHistoryItemRight">
-        <span>user56789012345</span>
-        <img src={avatar} />
-      </div>
-    </div>
-  )
-}
+// const WarmUpBox = () => {
+//   return (
+//     <div className="GameHistoryItem">
+//       <div className="GameHistoryItemLeft">
+//         <img src={avatar} />
+//         <span>user56789012345</span>
+//       </div>
+//       <div className="GameHistoryItemResult">
+//         <img src={vsImage} />
+//       </div>
+//       <div className="GameHistoryItemRight">
+//         <span>user56789012345</span>
+//         <img src={avatar} />
+//       </div>
+//     </div>
+//   )
+// }
 
 const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
@@ -219,7 +218,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
           <ReadyContext />
         </div>
       </div>
-      {displayFriends ? <FriendsPopUp setter={setDisplayFriends} /> : <></>}
+      {displayFriends && <FriendsPopUp setter={setDisplayFriends} />}
     </WarmUpContext.Provider>
   );
 }
