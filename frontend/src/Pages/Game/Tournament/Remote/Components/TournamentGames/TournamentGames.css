@@ -42,6 +42,61 @@
 	gap: 20px;
 }
 
+.tournament-LastMatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 170px;
+  border: solid 1px var(--fade);
+  background-color: var(--fade);
+  border-radius: 18px;
+  gap: 8px;
+}
+
+.tournament-LastMatch .LastMatchContent {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 6px;
+  position: relative;
+}
+
+.tournament-LastMatch .LastMatchContent .img {
+  border-radius: 50%;
+  width: 60px;
+  border: 2px solid var(--primary);
+  position: relative;
+}
+
+.tournament-LastMatch .LastMatchContent .win {
+  position: absolute;
+  top: -22px; /* Adjust to position above the image */
+  left: 23%;
+  transform: translateX(-50%);
+  width: 40px; /* Adjust to crown size */
+  height: 40px;
+  z-index: 10;
+	transform: rotate(-45deg);
+}
+
+.tournament-LastMatch .LastMatchContent .win img {
+  width: 100%;
+}
+
+.tournament-LastMatch .Winner  {
+	margin-top: 10px;
+}
+.tournament-LastMatch .Winner span {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--primary);
+	margin-top: 10px;
+}
+
 .TournamentGames .tournament-match {
 	/* max-width: 210px; */
 	width: 100%;

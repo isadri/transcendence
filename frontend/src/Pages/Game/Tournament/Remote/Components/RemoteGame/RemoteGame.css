@@ -1,19 +1,21 @@
 .RemoteGame {
-  width: 80%;
+  width: 100%;
   display: flex;
-  margin-top: 20px;
+  margin-top: 15px;
   border-radius: 18px;
   padding:10px 15px;
-  /* background-color: var(--fade); */
-  background-color: #665c5e;
+  background-color: var(--fade);
+  /* background-color: #665c5e; */
   justify-content: space-between;
+  border: solid 1px var(--fade);
   max-width: 400px;
+  height: 80px;
 }
 
 .RemoteGame div {
   display: flex;
   align-items: center;
-  
+  gap: 6px;
 }
 
 .RemoteGame div img {
@@ -24,12 +26,6 @@
 {
   display: flex;
   justify-content: end;
-}
-.RemoteGameLeft {
-  /* margin-left: 5%;
-  margin-right: 5%; */
-  /* display: flex;
-  justify-content: end; */
 }
 
 .RemoteGameRight img{
@@ -43,11 +39,37 @@
 
 .RemoteGameResult {
   justify-content: center;
+  margin-bottom: 10px;
+  height: 100%;
 }
 
 .RemoteGameResult img {
   padding-right: 10px;
 }
+
+
+.RemoteGame .gameType img{
+  width: 40px;
+}
+.RemoteGame .gameType{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+}
+
+.gameRound{
+  position: absolute;
+  top: 50px;
+  /* right: 2px; */
+}
+.gameRound span{
+  font-weight: 350;
+  font-size: 12px;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
 
 @media screen and (max-width: 530px) {
   .RemoteGame {

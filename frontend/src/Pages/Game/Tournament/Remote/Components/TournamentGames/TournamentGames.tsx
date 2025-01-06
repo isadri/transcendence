@@ -3,6 +3,8 @@ import "./TournamentGames.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../../../../context/getContextData";
 import { FriendDataType, userDataType } from "../../../../../../context/context";
+// import winImg from '../../../../Images/winnerImg.svg'
+import winImg from '../../../../Images/crown.svg'
 import RemoteGame from "../RemoteGame/RemoteGame";
 import { useNavigate } from "react-router-dom";
 
@@ -83,17 +85,24 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
   }
   return (
     <div className="TournamentGames">
-      <h2>Tournament Local</h2>
+      <h2>Tournament Remote Online HD</h2>
       <div className="tournament-players">
         <div className="first-two-match">
-          <RemoteGame game={data.half1} players={getGamePlayers('half1', data)} />
-          <RemoteGame game={data.half2} players={getGamePlayers('half2', data)} />
+          <RemoteGame type={"half"} game={data.half1} players={getGamePlayers('half1', data)} />
+          <RemoteGame type={"half"} game={data.half2} players={getGamePlayers('half2', data)} />
         </div>
 
-        <RemoteGame game={data.final} players={getGamePlayers('final', data)} />
-        <div className="tournament-match">
-          <div className="first-two-match">
+        <RemoteGame type={"final"} game={data.final} players={getGamePlayers('final', data)} />
+        <div className="tournament-LastMatch">
+          <div className="LastMatchContent">
+            <div className="win">
+              <img src={winImg} alt="Crown" />
+            </div>
+            <img className="img" src={data.winner ? getendpoint("http", data.winner.avatar) : ''} alt="" />
             {data.winner ? data.winner.username : 'waiting'}
+            <div className="Winner">
+              <span>Winner</span>
+            </div>
           </div>
         </div>
       </div>
