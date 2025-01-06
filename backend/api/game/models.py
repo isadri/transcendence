@@ -56,10 +56,17 @@ class Game(models.Model):
   def setWinner(self):
     if self.progress != 'E':
       raise ValueError("Cannot set a winner unless the game has ended.")
+    player2_states = UserStats.objects.get_or_create(user=self.player2)
+    player1_states = UserStats.objects.get_or_create(user=self.player1)
+    diff = abs(self.p1_score - self.p2_score)
     if self.p1_score > self.p2_score:
         self.winner = self.player1
+        player1_states.set_as_winner(diff)
+        player2_states.set_as_loser(diff)
     elif self.p2_score > self.p1_score:
         self.winner = self.player2
+        player1_states.set_as_loser(diff)
+        player2_states.set_as_winner(diff)
     self.save()
 
   def abortGame(self, winner, score):
@@ -122,6 +129,8 @@ class UserAchievement(models.Model):
         return self.name
 
 class UserStats(models.Model):
+  D_XP = 30
+  D_LEVEL = 1000
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_stats')
   level = models.FloatField(default=0)
   badge = models.IntegerField(default=0)
@@ -129,6 +138,28 @@ class UserStats(models.Model):
   lose = models.IntegerField(default=0)
   xp = models.IntegerField(default=0)
   nbr_games = models.IntegerField(default=0)
+  
+  def set_as_winner(self, diff_score):
+    self.win += 1
+    self.nbr_games += 1
+    self.xp += diff_score * D_XP
+    next_level = self.level + 1
+    required_xp = next_level * D_LEVEL
+    if self.xp >= required_xp:
+      diff = self.xp - required_xp
+      self.xp = diff if diff > 0 else 0
+      self.level += 1
+    self.save()
+
+  def set_as_loser(self, diff_score):
+    self.lose += 1
+    self.nbr_games += 1
+    self.xp -= diff_score * D_XP
+    required_xp = self.level * D_LEVEL
+    if self.xp < 0:
+      self.xp = required_xp + self.xp
+      self.level -= 1
+    self.save()
 
   def __str__(self):
         return f"{self.user.username} - Level {self.level}"
