@@ -676,8 +676,11 @@ class FriendGame(AsyncWebsocketConsumer):
     try:
       friend = User.objects.get(pk=userId)
       invite = GameInvite.objects.create(invited=friend, inviter=self.user)
-      message = f"{self.user} sent you game invite!"
-      NotificationConsumer.send_friend_request_notification(friend.id, message, "Game invite")
+      message = {
+        'inviteId': invite.id,
+        'message' : f"{self.user} sent you game invite!"
+      }
+      NotificationConsumer.send_friend_request_notification(friend.id, json.dumps(message), "Game invite")
       return invite
     except Exception as e:
       return None

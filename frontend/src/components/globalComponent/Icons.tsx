@@ -90,16 +90,16 @@ function Icons() {
         setIsIconClicked(false);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
-  
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
   return (
     <>
-      <span  className="Home-Icons">
+      <span className="Home-Icons">
         <div ref={closeMenuRef} className="notifIcon">
           {
             UnreadNotif !== 0 &&
@@ -119,18 +119,33 @@ function Icons() {
                   <>
                     <div className="dropConntent">
                       {
-                        notificationList.map((notif) => (
-                          <div key={notif.id} className="notification-ele">
-                            <div className="Notif-info">
-                              <span>{notif.type}</span>
-                              <span>{formatDateTime(notif.created_at)}</span>
+                        notificationList.map((notif) => {
+                          const data = JSON.parse(notif.message)
+                          return (
+                            <div key={notif.id} className="notification-ele">
+                              <div className="Notif-info">
+                                <span>{notif.type}</span>
+                                <span>{formatDateTime(notif.created_at)}</span>
+                              </div>
+                              {
+                                notif.type === "Game invite" ?
+                                  <>
+                                    <div className="Notif-msg">
+                                      <span>{data.message}</span>
+                                    </div>
+                                    <div className="Notif-msg">
+                                      <Link to={`/game/remote/friend/${data.inviteId}`}> Accept</Link>
+                                    </div>
+                                  </>
+                                  :
+                                  <div className="Notif-msg">
+                                    <span>{notif.message}</span>
+                                  </div>
+                              }
                             </div>
-                            <div className="Notif-msg">
-                              <span>{notif.message}</span>
-                            </div>
-                          </div>
-                        ))
-                      }
+                          )
+                        }
+                        )}
                     </div>
                     <div className="footerSide">
                       <button onClick={handelClearAll}>Clear All</button>
