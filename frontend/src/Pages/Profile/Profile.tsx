@@ -25,6 +25,7 @@ interface stats{
   win: number,
   lose: number,
   nbr_games: number
+  xp: number
 }
 
 interface UserData {
