@@ -193,7 +193,7 @@ class TournamentList(APIView):
 
   def get(self, request):
     user = request.user
-    tournaments = Tournament.objects.filter(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user))
+    tournaments = Tournament.objects.filter(Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user)).order_by('winner').reverse()
     serializer = TournamentSerializer(tournaments, many=True, context={'user' : request.user})
     return Response(serializer.data)
 

@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Create multiple test users'
+    help = 'Create games'
 
     def add_arguments(self, parser):
         # Add positional arguments

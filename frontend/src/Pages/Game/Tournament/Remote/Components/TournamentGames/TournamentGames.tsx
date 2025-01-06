@@ -140,5 +140,5 @@ function TournamentGames({ tournament }: TournamentGamesProps) {
   )
 }
 
-export type { TournamentRemoteGameData }
+export type { TournamentRemoteGameData, TournamentRemoteData }
 export default TournamentGames;
