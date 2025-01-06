@@ -1,31 +1,10 @@
 import "../styles/GameRank.css";
-import photo from "../images/profile.svg";
 import bg1 from "../images/badge1.svg";
 import { useEffect, useState } from "react";
 import { getContext, getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
 import { FriendDataType } from "../../../context/context";
 import { useNavigate } from "react-router-dom";
-
-// interface stats{
-//   level: number,
-//   badge: number,
-//   win: number,
-//   lose: number,
-//   nbr_games: number
-//   xp: number
-// }
-
-// interface FriendDataType{
-//   id: number,
-//   username: string,
-//   email: string,
-//   avatar: string,
-//   is_online: boolean,
-//   is_blocked: boolean,
-//   stats: stats,
-//   rank: number
-// }
 
 function GameRank() {
   const [usersRanking, setUseresRanking] = useState<FriendDataType[]>([])

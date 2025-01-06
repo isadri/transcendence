@@ -1,4 +1,4 @@
-.highlights{
+.highlights {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -7,12 +7,12 @@
     font-family: var(--mono);
 }
 
-.highlights h2{
+.highlights h2 {
     color: var(--primary);
     font-weight: 800;
-} 
+}
 
-.highlights .highlights-types{
+.highlights .highlights-types {
     width: 100%;
     height: 93%;
     background-color: var(--fade);
@@ -23,7 +23,11 @@
     flex-direction: column;
 }
 
-.choisesParent{
+.choisesParent  .tabs-spliter{
+    background-color: red;
+    width: 1%;
+}
+.choisesParent {
     display: flex;
     width: 90%;
     height: 8%;
@@ -31,58 +35,103 @@
 
 
 .choisesParent .first-tab,
-.choisesParent .second-tab
-{
+.choisesParent .third-tab,
+.choisesParent .second-tab {
     width: 30%;
-    /* background-color: red; */
     background-color: #7c7c7c1c;
-    /* border: solid 1px #7c7c7c1c; */
     border-bottom: none;
     justify-content: start;
     display: flex;
     align-items: center;
-    border-radius: 15px 15px 0  0;
+    border-radius: 15px 15px 0 0;
     justify-content: space-between;
-    border-radius: 15px 15px 0  0;
+    border-radius: 15px 15px 0 0;
     cursor: pointer;
 }
-.choisesParent .first-tab .gameRank-btn{
+
+.choisesParent .first-tab .gameRank-btn {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     border-radius: 15px 15px 15px 0;
-    /* background-color: transparent; */
-    
-     background-color: var(--fade);
-    /*border-radius: 15px 15px 15px 0; */
-    
+
+    background-color: var(--fade);
+
 }
-.choisesParent .first-tab .gameRank-btn.rank-tab{
-    
+
+.choisesParent .first-tab .gameRank-btn.rank-tab {
+
     border-radius: 15px 15px 0 0;
     background-color: transparent;
 }
 
-.choisesParent .second-tab .LastGame-btn{
+
+.choisesParent .first-tab .gameRank-btn.rankZero {
+    border-radius: 15px 15px 0 0;
+}
+.choisesParent .first-tab::after {
+    content: "";
+    width: 1px;
+}
+.choisesParent .second-tab::after {
+    content: "";
+    width: 1px;
+}
+
+.choisesParent .second-tab .LastGame-btn {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     background-color: var(--fade);
     border-radius: 15px 15px 0px 15px;
-    
+
 }
-.choisesParent .second-tab .LastGame-btn.lastgame-tab{
+
+.choisesParent .second-tab .LastGame-btn.lastgame-tab {
     background-color: transparent;
     border-radius: 15px 15px 15px 0px;
 }
 
-.highlights .highlights-types .TopPlayers{
+.choisesParent .second-tab .LastGame-btn.lastgameZero {
+    border-radius: 15px 15px 15px 0px;
+}
+
+
+
+
+.choisesParent .third-tab .Tournament-btn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--fade);
+    border-radius: 15px 15px 0px 15px;
+
+}
+
+.choisesParent .third-tab .Tournament-btn.tournament-tab {
+    background-color: transparent;
+    border-radius: 15px 15px 15px 0px;
+}
+
+.choisesParent .third-tab .Tournament-btn.tournamentOne {
+    border-radius: 15px 15px 0px 0px;
+}
+
+.choisesParent .third-tab .Tournament-btn.tournamentTwo {
+    border-radius: 15px 15px 0px 15px;
+}
+
+
+.highlights .highlights-types .TopPlayers {
     width: 90%;
     height: 80%;
     border-radius: 0 15px 15px 15px;
@@ -90,14 +139,120 @@
     border: solid 1px #7c7c7c1c;
     border-top: none;
     display: flex;
-    /* height: 100%; */
-    /* align-items */
-    /* justify-content: center; */
+
 }
 
 
 @media only screen and (max-width: 850px) {
-    .highlights{
+    .highlights {
         width: 100%;
     }
 }
+
+/* 
+.highlights {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 57%;
+    height: 640px;
+    font-family: var(--mono);
+}
+
+.highlights h2 {
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.highlights .highlights-types {
+    width: 100%;
+    height: 93%;
+    background-color: var(--fade);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.choisesParent {
+    display: flex;
+    width: 90%;
+    height: 8%;
+}
+
+
+.choisesParent .first-tab,
+.choisesParent .third-tab,
+.choisesParent .second-tab {
+    width: 30%;
+    border-bottom: none;
+    justify-content: start;
+    display: flex;
+    align-items: center;
+    border-radius: 15px 15px 0 0;
+    justify-content: space-between;
+    border-radius: 15px 15px 0 0;
+    cursor: pointer;
+}
+
+.choisesParent .first-tab .gameRank-btn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--fade);
+
+}
+
+.choisesParent .first-tab .gameRank-btn.rank-tab {
+    background-color: #d9d9d90a;
+}
+
+.choisesParent .second-tab .LastGame-btn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+    background-color: var(--fade);
+
+}
+
+.choisesParent .second-tab .LastGame-btn.lastgame-tab {
+    background-color: #d9d9d90a;
+}
+
+.highlights .highlights-types .TopPlayers {
+    width: 90%;
+    height: 80%;
+    border-radius: 0 15px 15px 15px;
+    background-color: #7c7c7c1c;
+    border: solid 1px #7c7c7c1c;
+    border-top: none;
+    display: flex;
+}
+
+.tabOnly {
+    background-color: red;
+}
+
+
+.first-tab,
+.second-tab {}
+
+
+.first-tab::after {
+    width: 15px;
+    content: "";
+    background-color: red;
+}
+
+@media only screen and (max-width: 850px) {
+    .highlights {
+        width: 100%;
+    }
+} */
