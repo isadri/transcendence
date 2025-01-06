@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'api.accounts',
     'api.notifications',
     
+    'daphne',
     'channels',
     'corsheaders',
     
