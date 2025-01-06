@@ -6,36 +6,47 @@ import { getendpoint } from "../../../../../../context/getContextData";
 
 interface RemoteGameProps {
   game?: TournamentRemoteGameData | null,
-  players: FriendDataType[] | null
+  players: FriendDataType[] | null,
+  type: string
 }
 
-function RemoteGame({ game, players }: RemoteGameProps) {
+function RemoteGame({ game, players, type }: RemoteGameProps) {
   return (
     <div className="RemoteGame">
-      {
-        game ?
-          <div className="RemoteGameLeft">
-            <img src={players ? getendpoint("http", players[0].avatar) : ""} />
-            <span>{game && players ? players[0].username : "-----------------"}</span>
+      <>
+        {
+          game ?
+            <div className="RemoteGameLeft">
+              <img src={players ? getendpoint("http", players[0].avatar) : ""} />
+              <span>{game && players ? players[0].username : "-----------------"}</span>
+            </div>
+            :
+            <div className="RemoteGameResult">waiting</div>
+        }
+        <div className="gameType">
+          <div className="RemoteGameResult">
+            <div> 
+              {game && game.progress != 'P' ? game.p1_score : ""}
+            </div>
+            <img src={vs} />
+            <div>
+              {game && game.progress != 'P' ? game.p2_score : ""}
+            </div>
           </div>
-          :
-          <div className="RemoteGameResult">waiting</div>
-      }
-      <div className="RemoteGameResult">
-        <div> {game ? game.p1_score : ""} </div>
-        <img src={vs} />
-        <div> {game ? game.p2_score : ""} </div>
-      </div>
-
-      {
-        game ?
-          <div className="RemoteGameRight">
-            <span>{game && players ? players[1].username : "-----------------"}</span>
-            <img src={players ? getendpoint("http", players[1].avatar) : ""} />
+          <div className="gameRound">
+            <span>Half Game</span>
           </div>
-          :
-          <div className="RemoteGameResult">waiting</div>
-      }
+        </div>
+        {
+          game ?
+            <div className="RemoteGameRight">
+              <span>{game && players ? players[1].username : "-----------------"}</span>
+              <img src={players ? getendpoint("http", players[1].avatar) : ""} />
+            </div>
+            :
+            <div className="RemoteGameResult">waiting</div>
+        }
+      </>
     </div>
   );
 }
