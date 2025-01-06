@@ -120,7 +120,7 @@ function Paddle({ position, mine = false }: Paddlerops) {
     args: [1.5, 0.5, 0.5],
     material: material
   }));
-  const speed = 2.5
+  const speed = 6
   const [direction, setDirection] = useState<[number, number, number]>([0, 0, 0]);
 
   useEffect(() => {
@@ -291,7 +291,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
           <directionalLight position={[-50, -9, -5]} intensity={1} />
           <pointLight position={[5, 9, -5]} intensity={1} />
           <directionalLight position={[3, 9, 5]} intensity={2} />
-          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 120} isPaused={result[0] === MAX_SCORE || result[1] === MAX_SCORE}>
+          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 240} isPaused={result[0] === MAX_SCORE || result[1] === MAX_SCORE}>
             {/* <Debug> */}
             <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
               <planeGeometry args={[300, 300]} />

@@ -1,0 +1,103 @@
+import "../styles/GameRank.css";
+import "../styles/TournamentHestory.css";
+import bg1 from "../images/badge1.svg";
+import { useEffect, useState } from "react";
+import { getContext, getUser, getendpoint } from "../../../context/getContextData";
+import axios from "axios";
+import { FriendDataType } from "../../../context/context";
+import { useNavigate } from "react-router-dom";
+import { TournamentRemoteData } from "../../Game/Tournament/Remote/Components/TournamentGames/TournamentGames";
+import cup from '../images/tournamentImg.svg'
+import { spawn } from "child_process";
+
+function GameRank() {
+    const [usersRanking, setUseresRanking] = useState<TournamentRemoteData[]>([])
+    const authUser = getUser()
+    const contxt = getContext()
+    const navigate = useNavigate();
+
+    const usersProfile = (user: FriendDataType) => {
+        if (user.is_blocked) {
+            contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
+            contxt?.setDisplayed(3)
+        }
+        else
+            navigate(`/profile/${user.username}`)
+    }
+
+    const GetUsersRank = () => {
+        axios.get(getendpoint("http", "/api/game/tournaments/"))
+            .then((response) => {
+                setUseresRanking(response.data)
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.error("Error fetching friends list:", error);
+            })
+    }
+    useEffect(() => {
+        GetUsersRank()
+    }, [])
+
+    return (
+        <div className="Home-GameRank">
+            {
+                usersRanking.length !== 0 &&
+                usersRanking.map((user, index) => (
+                    <div key={user.id} className="gamerank-ele">
+                        <div className="Home-RowEle elemens-tournament">
+                            <div className="Home-row1 cupImage">
+                                <div className="img">
+                                    <img src={cup} alt="" />
+                                </div>
+                                <div className="Home-ProfileRev gmaeTournament">
+                                    <img className="img1" src={getendpoint("http", user.player1.avatar)} alt=""
+                                        onClick={() => usersProfile(user.player1)} />
+                                    <img className="img2" src={getendpoint("http", user.player2.avatar)} alt=""
+                                        onClick={() => usersProfile(user.player2)} />
+                                    <img className="img3" src={getendpoint("http", user.player3.avatar)} alt=""
+                                        onClick={() => usersProfile(user.player3)} />
+                                    <img className="img4" src={getendpoint("http", user.player4.avatar)} alt=""
+                                        onClick={() => usersProfile(user.player4)} />
+                                </div>
+                            </div>
+                                <div className="tournamentState">
+                                    {
+                                        user.winner?
+                                        <>
+                                            <div className="SetWinner">
+                                                <span>Winner</span>
+                                                <img className="imgWinner" src={getendpoint("http", user.player1.avatar)} alt=""
+                                                    onClick={() => usersProfile(user.winner)} />
+                                                <div>
+                                                    <img src="" alt="" />
+                                                </div>
+                                            </div>
+                                            <span className="Finished">Finished</span>
+                                        </>
+                                        :
+                                        <span className="playing">Playing...</span>
+                                    }
+                                </div>
+                        </div>
+                    </div>
+                ))
+            }
+            {
+                usersRanking.length === 0 &&
+                <div className='Nostats game-NoStats'>
+                    <div className='stats-icon'>
+                        <i className="fa-solid fa-ranking-star"></i>
+                    </div>
+                    <div className='NoStats-msg'>
+                        <h3>No tournaments available</h3>
+                        <span>No tournaments games have been played yet across all users</span>
+                    </div>
+                </div>
+            }
+
+        </div>
+    );
+}
+
+export default GameRank;
