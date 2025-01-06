@@ -49,6 +49,8 @@ services:
       - app-network
     env_file:
       - .env
+    ports:
+      - 8000:8000
     healthcheck:
       test:
         [
