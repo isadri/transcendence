@@ -59,8 +59,7 @@ function ProfileUser({userData, username}:Prop) {
 
   if (!userData)
     return
-  const fractionalPart = userData.stats.level - Math.floor(userData.stats.level);
-  const percentage = fractionalPart * 100;
+  const percentage = userData.stats.xp * 100 / ((userData.stats.level + 1) * 100);
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>
