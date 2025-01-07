@@ -249,7 +249,7 @@
 }
 
 .Notifications .Notif-info span:nth-child(2) {
-    font-size: 12px;
+    font-size: 11px;
     color: #ccc;
 }
 
@@ -293,6 +293,27 @@
 
 .Notifications .footerSide button:hover {
     background-color: #4a3b63;
+}
+
+.invite-text-icon {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.invite-icon {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.invite-icon .accept-invete {
+    color: var(--primary);
+    font-size: 15px;
+}
+
+.invite-icon .refuse-invete {
+    color: #A9A9A9;
+    font-size: 13px;
 }
 
 
@@ -346,15 +367,17 @@
     padding: 10px;
     position: absolute;
     top: 41px;
-    left: -2px;
+    left: 4px;
     z-index: 100;
     transition: opacity 0.3s ease, visibility 0.3s ease;
     opacity: 0;
     border-radius: 5px;
+    visibility: hidden;
 }
 
 .userInfoGlobal:hover .hover-on-user {
     opacity: 1;
+    visibility: visible;
 }
 
 /********************** Responsive *******************************/

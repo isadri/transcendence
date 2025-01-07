@@ -122,6 +122,18 @@ class DeclineGameInvite(APIView):
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
 
 
+  def delete(self, request, pk):
+    print("hello")
+    user = request.user
+    try: 
+      # delet notifecation
+      invite = GameInvite.objects.get(Q(inviter=user) | Q(invited=user), pk=pk)
+      invite.delete()
+      return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    except :
+      return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
+
+
 
 class ListGameInvites(APIView):
   permission_classes = [IsAuthenticated]
