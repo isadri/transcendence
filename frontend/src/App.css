@@ -29,3 +29,9 @@
 	display: flex;
 	flex-direction: column;
 }
+
+@media screen and (max-width:476px) {
+	.mainContent{
+		width: 100%;
+	}
+}

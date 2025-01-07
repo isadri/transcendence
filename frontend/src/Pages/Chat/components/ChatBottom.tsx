@@ -65,7 +65,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 			}
 			setSelectedFriend(selectedFriend);
 			setUpdate(block.status);
-			setText("")
+			setText("");
 		}, [block, selectedFriend.is_blocked]);
 
 		const handleSendMessage = async () => {
@@ -138,26 +138,31 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 								{open && <EmojiPicker onEmojiClick={handleEmojiClick} />}
 							</div>
 						</div>
-						<div className="messageContent">
-							<textarea
-								placeholder="Type a message..."
-								value={text}
-								onChange={(event) => {
-									const maxLength = 300; // Set your max length
-									if (event.target.value.trim().length > maxLength) {
-										authContext?.setCreatedAlert(
-											"Message cannot exceed 300 characters."
-										);
-										authContext?.setDisplayed(2);
-										setText("");
-										return;
-									}
-									setText(event.target.value);
-								}}
-								onKeyDown={handleKeyDown}
-								ref={ref}
-							></textarea>
-						</div>
+						{/* <div className="message-area"> */}
+							<div className="messageContent">
+								<textarea
+									placeholder="Type a message..."
+									value={text}
+									onChange={(event) => {
+										const maxLength = 300; // Set your max length
+										if (event.target.value.trim().length > maxLength) {
+											authContext?.setCreatedAlert(
+												"Message cannot exceed 300 characters."
+											);
+											authContext?.setDisplayed(2);
+											// setText("");
+											return;
+										}
+										setText(event.target.value);
+									}}
+									onKeyDown={handleKeyDown}
+									ref={ref}
+								></textarea>
+							</div>
+							{text.trim().length > 295 && (
+								<div>{300 - text.trim().length} </div>
+							)}
+						{/* </div> */}
 						<button
 							className="subButton"
 							onClick={() => handleSendMessage()}
@@ -167,7 +172,9 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 						</button>
 					</>
 				) : (
-					<div className="block">Can't send a message to this contact (block).</div>
+					<div className="block">
+						Can't send a message to this contact (block).
+					</div>
 				)}
 			</div>
 		);
