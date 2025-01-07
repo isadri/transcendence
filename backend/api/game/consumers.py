@@ -102,11 +102,16 @@ class RandomGame(AsyncWebsocketConsumer):
       await self.connected[key1].send(json.dumps({
         "event" : "HANDSHAKING",
         "game_id": self.gameMatch.id,
-        "enemy": UserSerializer(self.connected[key2].user).data
+        "enemy": await self.serializing_data(self.connected[key2].user)
       }))
     except Exception as e:
       print(f"handshake of {key1}:> ", e)
 
+
+  @database_sync_to_async
+  def serializing_data(self, user):
+    serializer = FriendSerializer(user, context={'user':self.user})
+    return serializer.data
 
   async def handshaking(self, key1, key2):
     """
