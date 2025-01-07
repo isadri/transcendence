@@ -356,7 +356,7 @@ def check_otp_key(otp: str, user: User) -> bool:
 
 def add_level_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    if userStats.level == 1:
+    if userStats.level >= 1:
         if not UserAchievement.objects.filter(key='level_1').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -365,7 +365,7 @@ def add_level_achievement_to_user(user: User):
                 name="Beginner",
                 text="Reach level 1.",
             )
-    elif userStats.level == 10:
+    if userStats.level >= 10:
         if not UserAchievement.objects.filter(key='level_10').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -374,7 +374,7 @@ def add_level_achievement_to_user(user: User):
                 name="Intermediate",
                 text="Reach level 10.",
             )
-    elif userStats.level == 25:
+    if userStats.level >= 25:
         if not UserAchievement.objects.filter(key='level_25').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -383,7 +383,7 @@ def add_level_achievement_to_user(user: User):
                 name="Advanced Player",
                 text="Reach level 25.",
             )
-    elif userStats.level == 50:
+    if userStats.level >= 50:
         if not UserAchievement.objects.filter(key='level_50').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -392,7 +392,7 @@ def add_level_achievement_to_user(user: User):
                 name="Expert",
                 text="Reach level 50.",
             )
-    elif userStats.level == 100:
+    if userStats.level >= 100:
         if not UserAchievement.objects.filter(key='level_100').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -405,7 +405,7 @@ def add_level_achievement_to_user(user: User):
 
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    if userStats.win == 1:
+    if userStats.win >= 1:
         if not UserAchievement.objects.filter(key='win_1').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -414,7 +414,7 @@ def add_game_achievement_to_user(user: User):
                 name="First Victory",
                 text="Win your first match.",
             )
-    elif userStats.win == 20:
+    if userStats.win >= 20:
         if not UserAchievement.objects.filter(key='win_20').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -423,7 +423,7 @@ def add_game_achievement_to_user(user: User):
                 name="Champion",
                 text="Win 20 matches overall.",
             )
-    elif userStats.win == 50:
+    if userStats.win >= 50:
         if not UserAchievement.objects.filter(key='win_50').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -436,7 +436,7 @@ def add_game_achievement_to_user(user: User):
 
 def add_milestone_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    if userStats.nbr_games == 10:
+    if userStats.nbr_games >= 10:
         if not UserAchievement.objects.filter(key='match_10').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -445,7 +445,7 @@ def add_milestone_achievement_to_user(user: User):
                 name="Rookie",
                 text="Play 10 matches.",
             )
-    elif userStats.nbr_games == 50:
+    if userStats.nbr_games >= 50:
         if not UserAchievement.objects.filter(key='match_50').exists():
             UserAchievement.objects.create(
                 user=user,
@@ -454,7 +454,7 @@ def add_milestone_achievement_to_user(user: User):
                 name="Veteran",
                 text="Play 50 matches.",
             )
-    elif userStats.nbr_games == 100:
+    if userStats.nbr_games >= 100:
         if not UserAchievement.objects.filter(key='match_100').exists():
             UserAchievement.objects.create(
                 user=user,
