@@ -7,6 +7,7 @@ from channels.db import database_sync_to_async
 from .models import *
 from ..game.serializers import TournamentSerializer
 from ..accounts.serializers import UserSerializer
+from ..friends.serializers import FriendSerializer
 from channels.layers import get_channel_layer
 from django.db.models import Q
 channel_layer = get_channel_layer()
@@ -552,7 +553,7 @@ class RandomTournament(AsyncWebsocketConsumer):
 
   @database_sync_to_async
   def serializing_data(self, users):
-    serializer = UserSerializer(users, many=True)
+    serializer = FriendSerializer(users, many=True, context={'user':self.user})
     return serializer.data
   
   @database_sync_to_async
