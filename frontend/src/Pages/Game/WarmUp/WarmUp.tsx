@@ -173,7 +173,7 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
 
               navigator(`/game/warmup/friends/${response.data.id}`)
             })
-            .catch((error) => console.log(error.response.data)
+            .catch((error) => {console.log(error.response.data)}
             )
         }
       }
@@ -222,6 +222,7 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   const { inviteID } = useParams()
   const user = getUser()
+  const navigator = useNavigate()
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
@@ -237,6 +238,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
             setEnemyUser(response.data.inviter_data)
         }
       })
+      .catch((error) =>  navigator(`/game/warmup/friends/`))
   }
   return (
     <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>

@@ -579,9 +579,8 @@ class RandomTournament(AsyncWebsocketConsumer):
         {
             "type": "player_disconnected",
             "username": self.user.username,
-        },
+        }
       )
-
 
 
 
@@ -752,6 +751,8 @@ class FriendGame(AsyncWebsocketConsumer):
       pass
 
   async def disconnect(self, code):
+    if not self.room_name or not self.invite_id:
+      return
     await self.channel_layer.group_discard(self.room_name, self.channel_name)
 
 
