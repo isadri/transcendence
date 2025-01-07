@@ -274,18 +274,15 @@ function GameTable() {
 const MAX_SCORE = 7
 interface PlayProps {
   switcher?: React.Dispatch<React.SetStateAction<boolean>>;
-  game: TournamentGameData | null;
-  setGame: React.Dispatch<React.SetStateAction<TournamentGameData>>;
+  game?: TournamentGameData | null;
+  setGame?: React.Dispatch<React.SetStateAction<TournamentGameData>>;
 }
 
 const Play = ({ switcher, game, setGame }: PlayProps) => {
   const [result, setResult] = useState<[number, number]>([0, 0])
 
-  console.log('hello');
-  console.log('good bye');
-
   useEffect(() => {
-    if (game) {
+    if (game && setGame && switcher) {
       game.player1.score = result[0]
       game.player2.score = result[1]
       if (result[0] === MAX_SCORE || result[1] === MAX_SCORE) {
@@ -349,7 +346,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             ?
             <div className="winnerPopUp">
               <h2>The Winner</h2>
-              <img src={winner} alt="" className="winnerPic" />
+              {/* <img src={winner} alt="" className="winnerPic" /> */}
               <img src={pic} alt="" />
               <h3>{result[0] === MAX_SCORE ?
                 game ? game.player1.alias : "Player 1"
@@ -371,7 +368,6 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             :
             <></>
         }
-
         <div className="quitGame">
           <Link to={"../"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
         </div>

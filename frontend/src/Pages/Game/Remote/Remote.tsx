@@ -1,8 +1,6 @@
 import { Canvas, context, useThree } from "@react-three/fiber";
 import "../Play/Play.css";
-import winnerImg from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
-import pic from "../../Home/images/profile.svg"
 import "../../Home/styles/LastGame.css"
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
@@ -447,7 +445,7 @@ const Play = () => {
               ?
               <div className="winnerPopUp">
                 <h2>The Winner</h2>
-                <img src={winnerImg} alt="" className="winnerPic" />
+                {/* <img src={winnerImg} alt="" className="winnerPic" /> */}
                 <img src={getendpoint('http', winner.avatar)} className="winnerAvatar" />
                 <h3>{winner.username}</h3>
                 <div className="winnerBtns">
@@ -458,6 +456,9 @@ const Play = () => {
               :
               <></>
           }
+          <div className="quitGame">
+            <Link to={"../"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
+          </div>
         </div>
       </>
     );
