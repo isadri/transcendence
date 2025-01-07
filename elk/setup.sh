@@ -187,5 +187,12 @@ https://es01:9200/_index_template/django-logs-template -H "Content-Type: applica
 	"priority": 500
 }'
 
+echo -e "\nCreating data streams"
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_data_stream/logs-nginx.access-dev
+
+curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
+https://es01:9200/_data_stream/logs-django-dev
+
 echo -e "\nAll done"
 
