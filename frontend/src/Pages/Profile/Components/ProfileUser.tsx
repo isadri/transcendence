@@ -1,5 +1,5 @@
 import '../styles/ProfileUser.css'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { UserData } from '../Profile'
 import { getendpoint, getUser } from '../../../context/getContextData'
 import { useEffect, useState } from 'react'
@@ -18,6 +18,7 @@ function ProfileUser({userData, username, stats}:Prop) {
   const [frindshipStatus, setfrindshipStatus] = useState("")
   const [isOnline, setIsOnline] = useState<boolean>(userData?.is_online || false)
   // const [stats, setStats] = useState<stats>()
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(getendpoint('http', `/api/friends/friendship-status/${userData.id}`), {withCredentials:true})
@@ -80,6 +81,20 @@ function ProfileUser({userData, username, stats}:Prop) {
   var percentage = 0
   if (stats)
    percentage = stats.xp * 100 / ((stats.level + 1) * 100);
+
+  const handleInvitePlay = (id: Number) => {
+		axios
+		.post(getendpoint("http", `/api/game/invite/`), { invited: id })
+		.then((response) => {
+			console.log("created ", response.data);
+
+			navigate(`/game/warmup/friends/${response.data.id}`);
+		})
+		.catch((error) => {
+			console.log(error.response.data);
+		});
+	};
+
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>
@@ -122,7 +137,7 @@ function ProfileUser({userData, username, stats}:Prop) {
           {
             frindshipStatus === "accepted" &&
             <div className='proBtn'>
-              <button type='submit'>Invite to Play</button>
+              <button type='submit' onClick={() => handleInvitePlay(userData.id)} >Invite to Play</button>
             </div>
           }
           </>
