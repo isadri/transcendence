@@ -18,6 +18,7 @@ import React, { createContext, forwardRef, useContext, useEffect, useImperativeH
 import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
 import { Link } from "react-router-dom";
 import { TournamentGameData } from "../Tournament/Local/Components/TournamentForm/TournamentForm";
+import { getendpoint } from "../../../context/getContextData";
 const tableUrl = new URL("../../../assets/glb/tableLwa3ra.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
 
@@ -301,7 +302,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             {/* </Debug> */}
           </Physics>
         </Canvas>
-        <div className="Home-LastGame PlayResult">
+        {/* <div className="Home-LastGame PlayResult">
           <div className='Home-RowEle'>
             <div className='Home-Row1'>
               <img src={pic} alt="" />
@@ -319,6 +320,32 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
               <img src={pic} alt="" />
             </div>
           </div>
+        </div> */}
+        <div className="Home-LastGame PlayResult">
+          <div className="lastgames-ele">
+            <div className="Home-RowEle">
+              <div className="Home-Row1">
+                <img src={getendpoint("http", "/media/default.jpeg")} alt="" />
+                <span >{game ? game.player1.alias : "Player 1"}</span>
+              </div>
+              <div>
+                <div className="Home-Row2">
+                  <div className="Home-Row2-content">
+                    <span className="Home-score1">{result[0]}</span>
+                    <img src={vs} alt="" />
+                    <span className="Home-score2">{result[1]}</span>
+                  </div>
+                  <div className="date">
+                    <span>local game</span>
+                  </div>
+                </div>
+              </div>
+              <div className="Home-Row3">
+                <span >{game ? game.player2.alias : "Player 2"}</span>
+                <img src={getendpoint("http", "/media/default.jpeg")} alt="" />
+              </div>
+            </div>
+          </div>
         </div>
         {
           result[0] === MAX_SCORE || result[1] === MAX_SCORE
@@ -327,7 +354,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
               <h2>The Winner</h2>
               <img src={winner} alt="" className="winnerPic" />
               <img src={pic} alt="" />
-              <h3>{result[0] ===MAX_SCORE ?
+              <h3>{result[0] === MAX_SCORE ?
                 game ? game.player1.alias : "Player 1"
                 :
                 game ? game.player2.alias : "Player 2"
@@ -347,7 +374,10 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             :
             <></>
         }
-     
+
+        <div className="quitGame">
+          <Link to={"../"}><i class="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
+        </div>
       </div>
     </resultsContext.Provider>
   );

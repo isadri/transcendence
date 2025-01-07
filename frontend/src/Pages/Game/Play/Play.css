@@ -1,10 +1,33 @@
 .PlayResult {
-  top: 5%;
+  top: 2%;
   padding: 0 20%;
-  width: 100%;
+  /* width: 100%; */
   position: absolute;
 }
 
+.PlayScreen .quitGame{
+  width: 8%;
+  text-align: center;
+  top: calc(2% + 70px + 15px);
+  background-color: var(--fade);
+  border-bottom: solid 1px #7c7c7c1c;
+  border-left: solid 1px #7c7c7c1c;
+  border-right: solid 1px #7c7c7c1c;
+  border-radius: 0  0 15px 15px;
+  position: fixed;
+}
+
+.PlayScreen .quitGame a{
+  color: var(--primary);
+  font-weight: 300;
+  font-size: 15px;
+}
+
+
+
+.PlayResult .Home-RowEle{
+  justify-content: center;
+}
 .PlayScreen {
   justify-content: center;
   display: flex;
@@ -12,6 +35,7 @@
   width: 100%;
   height: 100%;
   left: 0;
+  top: 0;
   position: fixed;
 }
 
