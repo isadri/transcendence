@@ -97,7 +97,7 @@ const SideNavbar = () => {
 									className="rowMobile"
 									id="logoutMobile"
 									style={{ color: "#ffffffcc" }}
-									onClick={handleMenuClick}
+									onClick={handleLogoutClick}
 								>
 									<div id="iconMobile">
 										<i className="fa-solid fa-right-from-bracket "></i>
