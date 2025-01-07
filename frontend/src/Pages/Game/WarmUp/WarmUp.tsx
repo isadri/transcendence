@@ -21,8 +21,8 @@ interface GameInviteData {
   id: number,
   sent_at: string,
   status: string,
-  inviter: FriendDataType,
-  invited: FriendDataType,
+  inviter_data: FriendDataType,
+  invited_data: FriendDataType,
 }
 
 interface ContextData {
@@ -155,7 +155,6 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
   const navigator = useNavigate()
   if (context) {
     let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser } = context
-    console.log(enemyUser);
 
     const onReady = () => {
       if (ready)
@@ -227,16 +226,15 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null)
-  console.log('a');
-  
+
   if (inviteID && !enemyUser) {
     axios.get(getendpoint("http", `/api/game/invite/${inviteID}`))
       .then((response) => {
         if (user) {
-          if (user.id === response.data.invited.id)
-            setEnemyUser(response.data.invited)
+          if (user.id === response.data.invited)
+            setEnemyUser(response.data.invited_data)
           else
-            setEnemyUser(response.data.inviter)
+            setEnemyUser(response.data.inviter_data)
         }
       })
   }
