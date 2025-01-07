@@ -8,7 +8,8 @@ import { FriendDataType } from "../../../context/context";
 import { useNavigate } from "react-router-dom";
 import { TournamentRemoteData } from "../../Game/Tournament/Remote/Components/TournamentGames/TournamentGames";
 import cup from '../images/tournamentImg.svg'
-import { spawn } from "child_process";
+import NoTourn from '../images/No_tournament.svg'
+import crown from '../../Game/images/crown.svg'
 
 function GameRank() {
     const [usersRanking, setUseresRanking] = useState<TournamentRemoteData[]>([])
@@ -66,12 +67,12 @@ function GameRank() {
                                         user.winner?
                                         <>
                                             <div className="SetWinner">
-                                                <span>Winner</span>
+                                                <div className="crown">
+                                                    <img src={crown} alt="" />
+                                                </div>
                                                 <img className="imgWinner" src={getendpoint("http", user.player1.avatar)} alt=""
                                                     onClick={() => usersProfile(user.winner)} />
-                                                <div>
-                                                    <img src="" alt="" />
-                                                </div>
+                                                <span>Winner</span>
                                             </div>
                                             <span className="Finished">Finished</span>
                                         </>
@@ -87,11 +88,11 @@ function GameRank() {
                 usersRanking.length === 0 &&
                 <div className='Nostats game-NoStats'>
                     <div className='stats-icon'>
-                        <i className="fa-solid fa-ranking-star"></i>
+                        <img src={NoTourn} alt="" />
                     </div>
                     <div className='NoStats-msg'>
                         <h3>No tournaments available</h3>
-                        <span>No tournaments games have been played yet across all users</span>
+                        <span>No tournaments games have been played yet. Once you start playing, your tournament history will appear here!</span>
                     </div>
                 </div>
             }

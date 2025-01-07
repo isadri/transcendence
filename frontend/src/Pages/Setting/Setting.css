@@ -1,7 +1,8 @@
 .Par{
     width: 100%;
-    height: 96vh;
+    height: 87vh;
     position: relative;
+    display: flex;
     overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -16,7 +17,7 @@
     align-items: center;
     flex-direction: column;
     width: 100%;
-    height: 96vh;
+    height: 100%;
     min-height: 900px;
 }
 
@@ -105,7 +106,15 @@
     /* font-size: 2.4%; */
 }
 
-.settingContent form{
+.settingContent .dataform{
+    width: 98%;
+    padding-left: 1%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.settingContent .PassForm{
     width: 98%;
     padding-left: 1%;
     display: flex;
@@ -119,6 +128,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    position: relative;
 }
 
 .ProfileEdit-C1, .ChangePass-C1{
@@ -126,10 +136,27 @@
     display: flex;
     flex-direction: column;
 }
+.ChangePass-C1{
+    /* height: 84px; */
+    position: relative;
+    padding-bottom: 15px;
+}
+.ChangePass-C2{
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+.ChangePass-C2 .element1-changPass,
+.ChangePass-C2 .element2-changPass{
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+    justify-content: space-between;
+    position: relative;
+}
 
-
-.ChangePass-C1 *:nth-child(3){
-    margin-top: 5%;
+.ProfileEdit-C1,.ProfileEdit-C2{
+    position: relative;
 }
 
 .settingPage label{
@@ -148,6 +175,7 @@
     color: white;
     font-family: var(--mono);
     padding-left: 7px;
+    /* position: relative; */
 }
 
 .Setting-action{
@@ -187,13 +215,26 @@
     margin-right: 5px;
 }
 
+
 .SettingError{
-    font-size:1.4vw;
-    margin-top: 4%;
-    margin-left: 4%;
-    color: #ff0000;
+    font-size:12px;
     font-family: var(--sans);
+    background-color: #f8d7da; 
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    height: auto;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    margin-top: 5px;
+    position: absolute;
+    top: 65px;
+    left: 5px;
 }
+
 
 /*        Alert confime deleting account         */
 
@@ -572,7 +613,7 @@
 @media only screen and (max-width: 478px) {
     .ProfileEdit-C2, .ChangePass-C2 ,.ProfileEdit-C1, .ChangePass-C1{
         width: 100%;
-        margin-top: 5%;
+        margin-top: 15px;
     }
     .Setting-action button{
         width: 20vw;
@@ -591,6 +632,28 @@
         width: 15px;
         height: 15px;
     }
+
+    .ChangePass-C2{
+        flex-direction: column;
+    }
+
+    .ChangePass-C2 .element1-changPass,
+    .ChangePass-C2 .element2-changPass{
+        width: 100%;
+    }
+
+
+    .settingPage{
+        justify-content: flex-start;
+        padding-top: 19px;
+    }
+    .settingContent{
+        height: 1100px;
+    }
+
+    /* .Par{
+        height: 96vh;
+    } */
 }
 
 @media only screen and (min-width: 1200px) {

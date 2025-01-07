@@ -92,13 +92,17 @@
 }
 
 
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 900px){
     .game-NoStatsprofile{
         margin-top: 50px;
     }
     .Home-LastAchievement{
-        height: 370px;
+        height: 340px;
         width: 98%;
-        margin-top: 2vh;
+        margin-top: 10px;
+    }
+    .Home-LastAchievement h2{
+        margin: 3% 0 3% 5%;
+        /* font-size: 2vh; */
     }
 }

@@ -18,19 +18,7 @@ function Icons() {
     || useLocation().pathname === "/profile"
   const handelNotifacations = () => {
     setIsIconClicked(!isIconClicked)
-    axios
-      .get(getendpoint("http", "/api/notifications/notifications/"),
-        { withCredentials: true })
-      .then((response) => {
-        console.log("res => ", response.data);
-        contxt?.setNotifications(response.data)
-      })
-      .catch(error => {
-        console.log(error.response)
-      })
   }
-  // console.log("unread notif => ", UnreadNotif)
-  // console.log("unread  => ", contxt?.unreadCount)
   const handelClearAll = () => {
     axios
       .delete(getendpoint("http", "/api/notifications/clear-all-notif/"), {
@@ -40,7 +28,6 @@ function Icons() {
         console.log("hello")
         contxt?.setUnreadCount(0);
         contxt?.setNotifications([])
-        // console.log("sosi => ",notificationList)
       })
       .catch((error) => {
         console.log("Error clearing notifications:", error.response);
@@ -59,6 +46,18 @@ function Icons() {
     }).format(date).replace(",", "");
   };
 
+  useEffect(() => {
+    axios
+      .get(getendpoint("http", "/api/notifications/notifications/"),
+        { withCredentials: true })
+      .then((response) => {
+        console.log("res => ", response.data);
+        contxt?.setNotifications(response.data)
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+  },[])
   useEffect(() => {
     if (isIconClicked) {
       axios.post(getendpoint("http", "/api/notifications/mark-all-read/"), {},

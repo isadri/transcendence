@@ -59,26 +59,28 @@ function GameHestory({ userData, username }: Prop) {
           userGames.length !== 0 &&
           userGames.map((userStats) => (
             <div key={userStats.id} className='Home-rows Home-win'>
-              <span
-                style={userStats.winner === userData.id ? { color: '#00ff00' } : { color: '#ff0000' }}>
-                {userStats.winner === userData.id ? 'win' : 'lose'}</span>
-              <div className='Home-xp'>
+              <div className='elements-gamehis'>
                 <span
-                  style={userStats.winner === userData.id ? { color: '#00ff00' } : { color: '#ff0000' }}>50</span>
-                {
-                  userStats.winner === userData.id &&
-                  <i className="fa-solid fa-arrow-up-long"></i>
-                }
-                {
-                  userStats.winner !== userData.id &&
-                  <i className="fa-solid fa-arrow-down-long"></i>
-                }
-              </div>
-              {/* <span>{userStats.start_at}</span> */}
-              <div className='time-game'>
-                <span>
-                  {getRelativeTime(userStats.start_at)}
-                </span>
+                  style={userStats.winner === userData.id ? { color: '#00ff00' } : { color: '#ff0000' }}>
+                  {userStats.winner === userData.id ? 'win' : 'lose'}</span>
+                <div className='Home-xp'>
+                  <span
+                    style={userStats.winner === userData.id ? { color: '#00ff00' } : { color: '#ff0000' }}>50</span>
+                  {
+                    userStats.winner === userData.id &&
+                    <i className="fa-solid fa-arrow-up-long"></i>
+                  }
+                  {
+                    userStats.winner !== userData.id &&
+                    <i className="fa-solid fa-arrow-down-long"></i>
+                  }
+                </div>
+                {/* <span>{userStats.start_at}</span> */}
+                <div className='time-game'>
+                  <span>
+                    {getRelativeTime(userStats.start_at)}
+                  </span>
+                </div>
               </div>
             </div>
           ))

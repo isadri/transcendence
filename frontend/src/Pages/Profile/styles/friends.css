@@ -186,9 +186,10 @@
 
 
 
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 900px){
     .Home-friendsProfile{
         width: 100%;
+        height: 970px;
     }
     .Home-friendsProfile  .Home-title *:nth-child(1) {
         color: var(--primary);
@@ -197,7 +198,7 @@
         margin-top: 40%;
         margin-bottom: 8%;
     }
-    .Home-noFriends{
+    .game-NoStats{
         display: none;
     }
     

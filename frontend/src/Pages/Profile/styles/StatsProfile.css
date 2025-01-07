@@ -8,8 +8,6 @@
     color: var(--primary);
     font-family: var(--sans);
     margin: 8.5% 0 5.5% 5%;
-    color: var(--primary);
-    font-family: var(--sans);
     /* font-size: 2vh; */
 }
 
@@ -45,6 +43,7 @@
 }
 
 .statsProfile-content div span {
+    font-family: var(--sans);
     font-size: 15px;
     font-weight: bold;
     color: white;
@@ -67,4 +66,41 @@
 
 .statsProfile-content .total{
     background: linear-gradient(0.25turn,#462d4b, transparent); 
+}
+
+
+
+@media only screen and (max-width: 900px){
+    /* .game-NoStatsprofile{
+        margin-top: 50px;
+    } */
+    .state-profile{
+        height: 150px;
+        width: 98%;
+        flex-direction: column;
+        /* margin-top: 2vh; */
+    }
+    .statsProfile-content{
+        flex-direction: row;
+    }
+
+    .state-profile h2{
+        margin: 3% 0 3% 5%;
+        /* font-size: 2vh; */
+    }
+    
+    .statsProfile-content div {
+        width: 60%;
+        flex-direction: column;
+    }
+
+        
+    .statsProfile-content div h4 {
+        font-size: 15px;
+        /* margin-bottom: 8px; */
+    }
+    
+    .statsProfile-content div span {
+        font-size: 15px;
+    }
 }

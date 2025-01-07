@@ -30,6 +30,7 @@ function CallBack() {
     {
         if (from === "intra")
         {
+          console.log("--------------------------------")
           var url = getendpoint("http", '/api/accounts/login/intra')
           axios
           .get(url, {params: { code: code }, withCredentials: true })
@@ -54,6 +55,7 @@ function CallBack() {
               })
               .catch((error) => {
                 authContext?.setIsLogged(false),
+                navigate('/')
               console.error('Error:', error.response ? error.response.data : error.message);
             });
           }
@@ -62,6 +64,7 @@ function CallBack() {
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
+                
                 console.log(response.data.info)
                 if (response.data.info && response.data.code){
                   setUserCode(response.data.code)
@@ -82,11 +85,19 @@ function CallBack() {
                   })
                 .catch((error) => {
                   authContext?.setIsLogged(false),
+                  navigate('/')
                 console.error('Error:', error.response ? error.response.data : error.message);
             });
         }
+        else
+        {
+          authContext?.setIsLogged(false),
+          navigate('/')
+        }
     } else {
       console.error('error');
+      authContext?.setIsLogged(false),
+      navigate('/')
     }
   }
 

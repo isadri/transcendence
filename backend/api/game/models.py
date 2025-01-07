@@ -151,6 +151,8 @@ class UserStats(models.Model):
       self.badge = 1
     elif self.level >= 1:
       self.badge = 0
+    elif self.level == 0:
+      self.badge = -1
     self.save()
 
 

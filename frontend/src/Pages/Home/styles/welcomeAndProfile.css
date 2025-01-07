@@ -147,6 +147,8 @@
 
 .Home-user{
     display: flex;
+    width: 18px;
+    height: 37px;
     justify-content: end;
     /* margin-right: 15px; */
     position: absolute;
@@ -162,6 +164,10 @@
     bottom: 1px;
 }
 
+.Home-user .noImg{
+    filter:brightness(0);
+    opacity: 0.4;
+}
 /* .Home-level{
     background-color: var(--fade);
     font-family: var(--mono);
@@ -192,8 +198,6 @@
     position: absolute;
     margin-left: 5%;
     top: 37px;
-    /* right: 10px; */
-
 }
 
 .Home-comstats-containe .Home-state{
@@ -213,7 +217,7 @@
     }
     
 }
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 900px){
     .Home-comstats-containe .Home-state{
         font-size: 10px;
     }

@@ -1,10 +1,10 @@
 .Home-Profile{
     width: 100%;
-    height: 96vh;
+    height: 90vh;
     position: relative;
     display: flex;
     flex-direction: column;
-    /* padding-top: 2%; */
+    padding-top: 15px;
 }
 
 .Home-firstRaw, .Home-SecondRaw{
@@ -37,12 +37,15 @@
     height: 970px;
 }
 
+.Home-AddRaw .state-profile{
+    display: none;
+}
 @media only screen and (max-width: 1150px){
     .Home-SecondRaw .stats-friends{
         width: 25%;
         height: 750px;
     }
-
+    
     .Home-Profile{
         overflow-y: auto;
         -ms-overflow-style: none;
@@ -57,14 +60,24 @@
     }
 }
 
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 900px){
+    .Home-SecondRaw .stats-friends{
+        width: 14%;
+        height: 850px;
+    }
     .Home-SecondRaw .Home-LastAchievement{
         display: none;
     }
     .Home-SecondRaw .Home-AddRaw .Home-LastAchievement{
         display: flex;
     }
+    .Home-AddRaw .state-profile{
+        display: flex;
+    }
+    .stats-friends .state-profile{
+        display: none;
+    }
     .Home-SecondRaw .Home-AddRaw{
-        width: 90%;
+        width: 100% !important;
     }
 }
