@@ -141,6 +141,7 @@ class UserStats(models.Model):
   
 
   def update_badge(self):
+    from ..accounts.utils import add_game_achievement_to_user, add_level_achievement_to_user, add_milestone_achievement_to_user
     if (self.level >= 100):
       self.badge = 4
     elif self.level >= 50:
@@ -154,6 +155,9 @@ class UserStats(models.Model):
     elif self.level == 0:
       self.badge = -1
     self.save()
+    add_game_achievement_to_user(self.user)
+    add_level_achievement_to_user(self.user)
+    add_milestone_achievement_to_user(self.user)
 
 
   def set_as_winner(self, diff_score):
