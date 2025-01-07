@@ -123,10 +123,8 @@ class DeclineGameInvite(APIView):
 
 
   def delete(self, request, pk):
-    print("hello")
     user = request.user
     try: 
-      # delet notifecation
       invite = GameInvite.objects.get(Q(inviter=user) | Q(invited=user), pk=pk)
       invite.delete()
       return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
