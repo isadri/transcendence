@@ -19,7 +19,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AxesHelper, DoubleSide, Fog, MathUtils, Object3D, Object3DEventMap, WebGLRenderer } from "three";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getUser, getendpoint } from "../../../context/getContextData";
-import { userDataType } from "../../../context/context";
+import { FriendDataType, userDataType } from "../../../context/context";
 
 const tableUrl = new URL("../../../assets/glb/tableLwa3ra.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
@@ -27,14 +27,14 @@ useGLTF.preload(tableUrl);
 // the context of the game result
 interface ResultContext {
   error: string | null,
-  user: userDataType,
-  enemy: userDataType,
+  user: FriendDataType,
+  enemy: FriendDataType,
   result: [number, number],
-  winner: userDataType | null,
+  winner: FriendDataType | null,
   setError: React.Dispatch<React.SetStateAction<string | null>>,
   setResult: React.Dispatch<React.SetStateAction<[number, number]>>,
-  setEnemy: React.Dispatch<React.SetStateAction<userDataType>>,
-  setWinner: React.Dispatch<React.SetStateAction<userDataType | null>>,
+  setEnemy: React.Dispatch<React.SetStateAction<FriendDataType>>,
+  setWinner: React.Dispatch<React.SetStateAction<userDataType | FriendDataType | null>>,
   socket: WebSocket,
   paddle1: any,
   paddle2: any,
@@ -346,7 +346,7 @@ function GameTable() {
             <meshStandardMaterial side={DoubleSide} color={"#c1596c"} />
           </mesh>
 
-          <primitive object={new AxesHelper(5)} />
+          {/* <primitive object={new AxesHelper(5)} /> */}
         </>
       );
     return <></>
@@ -395,28 +395,35 @@ const Play = () => {
             <directionalLight position={[-50, -9, -5]} intensity={1} />
             <pointLight position={[5, 9, -5]} intensity={1} />
             <directionalLight position={[3, 9, 5]} intensity={2} />
-            <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 240} isPaused={false}>
+            <Physics iterations={40} gravity={[0, -9.81, 0]} stepSize={1 / 120} isPaused={false}>
               {/* <Debug> */}
               <GameTable />
               {/* </Debug> */}
             </Physics>
           </Canvas>
           <div className="Home-LastGame PlayResult">
-            <div className='Home-RowEle'>
-              <div className='Home-Row1'>
-                <img src={getendpoint("http", user.avatar)} alt="" />
-                <span>{user.username}</span>
-              </div>
-              <div>
-                <div className='Home-Row2'>
-                  <span className='Home-score1'>{result[0]}</span>
-                  <img src={vs} alt="" />
-                  <span className='Home-score2'>{result[1]}</span>
+            <div className="lastgames-ele">
+              <div className="Home-RowEle">
+                <div className="Home-Row1">
+                  <img src={getendpoint("http", user.avatar)} alt="" />
+                  <span >{user.username}</span>
                 </div>
-              </div>
-              <div className='Home-Row3'>
-                <span>{enemy.username}</span>
-                <img src={enemy.id !== -1 ? getendpoint("http", enemy.avatar) : pic} alt="" />
+                <div>
+                  <div className="Home-Row2">
+                    <div className="Home-Row2-content">
+                      <span className="Home-score1">{result[0]}</span>
+                      <img src={vs} alt="" />
+                      <span className="Home-score2">{result[1]}</span>
+                    </div>
+                    <div className="date">
+                      <span>remote game</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="Home-Row3">
+                  <span >{enemy.username}</span>
+                  <img src={getendpoint("http", enemy.avatar)} alt="" />
+                </div>
               </div>
             </div>
           </div>
@@ -462,20 +469,30 @@ const Play = () => {
 //   gameId
 // }
 
-const emptyUser:userDataType = {
+const emptyUser: FriendDataType = {
   id: -1,
   username: "Enemy",
   email: "",
-  avatar: "",
-  register_complete:true,
-  from_remote_api:false,
+  avatar: "/media/default.jpeg",
+  is_blocked: false,
+  is_online: true,
+  stats: {
+    xp: 0,
+    win: 0,
+    lose: 0,
+    level: 0,
+    user: -1,
+    badge: -1,
+    nbr_games: 0,
+  },
+  rank: 0,
 }
 
 const Provider = ({ socket }: { socket: WebSocket }) => {
   const user = getUser()
   const [error, setError] = useState<string | null>(null)
-  const [enemy, setEnemy] = useState<userDataType>(emptyUser)
-  const [winner, setWinner] = useState<userDataType | null>(null)
+  const [enemy, setEnemy] = useState<FriendDataType>(emptyUser)
+  const [winner, setWinner] = useState<userDataType | FriendDataType | null>(null)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
   return (

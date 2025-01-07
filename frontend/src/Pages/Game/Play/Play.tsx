@@ -63,7 +63,18 @@ function Ball() {
         setTimeout(() => api.velocity.set(randomX, 0, z < 0 ? -7 : MAX_SCORE), 500);
         if (res) {
           const { result, setResult } = res
-          setResult((z > 0) ? [result[0], result[1] + 1] : [result[0] + 1, result[1]])
+          if (z > 0)
+            setResult([result[0], result[1] + 1])
+          else {
+            setResult([result[0] + 1, result[1]])
+          }
+          if (Math.abs(x) > (6.1469 + 0.5) / 2) {
+            if (z > 0)
+              setResult([result[0], result[1] + 1])
+            else {
+              setResult([result[0] + 1, result[1]])
+            }
+          }
         }
         setCanScore(true)
       }
@@ -112,6 +123,7 @@ interface Paddlerops {
   mine?: boolean
 }
 
+const boundary = (3.07345 - 0.75);
 function Paddle({ position, mine = false }: Paddlerops) {
   const material = new Material();
   material.name = "paddle_mat"
@@ -128,15 +140,15 @@ function Paddle({ position, mine = false }: Paddlerops) {
     const onKeyDown = (event: KeyboardEvent) => {
       api.position.subscribe(([x, y, z]) => {
         if (mine) {
-          if ((event.key == "ArrowRight" && x < (3.07345 - 0.5)) || (event.key == "ArrowUp" && x < (3.07345 - 0.5)))
+          if ((event.key == "ArrowRight" && x < boundary) || (event.key == "ArrowUp" && x < boundary))
             setDirection([speed, 0, 0])
-          if ((event.key == "ArrowLeft" && x > -(3.07345 - 0.5)) || (event.key == "ArrowDown" && x > -(3.07345 - 0.5)))
+          if ((event.key == "ArrowLeft" && x > -boundary) || (event.key == "ArrowDown" && x > -boundary))
             setDirection([-speed, 0, 0])
         }
         if (!mine) {
-          if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w") && x < (3.07345 - 0.5))
+          if ((event.key == "D" || event.key == "d" || event.key == "W" || event.key == "w") && x < boundary)
             setDirection([speed, 0, 0])
-          if ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -(3.07345 - 0.5))
+          if ((event.key == "A" || event.key == "a" || event.key == "S" || event.key == "s") && x > -boundary)
             setDirection([-speed, 0, 0])
 
         }
@@ -166,6 +178,10 @@ function Paddle({ position, mine = false }: Paddlerops) {
 
   useEffect(() => {
     api.velocity.set(...direction);
+    api.position.subscribe(([x, y, z]) => {
+      if (x > boundary) api.position.set(boundary, y, z);
+      if (x < -boundary) api.position.set(-boundary, y, z);
+    });
   }, [direction, api, mine]);
 
   return (
@@ -292,7 +308,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
           <directionalLight position={[-50, -9, -5]} intensity={1} />
           <pointLight position={[5, 9, -5]} intensity={1} />
           <directionalLight position={[3, 9, 5]} intensity={2} />
-          <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 240} isPaused={result[0] === MAX_SCORE || result[1] === MAX_SCORE}>
+          <Physics iterations={40} gravity={[0, -9.81, 0]} stepSize={1 / 120} isPaused={result[0] === MAX_SCORE || result[1] === MAX_SCORE}>
             {/* <Debug> */}
             <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
               <planeGeometry args={[300, 300]} />
@@ -302,25 +318,6 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             {/* </Debug> */}
           </Physics>
         </Canvas>
-        {/* <div className="Home-LastGame PlayResult">
-          <div className='Home-RowEle'>
-            <div className='Home-Row1'>
-              <img src={pic} alt="" />
-              <span>{game ? game.player1.alias : "Player 1"}</span>
-            </div>
-            <div>
-              <div className='Home-Row2'>
-                <span className='Home-score1'>{result[0]}</span>
-                <img src={vs} alt="" />
-                <span className='Home-score2'>{result[1]}</span>
-              </div>
-            </div>
-            <div className='Home-Row3'>
-              <span>{game ? game.player2.alias : "Player 2"}</span>
-              <img src={pic} alt="" />
-            </div>
-          </div>
-        </div> */}
         <div className="Home-LastGame PlayResult">
           <div className="lastgames-ele">
             <div className="Home-RowEle">
@@ -376,7 +373,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
         }
 
         <div className="quitGame">
-          <Link to={"../"}><i class="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
+          <Link to={"../"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
         </div>
       </div>
     </resultsContext.Provider>
