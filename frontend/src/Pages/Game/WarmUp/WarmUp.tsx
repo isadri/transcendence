@@ -179,15 +179,14 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
       }
       if (newSocket) {
         newSocket.onopen = () => {
-          if (!enemyUser) return
           console.log("friend sock open", enemyUser);
           newSocket.send(JSON.stringify({
-            "event": "READY"
+            "eveent": "READY"
           }))
         }
         newSocket.onclose = () => {
           console.log("friend sock closed", enemyUser);
-          // setEnemyUser(null)
+          setReady(false)
         }
         setSocket(newSocket)
         setReady(true)

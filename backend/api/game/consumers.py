@@ -60,20 +60,23 @@ class RandomGame(AsyncWebsocketConsumer):
 
 
   async def receive(self, text_data):
-    data = json.loads(text_data)
-    if data["event"] == "READY":
-      self.queue[self.user.username] = self
-      print(self.queue)
-      if len(self.queue) >= 2:
-        iterator = iter(iter(self.queue.items()))
-        key1 , player1 = next(iterator)
-        key2 , player2 = next(iterator)
-        self.gameMatch = await self.create_game(player1.user, player2.user)
-        self.room_name = f"room_{self.gameMatch.id}"
-        self.setAsConnected(key1, key2)
-        await self.handshaking(key1, key2)
-        await self.joinRoom(player1)
-        await self.joinRoom(player2)
+    try:
+      data = json.loads(text_data)
+      if data["event"] == "READY":
+        self.queue[self.user.username] = self
+        print(self.queue)
+        if len(self.queue) >= 2:
+          iterator = iter(iter(self.queue.items()))
+          key1 , player1 = next(iterator)
+          key2 , player2 = next(iterator)
+          self.gameMatch = await self.create_game(player1.user, player2.user)
+          self.room_name = f"random_game_{self.gameMatch.id}"
+          self.setAsConnected(key1, key2)
+          await self.handshaking(key1, key2)
+          await self.joinRoom(player1)
+          await self.joinRoom(player2)
+    except:
+      await self.close()
 
 
   @database_sync_to_async
@@ -138,7 +141,7 @@ class GameData:
     self.resetBall()
 
     self.done = False
-    self.winneer = None
+    self.winner = None
 
     self.player1Update = 0
     self.player2Update = 0
@@ -220,7 +223,7 @@ class GameData:
   def checkWinner(self):
     if self.score[self.player1] == 7 or self.score[self.player2] == 7:
       self.done = True
-      self.winneer = self.player1 if self.score[self.player1] == 7 else self.player2
+      self.winner = self.player1 if self.score[self.player1] == 7 else self.player2
       return True
     return False
 
@@ -297,10 +300,10 @@ class GameData:
   def abort_game(self, username=None):
     self.done = True
     if username:
-      self.winneer = username
+      self.winner = username
 
   def getWinner(self):
-    return self.winneer
+    return self.winner
 
 class RemoteGame(AsyncWebsocketConsumer):
 
