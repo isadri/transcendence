@@ -5,27 +5,31 @@ import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
+import { FriendDataType } from "../../../context/context";
+import axios from "axios";
 
 
 interface PlayerCardData {
   enemy?: boolean,
   isRandom?: boolean,
+  inviteId?: string | undefined,
 }
 
-interface EnemyUserData {
-  username: string,
-  avatar: string,
-  email: string,
+interface GameInviteData {
   id: number,
+  sent_at: string,
+  status: string,
+  inviter_data: FriendDataType,
+  invited_data: FriendDataType,
 }
 
 interface ContextData {
   socket: WebSocket | null,
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>,
-  enemyUser: EnemyUserData | null
-  setEnemyUser: React.Dispatch<React.SetStateAction<EnemyUserData | null>>,
+  enemyUser: FriendDataType | null
+  setEnemyUser: React.Dispatch<React.SetStateAction<FriendDataType | null>>,
   setDisplayFriends: React.Dispatch<React.SetStateAction<boolean>>,
   ready: boolean,
   setReady: React.Dispatch<React.SetStateAction<boolean>>
@@ -57,7 +61,6 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
     }, [setEnemyUser, setSocket, socket])
 
     const inviteFriend = () => {
-      console.log('here');
       setDisplayFriends(true)
     }
 
@@ -129,49 +132,65 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 }
 
 
-const WarmUpBox = () => {
-  return (
-    <div className="GameHistoryItem">
-      <div className="GameHistoryItemLeft">
-        <img src={avatar} />
-        <span>user56789012345</span>
-      </div>
-      <div className="GameHistoryItemResult">
-        <img src={vsImage} />
-      </div>
-      <div className="GameHistoryItemRight">
-        <span>user56789012345</span>
-        <img src={avatar} />
-      </div>
-    </div>
-  )
-}
+// const WarmUpBox = () => {
+//   return (
+//     <div className="GameHistoryItem">
+//       <div className="GameHistoryItemLeft">
+//         <img src={avatar} />
+//         <span>user56789012345</span>
+//       </div>
+//       <div className="GameHistoryItemResult">
+//         <img src={vsImage} />
+//       </div>
+//       <div className="GameHistoryItemRight">
+//         <span>user56789012345</span>
+//         <img src={avatar} />
+//       </div>
+//     </div>
+//   )
+// }
 
-const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
+const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
+  const navigator = useNavigate()
   if (context) {
     let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser } = context
-    console.log(enemyUser);
 
     const onReady = () => {
       if (ready)
         return
-      console.log('isRandom', isRandom)
-      const newSocket = new WebSocket(isRandom ? 
-            getendpoint('ws', '/ws/game/random/'):
-            getendpoint('ws', '/ws/game/friend/')
-          )
-      setSocket(newSocket)
-      newSocket.onopen = () => {
-        
-        newSocket.send(JSON.stringify({
-          "event": "READY",
-        }))
+      let newSocket = null;
+      if (isRandom) {
+        newSocket = new WebSocket(getendpoint('ws', '/ws/game/random'))
       }
-      newSocket.onclose = () => {
-        setEnemyUser(null)
+      else {
+        if (inviteId)
+          newSocket = new WebSocket(getendpoint('ws', `/ws/game/friend/${inviteId}`))
+        else if (enemyUser) {
+          axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
+            .then((response) => {
+              console.log('created ', response.data);
+
+              navigator(`/game/warmup/friends/${response.data.id}`)
+            })
+            .catch((error) => {console.log(error.response.data)}
+            )
+        }
       }
-      setReady(true)
+      if (newSocket) {
+        newSocket.onopen = () => {
+          console.log("friend sock open", enemyUser);
+          newSocket.send(JSON.stringify({
+            "eveent": "READY"
+          }))
+        }
+        newSocket.onclose = () => {
+          console.log("friend sock closed", enemyUser);
+          setReady(false)
+        }
+        setSocket(newSocket)
+        setReady(true)
+      }
     }
     const onAbort = () => {
       if (socket) {
@@ -183,26 +202,43 @@ const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
         setReady(false)
       }
     }
+    console.log(inviteId)
     return (
       <div className="WarmUpReadyContext">
-        {/* <div className="WarmupReady"> */}
         <button className="WarmUpReadyBtn" onClick={onReady}>
-          {ready ? "Wait" : "Ready"}
+          {ready ? "Wait" : (
+            !isRandom && !inviteId ? "invite" : "Ready"
+          )}
         </button>
         <button className="WarmUpAbortBtn" onClick={onAbort}>
           Abort
         </button>
-        {/* </div> */}
       </div>
     )
   }
 }
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
+  const { inviteID } = useParams()
+  const user = getUser()
+  const navigator = useNavigate()
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   let [socket, setSocket] = useState<WebSocket | null>(null)
   const [ready, setReady] = useState<boolean>(false)
-  const [enemyUser, setEnemyUser] = useState<EnemyUserData | null>(null)
+  const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null)
+
+  if (inviteID && !enemyUser) {
+    axios.get(getendpoint("http", `/api/game/invite/${inviteID}`))
+      .then((response) => {
+        if (user) {
+          if (user.id === response.data.invited)
+            setEnemyUser(response.data.invited_data)
+          else
+            setEnemyUser(response.data.inviter_data)
+        }
+      })
+      .catch((error) =>  navigator(`/game/warmup/friends/`))
+  }
   return (
     <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>
       <div className="GameWarmUp">
@@ -216,10 +252,10 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
           {/* <div className="WarmUpBox">
             <WarmUpBox/>
           </div> */}
-          <ReadyContext />
+          <ReadyContext inviteId={inviteID} isRandom={isRandom}/>
         </div>
       </div>
-      {displayFriends ? <FriendsPopUp setter={setDisplayFriends} /> : <></>}
+      {displayFriends && <FriendsPopUp setter={setDisplayFriends} />}
     </WarmUpContext.Provider>
   );
 }

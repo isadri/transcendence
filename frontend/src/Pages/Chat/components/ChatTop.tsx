@@ -67,6 +67,25 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 			console.log("Error in handling block/unblock: ", err);
 		}
 	};
+	const handleInvitePlay = () => {
+		if (!user) return;
+		let friend_id;
+		if (user?.id === selectedFriend.user1.id) {
+			friend_id = selectedFriend.user2.id;
+		} else {
+			friend_id = selectedFriend.user1.id;
+		}
+		axios
+		.post(getendpoint("http", `/api/game/invite/`), { invited: friend_id })
+		.then((response) => {
+			console.log("created ", response.data);
+
+			navigate(`/game/warmup/friends/${response.data.id}`);
+		})
+		.catch((error) => {
+			console.log(error.response.data);
+		});
+	};
 
 	const friend_user =
 		user?.id === selectedFriend.user2.id
@@ -110,7 +129,7 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 				></i>
 				{openMenu && (
 					<ul className="menu-list">
-						<li>Invite to play</li>
+						<li onClick={handleInvitePlay}>Invite to play</li>
 						<li onClick={() => navigate(`/profile/${friend_user.username}`)}>
 							Friend profile
 						</li>
