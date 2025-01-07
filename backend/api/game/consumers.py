@@ -602,8 +602,10 @@ class RemoteTournament(AsyncWebsocketConsumer):
       self.tournament = await self.get_tournament(self.tournament_id)
       if not self.tournament:
         self.abort('This tournament does not exist!')
-      if not self.is_part_of_tournament(self.tournament):
+        return
+      if not await self.is_part_of_tournament(self.tournament):
         self.abort('You dont have the permissions to access this tournament!')
+        return
       self.task = await asyncio.create_task(self.update_data())
     else:
       self.abort('Something went wrong!')
@@ -657,8 +659,99 @@ class RemoteTournament(AsyncWebsocketConsumer):
 
 class FriendGame(AsyncWebsocketConsumer):
 
+  connected = {}
   async def connect(self):
     self.user = self.scope['user']
-    if not self.user or self.user.is_authenticated:
-      self.close()
+    if not self.user or not self.user.is_authenticated:
+      return
     await self.accept()
+    self.invite_id = self.scope["url_route"]["kwargs"]['invite_id']
+    self.invite = await self.get_invite(self.invite_id)
+    if not self.invite or not await self.is_part_of_invite(self.invite):
+      self.abort("No invite with this id or you dont have permission")
+      return
+    self.connected.setdefault(self.invite_id, {})
+    self.connected[self.invite_id].setdefault('players', [])
+    self.connected[self.invite_id]['players'].append(self)
+    self.room_name = f"room_invite_{self.invite.id}"
+    self.player1 = self.invite.inviter
+    self.player2 = self.invite.invited
+    await self.channel_layer.group_add(self.room_name, self.channel_name)
+    if not await self.accept_invite(self.invite):
+      self.close()
+
+
+  async def receive(self, text_data):
+    data = json.loads(text_data)
+    event = data.get("event")
+    if event and event == "READY":
+      if len(self.connected[self.invite_id]['players']) >= 2:
+        self.gameMatch = await self.create_game(player1=self.player1, player2=self.player2)
+        await self.delete_invite(self.invite)
+        await self.channel_layer.group_send(
+          self.room_name,
+          {
+            "type": "handshake",
+            "game_id": self.gameMatch.id,
+          },
+        )
+
+  @database_sync_to_async
+  def serializing_data(self, user):
+    serializer = FriendSerializer(user, context={'user':self.user})
+    return serializer.data
+  
+
+  async def handshake(self, event):
+    print(event)
+    await self.send(text_data=json.dumps({
+        "event" : "HANDSHAKING",
+        "game_id": event["game_id"],
+        "enemy": await self.serializing_data(self.player1 if self.user == self.player2 else self.player2)
+      }))
+
+  async def abort(self, message):
+    await self.send(text_data=json.dumps({
+      'event': 'ABORT',
+      'message': message
+    }))
+    self.close()
+
+  @database_sync_to_async
+  def is_part_of_invite(self, invite):
+    return self.user in [invite.inviter, invite.invited]
+
+  @database_sync_to_async
+  def accept_invite(self, id):
+    try:
+      if self.user == self.invite.invited:
+        self.invite.status = 'A'
+        self.invite.save(update_fields=['status'])
+      return True
+    except Exception as e:
+      return False
+
+  @database_sync_to_async
+  def get_invite(self, id):
+    try:
+      return GameInvite.objects.get(pk=id)
+    except Exception as e:
+      return None
+
+
+  @database_sync_to_async
+  def create_game(self, player1, player2):
+    return Game.objects.create(player1=player1, player2=player2)
+
+
+  @database_sync_to_async
+  def delete_invite(self, invite:GameInvite):
+    try:
+      invite.delete()
+    except Exception as e:
+      pass
+
+  async def disconnect(self, code):
+    await self.channel_layer.group_discard(self.room_name, self.channel_name)
+
+
