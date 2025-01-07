@@ -99,7 +99,7 @@ const mainRoutingTable = [
           },
           {
             path: "random",
-            element: <WarmUp isRandom/>,
+            element: <WarmUp isRandom={true}/>,
           },
         ]
       },

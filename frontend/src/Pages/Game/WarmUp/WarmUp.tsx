@@ -253,7 +253,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
           {/* <div className="WarmUpBox">
             <WarmUpBox/>
           </div> */}
-          <ReadyContext inviteId={inviteID}/>
+          <ReadyContext inviteId={inviteID} isRandom={isRandom}/>
         </div>
       </div>
       {displayFriends && <FriendsPopUp setter={setDisplayFriends} />}
