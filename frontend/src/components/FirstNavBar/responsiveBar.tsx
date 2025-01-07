@@ -1,13 +1,13 @@
 import "./navBar.css";
 import { Link } from "react-router-dom";
 
-function responsiveBar() {
+function responsiveBar({setValue}:{setValue: React.Dispatch<React.SetStateAction<boolean>>}) {
   return (
     <div className='resBar'>
         <ul >
-          <li><Link to="/landing">Home</Link></li>
-          <li><Link to="/aboutUs">AboutUs</Link></li>
-          <li><Link to="/license">License</Link></li>
+          <li><Link to="/landing" onClick={()=> setValue(false)}>Home</Link></li>
+          <li><Link to="/aboutUs" onClick={()=> setValue(false)}>AboutUs</Link></li>
+          <li><Link to="/license" onClick={()=> setValue(false)}>License</Link></li>
         </ul>
         <hr className="line" />
         <ul>

@@ -46,7 +46,7 @@ function navBar() {
           </div>
         </nav>
         )}
-        {value === true && !hideNavBar ? <ResponsiveBar/> : null}
+        {value === true && !hideNavBar ? <ResponsiveBar setValue={setValue} /> : null}
     </>
   );
 }

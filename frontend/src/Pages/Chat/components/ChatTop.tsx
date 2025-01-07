@@ -1,8 +1,7 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
-import { getUser, getendpoint } from "../../../context/getContextData";
-import axios from "axios";
+import { getUser} from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 interface ChatTopProps {
