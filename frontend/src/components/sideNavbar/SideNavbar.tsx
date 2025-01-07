@@ -23,6 +23,7 @@ const SideNavbar = () => {
 
 	const [desplayMenu, setDesplayMenu] = useState(false);
 	const handleMenuClick = () => {
+		console.log("99999")
 		setDesplayMenu(!desplayMenu);
 	};
 
