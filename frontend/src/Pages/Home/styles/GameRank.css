@@ -147,8 +147,8 @@
 	border-radius: 50%;
 	border: 1px solid #04de04;
 	background-color: #04de04;
-	top: 40px;
-	right: 14px;
+	top: 35px;
+    right: 1px;
 }
 
 @media only screen and (max-width: 1073px){
