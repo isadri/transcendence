@@ -255,8 +255,10 @@
 .forgetPass{
     width: 35%;
     height: 60%;
-    min-width: 450px;
-    min-height: 390px;
+    min-width: 400px;
+    min-height: 350px;
+    max-width: 470px;
+    max-height: 450px;
     background-color: var(--fade);
     display: flex;
     flex-direction: column;

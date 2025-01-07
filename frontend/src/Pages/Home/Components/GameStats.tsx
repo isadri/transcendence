@@ -10,8 +10,11 @@ import {
 } from 'chart.js';
 import 'chartjs-plugin-datalabels';  // Import the datalabels plugin
 import '../styles/GameStats.css';
-import { getUser } from '../../../context/getContextData';
+import { getUser, getendpoint } from '../../../context/getContextData';
 import { div } from 'three/webgpu';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { stats } from '../../../context/context';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
@@ -19,6 +22,20 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 
 function GameStats() {
   const user = getUser()
+  const [stats, setStats] = useState<stats>()
+
+
+  useEffect(() => {
+    axios.get(getendpoint("http", `/api/game/userStats/${user?.username}`))
+    .then((response) => {
+      setStats(response.data[0])
+      console.log(response.data[0])
+    })
+    .catch((error) => {
+      console.log("error==================>",error)
+    })
+  }, []);
+
   const data = {
     labels: [
       'Number of Wins',
@@ -26,7 +43,7 @@ function GameStats() {
     ],
     datasets: [{
       label: 'Game Stats',
-      data: [user?.stats.win, user?.stats.lose],
+      data: [stats?.win, stats?.lose],
       backgroundColor: [
         '#c1596c',
         '#462d4b',
@@ -62,6 +79,7 @@ function GameStats() {
       formatter: (value: number) => `${value}%`, // Optional: add custom formatting
     },
   };
+
   return (
     <div className='userStats'>
       <h2>Games Stats</h2>
@@ -71,11 +89,13 @@ function GameStats() {
           <div className='labels'>
             <div className='win-label'>
               <div className='winlabel-div'>
+                <span>{stats?.win}</span>
                 <span>Wins</span>
               </div>
             </div>
             <div className='loss-label'>
               <div className='losslabel-div'>
+                <span>{stats?.lose}</span>
                 <span>Losses</span>
               </div>
             </div>
@@ -91,7 +111,6 @@ function GameStats() {
           <div className='Nostats'>
             <div className='stats-icon'>
             <i className="fa-solid fa-chart-pie"></i>
-              {/* <i className="fa-solid fa-chart-column"></i> */}
             </div>
             <div className='NoStats-msg'>
               <h3>No stats to display</h3>

@@ -450,12 +450,23 @@ class FriendshipStatusView(APIView):
         """
         try:
             friend_request = FriendRequest.objects.filter(
-                (Q(sender=request.user, receiver_id=pk) | Q(sender_id=pk, receiver=request.user))
+                (Q(sender=request.user, receiver_id=pk))
             ).first()
+            if friend_request and friend_request.status == 'pending':
+                return Response({'status':'cancel'}, status=status.HTTP_200_OK)
+                
+            friend_request = FriendRequest.objects.filter(
+                ( Q(sender_id=pk, receiver=request.user))
+            ).first()
+            if friend_request and friend_request.status == 'pending':
+                return Response({'status':'pending'}, status=status.HTTP_200_OK)
 
+            friend_request = FriendRequest.objects.filter(
+                ( Q(sender_id=pk, receiver=request.user) | (Q(sender=request.user, receiver_id=pk)))
+            ).first()
             if not friend_request:
                 return Response({'status': 'no_request'}, status=status.HTTP_200_OK)
-
+            print("friend_request.status => ",friend_request.status)
             return Response({'status': friend_request.status}, status=status.HTTP_200_OK)
 
         except Exception as e:

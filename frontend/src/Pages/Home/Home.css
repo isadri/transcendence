@@ -1,6 +1,6 @@
 .Home-homePage {
 	width: 100%;
-	height: 96vh;
+	height: 90vh;
 	position: relative;
 	overflow-y: auto;
 	-ms-overflow-style: none; /* Hide scrollbars in IE and Edge */
@@ -85,7 +85,25 @@
 		display: none;
 	}
 }
-
+@media only screen and (max-width: 478px) {
+	.Home-welcome .Home-content{
+		display: none;
+	}
+}
+@media only screen and (max-width: 478px) {
+	.Home-welcome .Home-Image{
+		display: none;
+	}
+	.Home-welcome .Home-profile{
+		margin-top: 0;
+	}
+	.Home-homePage{
+		/* width: 95%;
+		display: flex;
+		flex-direction: column;
+		align-items: center; */
+	}
+}
 /* @media only screen and (min-height: 1030px){
     .Home-homePage {
         margin-top: 100px;

@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { loginContext } from "../../App";
 import { getendpoint } from "../../context/getContextData";
+import Icons from "../globalComponent/Icons";
 
 const SideNavbar = () => {
 	const authContext = useContext(loginContext)
@@ -48,7 +49,8 @@ const SideNavbar = () => {
 					<div className="closeNavbarMobile">
 						<img src={logo} alt="logo" className="logoMobile" />
 						<div className="menu-notiMobile">
-							<i className="fa-solid fa-bell notificationMobile"></i>
+							<Icons />
+							{/* <i className="fa-solid fa-bell notificationMobile"></i> */}
 							<i
 								className={`${
 									desplayMenu === true

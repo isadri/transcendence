@@ -10,46 +10,30 @@ import {
 import { Link, useLocation } from "react-router-dom";
 
 function Icons() {
-	const contxt = getContext();
-	const notificationList = getNotifications();
-	const UnreadNotif = getUnreadCount();
-	const [isIconClicked, setIsIconClicked] = useState(false);
-	const user = getUser();
-	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false);
+	const contxt = getContext()
+	const notificationList = getNotifications()
+	const UnreadNotif = getUnreadCount()
+	const [isIconClicked, setIsIconClicked] = useState(false)
+	const user = getUser()
+	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
 	// const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
 	// const [unread, setUnread] = useState(0)
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const hideProfileImg =
-		useLocation().pathname === "/" ||
-		useLocation().pathname === "/home" ||
-		useLocation().pathname === "/profile";
+	const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"
+		|| useLocation().pathname === "/profile"
 	const handelNotifacations = () => {
-		setIsIconClicked(!isIconClicked);
-		axios
-			.get(getendpoint("http", "/api/notifications/notifications/"), {
-				withCredentials: true,
-			})
-			.then((response) => {
-				console.log("res => ", response.data);
-				contxt?.setNotifications(response.data);
-			})
-			.catch((error) => {
-				console.log(error.response);
-			});
-	};
-	// console.log("unread notif => ", UnreadNotif)
-	// console.log("unread  => ", contxt?.unreadCount)
+		setIsIconClicked(!isIconClicked)
+	}
 	const handelClearAll = () => {
 		axios
 			.delete(getendpoint("http", "/api/notifications/clear-all-notif/"), {
 				withCredentials: true,
 			})
 			.then(() => {
-				console.log("hello");
+				console.log("hello")
 				contxt?.setUnreadCount(0);
-				contxt?.setNotifications([]);
-				// console.log("sosi => ",notificationList)
+				contxt?.setNotifications([])
 			})
 			.catch((error) => {
 				console.log("Error clearing notifications:", error.response);
@@ -72,47 +56,52 @@ function Icons() {
 
 	const deleteNotification = (notifId: Number) => {
 		axios
-		.delete(getendpoint("http", `/api/notifications/delete-notif/${notifId}`), {
-			withCredentials: true,
-		})
-		setIsIconClicked(!isIconClicked)
-	}
-	
-	const handleDeclineInvite = (id: Number, notifId: Number) => {
-		axios
-		.delete(getendpoint("http", `/api/game/invite/${id}/decline/`), {
-			withCredentials: true,
-		})
-		.catch((error) => {
-			console.log("Error delete invite request:", error.response);
-		});
-		deleteNotification(notifId)
-	};
-
-	useEffect(() => {
-		if (isIconClicked) {
-			axios
-				.post(
-					getendpoint("http", "/api/notifications/mark-all-read/"),
-					{},
-					{ withCredentials: true }
-				)
-				.then(() => {
-					console.log("clicked");
-					contxt?.setUnreadCount(0);
-				});
-		}
-		axios
-			.get(getendpoint("http", "/api/notifications/unreadNotifications/"), {
+			.delete(getendpoint("http", `/api/notifications/delete-notif/${notifId}`), {
 				withCredentials: true,
 			})
-			.then((response) => {
-				contxt?.setUnreadCount(response.data.unread_notifications_count);
+		setIsIconClicked(!isIconClicked)
+	}
+
+	const handleDeclineInvite = (id: Number, notifId: Number) => {
+		axios
+			.delete(getendpoint("http", `/api/game/invite/${id}/decline/`), {
+				withCredentials: true,
 			})
 			.catch((error) => {
-				console.log(error.response);
+				console.log("Error delete invite request:", error.response);
 			});
-		setIsOnline(user?.is_online || false);
+		deleteNotification(notifId)
+	};
+	useEffect(() => {
+		axios
+			.get(getendpoint("http", "/api/notifications/notifications/"),
+				{ withCredentials: true })
+			.then((response) => {
+				console.log("res => ", response.data);
+				contxt?.setNotifications(response.data)
+			})
+			.catch(error => {
+				console.log(error.response)
+			})
+	}, [])
+	useEffect(() => {
+		if (isIconClicked) {
+			axios.post(getendpoint("http", "/api/notifications/mark-all-read/"), {},
+				{ withCredentials: true })
+				.then(() => {
+					console.log("clicked")
+					contxt?.setUnreadCount(0);
+				})
+		}
+		axios.get(getendpoint("http", "/api/notifications/unreadNotifications/"),
+			{ withCredentials: true })
+			.then(response => {
+				contxt?.setUnreadCount(response.data.unread_notifications_count)
+			})
+			.catch(error => {
+				console.log(error.response)
+			})
+		setIsOnline(user?.is_online || false)
 	}, [isIconClicked, user?.is_online, contxt?.unreadCount]);
 
 	useEffect(() => {

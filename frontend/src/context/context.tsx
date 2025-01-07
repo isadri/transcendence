@@ -92,6 +92,6 @@ interface loginContextData {
 
 export const loginContext = createContext<loginContextData | null>(null)
 
-export type {loginContextData, NotificationsData}
+export type {loginContextData, NotificationsData, stats}
 export type {userDataType}
 export type {FriendDataType}

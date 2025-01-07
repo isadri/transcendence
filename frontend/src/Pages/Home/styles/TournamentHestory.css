@@ -37,11 +37,27 @@
     width: 50%;
 }
 
+.stats-icon img{
+    width: 150px;
+}
+
 .elemens-tournament .tournamentState .SetWinner{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 15px;
+    position: relative;
+}
+.elemens-tournament .tournamentState .SetWinner .crown{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    transform: rotate(-45deg);
+    top: -17px;
+    left: -17px;
+}
+.elemens-tournament .tournamentState .SetWinner .crown img{
+    width: 100%;
 }
 .elemens-tournament .tournamentState .SetWinner span{
     color: var(--primary);
@@ -53,6 +69,8 @@
     width: 50px;
     border-radius: 50%;
     cursor: pointer;
+    position: relative;
+    border: 1px solid var(--primary);
 }
 
 .elemens-tournament .tournamentState .Finished{
@@ -65,6 +83,11 @@
 }
 
 
+@media only screen and (max-width: 550px){
+    .elemens-tournament .tournamentState .SetWinner span{
+        display: none;
+    }
+}
 @media only screen and (max-width: 400px){
     .elemens-tournament .tournamentState .playing{
         font-weight: 500;

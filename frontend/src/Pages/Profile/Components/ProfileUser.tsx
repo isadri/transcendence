@@ -4,29 +4,37 @@ import { UserData } from '../Profile'
 import { getendpoint, getUser } from '../../../context/getContextData'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { stats } from '../../../context/context'
 
 
 interface Prop{
   userData: UserData
   username: string
+  stats: stats
 }
 
-function ProfileUser({userData, username}:Prop) {
+function ProfileUser({userData, username, stats}:Prop) {
   const user = getUser()
   const [frindshipStatus, setfrindshipStatus] = useState("")
   const [isOnline, setIsOnline] = useState<boolean>(userData?.is_online || false)
+  // const [stats, setStats] = useState<stats>()
 
   useEffect(() => {
     axios.get(getendpoint('http', `/api/friends/friendship-status/${userData.id}`), {withCredentials:true})
     .then(response => {
       setfrindshipStatus(response.data.status)
-      console.log(response.data.status)
+      console.log("====>", response.data.status)
     })
     .catch(() => {
       console.log("Error fetching user data:");
     });
     setIsOnline(userData?.is_online || false)
   }, [userData.id, userData?.is_online]);
+
+  console.log("=====>", username)
+
+
+
   const handleSendRequests = async (id: number) => {
 			axios.post(getendpoint("http", "/api/friends/send/"),
 				{ receiver: id },
@@ -57,9 +65,21 @@ function ProfileUser({userData, username}:Prop) {
 		}
 	};
 
-  if (!userData)
-    return
-  const percentage = userData.stats.xp * 100 / ((userData.stats.level + 1) * 100);
+  const handleCancelRequests = async (id: number) => {
+		try {
+			await axios
+				.delete(getendpoint("http", `/api/friends/cancel/${id}`), {
+					withCredentials: true,
+				})
+				.then((response) => {
+				});
+		} catch (error) {
+			console.error("Error decline friend request:", error);
+		}
+	};
+  var percentage = 0
+  if (stats)
+   percentage = stats.xp * 100 / ((stats.level + 1) * 100);
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>
@@ -80,12 +100,12 @@ function ProfileUser({userData, username}:Prop) {
             frindshipStatus === "no_request" &&
             <div className='proBtn' >
               <button type='submit' onClick={() => {handleSendRequests(userData.id),
-                setfrindshipStatus("")} }><i className="fa-solid fa-user-plus"></i>Add friend</button>
+                setfrindshipStatus("cancel")} }><i className="fa-solid fa-user-plus"></i>Add friend</button>
             </div>
           }
           {
             frindshipStatus === "pending" &&
-            <div className='proBtn' style={{ width: '30%'}}>
+            <div className='proBtn' style={{ width: '40%'}}>
               <button type='submit' onClick={() => {handleAcceptRequest(userData.id),
                 setfrindshipStatus("accepted")}}><i className="fa-solid fa-user-check"></i>Confirm</button>
               <button type='submit' onClick={() => {handleDeleteRequests(userData.id)
@@ -93,10 +113,10 @@ function ProfileUser({userData, username}:Prop) {
             </div>
           }
           {
-            //not handled yet
-            frindshipStatus === "" && 
+            frindshipStatus === "cancel" &&
             <div className='proBtn'>
-              <button type='submit'><i className="fa-solid fa-user-xmark"></i>Cancel request</button>
+              <button type='submit' onClick={() => {handleCancelRequests(userData.id),
+                setfrindshipStatus("no_request")}}><i className="fa-solid fa-user-xmark"></i>Cancel request</button>
             </div>
           }
           {
@@ -141,11 +161,11 @@ function ProfileUser({userData, username}:Prop) {
         </div>
         <div className='Home-ProfileLevel'>
           <div className='Home-XpClass'>
-            <span>15000px / 12000xp </span>
+            <span>{stats.xp}xp / {(stats.level + 1)*100}xp </span>
           </div>
           <div className="Home-level-bar">
             <div className="Home-level-bar-fill" style={{ width: `${percentage}%` }}></div>
-            <span className="Home-level-text">Level {Math.floor(userData.stats.level)} - {Math.round(percentage)}%</span>
+            <span className="Home-level-text">Level {stats && Math.floor(stats.level)} - {Math.round(percentage)}%</span>
           </div>
         </div>
       </div>
