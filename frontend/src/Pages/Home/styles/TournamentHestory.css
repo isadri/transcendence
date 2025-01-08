@@ -1,3 +1,5 @@
+
+
 .elemens-tournament{
     gap: 38px;
 }
@@ -10,23 +12,44 @@
 .cupImage .img img{
     width: 40px;
 }
-
+.gmaeTournament{
+    display: flex;
+    flex-direction: row;
+    
+}
+.gmaeTournament .Timg{
+    display: flex;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    /* overflow: hidden; */
+}
 .gmaeTournament img{
     border: 1px solid #777676;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
-.gmaeTournament .img2{
+.gmaeTournament .Timg .img2{
+    position: relative;
+    box-shadow: 0 10px 31px rgba(0, 0, 0, 0.2);
     left: -20px ;
 }
-.gmaeTournament .img3{
+.gmaeTournament .Timg .img3{
+    position: relative;
+    box-shadow: 0 10px 31px rgba(0, 0, 0, 0.2);
     left: -40px ;
 }
-.gmaeTournament .img4{
+.gmaeTournament .Timg .img4{
+    box-shadow: 0 10px 31px rgba(0, 0, 0, 0.2);
+    position: relative;
     left: -60px ;
 }
 
-.gmaeTournament img:not(:nth-child(1)){
-    position: relative;
-    box-shadow: 0 10px 31px rgba(0, 0, 0, 0.2);
+
+.gmaeTournament .Timg img:not(:nth-child(1)){
 }
 
 .elemens-tournament .tournamentState{
@@ -65,12 +88,20 @@
     font-size: 14px;
 }
 
-.elemens-tournament .tournamentState .imgWinner{
-    width: 50px;
+.elemens-tournament .tournamentState .Timg {
+    display: flex;
+    align-items: center;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    border: 1px solid var(--primary);
+    overflow: hidden;
+}
+
+.elemens-tournament .tournamentState .Timg .imgWinner{
+    width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 
 .elemens-tournament .tournamentState .Finished{

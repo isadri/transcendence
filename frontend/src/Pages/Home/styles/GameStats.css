@@ -2,7 +2,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 640px;
+   /*height: 758px;*/
+    height: 650px;
     width: 40%;
     font-family: var(--mono);
 }
@@ -19,7 +20,6 @@
     border-radius: 15px;
     display: flex;
     align-items: center;
-    /* justify-content: center; */
     flex-direction: column;
 }
 

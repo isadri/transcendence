@@ -20,6 +20,7 @@
     left: 50%;
     transform: translateX(-50%);
     overflow: hidden;
+    min-height: 360px;
 }
 
 @media only screen and (min-width: 1200px){

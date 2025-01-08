@@ -121,7 +121,8 @@
     width: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: solid 1px white;
+    border: solid 2px white;
+    aspect-ratio: 1 /1;
 }
 
 .Home-ProfImg .onlineCircle{

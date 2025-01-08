@@ -6,6 +6,15 @@ import { getContext, getUser, getendpoint} from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 
+interface ErrorData {
+  username: string | undefined;
+  tmp_email: string | undefined;
+  avatar: string | undefined;
+  CurrentPassword: string;
+  password: string;
+  confirmPassword: string;
+}
+
 interface Data {
   username: string | undefined;
   email: string | undefined;
@@ -30,9 +39,9 @@ const Setting = () => {
   const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
   const [isOtpDisactive, setIsOtpDisactive] = useState(false)
   const [confirmEmail, setConfirmEmail] = useState(false)
-  const [errors, SetErrors] = useState<Data>({
+  const [errors, SetErrors] = useState<ErrorData>({
     username: "",
-    email: "",
+    tmp_email: "",
     avatar: "",
     CurrentPassword: "",
     password: "",
@@ -102,7 +111,7 @@ const Setting = () => {
           {
             console.log("dataaa=> ", response.data.data)
             authContext?.setUser(response.data.data);
-            SetErrors({ ...errors, username: "", email: "", avatar: "" });
+            SetErrors({ ...errors, username: "", tmp_email: "", avatar: "" });
             console.log("saved sacces")
           }
         })
@@ -270,8 +279,8 @@ const Setting = () => {
       </div>
       <div className="Par">
         <div className="settingPage">
-          <h1>Settings</h1>
           <div className="settingContent">
+            <h1>Settings</h1>
             <div className="ProfileEdit">
               <h2 >Edit Profile</h2>
               <div className="ChangeAvatar">
@@ -293,6 +302,7 @@ const Setting = () => {
                   <input
                     type="file"
                     name="avatar"
+                    accept=".jpg,.jpeg,.png"
                     onChange={handleFileChange}
                     id="file-input"
                     style={{ display: "none" }}
@@ -322,8 +332,8 @@ const Setting = () => {
                     value={dataUpdated.email}
                     onChange={handleInputChange}
                   />
-                  {errors.email !== undefined && (
-                    <p className={`${errors.email !== "" ? "SettingError" : ""}`}>{errors.email}</p>
+                  {errors.tmp_email !== undefined && (
+                    <p className={`${errors.tmp_email !== "" ? "SettingError" : ""}`}>{errors.tmp_email}</p>
                   )}
                 </div>
               </form>

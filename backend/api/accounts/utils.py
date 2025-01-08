@@ -18,6 +18,9 @@ from ..game.models import Game, UserAchievement, UserStats
 
 from .models import User
 
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 
 def get_next_id() -> int:
     """
@@ -86,6 +89,11 @@ def send_otp_to(user: User, toEmail: str) -> None:
     """
     Send an email to the user containg the otp key to confirm email on setting
     """
+    try:
+        validate_email(toEmail)  # Validate email format
+    except ValidationError:
+        raise ValueError(f"Invalid email address: {toEmail}")
+
     user.email_user_to_email(
         subject='Email verification',
         message=('Your verification code is: '
@@ -237,7 +245,7 @@ def get_user(data: dict) -> User | None:
                 username += '*' + str(get_next_id())
                 register_state = False
             user = User.objects.create_user(
-                remote_id=remote_id,
+                remote_id=[remote_id],
                 username=username,
                 email=email,
                 register_complete=register_state,
