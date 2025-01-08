@@ -290,16 +290,16 @@ class CancelFriendRequestsView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-class AcceptedFriendRequestsView(APIView):
-    """
-    View to list all accepted friend requests.
-    """
-    permission_classes = [IsAuthenticated]
+# class AcceptedFriendRequestsView(APIView):
+#     """
+#     View to list all accepted friend requests.
+#     """
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        accepted_requests = FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
-        serializer = FriendRequestReceiverSerializer(accepted_requests, many=True, context={'user': request.user})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#     def get(self, request, *args, **kwargs):
+#         accepted_requests = FriendRequest.objects.filter(receiver=self.request.user, status="accepted")
+#         serializer = FriendRequestReceiverSerializer(accepted_requests, many=True, context={'user': request.user})
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class BlockedFriendsRequestsView(APIView):
     """

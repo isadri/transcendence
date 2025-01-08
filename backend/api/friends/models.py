@@ -43,29 +43,6 @@ class FriendList(models.Model):
         """
         if friend in self.friends.all():
             self.friends.remove(friend)
-    
-    # def unfriend(self, removee):
-    #     """
-    #     Initiate the action of unfriending someone
-    #     """
-    #     remove_friends_list = self # person terminating the friendship
-
-    #     # Remove friend from remover friend list
-    #     remove_friends_list.remove_friend(removee)
-
-    #     # Remove friend from removee friend list
-    #     friends_list = FriendList.objects.get(user=removee)
-    #     friends_list.remove_friend(self.user)
-
-    # def is_mutual_friend(self, friend):
-    #     """
-    #     Is this a friend?
-    #     """
-    #     if friend in self.friends.all():
-    #         return True
-    #     return False
-
-
 
 STATUS_CHOICES = (
     ('pending', 'pending'),
