@@ -142,11 +142,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if (not chat_id or not blocked or not blocker):
                 await self.send(text_data=json.dumps({'error': 'Invalid'}))
                 return
+            if (int(blocker) != self.user.id):
+                await self.send(text_data=json.dumps({'error': 'You cannot block'}))
+                return
+            if (blocked == blocker):
+                await self.send(text_data=json.dumps({'error': 'You cannot block yourself'}))
+                return
             chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
 
             user1, user2 = await self.get_users_from_chat(chat)
-            blocker_user = await database_sync_to_async(User.objects.get)(id=blocker)
-            blocked_user = await database_sync_to_async(User.objects.get)(id=blocked)
+            if ((user1.id != int(blocked) and user1.id != int(blocker)) or (user2.id != int(blocked) and user2.id != int(blocker))):
+                await self.send(text_data=json.dumps({'error': 'You are not a member of that chat.'}))
+                return
+            try:
+                blocker_user = await database_sync_to_async(User.objects.get)(id=blocker)
+                blocked_user = await database_sync_to_async(User.objects.get)(id=blocked)
+            except User.DoesNotExist:
+                await self.send(text_data=json.dumps({
+                    'error': 'This user does not exist.'
+                }))
+                return
 
             if (status == True and chat.blocke_state_user1 != 'none' and chat.blocke_state_user2 != 'none'):
                 await self.send(text_data=json.dumps({'error': 'You cannot block this user.'}))
