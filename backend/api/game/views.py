@@ -232,7 +232,7 @@ class GameHistory(APIView):
   def get(self, request, username):
     try:
       user = get_object_or_404(User, username=username)
-      userStats = Game.objects.filter((Q(player1=user) | Q(player2=user)) & Q(progress='E'))
+      userStats = Game.objects.filter((Q(player1=user) | Q(player2=user)) & Q(progress='E')).order_by('-start_at')
       serializer = GameSerializer(userStats, many=True, context={'user' : request.user})
       return Response(serializer.data)
     except User.DoesNotExist:

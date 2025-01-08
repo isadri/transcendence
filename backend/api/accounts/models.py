@@ -62,6 +62,13 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_active=True.')
         return self.create_user(username, email, password, **extra_fields)
+    
+    def get_queryset(self):
+        """
+        Return users who have completed registration and verified their email.
+
+        """
+        return super().get_queryset().filter(register_complete=True, email_verified=True, is_active=True)
 
 
 class User(PermissionsMixin, AbstractBaseUser):
