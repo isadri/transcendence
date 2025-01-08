@@ -91,7 +91,6 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
 	"repository": "logs-backups-repo",
 	"config": {
 		"indices": "logs-nginx.access-dev,logs-django-dev",
-        "ignore_available": true,
         "include_global_state": false
 	},
 	"retention": {
