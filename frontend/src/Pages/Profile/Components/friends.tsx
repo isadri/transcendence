@@ -22,7 +22,7 @@ function friends({ FriendsLst, username }: Props) {
 		})
 		.catch((error) => {
 			console.log(error.response.data.error);
-      console.log("hellllllllo")
+      console.log("")
       cntxt?.setCreatedAlert(error.response.data.error)
       cntxt?.setDisplayed(3)
 		});

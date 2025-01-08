@@ -184,9 +184,9 @@
 @media only screen and (max-width: 400px){
     
     .Home-GameRank .Home-row1 .Home-ProfileRev img{
-        width: 30px;
+        /* width: 30px; */
     }
     .Home-GameRank .Home-row1 img{
-        width: 20px;
+        /* width: 20px; */
     }
 }

@@ -65,7 +65,9 @@ function GameHestory({ userData, username }: Prop) {
                   {userStats.winner === userData.id ? 'win' : 'lose'}</span>
                 <div className='Home-xp'>
                   <span
-                    style={userStats.winner === userData.id ? { color: '#00ff00' } : { color: '#ff0000' }}>50</span>
+                    style={userStats.winner === userData.id ? { color: '#00ff00' } : { color: '#ff0000' }}>
+                      { (Math.abs(userStats.p1_score - userStats.p2_score) * 30) + (userStats.winner === userData.id ? 10 : 0)}
+                  </span>
                   {
                     userStats.winner === userData.id &&
                     <i className="fa-solid fa-arrow-up-long"></i>

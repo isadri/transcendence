@@ -155,6 +155,8 @@ class UserStats(models.Model):
     elif self.level == 0:
       self.badge = -1
     self.save()
+    print("chi haja")
+    print(self.user)
     add_game_achievement_to_user(self.user)
     add_level_achievement_to_user(self.user)
     add_milestone_achievement_to_user(self.user)
@@ -165,7 +167,7 @@ class UserStats(models.Model):
     self.nbr_games += 1
     self.xp += diff_score * self.D_XP
     next_level = self.level + 1
-    required_xp = next_level * self.D_LEVEL
+    required_xp = next_level * self.D_LEVEL + 10
     if self.xp >= required_xp:
       diff = self.xp - required_xp
       self.xp = diff if diff > 0 else 0

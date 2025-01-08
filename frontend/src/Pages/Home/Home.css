@@ -3,8 +3,9 @@
 	height: 96vh;
 	position: relative;
 	overflow-y: auto;
-	-ms-overflow-style: none; /* Hide scrollbars in IE and Edge */
-	scrollbar-width: none; /* Hide scrollbars in Firefox */
+	overflow-x: hidden;
+	-ms-overflow-style: none; 
+	scrollbar-width: none; 
 }
 
 .Home-homePage::-webkit-scrollbar {

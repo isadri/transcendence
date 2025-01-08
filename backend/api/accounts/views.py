@@ -755,6 +755,9 @@ class UserDetailView(APIView):
         Retrieve user data by username.
         """
         user = get_object_or_404(User, username=username)
+        add_level_achievement_to_user(user)
+        add_game_achievement_to_user(user)
+        add_milestone_achievement_to_user(user)
         serializer = UserSerializer(user)
         data = serializer.data
         return Response(data, status=status.HTTP_200_OK)

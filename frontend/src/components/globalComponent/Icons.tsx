@@ -59,7 +59,19 @@ function Icons() {
 			.delete(getendpoint("http", `/api/notifications/delete-notif/${notifId}`), {
 				withCredentials: true,
 			})
-		setIsIconClicked(!isIconClicked)
+      .then(() => {
+        axios
+          .get(getendpoint("http", "/api/notifications/notifications/"),
+            { withCredentials: true })
+          .then((response) => {
+            console.log("res => ", response.data);
+            contxt?.setNotifications(response.data)
+          })
+          .catch(error => {
+            console.log(error.response)
+          })
+      })
+		// setIsIconClicked(!isIconClicked)
 	}
 
 	const handleDeclineInvite = (id: Number, notifId: Number) => {
@@ -161,7 +173,9 @@ function Icons() {
 																	<span>{data.message}</span>
 																	<div className="invite-icon">
 																		<Link
-																			to={`/game/warmup/friends/${data.inviteId}`}
+																			to={`/game/warmup/friends/${data.inviteId}`} onClick={() =>{
+																				setIsIconClicked(!isIconClicked)
+																			}}
 																		>
 																			<i className="fa-solid fa-check accept-invete"></i>
 																		</Link>
