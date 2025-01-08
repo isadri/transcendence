@@ -24,19 +24,20 @@ useGLTF.preload(tableUrl);
 
 // the context of the game result
 interface ResultContext {
+  ball: any,
+  paddle1: any,
+  paddle2: any,
+  gameId:number,
   error: string | null,
   user: FriendDataType,
   enemy: FriendDataType,
   result: [number, number],
   winner: FriendDataType | null,
+  socketRef: React.MutableRefObject<WebSocket | null>,
   setError: React.Dispatch<React.SetStateAction<string | null>>,
-  setResult: React.Dispatch<React.SetStateAction<[number, number]>>,
   setEnemy: React.Dispatch<React.SetStateAction<FriendDataType>>,
+  setResult: React.Dispatch<React.SetStateAction<[number, number]>>,
   setWinner: React.Dispatch<React.SetStateAction<userDataType | FriendDataType | null>>,
-  socket: WebSocket,
-  paddle1: any,
-  paddle2: any,
-  ball: any
 }
 const resultsContext = createContext<ResultContext | null>(null)
 
@@ -97,7 +98,7 @@ interface Paddlerops {
   box: PaddleBox
 }
 
-const move = (socket: WebSocket, username: string, direction: string) => {
+const move = (socket: WebSocket|null, username: string, direction: string) => {
 
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(
@@ -127,7 +128,9 @@ function Paddle1({ position, box }: Paddlerops) { // my Paddle
   }, [box, api])
   useEffect(() => {
     if (context) {
-      const { socket, user } = context
+      const { socketRef, user } = context
+      if (!socketRef) return
+      const socket = socketRef.current
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key == "ArrowRight" || event.key == "ArrowUp")
           move(socket, user.username, box.right)
@@ -260,8 +263,11 @@ function GameTable() {
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
   if (context) {
-    const { socket, setEnemy, enemy, user, setResult, setError, setWinner } = context
+    const { socketRef, setEnemy, enemy, user, setResult, setError, setWinner, gameId } = context
     useEffect(() => {
+      if (!socketRef || !socketRef.current)
+        socketRef.current = new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`))
+      const socket = socketRef.current
       socket.onmessage = (e) => {
 
         const data = JSON.parse(e.data)
@@ -270,8 +276,13 @@ function GameTable() {
 
           setError(data.message)
         }
-        if (data.event == "START") {
+        if (data.event == "START" && enemy.id == -1) {
           console.log(data);
+          socket.send(
+            JSON.stringify({
+              event: "DONE",
+            })
+          );
           setEnemy(data.enemy)
           setLoading(false)
           if (data[user.username] && data[user.username] == 'player2') {
@@ -329,10 +340,6 @@ function GameTable() {
       }
     }, [context])
 
-    useEffect(() => {
-      if (enemy.id != -1)
-        setLoading()
-    })
     if (!loading)
       return (
         <>
@@ -361,14 +368,14 @@ const Play = () => {
   const context = useContext(resultsContext)
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   if (context) {
-    const { result, user, enemy, error, winner, socket } = context
+    const { result, user, enemy, error, winner, socketRef } = context
 
     useEffect(() => {
       let renderer: WebGLRenderer | null = null;
-
+      const socket = socketRef.current
       const handleContextLost = (event: Event) => {
         event.preventDefault()
-        if (socket.readyState === WebSocket.OPEN)
+        if (socket && socket.readyState === WebSocket.OPEN)
           socket.close()
       };
 
@@ -383,11 +390,11 @@ const Play = () => {
           const glCanvas = renderer.domElement;
           glCanvas.removeEventListener("webglcontextlost", handleContextLost);
         }
-        if (socket.readyState === WebSocket.OPEN) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
           socket.close(1000, "Component unmounted");
         }
       };
-    }, [socket]);
+    }, [socketRef]);
 
     return (
       <>
@@ -494,27 +501,15 @@ const emptyUser: FriendDataType = {
   rank: 0,
 }
 
-const Provider = ({ socket }: { socket: WebSocket }) => {
+const Provider = ({ socketRef, gameId }: { socketRef: React.MutableRefObject<WebSocket | null> , gameId:number}) => {
   const user = getUser()
   const [error, setError] = useState<string | null>(null)
   const [enemy, setEnemy] = useState<FriendDataType>(emptyUser)
   const [winner, setWinner] = useState<userDataType | FriendDataType | null>(null)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
-  socket.onmessage = (e) =>{
-    const data = JSON.parse(e.data)
-    if (data.event == "ABORT") {
-      console.log(data.message);
-      setError(data.message)
-    }
-    if (data.event == "START") {
-      if (!user)
-        return
-      setEnemy(data.enemy)
-    }
-  }
   return (
-    <resultsContext.Provider value={{ result, setResult, user, socket, enemy, setEnemy, error, setError, winner, setWinner }}>
+    <resultsContext.Provider value={{ result, setResult, user, socketRef, enemy, setEnemy, error, setError, winner, setWinner, gameId }}>
       <Play />
     </resultsContext.Provider>
   )
@@ -524,12 +519,11 @@ const Provider = ({ socket }: { socket: WebSocket }) => {
 
 const Remote = () => {
   const { id } = useParams();
-  if (!id)
+  const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
+  if (gameId == -1)
     return <Navigate to={"/"}/>
-  const [gameId] = useState<string>(id)
-  const [socket] = useState<WebSocket>(new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`)))
-  socket.onclose = (e) => console.log('closed')
-  return (<Provider socket={socket} />)
+  const socket = useRef<WebSocket|null>(null)
+  return (<Provider socketRef={socket} gameId={gameId}/>)
 }
 
 export default Remote;
