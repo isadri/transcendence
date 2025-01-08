@@ -1,8 +1,6 @@
 import { Canvas, context, useThree } from "@react-three/fiber";
 import "../Play/Play.css";
-import winnerImg from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
-import pic from "../../Home/images/profile.svg"
 import "../../Home/styles/LastGame.css"
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
@@ -17,28 +15,29 @@ import {
 import { Material } from 'cannon-es';
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AxesHelper, DoubleSide, Fog, MathUtils, Object3D, Object3DEventMap, WebGLRenderer } from "three";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { getUser, getendpoint } from "../../../context/getContextData";
-import { userDataType } from "../../../context/context";
+import { FriendDataType, userDataType } from "../../../context/context";
 
 const tableUrl = new URL("../../../assets/glb/tableLwa3ra.glb", import.meta.url).href;
 useGLTF.preload(tableUrl);
 
 // the context of the game result
 interface ResultContext {
-  error: string | null,
-  user: userDataType,
-  enemy: userDataType,
-  result: [number, number],
-  winner: userDataType | null,
-  setError: React.Dispatch<React.SetStateAction<string | null>>,
-  setResult: React.Dispatch<React.SetStateAction<[number, number]>>,
-  setEnemy: React.Dispatch<React.SetStateAction<userDataType>>,
-  setWinner: React.Dispatch<React.SetStateAction<userDataType | null>>,
-  socket: WebSocket,
+  ball: any,
   paddle1: any,
   paddle2: any,
-  ball: any
+  gameId:number,
+  error: string | null,
+  user: FriendDataType,
+  enemy: FriendDataType,
+  result: [number, number],
+  winner: FriendDataType | null,
+  socketRef: React.MutableRefObject<WebSocket | null>,
+  setError: React.Dispatch<React.SetStateAction<string | null>>,
+  setEnemy: React.Dispatch<React.SetStateAction<FriendDataType>>,
+  setResult: React.Dispatch<React.SetStateAction<[number, number]>>,
+  setWinner: React.Dispatch<React.SetStateAction<userDataType | FriendDataType | null>>,
 }
 const resultsContext = createContext<ResultContext | null>(null)
 
@@ -99,7 +98,7 @@ interface Paddlerops {
   box: PaddleBox
 }
 
-const move = (socket: WebSocket, username: string, direction: string) => {
+const move = (socket: WebSocket|null, username: string, direction: string) => {
 
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(
@@ -129,7 +128,9 @@ function Paddle1({ position, box }: Paddlerops) { // my Paddle
   }, [box, api])
   useEffect(() => {
     if (context) {
-      const { socket, user } = context
+      const { socketRef, user } = context
+      if (!socketRef) return
+      const socket = socketRef.current
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key == "ArrowRight" || event.key == "ArrowUp")
           move(socket, user.username, box.right)
@@ -262,8 +263,11 @@ function GameTable() {
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
   if (context) {
+    const { socketRef, setEnemy, enemy, user, setResult, setError, setWinner, gameId } = context
     useEffect(() => {
-      const { socket, setEnemy, enemy, user, setResult, setError, setWinner } = context
+      if (!socketRef || !socketRef.current)
+        socketRef.current = new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`))
+      const socket = socketRef.current
       socket.onmessage = (e) => {
 
         const data = JSON.parse(e.data)
@@ -272,8 +276,13 @@ function GameTable() {
 
           setError(data.message)
         }
-        if (data.event == "START") {
+        if (data.event == "START" && enemy.id == -1) {
           console.log(data);
+          socket.send(
+            JSON.stringify({
+              event: "DONE",
+            })
+          );
           setEnemy(data.enemy)
           setLoading(false)
           if (data[user.username] && data[user.username] == 'player2') {
@@ -330,6 +339,7 @@ function GameTable() {
         }
       }
     }, [context])
+
     if (!loading)
       return (
         <>
@@ -346,7 +356,7 @@ function GameTable() {
             <meshStandardMaterial side={DoubleSide} color={"#c1596c"} />
           </mesh>
 
-          <primitive object={new AxesHelper(5)} />
+          {/* <primitive object={new AxesHelper(5)} /> */}
         </>
       );
     return <></>
@@ -358,14 +368,14 @@ const Play = () => {
   const context = useContext(resultsContext)
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   if (context) {
-    const { result, user, enemy, error, winner, socket } = context
+    const { result, user, enemy, error, winner, socketRef } = context
 
     useEffect(() => {
       let renderer: WebGLRenderer | null = null;
-
+      const socket = socketRef.current
       const handleContextLost = (event: Event) => {
         event.preventDefault()
-        if (socket.readyState === WebSocket.OPEN)
+        if (socket && socket.readyState === WebSocket.OPEN)
           socket.close()
       };
 
@@ -380,11 +390,11 @@ const Play = () => {
           const glCanvas = renderer.domElement;
           glCanvas.removeEventListener("webglcontextlost", handleContextLost);
         }
-        if (socket.readyState === WebSocket.OPEN) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
           socket.close(1000, "Component unmounted");
         }
       };
-    }, [socket]);
+    }, [socketRef]);
 
     return (
       <>
@@ -395,28 +405,35 @@ const Play = () => {
             <directionalLight position={[-50, -9, -5]} intensity={1} />
             <pointLight position={[5, 9, -5]} intensity={1} />
             <directionalLight position={[3, 9, 5]} intensity={2} />
-            <Physics iterations={40} gravity={[0, -9.81, 0]} step={1 / 240} isPaused={false}>
+            <Physics iterations={40} gravity={[0, -9.81, 0]} stepSize={1 / 120} isPaused={false}>
               {/* <Debug> */}
               <GameTable />
               {/* </Debug> */}
             </Physics>
           </Canvas>
           <div className="Home-LastGame PlayResult">
-            <div className='Home-RowEle'>
-              <div className='Home-Row1'>
-                <img src={getendpoint("http", user.avatar)} alt="" />
-                <span>{user.username}</span>
-              </div>
-              <div>
-                <div className='Home-Row2'>
-                  <span className='Home-score1'>{result[0]}</span>
-                  <img src={vs} alt="" />
-                  <span className='Home-score2'>{result[1]}</span>
+            <div className="lastgames-ele">
+              <div className="Home-RowEle">
+                <div className="Home-Row1">
+                  <img src={getendpoint("http", user.avatar)} alt="" />
+                  <span >{user.username}</span>
                 </div>
-              </div>
-              <div className='Home-Row3'>
-                <span>{enemy.username}</span>
-                <img src={enemy.id !== -1 ? getendpoint("http", enemy.avatar) : pic} alt="" />
+                <div>
+                  <div className="Home-Row2">
+                    <div className="Home-Row2-content">
+                      <span className="Home-score1">{result[0]}</span>
+                      <img src={vs} alt="" />
+                      <span className="Home-score2">{result[1]}</span>
+                    </div>
+                    <div className="date">
+                      <span>remote game</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="Home-Row3">
+                  <span >{enemy.username}</span>
+                  <img src={getendpoint("http", enemy.avatar)} alt="" />
+                </div>
               </div>
             </div>
           </div>
@@ -440,7 +457,7 @@ const Play = () => {
               ?
               <div className="winnerPopUp">
                 <h2>The Winner</h2>
-                <img src={winnerImg} alt="" className="winnerPic" />
+                {/* <img src={winnerImg} alt="" className="winnerPic" /> */}
                 <img src={getendpoint('http', winner.avatar)} className="winnerAvatar" />
                 <h3>{winner.username}</h3>
                 <div className="winnerBtns">
@@ -451,6 +468,9 @@ const Play = () => {
               :
               <></>
           }
+          <div className="quitGame">
+            <Link to={"../"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
+          </div>
         </div>
       </>
     );
@@ -462,24 +482,34 @@ const Play = () => {
 //   gameId
 // }
 
-const emptyUser:userDataType = {
+const emptyUser: FriendDataType = {
   id: -1,
   username: "Enemy",
   email: "",
-  avatar: "",
-  register_complete:true,
-  from_remote_api:false,
+  avatar: "/media/default.jpeg",
+  is_blocked: false,
+  is_online: true,
+  stats: {
+    xp: 0,
+    win: 0,
+    lose: 0,
+    level: 0,
+    user: -1,
+    badge: -1,
+    nbr_games: 0,
+  },
+  rank: 0,
 }
 
-const Provider = ({ socket }: { socket: WebSocket }) => {
+const Provider = ({ socketRef, gameId }: { socketRef: React.MutableRefObject<WebSocket | null> , gameId:number}) => {
   const user = getUser()
   const [error, setError] = useState<string | null>(null)
-  const [enemy, setEnemy] = useState<userDataType>(emptyUser)
-  const [winner, setWinner] = useState<userDataType | null>(null)
+  const [enemy, setEnemy] = useState<FriendDataType>(emptyUser)
+  const [winner, setWinner] = useState<userDataType | FriendDataType | null>(null)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
   return (
-    <resultsContext.Provider value={{ result, setResult, user, socket, enemy, setEnemy, error, setError, winner, setWinner }}>
+    <resultsContext.Provider value={{ result, setResult, user, socketRef, enemy, setEnemy, error, setError, winner, setWinner, gameId }}>
       <Play />
     </resultsContext.Provider>
   )
@@ -490,9 +520,10 @@ const Provider = ({ socket }: { socket: WebSocket }) => {
 const Remote = () => {
   const { id } = useParams();
   const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
-  const [socket] = useState<WebSocket>(new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`)))
-  socket.onclose = (e) => console.log('closed')
-  return (<Provider socket={socket} />)
+  if (gameId == -1)
+    return <Navigate to={"/"}/>
+  const socket = useRef<WebSocket|null>(null)
+  return (<Provider socketRef={socket} gameId={gameId}/>)
 }
 
 export default Remote;
