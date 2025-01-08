@@ -319,7 +319,10 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
           <div className="lastgames-ele">
             <div className="Home-RowEle">
               <div className="Home-Row1">
-                <img src={getendpoint("http", "/media/default.jpeg")} alt="" />
+
+                <div className="Uimg">
+                  <img src={getendpoint("http", "/media/default.jpeg")} alt="" />
+                </div>
                 <span >{game ? game.player1.alias : "Player 1"}</span>
               </div>
               <div>
@@ -336,7 +339,9 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
               </div>
               <div className="Home-Row3">
                 <span >{game ? game.player2.alias : "Player 2"}</span>
-                <img src={getendpoint("http", "/media/default.jpeg")} alt="" />
+                <div className="Uimg">
+                  <img src={getendpoint("http", "/media/default.jpeg")} alt="" />
+                </div>
               </div>
             </div>
           </div>

@@ -27,7 +27,7 @@ interface ResultContext {
   ball: any,
   paddle1: any,
   paddle2: any,
-  gameId:number,
+  gameId: number,
   error: string | null,
   user: FriendDataType,
   enemy: FriendDataType,
@@ -98,7 +98,7 @@ interface Paddlerops {
   box: PaddleBox
 }
 
-const move = (socket: WebSocket|null, username: string, direction: string) => {
+const move = (socket: WebSocket | null, username: string, direction: string) => {
 
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send(
@@ -415,7 +415,9 @@ const Play = () => {
             <div className="lastgames-ele">
               <div className="Home-RowEle">
                 <div className="Home-Row1">
-                  <img src={getendpoint("http", user.avatar)} alt="" />
+                  <div className="Uimg">
+                    <img src={getendpoint("http", user.avatar)} alt="" />
+                  </div>
                   <span >{user.username}</span>
                 </div>
                 <div>
@@ -432,7 +434,9 @@ const Play = () => {
                 </div>
                 <div className="Home-Row3">
                   <span >{enemy.username}</span>
-                  <img src={getendpoint("http", enemy.avatar)} alt="" />
+                  <div className="Uimg">
+                    <img src={getendpoint("http", enemy.avatar)} alt="" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -501,7 +505,7 @@ const emptyUser: FriendDataType = {
   rank: 0,
 }
 
-const Provider = ({ socketRef, gameId }: { socketRef: React.MutableRefObject<WebSocket | null> , gameId:number}) => {
+const Provider = ({ socketRef, gameId }: { socketRef: React.MutableRefObject<WebSocket | null>, gameId: number }) => {
   const user = getUser()
   const [error, setError] = useState<string | null>(null)
   const [enemy, setEnemy] = useState<FriendDataType>(emptyUser)
@@ -521,9 +525,9 @@ const Remote = () => {
   const { id } = useParams();
   const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
   if (gameId == -1)
-    return <Navigate to={"/"}/>
-  const socket = useRef<WebSocket|null>(null)
-  return (<Provider socketRef={socket} gameId={gameId}/>)
+    return <Navigate to={"/"} />
+  const socket = useRef<WebSocket | null>(null)
+  return (<Provider socketRef={socket} gameId={gameId} />)
 }
 
 export default Remote;
