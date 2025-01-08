@@ -161,22 +161,18 @@ class FriendRequest(models.Model):
         """
         Asynchronous version of the block method.
         Block a user from the friend request.
-        The blocker_user must be either the sender or the receiver.
         """
-        # Access the sender and receiver asynchronously using sync_to_async
         sender = await database_sync_to_async(lambda: self.sender)()
         receiver = await database_sync_to_async(lambda: self.receiver)()
 
         if blocker_user not in [sender, receiver]:
             raise ValueError("The blocker_user must be either the sender or the receiver.")
 
-        # Determine the user being blocked
         user_to_block = receiver if blocker_user == sender else sender
 
         try:
-            # Perform the database operations within a sync-to-async block
-            # Wrap all database operations within a synchronous transaction block
-            await database_sync_to_async(self._block_async_db_operations)(blocker_user, user_to_block)()
+            # Perform the synchronous database operations asynchronously
+            await database_sync_to_async(self._block_db_operations)(blocker_user, user_to_block)
 
             # Update the FriendRequest status and record who blocked whom
             self.status = 'blocked'
@@ -187,10 +183,10 @@ class FriendRequest(models.Model):
             raise ValueError(f"Failed to block the friend request: {str(e)}")
 
 
-    @sync_to_async
-    def _block_async_db_operations(self, blocker_user, user_to_block):
+
+    def _block_db_operations(self, blocker_user, user_to_block):
         """
-        Perform the database operations within a synchronous context (to use transaction.atomic)
+        Perform the database operations synchronously (to use transaction.atomic).
         """
         with transaction.atomic():
             # Check if they are friends
@@ -213,6 +209,7 @@ class FriendRequest(models.Model):
                 # Save both users' changes
                 blocker_user.save()
                 user_to_block.save()
+
 
     def remove(self, remover_user):
         """

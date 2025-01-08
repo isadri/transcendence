@@ -24,8 +24,14 @@
 }
 
 .mainContent{
-	width: 100%;
+	width: 94%;
 	height: 96dvh;
 	display: flex;
 	flex-direction: column;
+}
+
+@media screen and (max-width:476px) {
+	.mainContent{
+		width: 100%;
+	}
 }

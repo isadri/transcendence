@@ -122,6 +122,9 @@ class FriendRequestBlockView(APIView):
             #     Q(user1=receiver, user2=request.user),
             #     # defaults={'blocke_state_user1': 'none', 'blocke_state_user2': 'none'}
             # )
+            if request.user.id == receiver.id:
+                return Response({'error': 'You cannot block yourself.'},
+                status=status.HTTP_400_BAD_REQUEST)
             chat = Chat.objects.filter(
                 Q(user1=request.user, user2=receiver) |
                 Q(user1=receiver, user2=request.user)
