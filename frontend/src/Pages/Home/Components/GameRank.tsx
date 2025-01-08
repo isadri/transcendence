@@ -78,6 +78,13 @@ function GameRank() {
                 <div className="Home-ProfileRev">
                   <img className="img" src={getendpoint("http", user.avatar)} alt=""
                     onClick={() => usersProfile(user)} />
+                  {
+                    user.is_online ?
+                    <div className="onlineCircle-friend"></div>
+                    :
+                    <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)',
+                    borderColor:'rgb(119 118 118)'}}></div>
+                  }
                 </div>
                 <div className="rank-username">
                   <span onClick={() => usersProfile(user)} >{user.username}</span>
