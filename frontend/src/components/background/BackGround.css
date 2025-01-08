@@ -90,7 +90,7 @@ body {
 
 @media (min-width: 1800px) {
 	.mainPage {
-		background-color: rgba(217, 217, 217, 0.1);
+		background-color: rgba(217, 217, 217, 0.05);
 		border-radius: 15px;
 	}
 	.main_container {
