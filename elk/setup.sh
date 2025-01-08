@@ -94,7 +94,7 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
         "include_global_state": false
 	},
 	"retention": {
-		"expire_after": "10m",
+		"expire_after": "25m",
 		"min_count": 1,
 		"max_count": 10
 	}
