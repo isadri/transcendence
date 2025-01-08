@@ -2,8 +2,7 @@
 import '../styles/friends.css'
 import { FriendsData } from '../Profile'
 import { useNavigate } from 'react-router-dom'
-import { getendpoint } from '../../../context/getContextData'
-import { userData } from 'three/webgpu'
+import { getContext, getendpoint } from '../../../context/getContextData'
 import axios from 'axios'
 interface Props {
   FriendsLst: FriendsData[],
@@ -12,7 +11,7 @@ interface Props {
 
 function friends({ FriendsLst, username }: Props) {
   const navigate = useNavigate()
-
+  const cntxt = getContext()
   const handleInvitePlay = (id: Number) => {
 		axios
 		.post(getendpoint("http", `/api/game/invite/`), { invited: id })
@@ -22,7 +21,10 @@ function friends({ FriendsLst, username }: Props) {
 			navigate(`/game/warmup/friends/${response.data.id}`);
 		})
 		.catch((error) => {
-			console.log(error.response.data);
+			console.log(error.response.data.error);
+      console.log("hellllllllo")
+      cntxt?.setCreatedAlert(error.response.data.error)
+      cntxt?.setDisplayed(3)
 		});
 	};
 

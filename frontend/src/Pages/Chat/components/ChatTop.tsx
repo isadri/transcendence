@@ -1,7 +1,7 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
-import { getUser, getendpoint} from "../../../context/getContextData";
+import { getContext, getUser, getendpoint} from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -18,6 +18,7 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 		useChatContext();
 	const user = getUser();
 	const navigate = useNavigate();
+	const cntext = getContext()
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -83,7 +84,9 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 			navigate(`/game/warmup/friends/${response.data.id}`);
 		})
 		.catch((error) => {
-			console.log(error.response.data);
+			console.log(error.response.data.error);
+			cntext?.setCreatedAlert(error.response.data.error)
+			cntext?.setDisplayed(3)
 		});
 	};
 

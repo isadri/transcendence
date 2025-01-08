@@ -1,7 +1,7 @@
 import '../styles/ProfileUser.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserData } from '../Profile'
-import { getendpoint, getUser } from '../../../context/getContextData'
+import { getContext, getendpoint, getUser } from '../../../context/getContextData'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { stats } from '../../../context/context'
@@ -14,12 +14,12 @@ interface Prop{
 }
 
 function ProfileUser({userData, username, stats}:Prop) {
-  const user = getUser()
   const [frindshipStatus, setfrindshipStatus] = useState("")
   const [isOnline, setIsOnline] = useState<boolean>(userData?.is_online || false)
   // const [stats, setStats] = useState<stats>()
+  const user = getUser()
   const navigate = useNavigate();
-
+  const cntxt = getContext()
   useEffect(() => {
     axios.get(getendpoint('http', `/api/friends/friendship-status/${userData.id}`), {withCredentials:true})
     .then(response => {
@@ -92,6 +92,8 @@ function ProfileUser({userData, username, stats}:Prop) {
 		})
 		.catch((error) => {
 			console.log(error.response.data);
+      cntxt?.setCreatedAlert(error.response.data.error)
+      cntxt?.setDisplayed(3)
 		});
 	};
 
