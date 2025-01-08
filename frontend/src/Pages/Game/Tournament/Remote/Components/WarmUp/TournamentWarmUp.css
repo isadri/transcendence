@@ -71,6 +71,8 @@
 .TournamentWarmUpVsAvatar {
     width: 50%;
     border-radius: 50%;
+    aspect-ratio: 1;
+    object-fit: cover;
 }
 
 .TournamentWarmUpVsPlus div {
