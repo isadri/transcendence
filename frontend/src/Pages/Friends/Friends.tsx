@@ -5,12 +5,9 @@ import FriendRequests from "./components/FriendRequests.tsx";
 import AddFriends from "./components/AddFriends.tsx";
 import BlockedFriends from "./components/BlockedFriends.tsx";
 import CancelFriends from "./components/CancelFriends.tsx";
-import Alert from "../../components/Alert/Alert.tsx";
-import { getContext } from "../../context/getContextData.tsx";
 
 const Friends = () => {
 	const [activeSection, setActiveSection] = useState("allFriends");
-	const account = getContext();
 
 	return (
 		<div className="Friend-Container">

@@ -54,7 +54,6 @@ const AllFriends = () => {
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 

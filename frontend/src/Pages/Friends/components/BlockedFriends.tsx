@@ -23,7 +23,6 @@ const BlockedFriends = () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/blocked"),
-					// "http://0.0.0.0:8000/api/friends/blocked",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -57,13 +56,6 @@ const BlockedFriends = () => {
 		};
 
 		fetchBlockedFriend();
-		// Set up an interval to fetch new data every 10 seconds
-		// const intervalId = setInterval(fetchBlockedFriend, 5000);
-
-		// Clean up the interval when the component unmounts
-		// return () => {
-		// 	clearInterval(intervalId);
-		// };
 	}, []);
 
 	const handleUnblockRequests = async (id: number) => {

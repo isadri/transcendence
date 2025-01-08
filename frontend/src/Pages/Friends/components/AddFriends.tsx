@@ -37,7 +37,6 @@ const AddFriends = () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/usersUnfriends"),
-					// "http://0.0.0.0:8000/api/friends/users",
 					{
 						withCredentials: true,
 					}
@@ -54,7 +53,6 @@ const AddFriends = () => {
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -103,7 +101,6 @@ const AddFriends = () => {
 	};
 
 	const friendsList = searchFriend ? results : allUsers;
-	// console.log(friendsList)
 	return (
 		<div className="add-friends-page">
 			<>

@@ -1,5 +1,4 @@
 import LastGame from "../../../Home/Components/LastGame";
-import GameHistoryitem from "../gameHistoryItem/GameHistoryitem";
 import "./GameHistory.css"
 
 function GameHistory() {

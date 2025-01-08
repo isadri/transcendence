@@ -53,7 +53,6 @@ const CancelFriends = () => {
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
