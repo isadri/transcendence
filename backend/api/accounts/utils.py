@@ -365,7 +365,7 @@ def check_otp_key(otp: str, user: User) -> bool:
 def add_level_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
     if userStats.level >= 1:
-        if not UserAchievement.objects.filter(key='level_1').exists():
+        if not UserAchievement.objects.filter(user=user, key='level_1').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -374,7 +374,7 @@ def add_level_achievement_to_user(user: User):
                 text="Reach level 1.",
             )
     if userStats.level >= 10:
-        if not UserAchievement.objects.filter(key='level_10').exists():
+        if not UserAchievement.objects.filter(user=user, key='level_10').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -383,7 +383,7 @@ def add_level_achievement_to_user(user: User):
                 text="Reach level 10.",
             )
     if userStats.level >= 25:
-        if not UserAchievement.objects.filter(key='level_25').exists():
+        if not UserAchievement.objects.filter(user=user, key='level_25').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -392,7 +392,7 @@ def add_level_achievement_to_user(user: User):
                 text="Reach level 25.",
             )
     if userStats.level >= 50:
-        if not UserAchievement.objects.filter(key='level_50').exists():
+        if not UserAchievement.objects.filter(user=user, key='level_50').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -401,7 +401,7 @@ def add_level_achievement_to_user(user: User):
                 text="Reach level 50.",
             )
     if userStats.level >= 100:
-        if not UserAchievement.objects.filter(key='level_100').exists():
+        if not UserAchievement.objects.filter(user=user, key='level_100').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -414,7 +414,8 @@ def add_level_achievement_to_user(user: User):
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
     if userStats.win >= 1:
-        if not UserAchievement.objects.filter(key='win_1').exists():
+        print("here")
+        if not UserAchievement.objects.filter(user=user, key='win_1').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="win",
@@ -423,7 +424,7 @@ def add_game_achievement_to_user(user: User):
                 text="Win your first match.",
             )
     if userStats.win >= 20:
-        if not UserAchievement.objects.filter(key='win_20').exists():
+        if not UserAchievement.objects.filter(user=user, key='win_20').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="win",
@@ -432,7 +433,7 @@ def add_game_achievement_to_user(user: User):
                 text="Win 20 matches overall.",
             )
     if userStats.win >= 50:
-        if not UserAchievement.objects.filter(key='win_50').exists():
+        if not UserAchievement.objects.filter(user=user, key='win_50').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="win",
@@ -445,7 +446,7 @@ def add_game_achievement_to_user(user: User):
 def add_milestone_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
     if userStats.nbr_games >= 10:
-        if not UserAchievement.objects.filter(key='match_10').exists():
+        if not UserAchievement.objects.filter(user=user, key='match_10').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="game",
@@ -454,7 +455,7 @@ def add_milestone_achievement_to_user(user: User):
                 text="Play 10 matches.",
             )
     if userStats.nbr_games >= 50:
-        if not UserAchievement.objects.filter(key='match_50').exists():
+        if not UserAchievement.objects.filter(user=user, key='match_50').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="game",
@@ -463,7 +464,7 @@ def add_milestone_achievement_to_user(user: User):
                 text="Play 50 matches.",
             )
     if userStats.nbr_games >= 100:
-        if not UserAchievement.objects.filter(key='match_100').exists():
+        if not UserAchievement.objects.filter(user=user, key='match_100').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="game",

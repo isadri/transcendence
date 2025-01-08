@@ -40,7 +40,6 @@
     align-items: center;
     justify-content: space-between;
     font-family: var(--mono);
-    /* min-height: 520px; */
 }
 
 .ChangeAvatar{

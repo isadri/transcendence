@@ -112,6 +112,8 @@ const Setting = () => {
             console.log("dataaa=> ", response.data.data)
             authContext?.setUser(response.data.data);
             SetErrors({ ...errors, username: "", tmp_email: "", avatar: "" });
+            authContext?.setCreatedAlert("Your information has been updated successfully");
+            authContext?.setDisplayed(5)
             console.log("saved sacces")
           }
         })
@@ -139,6 +141,8 @@ const Setting = () => {
         withCredentials: true,
       })
       .then(() => {
+        authContext?.setCreatedAlert("Your Password has been updated successfully");
+        authContext?.setDisplayed(5)
         SetErrors({
           ...errors,
           CurrentPassword: "",

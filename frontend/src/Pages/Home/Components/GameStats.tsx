@@ -84,7 +84,7 @@ function GameStats() {
     <div className='userStats'>
       <h2>Games Stats</h2>
       {
-        (user?.stats.lose !== 0 || user?.stats.win !== 0) &&
+        (stats?.lose !== 0 || stats.win !== 0) &&
         <div className='stats-contents'>
           <div className='labels'>
             <div className='win-label'>
@@ -106,7 +106,7 @@ function GameStats() {
         </div>
       }
       {
-        user?.stats.lose === 0 && user?.stats.win === 0 &&
+        stats?.lose === 0 && stats?.win === 0 &&
         <div className='stats-content'>
           <div className='Nostats'>
             <div className='stats-icon'>
