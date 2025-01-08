@@ -5,9 +5,6 @@ from django.db.models.deletion import SET_NULL
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 
-
-from . import friends
-
 class FriendList(models.Model):
     """
     Friends model to create list of friends.

@@ -58,31 +58,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get('message_type')
 
-        if not message_type:
-            await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
-            return
-
-        if (message_type == "send_message"):
-            await self.handle_send_message(data)
-
-        if (message_type == "block_friend" or self.isBlocked):
-            data = self.isBlockedPayload if self.isBlocked else data
-            await self.handle_block_friend(data)
-        if (message_type == "active_chat"):
-            chat_id = data.get('chat_id')
-            if not chat_id:
-                await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+        try:
+            if not message_type:
+                await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
                 return
-            if chat_id == -1:
-                await self.handle_reset_active_chat()
-            else:
-                await self.handle_active_chat(chat_id)
-        if (message_type == "mark_is_read"):
-            chat_id = data.get('chat_id')
-            if not chat_id:
-                await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
-                return
-            await self.handle_mark_is_read(chat_id)
+
+            if (message_type == "send_message"):
+                await self.handle_send_message(data)
+
+            if (message_type == "block_friend" or self.isBlocked):
+                data = self.isBlockedPayload if self.isBlocked else data
+                await self.handle_block_friend(data)
+            if (message_type == "active_chat"):
+                chat_id = data.get('chat_id')
+                if not chat_id:
+                    await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+                    return
+                if chat_id == -1:
+                    await self.handle_reset_active_chat()
+                else:
+                    await self.handle_active_chat(chat_id)
+            if (message_type == "mark_is_read"):
+                chat_id = data.get('chat_id')
+                if not chat_id:
+                    await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+                    return
+                await self.handle_mark_is_read(chat_id)
+        except Exception as e:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat receiver'
+            }))
 
     async def handle_mark_is_read(self, chat_id):
         try:
