@@ -44,8 +44,8 @@
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    overflow: hidden;
-	/* position: relative; */
+    /* overflow: hidden; */
+	position: relative;
 }
 
 .Home-friends-item  .onlineCircle-friend {
@@ -56,7 +56,7 @@
 	border: 1px solid #04de04;
 	background-color: #04de04;
 	top: 33px;
-	right: 20px;
+	right: 2px;
 }
 
 .hover-friend {
