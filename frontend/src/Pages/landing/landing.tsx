@@ -84,10 +84,6 @@ function Landing() {
     const account = getContext()
     return (
       <>
-        <Alert primaryColor='#00ff115a' secondaryColor='#90f18b'>
-          <i className="fa-solid fa-circle-check"></i>
-          <span>{account?.createdAlert}</span>
-        </Alert>
         <div className='landing'>
           <div className='landing3d'>
             <Canvas camera={{ position: [0, 3, 7] }}>

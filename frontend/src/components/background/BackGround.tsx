@@ -2,6 +2,8 @@ import { ReactNode, useEffect } from "react";
 import "./BackGround.css";
 import circl from "./images/circle.png";
 import { useMediaQuery } from "@uidotdev/usehooks";
+import { getContext } from "../../context/getContextData";
+import Alert from "../Alert/Alert";
 
 interface Props {
 	children: ReactNode;
@@ -9,6 +11,7 @@ interface Props {
 }
 
 const BackGround = ({ children, isLogged }: Props) => {
+	const account = getContext() 
 	const win_width = useMediaQuery("only screen and (max-width : 478px)");
 	return (
 		<>
@@ -23,16 +26,19 @@ const BackGround = ({ children, isLogged }: Props) => {
 					style={
 						isLogged
 							? {
-									// padding: "0 20px", possible to make problem
-									flexDirection: win_width ? "column" : "row",
-							  }
+								// padding: "0 20px", possible to make problem
+								flexDirection: win_width ? "column" : "row",
+							}
 							: {
-									backgroundColor: "transparent",
-									flexDirection: "column",
-									justifyContent: "center",
-							  }
+								backgroundColor: "transparent",
+								flexDirection: "column",
+								justifyContent: "center",
+							}
 					}
 				>
+					<Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
+						<span>{account?.createdAlert}</span>
+					</Alert>
 					{children}
 				</div>
 			</div>

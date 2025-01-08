@@ -315,8 +315,7 @@
 .alert-acountNotDeleted{
     display: none;
     position: absolute;
-    z-index: 10;
-    top: 70px;
+    top: 80px;
     right: 10px;
     width: 420px;
     height: 60px;
@@ -325,8 +324,7 @@
     display: flex;
     align-items: center;
     padding-left: 2%;
-    color:#f18b8b;
-    border: 1px solid #f18b8b;
+    color: white;
     opacity: 0;
     transition: opacity 0.5s ease-in-out, display 0s 0.5s;
 }
@@ -335,6 +333,7 @@
     display: flex;
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
+    z-index: 10;
 }
 
 .alert-acountNotDeleted.hide {

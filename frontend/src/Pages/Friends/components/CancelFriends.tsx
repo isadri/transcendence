@@ -88,7 +88,7 @@ const CancelFriends = () => {
 						authContext?.setCreatedAlert(
 							"Friend request not found or already processed."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setPendingUsers((prev) => prev.filter((user) => user.id !== id));
 				});

@@ -77,7 +77,7 @@ const BlockedFriends = () => {
 				.then((response) => {
 					if (response.data.error == "No blocked request found.") {
 						authContext?.setCreatedAlert("No blocked request found.");
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
 				});

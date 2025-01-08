@@ -76,10 +76,6 @@ const Chat = () => {
 	// const account = getContext();
 	return (
 		<ChatProvider>
-			{/* <Alert primaryColor="red" secondaryColor="#f18b8b">
-				<i className="fa-solid fa-circle-exclamation"></i>
-				<span>{account?.createdAlert}</span>
-			</Alert> */}
 			<div className="Chat">
 				{isSmallDevice ? (
 					!selectedFriend && (

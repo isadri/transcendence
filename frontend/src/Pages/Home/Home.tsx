@@ -15,9 +15,6 @@ function Home() {
   const account = getContext()
   return (
     <>
-      <Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
-          <span>{account?.createdAlert}</span>
-      </Alert>
       <div className='Home-homePage'>
         <div className='Home-welcome'>
           <Welcome/>

@@ -180,13 +180,17 @@ const Setting = () => {
         withCredentials: true,
       })
       .then((response) => {
+        // authContext?.setCreatedAlert(response.data.detail);
         authContext?.setCreatedAlert(response.data.detail);
+        authContext?.setDisplayed(3)
         authContext?.setIsLogged(false)
         navigate('/')
       })
       .catch((error) => {
         SetMyAlert(false)
-        setcreatedAlert(error.response.data.detail)
+        authContext?.setDisplayed(3)
+        authContext?.setCreatedAlert(error.response.data.detail)
+        // setcreatedAlert(error.response.data.detail)
       })
   }
 
@@ -269,10 +273,6 @@ const Setting = () => {
   console.log("username error => ",errors.username)
   return (
     <>
-      <div className={`alert-acountNotDeleted ${confirm === 3 ? "show" : "hide"}`}>
-        <i className="fa-solid fa-circle-exclamation"></i>
-        <span>{createdAlert}</span>
-      </div>
       <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>
         <i className="fa-solid fa-circle-exclamation"></i>
         <span>Two-Factor Authentication disabled</span>

@@ -93,7 +93,7 @@ const AddFriends = () => {
 						authContext?.setCreatedAlert(
 							"A friend request already exists between you and this user."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setAllUsers((prev) => prev.filter((user) => user.id !== id));
 				});
