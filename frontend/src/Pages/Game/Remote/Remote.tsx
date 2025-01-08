@@ -15,7 +15,7 @@ import {
 import { Material } from 'cannon-es';
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AxesHelper, DoubleSide, Fog, MathUtils, Object3D, Object3DEventMap, WebGLRenderer } from "three";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { FriendDataType, userDataType } from "../../../context/context";
 
@@ -260,8 +260,8 @@ function GameTable() {
   const [ball, setball] = useState<[number, number, number]>([0, 0.2, 0])
 
   if (context) {
+    const { socket, setEnemy, enemy, user, setResult, setError, setWinner } = context
     useEffect(() => {
-      const { socket, setEnemy, enemy, user, setResult, setError, setWinner } = context
       socket.onmessage = (e) => {
 
         const data = JSON.parse(e.data)
@@ -328,6 +328,11 @@ function GameTable() {
         }
       }
     }, [context])
+
+    useEffect(() => {
+      if (enemy.id != -1)
+        setLoading()
+    })
     if (!loading)
       return (
         <>
@@ -496,6 +501,18 @@ const Provider = ({ socket }: { socket: WebSocket }) => {
   const [winner, setWinner] = useState<userDataType | FriendDataType | null>(null)
   const [result, setResult] = useState<[number, number]>([0, 0])
 
+  socket.onmessage = (e) =>{
+    const data = JSON.parse(e.data)
+    if (data.event == "ABORT") {
+      console.log(data.message);
+      setError(data.message)
+    }
+    if (data.event == "START") {
+      if (!user)
+        return
+      setEnemy(data.enemy)
+    }
+  }
   return (
     <resultsContext.Provider value={{ result, setResult, user, socket, enemy, setEnemy, error, setError, winner, setWinner }}>
       <Play />
@@ -507,7 +524,9 @@ const Provider = ({ socket }: { socket: WebSocket }) => {
 
 const Remote = () => {
   const { id } = useParams();
-  const [gameId] = useState<number>(id && !isNaN(parseInt(id, 10)) ? parseInt(id, 10) : -1)
+  if (!id)
+    return <Navigate to={"/"}/>
+  const [gameId] = useState<string>(id)
   const [socket] = useState<WebSocket>(new WebSocket(getendpoint('ws', `/ws/game/remote/${gameId}`)))
   socket.onclose = (e) => console.log('closed')
   return (<Provider socket={socket} />)

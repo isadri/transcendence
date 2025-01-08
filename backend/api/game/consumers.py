@@ -344,11 +344,23 @@ class RemoteGame(AsyncWebsocketConsumer):
         self.connected[self.game_id][self.username] = self
       await self.channel_layer.group_add(self.room_name, self.channel_name)
       print(self.user, self.connected[self.game_id])
+      self.started = False
+      self.task_start = asyncio.create_task(self.start_loop())
       if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
         self.task = asyncio.create_task(self.game_loop())
         self.task.add_done_callback(self.handle_task)
     else:
       await self.abort("You are not allowed to join this game")
+
+  async def start_loop(self):
+    while not self.started:
+      await asyncio.sleep(1/10)
+      await self.channel_layer.group_send(self.room_name, {
+        'type': 'game.start',
+        'event': 'START',
+        'player1':self.game.player1.username,
+        'player2':self.game.player2.username
+      })
 
   def handle_task(self, task):
     try:
@@ -411,12 +423,14 @@ class RemoteGame(AsyncWebsocketConsumer):
     await self.send(json.dumps(event))
 
   async def game_start(self, event):
-    await self.send(json.dumps({
-      "event": "START",
-      "enemy": await self.serializing_data(self.enemy),
-      event['player1']:'player1',
-      event['player2']:'player2',
-    }))
+    if not self.started:
+      await self.send(json.dumps({
+        "event": "START",
+        "enemy": await self.serializing_data(self.enemy),
+        event['player1']:'player1',
+        event['player2']:'player2',
+      }))
+      self.started = True
 
   @database_sync_to_async
   def serializing_data(self, users):
@@ -444,8 +458,8 @@ class RemoteGame(AsyncWebsocketConsumer):
     await self.channel_layer.group_send(self.room_name, {
       'type': 'game.start',
       'event': 'START',
-      'player1':self.game_data.player1,
-      'player2':self.game_data.player2
+      'player1':self.game.player1.username,
+      'player2':self.game.player2.username
     })
     while True:
       await self.game_data.update()
