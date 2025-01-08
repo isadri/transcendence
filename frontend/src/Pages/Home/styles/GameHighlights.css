@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: space-between;
     width: 57%;
-    height: 640px;
+    height: 650px;
     font-family: var(--mono);
 }
 
@@ -143,6 +143,11 @@
 }
 
 
+@media only screen and (max-width: 850px) {
+    .highlights {
+        width: 100%;
+    }
+}
 @media only screen and (max-width: 850px) {
     .highlights {
         width: 100%;

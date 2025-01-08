@@ -67,6 +67,11 @@ class HomeView(APIView):
         HTTP_402_UNAUTHORIZED response otherwise.
         """
         if request.user.is_authenticated:
+            if not request.user.register_complete:
+                logout(request)
+                response = Response(status=status.HTTP_401_UNAUTHORIZED)
+                response.delete_cookie(settings.AUTH_COOKIE)
+                return response
             request.user.open_chat = False
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
@@ -462,6 +467,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
     A viewset for sending an email for reseting the password.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def send_email(self, user: User, reset_url: str) -> None:
         """
@@ -545,6 +551,7 @@ class ResetPasswordViewSet(viewsets.ViewSet):
     A viewset for reseting the password.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def list(self, request: Request) -> None:
         """
@@ -664,7 +671,11 @@ class UpdateUserDataView(APIView):
             del data['email']
             print("data => ", data)
             generate_otp_for_user(user)
-            send_otp_to(user, data['tmp_email'])
+            try:
+                send_otp_to(user, data['tmp_email'])
+            except ValueError as e:
+                print("===========================>", str(e))
+                return Response({'tmp_email': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             print(user.otp)
             response_data['message'] = 'the code sent to your email'
         serializer = UserSerializer(user, data=data, partial=True)
@@ -672,6 +683,7 @@ class UpdateUserDataView(APIView):
             serializer.save()
             response_data['data'] = serializer.data
             return Response(response_data, status=status.HTTP_200_OK)
+        print("Validation errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateUserPasswordView(APIView):
@@ -777,6 +789,7 @@ class GetIntraLink(APIView):
         get intra link
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
     def get(self, request):
         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
         return Response(data, status=status.HTTP_200_OK)
@@ -787,6 +800,7 @@ class GetGoogleLink(APIView):
         get google link
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
     def get(self, request):
         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
         return Response(data, status=status.HTTP_200_OK)
@@ -858,6 +872,8 @@ class checkValidOtpEmail(APIView):
         print('send by user => ', otp)
         print('otp real=> ', user.otp)
         total_difference = timezone.now() - user.otp_created_at
+        print("your code otp => ", otp)
+        print("otp =>", user.otp)
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getContext, getendpoint } from '../../context/getContextData'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
 import Alert from '../../components/Alert/Alert'
@@ -25,6 +25,7 @@ function CallBack() {
     })
   }
   const {from} = useParams()
+  const location = useLocation()
   const handelLogin = async (code: string | null) => {
     if (code)
     {
@@ -61,6 +62,8 @@ function CallBack() {
           }
           else if (from === "google")
           {
+            console.log(1);
+            
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
@@ -73,14 +76,14 @@ function CallBack() {
                 else if (response.data.info){
                   authContext?.setUser(response.data)
                   setUsernameAlert(true)
-                  }
-                  else{
+                }
+                else{
                     setTimeout(() => {
                       GetUserInfo()
                       authContext?.setIsLogged(true)
                       navigate('/')
                     }, 2000);
-                  }
+                }
                     console.log('Success:', response.data)
                   })
                 .catch((error) => {
@@ -114,9 +117,9 @@ function CallBack() {
           authContext?.setUser(response.data)
       })
       .catch((error)=> {
-        authContext?.setDisplayed(2);
+        authContext?.setDisplayed(3);
+        console.log(error.response.data)
         authContext?.setCreatedAlert(error.response.data.username[0]);
-        console.log(error.response.data.username[0])
       })
   }
 
@@ -143,7 +146,8 @@ function CallBack() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     console.log("from ==========> ", from);
-    handelLogin(code)
+    if (!usernameAlert)
+      handelLogin(code)
     console.log(usernameAlert)
   }, [authContext, navigate]);
 
@@ -157,7 +161,7 @@ function CallBack() {
         usernameAlert || showOtpAlert ?
         (
           usernameAlert ?
-          <div className="GameModePopUpBlur">
+          <div className='alerUsername'>
             <div className="alertDeleteUser alertOTP userAlert">
               <div className="contentOtp">
                 <div className="iconEmail">

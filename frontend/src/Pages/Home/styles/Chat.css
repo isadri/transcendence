@@ -32,20 +32,31 @@
 }
 
 .Home-friends-item {
+	display: flex;
+	justify-content: center;
 	cursor: pointer;
 	position: relative;
 	margin-top: 12.5px;
 }
+.Home-friends-item  .Cimg{
+	display: flex;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+	/* position: relative; */
+}
 
-.Home-friends-item .onlineCircle-friend {
-	width: 13px;
-	height: 13px;
+.Home-friends-item  .onlineCircle-friend {
+	width: 9px;
+	height: 9px;
 	position: absolute;
 	border-radius: 50%;
 	border: 1px solid #04de04;
 	background-color: #04de04;
-	top: 40px;
-	right: 14px;
+	top: 33px;
+	right: 20px;
 }
 
 .hover-friend {
@@ -58,10 +69,11 @@
 	z-index: 100;
 }
 
-.Home-ChatRev .Home-friends-item img {
-	width: 55px;
-	height: 55px;
-	border-radius: 50%;
+.Home-ChatRev .Home-friends-item .Cimg img {
+	width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 
 @media only screen and (max-width: 1073px) {

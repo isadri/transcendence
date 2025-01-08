@@ -25,8 +25,10 @@ function friends({ FriendsLst, username }: Props) {
             <div className='Home-friend' key={friend.id}>
               <div className="Home-friendInfo">
                 <div className='img'>
-                  <img src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
-                    onClick={() => navigate(`/profile/${friend.username}`)} />
+                  <div className='Fimg'>
+                    <img src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
+                      onClick={() => navigate(`/profile/${friend.username}`)} />
+                  </div>
                   {
                     friend.is_online ?
                       <div className="onlineCircle-friend"></div>
@@ -48,7 +50,7 @@ function friends({ FriendsLst, username }: Props) {
               <>
                   {
                     username === '' ?
-                      <div className='Nostats game-NoStats'>
+                      <div className='Nostats  NoFriend'>
                         <div className='stats-icon stats-iconFriend'>
                           <i className="fa-solid fa-users-slash"></i>
                         </div>
@@ -58,7 +60,7 @@ function friends({ FriendsLst, username }: Props) {
                         </div>
                       </div>
                       :
-                      <div className='Nostats game-NoStats'>
+                      <div className='Nostats NoFriend'>
                         <div className='stats-icon stats-iconFriend'>
                           <i className="fa-solid fa-users-slash"></i>
                         </div>

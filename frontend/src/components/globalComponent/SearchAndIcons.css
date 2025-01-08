@@ -329,18 +329,19 @@
 }
 
 .imgGlobal .imag{
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     overflow: hidden;
     border: solid 1px white;
     background-color: white;
 }
-.imgGlobal img{
+.imag img{
     width: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: solid 1px white;
+    border: solid 2px white;
+    aspect-ratio: 1 /1;
 }
 
 .imgGlobal .globalCircle{
@@ -348,7 +349,7 @@
     border-radius: 50%;
     background-color: #04de04;
     bottom: 6px;
-    top: 3px;
+    top: 0px;
     left: 21px;
     width: 9px;
     height: 9px;
@@ -384,6 +385,9 @@
         width: 100%;
     }
     .Home-searchAndIcons{
+        display: none;
+    }
+    .userInfoGlobal{
         display: none;
     }
 }

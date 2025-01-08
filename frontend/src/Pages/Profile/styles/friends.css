@@ -71,9 +71,24 @@
     width: 50px;
     position: relative;
 }
+.Home-FriensList .Home-friend .Home-friendInfo .Fimg{
+    /* display: flex;
+    align-items: center; */
+    width: 50px;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
 .Home-FriensList .Home-friend .Home-friendInfo .img img{
     width: 100%;
+    object-fit: cover;
     border-radius: 50%;
+    aspect-ratio: 1 / 1;
     cursor: pointer;
 }
 .Home-FriensList .Home-friend .Home-friendInfo  .onlineCircle-friend{
@@ -184,7 +199,9 @@
     } */
 }
 
-
+.NoFriend{
+    margin-top: 50px;
+}
 
 @media only screen and (max-width: 900px){
     .Home-friendsProfile{
@@ -198,7 +215,7 @@
         margin-top: 40%;
         margin-bottom: 8%;
     }
-    .game-NoStats{
+    .NoFriend{
         display: none;
     }
     

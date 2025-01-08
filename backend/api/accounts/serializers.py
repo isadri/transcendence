@@ -6,6 +6,8 @@ from .models import User
 
 from ..game.models import UserStats
 from ..game.serializers import UserStatsSerializer
+import re
+
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -98,6 +100,13 @@ class UserSerializer(serializers.ModelSerializer):
                                               'symbol.')
         return value
 
+    def validate_tmp_email(self, value:str) ->str:
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, value):
+            print("hellooo")
+            raise serializers.ValidationError('Invalid email format.')
+        return value
+        
     def create(self, validated_data: dict[str, str]) -> User:
         """
         Create a new User instance.

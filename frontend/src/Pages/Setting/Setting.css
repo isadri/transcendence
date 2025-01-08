@@ -25,13 +25,14 @@
 .settingPage h1{
     color: var(--primary);
     padding-bottom: 1.5%;
+    padding-top: 10px;
     /* font-size: px; */
     font-family: var(--sans);
 }
 
 .settingContent {
     width: 90%;
-    height: 900px;
+    height: 976px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -52,6 +53,8 @@
 }
 
 .ChangeAvatar .img{
+    display: flex;
+    align-items: center;
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -61,6 +64,8 @@
 .ChangeAvatar .img img{
     width: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 
 .ChangeAvatar .btns, .alertDeleteUser .btns{

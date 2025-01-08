@@ -86,9 +86,10 @@
 }
 
 .Home-imgUser .Home-img{
+    display: flex;
+    align-items: center;
     width: 75px;
     height: 75px;
-    aspect-ratio: 1 / 1;
     border-radius: 50%;
     overflow: hidden;
 }
@@ -96,6 +97,8 @@
 .Home-img img{
     width: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 .Home-UserName{
     display: flex;

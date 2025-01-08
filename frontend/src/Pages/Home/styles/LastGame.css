@@ -101,11 +101,19 @@
     margin-right: 4%;
 }
 
-.Home-LastGame .Home-Row3 img, .Home-LastGame .Home-Row1 img{
-    aspect-ratio: 1;
-    border-radius: 50%;
+.Home-LastGame .Home-Row3 .Uimg, .Home-LastGame .Home-Row1 .Uimg{
+    display: flex;
+    align-items: center;
     width: 45px;
-    cursor: pointer;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.Home-LastGame .Home-Row3 img, .Home-LastGame .Home-Row1 img{
+    width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 
 .Home-Row1 span{
