@@ -115,11 +115,11 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					<span onClick={() => navigate(`/profile/${friend_user.username}`)}>
 						{friend_user.username}
 					</span>
-					{friend_user.is_online ? (
+					{/* {friend_user.is_online ? (
 						<p className="friend-online">Online</p>
 					) : (
 						<p className="friend-offline">Offline</p>
-					)}
+					)} */}
 				</div>
 			</div>
 			<div ref={buttonMenuRef}>
