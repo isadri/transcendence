@@ -147,7 +147,7 @@ services:
     depends_on:
       setup:
         condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.17.0}
     container_name: es01
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
@@ -179,7 +179,7 @@ services:
     depends_on:
       setup:
         condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.17.0}
     container_name: es02
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
@@ -213,7 +213,7 @@ services:
         condition: service_healthy
       es02:
         condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-8.17.0}
     container_name: kibana
     volumes:
       - certs:/usr/share/kibana/config/certs
@@ -232,7 +232,7 @@ services:
         condition: service_healthy
       es02:
         condition: service_healthy
-    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION:-8.17.0}
     container_name: logstash
     command: bin/logstash -f pipeline/logstash.conf --config.reload.automatic
     volumes:
