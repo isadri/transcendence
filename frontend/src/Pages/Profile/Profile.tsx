@@ -4,7 +4,7 @@ import Friends from "./Components/friends"
 import GameHestory from "./Components/GameHestory"
 import LastAchievement from "./Components/LastAchievement"
 import StatsProfile from "./Components/StatsProfile"
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import './Profile.css'
 import { useEffect, useState } from "react"
@@ -43,6 +43,7 @@ interface UserData {
 
 const Profile = () => {
   const user = getUser()
+  const navigate = useNavigate()
   const {username} = useParams()
   const [userData, setUserData] = useState<UserData | null>(null);
   const [FriendsLst, setFriendsLst] = useState<FriendsData[] | null>([]);
@@ -66,6 +67,7 @@ const Profile = () => {
         })
         .catch(error => {
           console.log("Error fetching user data:");
+          navigate("/")
         });
       }
       else{

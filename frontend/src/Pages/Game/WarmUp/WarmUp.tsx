@@ -232,9 +232,9 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
       .then((response) => {
         if (user) {
           if (user.id === response.data.invited)
-            setEnemyUser(response.data.invited_data)
-          else
             setEnemyUser(response.data.inviter_data)
+          else
+            setEnemyUser(response.data.invited_data)
         }
       })
       .catch((error) =>  navigator(`/game/warmup/friends/`))
