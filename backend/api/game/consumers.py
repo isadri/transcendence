@@ -347,7 +347,11 @@ class RemoteGame(AsyncWebsocketConsumer):
       self.started = False
       self.task_start = asyncio.create_task(self.start_loop())
       if len(self.connected[self.game_id]) == 2 and list(self.connected[self.game_id].keys()).index(self.username) == 1:
-        self.task = asyncio.create_task(self.game_loop())
+        player1 = self.connected[self.game_id]['players'][self.game.player1.username]
+        player2 = self.connected[self.game_id]['players'][self.game.player2.username]
+        self.game_data = GameData(player1, player2, self.game, self.room_name)
+        self.connected[self.game_id].setdefault('game_data', self.game_data)
+        self.task = asyncio.create_task(self.game_loop(player1, player2))
         self.task.add_done_callback(self.handle_task)
     else:
       await self.abort("You are not allowed to join this game")
@@ -443,18 +447,15 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   async def game_loop(self):
     iterator = iter(iter(self.connected[self.game_id].items()))
-    _ , player1 = next(iterator)
-    _ , player2 = next(iterator)
     player1.task = self.task
     player2.task = self.task
+    player1.task = self.connected[self.game_id]['game_data']
+    player2.task = self.connected[self.game_id]['game_data']
     try:
       await self.setGameAsStarted()
     except Exception as e:
       await self.abort(e.args[0])
       return
-    if not player1.game_data and not player2.game_data:
-      player1.game_data = player2.game_data  = GameData(player1, player2, self.game, self.room_name)
-    player2.game_data = player1.game_data
     await self.channel_layer.group_send(self.room_name, {
       'type': 'game.start',
       'event': 'START',
