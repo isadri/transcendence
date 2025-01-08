@@ -18,16 +18,12 @@ function GameModePopUp({mode, setter}:GameModePopUpProps) {
       navigator("/game/warmup/random")
     else if (mode === 2)
       navigator("/game/local")
-    else if (mode === 3)
-      navigator("/game/warmup/friends")
   }
   const get4v4ModeLink = () => {
     if (mode === 1)
       navigator("/game/tournament/remote/random")
     else if (mode === 2)
       navigator("/game/tournament/local")
-    else if (mode === 3)
-      navigator("/game/tournament/remote/friends")
   }
   return (
     <>
