@@ -65,10 +65,6 @@ const Friends = () => {
 				</ul>
 			</div>
 			<div className="bodyFriends">
-				{/* <Alert primaryColor="#d42f2f" secondaryColor="white">
-					<i className="fa-solid fa-circle-exclamation"></i>
-					<span>{account?.createdAlert}</span>
-				</Alert> */}
 				{activeSection === "allFriends" && <AllFriends />}
 				{activeSection === "friendRequests" && <FriendRequests />}
 				{activeSection === "addFriends" && <AddFriends />}

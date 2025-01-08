@@ -89,7 +89,7 @@ const AllFriends = () => {
 						authContext?.setCreatedAlert(
 							"Friend request not found or already processed."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setGetFriends((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -107,7 +107,7 @@ const AllFriends = () => {
 					// console.log(response.data)
 					if (response.data.error === "You can not block this user.") {
 						authContext?.setCreatedAlert("You can not block this user.");
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setGetFriends((prev) => prev.filter((user) => user.id !== id));
 				});

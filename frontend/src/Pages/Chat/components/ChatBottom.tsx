@@ -72,7 +72,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 			const maxLength = 300; // Set your max length
 			if (text.trim().length > maxLength) {
 				authContext?.setCreatedAlert("Message cannot exceed 300 characters.");
-				authContext?.setDisplayed(2);
+				authContext?.setDisplayed(3);
 				return;
 			}
 			if (selectedFriend && text.trim()) {
@@ -149,7 +149,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 											authContext?.setCreatedAlert(
 												"Message cannot exceed 300 characters."
 											);
-											authContext?.setDisplayed(2);
+											authContext?.setDisplayed(3);
 											// setText("");
 											return;
 										}

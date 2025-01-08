@@ -135,7 +135,7 @@ function CallBack() {
         SetshowOtpAlert(false)
       })
       .catch(error => {
-        authContext?.setDisplayed(2)
+        authContext?.setDisplayed(3)
         authContext?.setCreatedAlert(error.response.data.error);
         SetshowOtpAlert(false)
         navigate('/Auth')
@@ -153,10 +153,6 @@ function CallBack() {
 
   return (
     <div className="loader-container">
-      <Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
-       {/* <i className="fa-solid fa-circle-exclamation"></i> */}
-        <span>{authContext?.createdAlert}</span>
-      </Alert>
       {
         usernameAlert || showOtpAlert ?
         (

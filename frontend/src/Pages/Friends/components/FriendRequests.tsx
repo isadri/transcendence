@@ -53,7 +53,7 @@ const FriendRequests = () => {
 						authContext?.setCreatedAlert(
 							"Friend request not found or already processed."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setFriendRequests((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -76,7 +76,7 @@ const FriendRequests = () => {
 						authContext?.setCreatedAlert(
 							"Friend request not found or already processed."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setFriendRequests((prev) => prev.filter((user) => user.id !== id));
 				});
