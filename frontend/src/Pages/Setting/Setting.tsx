@@ -123,6 +123,8 @@ const Setting = () => {
     }
     else {
       console.log("No changes deticted")
+      authContext?.setCreatedAlert("No changes detected in your data");
+      authContext?.setDisplayed(4)
     }
   };
 
