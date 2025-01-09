@@ -21,6 +21,8 @@ services:
     image: nginx
     build:
       context: nginx
+    volumes:
+      - nginx_logs:/var/log/nginx
     ports:
       - 80:80
       - 443:443
