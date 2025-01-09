@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
 import Alert from '../../components/Alert/Alert'
+import Preloader from '../Preloader/Preloader'
 
 function CallBack() {
   const authContext = getContext()
@@ -204,7 +205,8 @@ function CallBack() {
             </div>
         )
         :
-        <div className="ripple"></div>
+          <Preloader/>
+        // <div className="ripple"></div>
       }
     </div>
   )

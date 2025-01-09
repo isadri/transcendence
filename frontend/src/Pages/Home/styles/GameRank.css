@@ -118,6 +118,7 @@
     width: 20%;
     display: flex; 
     align-items: start;
+    white-space: nowrap;
 }
 
 .rank-username span{
