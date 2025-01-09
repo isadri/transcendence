@@ -103,7 +103,6 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_tmp_email(self, value:str) ->str:
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if not re.match(email_regex, value):
-            print("hellooo")
             raise serializers.ValidationError('Invalid email format.')
         return value
         
@@ -130,7 +129,6 @@ class UserSerializer(serializers.ModelSerializer):
         self.fields['password'].required = False
         self.fields['tmp_email'].required = False
 
-        print("=====> ",validated_data)
         password = validated_data.pop('password', None)
         if password:
             instance.password = make_password(password)
