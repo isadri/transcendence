@@ -4,25 +4,24 @@ networks:
 volumes:
   postgres_data:
   modules_files:
-  # nginx_conf:
-  # ssl_certs:
 
 services:
-  # nginx:
-  #   container_name: nginx
-  #   build: ./nginx
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-  #   volumes:
-  #     - nginx_conf:/etc/nginx/conf.data
-  #     - ssl_certs:/etc/ssl/certs
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     - front-end
-  #     - back-end
-  #   restart: on-failure
+  nginx:
+    container_name: nginx
+    image: nginx
+    build:
+      context: nginx
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - app-network
+    depends_on:
+      - front-end
+      - back-end
+    env_file:
+      - .env
+    restart: on-failure
 
   back-end:
     container_name: backend
