@@ -7,7 +7,7 @@ import { getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
-import { FriendDataType } from "../../../context/context";
+import { FriendDataType, userDataType } from "../../../context/context";
 import axios from "axios";
 
 
@@ -27,6 +27,7 @@ interface GameInviteData {
 
 interface ContextData {
   socket: WebSocket | null,
+  user:userDataType | null|undefined;
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>,
   enemyUser: FriendDataType | null
   setEnemyUser: React.Dispatch<React.SetStateAction<FriendDataType | null>>,
@@ -38,11 +39,11 @@ interface ContextData {
 export const WarmUpContext = createContext<ContextData | null>(null)
 
 const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
-  const user = getUser()
+
   const context = useContext(WarmUpContext)
   const navigator = useNavigate()
   if (context) {
-    const { socket, setSocket, enemyUser, setEnemyUser, setReady, setDisplayFriends } = context
+    const { user, socket, setSocket, enemyUser, setEnemyUser, setReady, setDisplayFriends } = context
     useEffect(() => {
       if (socket)
         socket.onmessage = (e) => {
@@ -80,12 +81,12 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
                 enemy && enemyUser ?
                   <>
                     <img src={getendpoint("http", enemyUser.avatar)} className="WarmUpVsAvatar" />
-                    <img src={badge} className="WarmUpVsBadge" />
+                    {/* <img src={badge} className="WarmUpVsBadge" /> */}
                   </>
                   :
                   <>
                     <img src={getendpoint("http", user?.avatar || '')} className="WarmUpVsAvatar" />
-                    <img src={badge} className="WarmUpVsBadge" />
+                    {/* <img src={badge} className="WarmUpVsBadge" /> */}
                   </>
 
               )
@@ -99,7 +100,7 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
                   enemyUser ?
                     <>
                       <h4>{enemyUser.username}</h4>
-                      <h4>4.5 lvl</h4>
+                      <h4>{enemyUser.stats.level}</h4>
                     </>
                     :
                     (
@@ -122,7 +123,7 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
               :
               <>
                 <h4>{user?.username}</h4>
-                <h4>4.5 lvl</h4>
+                <h4>{user?.stats.level}</h4>
               </>
           }
         </div>
@@ -220,7 +221,7 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   const { inviteID } = useParams()
-  const user = getUser()
+  const [user, setUser] = useState<userDataType | null|undefined>(null)
   const navigator = useNavigate()
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   let [socket, setSocket] = useState<WebSocket | null>(null)
@@ -239,8 +240,19 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
       })
       .catch((error) =>  navigator(`/game/warmup/friends/`))
   }
+
+  useEffect(() => {
+    axios.get(getendpoint('http', `/`), {withCredentials:true})
+    .then(response => {
+      setUser(response.data);
+    })
+    .catch(() => {
+      const user = getUser()
+      setUser(user)
+    })
+  }, [])
   return (
-    <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends }}>
+    <WarmUpContext.Provider value={{ socket, setSocket, enemyUser, setEnemyUser, ready, setReady, setDisplayFriends, user }}>
       <div className="GameWarmUp">
         <h2>Warm Up</h2>
         <div className="WarmUpOther">

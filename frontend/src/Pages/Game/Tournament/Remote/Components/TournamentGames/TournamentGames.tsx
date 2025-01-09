@@ -106,7 +106,7 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 	};
 	return (
 		<div className="TournamentGames">
-			<h2>Tournament Remote Online HD</h2>
+			<h2>Tournament Remote</h2>
 			<div className="tournament-players">
 				<div className="first-two-match">
 					<RemoteGame
