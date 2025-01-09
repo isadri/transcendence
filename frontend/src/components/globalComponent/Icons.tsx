@@ -7,15 +7,17 @@ import {
 	getUser,
 	getendpoint,
 } from "../../context/getContextData";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Icons() {
+	const navigate = useNavigate()
 	const user = getUser()
 	const contxt = getContext()
 	const notificationList = getNotifications()
 	const UnreadNotif = getUnreadCount()
 	const [isIconClicked, setIsIconClicked] = useState(false)
 	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
+	
 	// const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
 	// const [unread, setUnread] = useState(0)
 	const location = useLocation()
@@ -159,7 +161,9 @@ function Icons() {
 									<div className="dropConntent">
 										{notificationList.map((notif) => {
 											let data = null;
-											if (notif.type === "Game invite")
+											console.log(notif);
+											
+											if (notif.type === "Game invite" || notif.type === "Tournament")
 												data = JSON.parse(notif.message);
 											return (
 												<div key={notif.id} className="notification-ele">
@@ -167,7 +171,7 @@ function Icons() {
 														<span>{notif.type}</span>
 														<span>{formatDateTime(notif.created_at)}</span>
 													</div>
-													{notif.type === "Game invite" ? (
+													{notif.type === "Game invite" && (
 														<>
 															<div className="Notif-msg">
 																<div className="invite-text-icon">
@@ -195,11 +199,35 @@ function Icons() {
 															{/* <div className="Notif-msg">
 															</div> */}
 														</>
-													) : (
+													)}
+													{notif.type === "Tournament" && (
+														<>
+															<div className="Notif-msg" 
+																onClick={() => {navigate(`/game/tournament/remote/${data.id}`),
+																setIsIconClicked(!isIconClicked)}}>
+																<div className="invite-text-icon">
+																	<span>{data.message}</span>
+																	<div className="invite-icon">
+																		<Link
+																			to={`/game/tournament/remote/${data.id}`} onClick={() =>{
+																				setIsIconClicked(!isIconClicked)
+																			}}
+																		>
+																			<i className="fa-solid fa-arrow-right accept-invete"></i>
+																		</Link>
+																	</div>
+																</div>
+															</div>
+															{/* <div className="Notif-msg">
+															</div> */}
+														</>
+													)}
+													{
+														(notif.type !== "Tournament" && notif.type !== "Game invite") &&
 														<div className="Notif-msg">
 															<span>{notif.message}</span>
 														</div>
-													)}
+													}
 												</div>
 											);
 										})}
