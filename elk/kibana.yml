@@ -14,3 +14,4 @@ server.ssl.enabled: true
 server.ssl.certificate: config/certs/kibana/kibana.crt
 server.ssl.key: config/certs/kibana/kibana.key
 
+elasticsearch.requestTimeout: 60000
