@@ -21,6 +21,7 @@ from .models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
+from config import settings
 
 def get_next_id() -> int:
     """
@@ -273,7 +274,7 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     return response.json(), response.status_code
 
 
-def get_access_token_google(authorization_code: str) -> str:
+def get_access_token_google(redirect_url: str, authorization_code: str) -> str:
     """
     Get the access token from Google API.
 
@@ -289,13 +290,13 @@ def get_access_token_google(authorization_code: str) -> str:
         'code': authorization_code,
         'client_id': os.getenv('GOOGLE_ID'),
         'client_secret': os.getenv('GOOGLE_SECRET'),
-        'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
+        'redirect_uri': redirect_url,
         'grant_type': 'authorization_code'
     }
     return get_access_token_from_api(token_endpoint, payload)
 
 
-def get_access_token_42(authorization_code: str) -> str:
+def get_access_token_42(redirect_url: str, authorization_code: str) -> str:
     """
     Get the access token from 42 API.
 
@@ -311,7 +312,7 @@ def get_access_token_42(authorization_code: str) -> str:
         'code': authorization_code,
         'client_id': os.getenv('INTRA_ID'),
         'client_secret': os.getenv('INTRA_SECRET'),
-        'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
+        'redirect_uri': redirect_url,
         'grant_type': 'authorization_code'
     }
     return get_access_token_from_api(token_endpoint, payload)
@@ -471,3 +472,7 @@ def add_milestone_achievement_to_user(user: User):
                 name="Marathon Player",
                 text="Play 100 matches.",
             )
+
+
+def get_url(request, path="/") -> str:
+    return request.build_absolute_uri(path).replace("http://", "https://")

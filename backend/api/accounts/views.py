@@ -46,6 +46,7 @@ from .utils import (
     send_otp_email,
     send_otp_to,
     get_response,
+    get_url,
     generate_otp_for_user,
     reset_code,
     validate_token,
@@ -228,7 +229,8 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         Authenticate with the authorization server and obtain user information.
         """
         authorization_code = request.GET.get('code')
-        access_token = get_access_token_google(authorization_code)
+        redirect_url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+        access_token = get_access_token_google(redirect_url, authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
                              '?scope=openid profile email')
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
@@ -340,7 +342,8 @@ class IntraLoginViewSet(viewsets.ViewSet):
         Authenticate with the authorization server and obtain user information.
         """
         authorization_code = request.GET.get('code')
-        access_token = get_access_token_42(authorization_code)
+        redirect_url =  get_url(request, settings.INTRA_REDIRECT_URI)
+        access_token = get_access_token_42(redirect_url, authorization_code)
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
                                                access_token)
         if status_code != 200:
@@ -759,31 +762,6 @@ class UserDetailView(APIView):
         data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
 
-# class GetIntraLink(APIView):
-#     """
-#         get intra link
-#     """
-#     permission_classes = [AllowAny]
-#     authentication_classes = []
-#     def get(self, request):
-#         url =  request.META.get('HTTP_ORIGIN')
-#         print("url ============> ",url)
-#         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url+settings.INTRA_REDIRECT_URI}&response_type=code'
-#         print(data)
-#         return Response(data, status=status.HTTP_200_OK)
-
-# class GetGoogleLink(APIView):
-#     """
-#         get google link
-#     """
-#     permission_classes = [AllowAny]
-#     authentication_classes = []
-#     def get(self, request):
-#         url =  request.META.get('HTTP_ORIGIN')
-#         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url+settings.GOOGLE_REDIRECT_URI}'
-#         return Response(data, status=status.HTTP_200_OK)
-
-
 class GetIntraLink(APIView):
     """
         get intra link
@@ -791,9 +769,10 @@ class GetIntraLink(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
     def get(self, request):
-        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
+        url =  get_url(request, settings.INTRA_REDIRECT_URI)
+        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url}&response_type=code'
+        print(data)
         return Response(data, status=status.HTTP_200_OK)
-
 
 class GetGoogleLink(APIView):
     """
@@ -802,8 +781,31 @@ class GetGoogleLink(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
     def get(self, request):
-        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
+        url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url}'
         return Response(data, status=status.HTTP_200_OK)
+
+
+# class GetIntraLink(APIView):
+#     """
+#         get intra link
+#     """
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
+#     def get(self, request):
+#         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
+#         return Response(data, status=status.HTTP_200_OK)
+
+
+# class GetGoogleLink(APIView):
+#     """
+#         get google link
+#     """
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
+#     def get(self, request):
+#         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
+#         return Response(data, status=status.HTTP_200_OK)
 
 
 class SendOTPView(APIView):
