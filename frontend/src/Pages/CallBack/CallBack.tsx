@@ -15,7 +15,7 @@ function CallBack() {
   const [userCode, setUserCode] = useState('')
   const [otpcode, setOtpCode] = useState('')
   const GetUserInfo = () =>{
-    axios.get(getendpoint("http", '/'),  {withCredentials:true})
+    axios.get(getendpoint("http", '/api'),  {withCredentials:true})
     .then((response) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)

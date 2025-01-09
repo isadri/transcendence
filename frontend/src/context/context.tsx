@@ -44,12 +44,11 @@ interface NotificationsData {
   }
 
 interface loginContextData {
-    preloader:boolean,
-    setPreloader:React.Dispatch<React.SetStateAction<boolean>>
+
     isLogged:boolean |null,
     setIsLogged: React.Dispatch<React.SetStateAction<boolean | null>>
     user: userDataType | null
-    setUser: React.Dispatch<React.SetStateAction<userDataType | null>>;
+    setUser: React.Dispatch<React.SetStateAction<userDataType | null>>
     createdAlert: string
     Displayed: number
     setCreatedAlert:  React.Dispatch<React.SetStateAction<string>>
@@ -62,7 +61,22 @@ interface loginContextData {
     setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
  }
 
-export const loginContext = createContext<loginContextData | null>(null)
+export const loginContext = createContext<loginContextData | null>({
+  isLogged:null,
+  setIsLogged: () => {}, 
+  user: null,
+  setUser: () => {},
+  createdAlert: '',
+  Displayed: 1,
+  setCreatedAlert:  () => {},
+  setDisplayed: () => {},
+
+  /******** Notifications **********/
+  notifications:[],
+  setNotifications: () => {},
+  unreadCount:0,
+  setUnreadCount: () => {},
+})
 
 export type {loginContextData, NotificationsData, stats}
 export type {userDataType}
