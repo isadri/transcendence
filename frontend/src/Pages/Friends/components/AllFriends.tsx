@@ -41,12 +41,12 @@ const AllFriends = () => {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/friends"),
 					{
-						withCredentials: true, // Include cookies in the request
+						withCredentials: true,
 					}
 				);
 				setGetFriends(response.data.friends);
 			} catch (err) {
-				console.log("Error to fetch friends.", err); // Set the response data to state
+				console.log("Error to fetch friends.", err);
 			}
 		};
 
@@ -103,7 +103,6 @@ const AllFriends = () => {
 					withCredentials: true,
 				})
 				.then((response) => {
-					// console.log(response.data)
 					if (response.data.error === "You can not block this user.") {
 						authContext?.setCreatedAlert("You can not block this user.");
 						authContext?.setDisplayed(3);
@@ -182,8 +181,6 @@ const AllFriends = () => {
 									>
 										Remove
 									</button>
-									{/* <i className="fa-solid fa-user user"></i>
-								<i className="fa-solid fa-comment-dots chat"></i> */}
 								</div>
 							</div>
 						);

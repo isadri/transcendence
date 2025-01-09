@@ -13,7 +13,7 @@ import {
 	GetChats,
 	ChatMessage,
 } from "./context/ChatUseContext";
-// import Alert from "../../../components/Alert/Alert";
+import Preloader from "../../Preloader/Preloader";
 
 interface ChatBodyProps {
 	selectedFriend: GetChats;
@@ -24,10 +24,11 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	const ref = useRef<HTMLTextAreaElement>(null);
 	const { setBlock, clearMessages } = useChatContext();
 	const user = getUser();
-	const [messagesUser, setMessagesUser] = useState<ChatMessage[]>([]);
+	const [messagesUser, setMessagesUser] = useState<ChatMessage[]|null>(null);
 	useEffect(() => {
 		const fetchMessages = async () => {
 			try {
+				setMessagesUser(null)
 				const response = await axios.get(
 					getendpoint("http", `/api/chat/chatuser/${selectedFriend.id}`),
 					{
@@ -67,8 +68,9 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 		
 		fetchBlockedFriend();
 	}, [selectedFriend]);
-	
-	// const account = getContext();
+	if (!messagesUser)
+		return <><Preloader/></>
+
 	return (
 		<>
 			<div className="chatContent">
