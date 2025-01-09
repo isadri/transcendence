@@ -76,7 +76,7 @@ class HomeView(APIView):
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
-
+            
             serializer =  UserSerializer(request.user)
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
