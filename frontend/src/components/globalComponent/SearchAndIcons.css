@@ -1,7 +1,6 @@
 .Home-searchBar{
     display: flex;
     flex-direction: column;
-    /* width: 450%; */
 }
 
 .Home-searchAndIcons {
@@ -51,7 +50,7 @@
     top: 40px;
     width: 320px;
     display: flex;
-    background-color: #432945d6;
+    background-color: #301e33;
     border: 1px solid white;
     /* border-top: none; */
     border-radius: 8px;
@@ -109,10 +108,6 @@
     width: 50%;
 }
 
-/* .Home-GameRank .Home-row1 *:not(:nth-child(1)){
-    margin-left: 10px;
-} */
-
  .searchItem img{
     width: 50px;
     border-radius: 50%;
@@ -122,7 +117,7 @@
 /******************** Notifications ***************************/
 
 
-.Home-searchAndIcons .Home-Icons {
+.Home-Icons {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -130,7 +125,7 @@
     position: relative; /******/
 }
 
-.Home-searchAndIcons .Home-Icons .unreadNotif{
+.Home-Icons .unreadNotif{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -145,12 +140,12 @@
     height: 15px;
 }
 
-.Home-searchAndIcons .Home-Icons .unreadNotif span{
+.Home-Icons .unreadNotif span{
     font-size: 11px;
     font-family: var(--sans);
 }
 
-.Home-searchAndIcons .Home-Icons .notifIcon {
+.Home-Icons .notifIcon {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -169,7 +164,7 @@
 
 /* notificationsNumberm                                                                             */
 
-.Home-searchAndIcons .Notifications {
+.Notifications {
     position:absolute;
     z-index: 10;
     right: 0;
@@ -178,7 +173,7 @@
     flex-direction: column;
     width: 320px;
     max-height: 365px;
-    background-color: #2c213f;
+    background-color: #301e33;
     border-radius: 8px;
     font-family: var(--sans);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -207,7 +202,7 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--fade) transparent;
-    background-color: #2c213f;
+    background-color: #301e33;
 }
 
 .Notifications .dropConntent::-webkit-scrollbar {
@@ -249,7 +244,7 @@
 }
 
 .Notifications .Notif-info span:nth-child(2) {
-    font-size: 12px;
+    font-size: 11px;
     color: #ccc;
 }
 
@@ -295,6 +290,27 @@
     background-color: #4a3b63;
 }
 
+.invite-text-icon {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.invite-icon {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.invite-icon .accept-invete {
+    color: var(--primary);
+    font-size: 15px;
+}
+
+.invite-icon .refuse-invete {
+    color: #A9A9A9;
+    font-size: 13px;
+}
+
 
 /***************** Profile **********************/
 
@@ -313,18 +329,19 @@
 }
 
 .imgGlobal .imag{
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     overflow: hidden;
     border: solid 1px white;
     background-color: white;
 }
-.imgGlobal img{
+.imag img{
     width: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: solid 1px white;
+    border: solid 2px white;
+    aspect-ratio: 1 /1;
 }
 
 .imgGlobal .globalCircle{
@@ -332,18 +349,45 @@
     border-radius: 50%;
     background-color: #04de04;
     bottom: 6px;
-    top: 3px;
+    top: 0px;
     left: 21px;
     width: 9px;
     height: 9px;
     z-index: 1;
 }
+
+.hover-on-user {
+    font-family: var(--sans);
+    /* background-color: #B7B7B7; */
+    background-color: #727D73;
+    padding: 10px;
+    position: absolute;
+    top: 41px;
+    left: 4px;
+    z-index: 100;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    border-radius: 5px;
+    visibility: hidden;
+}
+
+.userInfoGlobal:hover .hover-on-user {
+    opacity: 1;
+    visibility: visible;
+}
+
 /********************** Responsive *******************************/
 @media only screen and (max-width: 478px){
-    .Home-Icons{
-        display: none !important;
-    }
+    /* .Home-Icons{ */
+        /* display: none !important;
+    } */
     .Home-search .Home-searchBar{
         width: 100%;
+    }
+    .Home-searchAndIcons{
+        display: none;
+    }
+    .userInfoGlobal{
+        display: none;
     }
 }

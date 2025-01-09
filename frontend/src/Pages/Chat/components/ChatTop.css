@@ -26,6 +26,7 @@
 	width: 40px;
 	border-radius: 50%;
 	object-fit: cover;
+	cursor: pointer;
 }
 
 .textInfo {
@@ -37,6 +38,7 @@
 .textInfo span {
 	font-weight: 500;
 	font-size: 20px;
+	cursor: pointer;
 }
 
 .textInfo p {

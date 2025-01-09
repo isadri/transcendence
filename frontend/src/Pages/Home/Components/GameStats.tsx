@@ -8,17 +8,19 @@ import {
   CategoryScale,
   LinearScale,
 } from 'chart.js';
-import 'chartjs-plugin-datalabels';  // Import the datalabels plugin
+import 'chartjs-plugin-datalabels';
 import '../styles/GameStats.css';
-import { getUser } from '../../../context/getContextData';
-import { div } from 'three/webgpu';
+
+import { stats } from '../../../context/context';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
+interface Prop{
+  stats : stats
+}
 
+function GameStats({stats}:Prop) {
 
-function GameStats() {
-  const user = getUser()
   const data = {
     labels: [
       'Number of Wins',
@@ -26,7 +28,7 @@ function GameStats() {
     ],
     datasets: [{
       label: 'Game Stats',
-      data: [user?.stats.win, user?.stats.lose],
+      data: [stats?.win, stats?.lose],
       backgroundColor: [
         '#c1596c',
         '#462d4b',
@@ -37,17 +39,10 @@ function GameStats() {
   };
 
   const options = {
-    // responsive: true, 
     plugins: {
       legend: {
         display: false,
-        // labels: {
-        //   borderRadius:'15',
-        //   color: 'white',
-        //   font: {
-        //     size: 14,
-        //   },
-        // },
+
       },
       tooltip: {
         titleColor: 'white',
@@ -56,26 +51,26 @@ function GameStats() {
       datalabels: {
         color: 'white',
       },
-      // position: 'outside', // position the labels outside the doughnut
-      // offset: 10, // Adjust the distance of the labels from the doughnut
-      // padding: 40, // Adjust the padding (distance) between the label and doughnut
-      formatter: (value: number) => `${value}%`, // Optional: add custom formatting
+      formatter: (value: number) => `${value}%`,
     },
   };
+
   return (
     <div className='userStats'>
       <h2>Games Stats</h2>
       {
-        (user?.stats.lose !== 0 || user?.stats.win !== 0) &&
+        (stats?.lose !== 0 || stats.win !== 0) &&
         <div className='stats-contents'>
           <div className='labels'>
             <div className='win-label'>
               <div className='winlabel-div'>
+                <span>{stats?.win}</span>
                 <span>Wins</span>
               </div>
             </div>
             <div className='loss-label'>
               <div className='losslabel-div'>
+                <span>{stats?.lose}</span>
                 <span>Losses</span>
               </div>
             </div>
@@ -86,12 +81,11 @@ function GameStats() {
         </div>
       }
       {
-        user?.stats.lose === 0 && user?.stats.win === 0 &&
+        stats?.lose === 0 && stats?.win === 0 &&
         <div className='stats-content'>
           <div className='Nostats'>
             <div className='stats-icon'>
             <i className="fa-solid fa-chart-pie"></i>
-              {/* <i className="fa-solid fa-chart-column"></i> */}
             </div>
             <div className='NoStats-msg'>
               <h3>No stats to display</h3>

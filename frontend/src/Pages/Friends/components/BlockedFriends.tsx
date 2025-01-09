@@ -6,7 +6,6 @@ import {
 	getUser,
 	getendpoint,
 } from "../../../context/getContextData.tsx";
-import { useNavigate } from "react-router-dom";
 
 interface BlockedFriend {
 	id: number;
@@ -15,7 +14,6 @@ interface BlockedFriend {
 }
 
 const BlockedFriends = () => {
-	const navigate = useNavigate();
 	const [blockedfriend, setBlockedFriend] = useState<BlockedFriend[]>([]);
 	const user = getUser();
 	const authContext = getContext();
@@ -25,7 +23,6 @@ const BlockedFriends = () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/blocked"),
-					// "http://0.0.0.0:8000/api/friends/blocked",
 					{
 						withCredentials: true, // Include cookies in the request
 					}
@@ -59,13 +56,6 @@ const BlockedFriends = () => {
 		};
 
 		fetchBlockedFriend();
-		// Set up an interval to fetch new data every 10 seconds
-		// const intervalId = setInterval(fetchBlockedFriend, 5000);
-
-		// Clean up the interval when the component unmounts
-		// return () => {
-		// 	clearInterval(intervalId);
-		// };
 	}, []);
 
 	const handleUnblockRequests = async (id: number) => {
@@ -79,7 +69,7 @@ const BlockedFriends = () => {
 				.then((response) => {
 					if (response.data.error == "No blocked request found.") {
 						authContext?.setCreatedAlert("No blocked request found.");
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -97,8 +87,7 @@ const BlockedFriends = () => {
 							<img
 								src={getendpoint("http", friend.avatar)}
 								alt=""
-								className="friendImage"
-								onClick={() => navigate(`/profile/${friend.username}`)}
+								className="blockedImage"
 							/>
 							<span>{friend.username}</span>
 						</div>

@@ -37,3 +37,14 @@ class ClearAllNotificationsView(APIView):
             return Response({"message": "All your notifications have been cleared."}, status=200)
         else:
             return Response({"message": "You have no notifications to clear."}, status=200)
+
+class DeleteNotificationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+          notif = Notification.objects.get(user=request.user, pk=pk)
+          notif.delete()
+          return Response({"detail": "Notifecation deleted successfully."}, status=204)
+        except :
+          return Response({"error", "Not found"}, status=404)

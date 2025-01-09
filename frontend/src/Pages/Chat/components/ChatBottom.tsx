@@ -12,7 +12,6 @@ import {
 	getendpoint,
 } from "../../../context/getContextData";
 import axios from "axios";
-// import Alert from "../../../components/Alert/Alert";
 
 interface ChatBottomProps {
 	selectedFriend: GetChats;
@@ -60,19 +59,19 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 				(friend_id == block.blocked || friend_id == block.blocker)
 			) {
 				selectedFriend.is_blocked = block.status;
-			} else {
+			} else if (friend_id == block.blocked || friend_id == block.blocker) {
 				selectedFriend.is_blocked = false;
 			}
 			setSelectedFriend(selectedFriend);
 			setUpdate(block.status);
-			setText("")
+			setText("");
 		}, [block, selectedFriend.is_blocked]);
 
 		const handleSendMessage = async () => {
-			const maxLength = 300; // Set your max length
+			const maxLength = 300;
 			if (text.trim().length > maxLength) {
 				authContext?.setCreatedAlert("Message cannot exceed 300 characters.");
-				authContext?.setDisplayed(2);
+				authContext?.setDisplayed(3);
 				return;
 			}
 			if (selectedFriend && text.trim()) {
@@ -82,7 +81,6 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 				} else {
 					receiver_id = selectedFriend.user1.id;
 				}
-				// addded by jhamza
 				try {
 					const response = await axios.get(
 						getendpoint("http", `/api/friends/blockedfriend/${receiver_id}`),
@@ -100,7 +98,6 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 					setSelectedFriend({ ...selectedFriend });
 					return;
 				}
-				// addded by jhamza
 				sendMessage({
 					message: text.trim(),
 					receiver: receiver_id,
@@ -138,26 +135,28 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 								{open && <EmojiPicker onEmojiClick={handleEmojiClick} />}
 							</div>
 						</div>
-						<div className="messageContent">
-							<textarea
-								placeholder="Type a message..."
-								value={text}
-								onChange={(event) => {
-									const maxLength = 300; // Set your max length
-									if (event.target.value.trim().length > maxLength) {
-										authContext?.setCreatedAlert(
-											"Message cannot exceed 300 characters."
-										);
-										authContext?.setDisplayed(2);
-										setText("");
-										return;
-									}
-									setText(event.target.value);
-								}}
-								onKeyDown={handleKeyDown}
-								ref={ref}
-							></textarea>
-						</div>
+							<div className="messageContent">
+								<textarea
+									placeholder="Type a message..."
+									value={text}
+									onChange={(event) => {
+										const maxLength = 300;
+										if (event.target.value.trim().length > maxLength) {
+											authContext?.setCreatedAlert(
+												"Message cannot exceed 300 characters."
+											);
+											authContext?.setDisplayed(3);
+											return;
+										}
+										setText(event.target.value);
+									}}
+									onKeyDown={handleKeyDown}
+									ref={ref}
+								></textarea>
+							</div>
+							{text.trim().length > 295 && (
+								<div>{300 - text.trim().length} </div>
+							)}
 						<button
 							className="subButton"
 							onClick={() => handleSendMessage()}
@@ -167,7 +166,9 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 						</button>
 					</>
 				) : (
-					<div className="block">Can't send a message to this contact (block).</div>
+					<div className="block">
+						Can't send a message to this contact (block).
+					</div>
 				)}
 			</div>
 		);

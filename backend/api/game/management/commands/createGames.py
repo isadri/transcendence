@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Create multiple test users'
+    help = 'Create games'
 
     def add_arguments(self, parser):
         # Add positional arguments
@@ -26,5 +26,5 @@ class Command(BaseCommand):
             game = Game.objects.create(player1=player1, player2=player2, progress='E', p1_score=score1, p2_score=score2)
             game.setWinner()
             self.stdout.write(self.style.SUCCESS(f"Game created {game}."))
-        except:
-            self.stdout.write(self.style.WARNING(f"Failed"))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Failed :{str(e)}"))

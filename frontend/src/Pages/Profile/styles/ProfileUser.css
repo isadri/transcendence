@@ -28,7 +28,7 @@
     display: flex;
     margin-right: 5%;
     height: 25px;
-    width: 17%;
+    width: 22%;
 }
 
 .Home-ProfileUser .Home-Btn .proBtn button{
@@ -37,10 +37,10 @@
     color: white;
     border: 1px solid var(--primary);
     border-radius: 20px;
-    /* font-size: 1vh; */
-    /* font-size: 1px; */
     width: 100%;
     margin-left: 5%;
+    white-space: nowrap;
+
 }
 
 .Home-ProfileUser .Home-Btn .proBtn .link{
@@ -86,9 +86,10 @@
 }
 
 .Home-imgUser .Home-img{
+    display: flex;
+    align-items: center;
     width: 75px;
     height: 75px;
-    aspect-ratio: 1 / 1;
     border-radius: 50%;
     overflow: hidden;
 }
@@ -96,6 +97,8 @@
 .Home-img img{
     width: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 .Home-UserName{
     display: flex;
@@ -179,12 +182,9 @@
     left: 50%;
     transform: translate(-50%, -50%); /* Center text horizontally and vertically */
     color: white; /* Text color */
-    /* font-size: 1.2vh; */
     font-size: 12px;
     font-family: var(--sans);
 }
-
-
 
 .Home-levelUpUser{
     display: flex;
@@ -201,5 +201,13 @@
 @media only screen and (max-width: 1150px){
     .Home-ProfileUser{
         width: 100%;
+    }
+}
+@media only screen and (max-width: 700px){
+    .Home-ProfileUser .Home-Btn .proBtn button{
+        font-size: 10px;
+    }
+    .Home-ProfileUser .Home-Btn .proBtn{
+        width: 100px;
     }
 }

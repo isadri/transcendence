@@ -3,7 +3,6 @@ import "./ChatList.css";
 import axios from "axios";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { useChatContext, GetFriends, GetChats } from "./context/ChatUseContext";
-import { useNavigate } from "react-router-dom";
 interface ChatListProps {
 	friends: GetFriends[];
 	onSelectFriend: (friend: GetChats) => void;
@@ -23,7 +22,6 @@ const ChatList = ({
 	listAllFriends,
 	setListAllFriends,
 }: ChatListProps) => {
-	const navigate = useNavigate();
 	const user = getUser();
 	const { lastMessage, setChats, chats, activeChat, unseenMessage, unseen } =
 		useChatContext();
@@ -162,10 +160,11 @@ const ChatList = ({
 								src={getendpoint("http", friend.avatar)}
 								alt="profile"
 								className="profile"
-								onClick={() => navigate(`/profile/${friend.username}`)}
 							/>
 							<div className="text">
-								<span>{friend.username}</span>
+								<span>
+									{friend.username}
+								</span>
 							</div>
 						</div>
 				  ))

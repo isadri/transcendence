@@ -53,7 +53,6 @@ const CancelFriends = () => {
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -88,7 +87,7 @@ const CancelFriends = () => {
 						authContext?.setCreatedAlert(
 							"Friend request not found or already processed."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setPendingUsers((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -133,7 +132,12 @@ const CancelFriends = () => {
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}
 									/>
-									<span>{friend.username}</span>
+									<span
+										className="friendName"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									>
+										{friend.username}
+									</span>
 								</div>
 								<button
 									className="cancelFriend"

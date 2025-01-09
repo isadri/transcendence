@@ -1,5 +1,5 @@
 import BackGround from './components/background/BackGround'
-import { RouterProvider } from "react-router-dom";
+import { RouterProvider, useLocation, useNavigate } from "react-router-dom";
 import './App.css'
 
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import { getendpoint } from './context/getContextData';
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean | null>(null)
+  let [preloader, setPreloader] = useState<boolean>(false)
   let [user, setUser] = useState<userDataType | null>(null)
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
@@ -24,10 +25,9 @@ function App() {
 
   axios.defaults.withCredentials = true
   const getUserInfo = () => {
-    axios.get(getendpoint('http', "/"))
+    axios.get(getendpoint('http', "/api"))
         .then((response: any) => {
           console.log("response.data => ", { ...response.data, is_online: true })
-  
           setUser({ ...response.data, is_online: true })
           setIsLogged(true)
         })
@@ -67,7 +67,7 @@ function App() {
     <loginContext.Provider value={{
       user, setUser, isLogged, setIsLogged,
       createdAlert, setCreatedAlert, Displayed, setDisplayed, notifications,
-      setNotifications, setUnreadCount, unreadCount
+      setNotifications, setUnreadCount, unreadCount, preloader, setPreloader
     }}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={isLogged ? mainRouter : landingRouter} />

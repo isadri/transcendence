@@ -14,7 +14,7 @@ import {
 // import Alert from "../../components/Alert/Alert";
 
 const Chat = () => {
-	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
+	const isSmallDevice = useMediaQuery("only screen and (max-width : 700px)");
 	const [selectedFriend, setSelectedFriend] = useState<GetChats | null>(null);
 
 	const [getFriends, setGetFriends] = useState<GetFriends[]>([]);
@@ -76,10 +76,6 @@ const Chat = () => {
 	// const account = getContext();
 	return (
 		<ChatProvider>
-			{/* <Alert primaryColor="red" secondaryColor="#f18b8b">
-				<i className="fa-solid fa-circle-exclamation"></i>
-				<span>{account?.createdAlert}</span>
-			</Alert> */}
 			<div className="Chat">
 				{isSmallDevice ? (
 					!selectedFriend && (

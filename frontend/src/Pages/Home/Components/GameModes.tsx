@@ -1,10 +1,11 @@
 import "../styles/GameModes.css";
 import FMode from "../images/friendsMode.svg";
-import AMode from "../images/aiMode.svg";
-import RMode from "../images/randomMode.svg";
+import AMode from "../images/randomMode.svg";
+import RMode from "../images/random4.svg";
 import { useState } from "react";
 
 import GameModePopUp from "../../../components/GameModePopUp/GameModePopUp";
+import { useNavigate } from "react-router-dom";
 
 const ModesData = [
     {
@@ -29,6 +30,7 @@ const ModesData = [
 
 function GameModes() {
     const [mode, setMode] = useState<number>(-1);
+    const navigator = useNavigate()
     return (
         <>
             <div className="Home-GameModes">
@@ -57,9 +59,9 @@ function GameModes() {
                     })}
                 </div>
             </div>
-            <div style={(mode !== -1 ? {display:"flex"} : {display: "none"})}>
+            {mode === 3 ? navigator("/game/warmup/friends") : <div style={(mode !== -1 ? {display:"flex"} : {display: "none"})}>
                 <GameModePopUp mode={mode} setter={setMode}/>
-            </div>
+            </div>}
         </>
     );
 }

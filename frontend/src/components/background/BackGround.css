@@ -10,6 +10,10 @@ body {
 	color: white;
 	/* padding: 20px; */
 	overflow: hidden;
+	background: url(/Dashboard.png);
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 .mainPage {
@@ -85,18 +89,18 @@ body {
 }
 
 @media (min-width: 1800px) {
-    .mainPage {
-        background-color: rgba(217,217,217,0.1);
-        border-radius: 15px;
-    }
-    .main_container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-    .mainPage {
-        width: 70%;
-    }
+	.mainPage {
+		background-color: rgba(217, 217, 217, 0.05);
+		border-radius: 15px;
+	}
+	.main_container {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+	.mainPage {
+		width: 70%;
+	}
 }
 
 @media (max-width: 1024px) {

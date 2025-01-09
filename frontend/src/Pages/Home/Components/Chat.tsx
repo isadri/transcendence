@@ -42,19 +42,22 @@ function Chat() {
   return (
     <div className="Home-ChatRev">
       <div className="Home-Icon">
-        <i className="fa-solid fa-comment-dots fa-lg"></i>
+      <i className="fa-solid fa-user-group"></i>
       </div>
       <div className="Home-friends">
         {friendsList.map((friend) => (
           <div key={friend.id} className="Home-friends-item">
-              <img src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
-              onClick={() => navigate(`/profile/${friend.username}`)}/>
-            {
-              friend.is_online ?
-              <div className="onlineCircle-friend"></div>
-              :
-              <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)', borderColor:'rgb(119 118 118)'}}></div>
-            }
+             <div className='Cimg'>
+                <img src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
+                  onClick={() => navigate(`/profile/${friend.username}`)}/>
+              {
+                friend.is_online ?
+                <div className="onlineCircle-friend"></div>
+                :
+                <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)', borderColor:'rgb(119 118 118)'}}></div>
+              }
+             </div>
+            {/* <div className='hover-friend' >{friend.username}</div> */}
           </div>
         ))}
       </div>

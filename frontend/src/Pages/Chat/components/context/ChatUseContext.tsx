@@ -209,7 +209,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 		setSocket(ws);
 
 		return () => ws.close(); // Clean up the WebSocket on component unmont
-	}, [setChats]);
+	}, []);
 	const sendMessage = (data: {
 		message: string;
 		receiver: number;

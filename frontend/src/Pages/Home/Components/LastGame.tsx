@@ -65,8 +65,10 @@ function LastGame() {
           <div key={usergame.id} className="lastgames-ele">
             <div className="Home-RowEle">
               <div className="Home-Row1">
-                <img src={getendpoint("http", usergame.player2.avatar)} alt=""
-                  onClick={() => usersProfile(usergame.player2)} />
+                <div className="Uimg">
+                  <img src={getendpoint("http", usergame.player2.avatar)} alt=""
+                    onClick={() => usersProfile(usergame.player2)} />
+                </div>
                 <span onClick={() => usersProfile(usergame.player2)}>{usergame.player2.username}</span>
               </div>
               <div>
@@ -83,8 +85,10 @@ function LastGame() {
               </div>
               <div className="Home-Row3">
                 <span onClick={() => usersProfile(usergame.player1)}>{usergame.player1.username}</span>
-                <img src={getendpoint("http", usergame.player1.avatar)} alt=""
-                  onClick={() => usersProfile(usergame.player1)} />
+                <div className="Uimg">
+                  <img src={getendpoint("http", usergame.player1.avatar)} alt=""
+                    onClick={() => usersProfile(usergame.player1)} />
+                </div>
               </div>
             </div>
           </div>

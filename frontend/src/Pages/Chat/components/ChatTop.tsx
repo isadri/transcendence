@@ -1,7 +1,8 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
-import { getUser, getendpoint } from "../../../context/getContextData";
+import { getContext, getUser, getendpoint} from "../../../context/getContextData";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 interface ChatTopProps {
@@ -16,6 +17,8 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 	const { block, blockUnblockFriend, activeChat, setActiveChatId } =
 		useChatContext();
 	const user = getUser();
+	const navigate = useNavigate();
+	const cntext = getContext()
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -65,6 +68,27 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 			console.log("Error in handling block/unblock: ", err);
 		}
 	};
+	const handleInvitePlay = () => {
+		if (!user) return;
+		let friend_id;
+		if (user?.id === selectedFriend.user1.id) {
+			friend_id = selectedFriend.user2.id;
+		} else {
+			friend_id = selectedFriend.user1.id;
+		}
+		axios
+		.post(getendpoint("http", `/api/game/invite/`), { invited: friend_id })
+		.then((response) => {
+			console.log("created ", response.data);
+
+			navigate(`/game/warmup/friends/${response.data.id}`);
+		})
+		.catch((error) => {
+			console.log(error.response.data.error);
+			cntext?.setCreatedAlert(error.response.data.error)
+			cntext?.setDisplayed(3)
+		});
+	};
 
 	const friend_user =
 		user?.id === selectedFriend.user2.id
@@ -81,14 +105,21 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 						setActiveChatId(null);
 					}}
 				></i>
-				<img src={friend_user.avatar} alt="profile" className="image" />
+				<img
+					src={friend_user.avatar}
+					alt="profile"
+					className="image"
+					onClick={() => navigate(`/profile/${friend_user.username}`)}
+				/>
 				<div className="textInfo">
-					<span>{friend_user.username}</span>
-					{friend_user.is_online ? (
+					<span onClick={() => navigate(`/profile/${friend_user.username}`)}>
+						{friend_user.username}
+					</span>
+					{/* {friend_user.is_online ? (
 						<p className="friend-online">Online</p>
 					) : (
 						<p className="friend-offline">Offline</p>
-					)}
+					)} */}
 				</div>
 			</div>
 			<div ref={buttonMenuRef}>
@@ -101,8 +132,10 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 				></i>
 				{openMenu && (
 					<ul className="menu-list">
-						<li>Invite to play</li>
-						<li>Friend profile</li>
+						<li onClick={handleInvitePlay}>Invite to play</li>
+						<li onClick={() => navigate(`/profile/${friend_user.username}`)}>
+							Friend profile
+						</li>
 						<li
 							onClick={() => {
 								setSelectedFriend(null);

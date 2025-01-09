@@ -6,6 +6,15 @@ import { getContext, getUser, getendpoint} from "../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 
 
+interface ErrorData {
+  username: string | undefined;
+  tmp_email: string | undefined;
+  avatar: string | undefined;
+  CurrentPassword: string;
+  password: string;
+  confirmPassword: string;
+}
+
 interface Data {
   username: string | undefined;
   email: string | undefined;
@@ -30,9 +39,9 @@ const Setting = () => {
   const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
   const [isOtpDisactive, setIsOtpDisactive] = useState(false)
   const [confirmEmail, setConfirmEmail] = useState(false)
-  const [errors, SetErrors] = useState<Data>({
+  const [errors, SetErrors] = useState<ErrorData>({
     username: "",
-    email: "",
+    tmp_email: "",
     avatar: "",
     CurrentPassword: "",
     password: "",
@@ -102,7 +111,9 @@ const Setting = () => {
           {
             console.log("dataaa=> ", response.data.data)
             authContext?.setUser(response.data.data);
-            SetErrors({ ...errors, username: "", email: "", avatar: "" });
+            SetErrors({ ...errors, username: "", tmp_email: "", avatar: "" });
+            authContext?.setCreatedAlert("Your information has been updated successfully");
+            authContext?.setDisplayed(5)
             console.log("saved sacces")
           }
         })
@@ -112,6 +123,8 @@ const Setting = () => {
     }
     else {
       console.log("No changes deticted")
+      authContext?.setCreatedAlert("No changes detected in your data");
+      authContext?.setDisplayed(4)
     }
   };
 
@@ -130,6 +143,8 @@ const Setting = () => {
         withCredentials: true,
       })
       .then(() => {
+        authContext?.setCreatedAlert("Your Password has been updated successfully");
+        authContext?.setDisplayed(5)
         SetErrors({
           ...errors,
           CurrentPassword: "",
@@ -171,13 +186,17 @@ const Setting = () => {
         withCredentials: true,
       })
       .then((response) => {
+        // authContext?.setCreatedAlert(response.data.detail);
         authContext?.setCreatedAlert(response.data.detail);
+        authContext?.setDisplayed(3)
         authContext?.setIsLogged(false)
         navigate('/')
       })
       .catch((error) => {
         SetMyAlert(false)
-        setcreatedAlert(error.response.data.detail)
+        authContext?.setDisplayed(3)
+        authContext?.setCreatedAlert(error.response.data.detail)
+        // setcreatedAlert(error.response.data.detail)
       })
   }
 
@@ -257,21 +276,17 @@ const Setting = () => {
     }, 900);
   }, [showAlert,Verified, setIsOtpDisactive, isOtpDisactive]);
   console.log("usable pass => ", user?.usable_password);
-  
+  console.log("username error => ",errors.username)
   return (
     <>
-      <div className={`alert-acountNotDeleted ${confirm === 3 ? "show" : "hide"}`}>
-        <i className="fa-solid fa-circle-exclamation"></i>
-        <span>{createdAlert}</span>
-      </div>
       <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>
         <i className="fa-solid fa-circle-exclamation"></i>
         <span>Two-Factor Authentication disabled</span>
       </div>
       <div className="Par">
         <div className="settingPage">
-          <h1>Settings</h1>
           <div className="settingContent">
+            <h1>Settings</h1>
             <div className="ProfileEdit">
               <h2 >Edit Profile</h2>
               <div className="ChangeAvatar">
@@ -293,13 +308,14 @@ const Setting = () => {
                   <input
                     type="file"
                     name="avatar"
+                    accept=".jpg,.jpeg,.png"
                     onChange={handleFileChange}
                     id="file-input"
                     style={{ display: "none" }}
                   />
                 </div>
               </div>
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form className="dataform" onSubmit={(e) => e.preventDefault()}>
                 <div className="ProfileEdit-C1">
                   <label htmlFor="username">Username</label>
                   <input
@@ -309,8 +325,8 @@ const Setting = () => {
                     value={dataUpdated.username}
                     onChange={handleInputChange}
                   />
-                  {errors.username !== "" && (
-                    <p className="SettingError">{errors.username}</p>
+                  {errors.username !== undefined && (
+                    <p className={`${errors.username !== "" ? "SettingError" : ""}`}>{errors.username}</p>
                   )}
                 </div>
                 <div className="ProfileEdit-C2">
@@ -322,8 +338,8 @@ const Setting = () => {
                     value={dataUpdated.email}
                     onChange={handleInputChange}
                   />
-                  {errors.email !== "" && (
-                    <p className="SettingError">{errors.email}</p>
+                  {errors.tmp_email !== undefined && (
+                    <p className={`${errors.tmp_email !== "" ? "SettingError" : ""}`}>{errors.tmp_email}</p>
                   )}
                 </div>
               </form>
@@ -335,44 +351,49 @@ const Setting = () => {
             </div>
             <div className="ChangePass">
               <h2>Change Password</h2>
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form className="PassForm" onSubmit={(e) => e.preventDefault()}>
                 <div className="ChangePass-C1">
                   <label htmlFor="CurrentPassword">Current Password</label>
                   <input
-                    type="text"
+                    type="password"
                     name="CurrentPassword"
                     id="CurrentPassword"
                     value={dataUpdated.CurrentPassword}
                     onChange={handleInputChange}
                     disabled={!user?.usable_password}
                   />
-                  {errors.CurrentPassword !== "" && (
-                    <p className="SettingError">{errors.CurrentPassword}</p>
-                  )}
-                  <label htmlFor="password">New Password</label>
-                  <input
-                    type="text"
-                    name="password"
-                    id="password"
-                    value={dataUpdated.password}
-                    onChange={handleInputChange}
-                  />
-                  {errors.password !== "" && (
-                    <p className="SettingError">{errors.password}</p>
+                  {errors.CurrentPassword !== undefined && (
+                    <p className={`${errors.CurrentPassword !== "" ? "SettingError" : ""}`}>{errors.CurrentPassword}</p>
                   )}
                 </div>
                 <div className="ChangePass-C2">
-                  <label htmlFor="confirmPassword">Confirm Password</label>
-                  <input
-                    type="text"
-                    name="confirmPassword"
-                    id="confirmPassword"
-                    value={dataUpdated.confirmPassword}
-                    onChange={handleInputChange}
-                  />
-                  {errors.confirmPassword !== "" && (
-                    <p className="SettingError">{errors.confirmPassword}</p>
-                  )}
+                  <div className="element1-changPass">
+                    <label htmlFor="password">New Password</label>
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      value={dataUpdated.password}
+                      onChange={handleInputChange}
+                      onCopy={(e) => e.preventDefault()}
+                    />
+                    {errors.password !== undefined && (
+                      <p className={`${errors.password !== "" ? "SettingError" : ""}`}>{errors.password}</p>
+                    )}
+                  </div>
+                  <div className="element1-changPass">
+                    <label htmlFor="confirmPassword">Confirm Password</label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      id="confirmPassword"
+                      value={dataUpdated.confirmPassword}
+                      onChange={handleInputChange}
+                    />
+                    {errors.confirmPassword !== undefined && (
+                      <p className={`${errors.confirmPassword !== "" ? "SettingError" : ""}`}>{errors.confirmPassword}</p>
+                    )}
+                  </div>
                 </div>
               </form>
               <div className="saveProfileEdit">

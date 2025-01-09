@@ -56,10 +56,17 @@ class Game(models.Model):
   def setWinner(self):
     if self.progress != 'E':
       raise ValueError("Cannot set a winner unless the game has ended.")
+    player2_states, _ = UserStats.objects.get_or_create(user=self.player2)
+    player1_states, _ = UserStats.objects.get_or_create(user=self.player1)
+    diff = abs(self.p1_score - self.p2_score)
     if self.p1_score > self.p2_score:
         self.winner = self.player1
+        player1_states.set_as_winner(diff)
+        player2_states.set_as_loser(diff)
     elif self.p2_score > self.p1_score:
         self.winner = self.player2
+        player1_states.set_as_loser(diff)
+        player2_states.set_as_winner(diff)
     self.save()
 
   def abortGame(self, winner, score):
@@ -122,13 +129,66 @@ class UserAchievement(models.Model):
         return self.name
 
 class UserStats(models.Model):
+  D_XP = 30
+  D_LEVEL = 100
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_stats')
   level = models.FloatField(default=0)
-  badge = models.IntegerField(default=0)
+  badge = models.IntegerField(default=-1)
   win = models.IntegerField(default=0)
   lose = models.IntegerField(default=0)
   xp = models.IntegerField(default=0)
   nbr_games = models.IntegerField(default=0)
+  
+
+  def update_badge(self):
+    from ..accounts.utils import add_game_achievement_to_user, add_level_achievement_to_user, add_milestone_achievement_to_user
+    if (self.level >= 100):
+      self.badge = 4
+    elif self.level >= 50:
+      self.badge = 3
+    elif self.level >= 30:
+      self.badge = 2
+    elif self.level >= 15:
+      self.badge = 1
+    elif self.level >= 1:
+      self.badge = 0
+    elif self.level == 0:
+      self.badge = -1
+    self.save()
+    print("chi haja")
+    print(self.user)
+    add_game_achievement_to_user(self.user)
+    add_level_achievement_to_user(self.user)
+    add_milestone_achievement_to_user(self.user)
+
+
+  def set_as_winner(self, diff_score):
+    self.win += 1
+    self.nbr_games += 1
+    self.xp += diff_score * self.D_XP
+    next_level = self.level + 1
+    required_xp = next_level * self.D_LEVEL + 10
+    if self.xp >= required_xp:
+      diff = self.xp - required_xp
+      self.xp = diff if diff > 0 else 0
+      self.level += 1
+    self.save()
+    self.update_badge()
+
+  def set_as_loser(self, diff_score):
+    self.lose += 1
+    self.nbr_games += 1
+    self.xp -= diff_score * self.D_XP
+    required_xp = self.level * self.D_LEVEL
+    if self.xp < 0:
+      self.xp = required_xp + self.xp
+      if self.xp < 0:
+        self.xp = 0
+      self.level -= 1
+      if self.level < 0:
+        self.level = 0
+    self.save()
+    self.update_badge()
 
   def __str__(self):
         return f"{self.user.username} - Level {self.level}"

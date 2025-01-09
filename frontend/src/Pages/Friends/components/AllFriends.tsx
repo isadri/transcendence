@@ -8,7 +8,7 @@ interface GetFriends {
 	id: number;
 	username: string;
 	avatar: string;
-	is_online: boolean
+	is_online: boolean;
 }
 
 const AllFriends = () => {
@@ -54,7 +54,6 @@ const AllFriends = () => {
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -89,7 +88,7 @@ const AllFriends = () => {
 						authContext?.setCreatedAlert(
 							"Friend request not found or already processed."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setGetFriends((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -107,7 +106,7 @@ const AllFriends = () => {
 					// console.log(response.data)
 					if (response.data.error === "You can not block this user.") {
 						authContext?.setCreatedAlert("You can not block this user.");
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setGetFriends((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -152,13 +151,23 @@ const AllFriends = () => {
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}
 									/>
-									{
-           							  	friend.is_online ?
-           							 	  <div className="onlineCircle-friend"></div>
-           							 	  :
-           							 	  <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)', borderColor:'rgb(119 118 118)'}}></div>
-           							}
-									<span>{friend.username}</span>
+									{friend.is_online ? (
+										<div className="onlineCircle-friend"></div>
+									) : (
+										<div
+											className="onlineCircle-friend"
+											style={{
+												backgroundColor: "rgb(119 118 118)",
+												borderColor: "rgb(119 118 118)",
+											}}
+										></div>
+									)}
+									<span
+										className="friendName"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									>
+										{friend.username}
+									</span>
 								</div>
 								<div className="iconFriend">
 									<button

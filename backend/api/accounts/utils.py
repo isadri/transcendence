@@ -18,6 +18,10 @@ from ..game.models import Game, UserAchievement, UserStats
 
 from .models import User
 
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
+from config import settings
 
 def get_next_id() -> int:
     """
@@ -86,6 +90,11 @@ def send_otp_to(user: User, toEmail: str) -> None:
     """
     Send an email to the user containg the otp key to confirm email on setting
     """
+    try:
+        validate_email(toEmail)  # Validate email format
+    except ValidationError:
+        raise ValueError(f"Invalid email address: {toEmail}")
+
     user.email_user_to_email(
         subject='Email verification',
         message=('Your verification code is: '
@@ -134,6 +143,7 @@ def get_access_token_from_api(token_endpoint: str,
                 grant_type, code, redirect_uri and client_id.
     """
     response = requests.post(token_endpoint, params=payload)
+    print(response.json())
     return response.json().get('access_token')
 
 
@@ -237,7 +247,7 @@ def get_user(data: dict) -> User | None:
                 username += '*' + str(get_next_id())
                 register_state = False
             user = User.objects.create_user(
-                remote_id=remote_id,
+                remote_id=[remote_id],
                 username=username,
                 email=email,
                 register_complete=register_state,
@@ -265,7 +275,7 @@ def get_user_info(userinfo_endpoint: str, access_token: str) -> dict[str, str]:
     return response.json(), response.status_code
 
 
-def get_access_token_google(authorization_code: str) -> str:
+def get_access_token_google(redirect_url: str, authorization_code: str) -> str:
     """
     Get the access token from Google API.
 
@@ -281,13 +291,13 @@ def get_access_token_google(authorization_code: str) -> str:
         'code': authorization_code,
         'client_id': os.getenv('GOOGLE_ID'),
         'client_secret': os.getenv('GOOGLE_SECRET'),
-        'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
+        'redirect_uri': redirect_url,
         'grant_type': 'authorization_code'
     }
     return get_access_token_from_api(token_endpoint, payload)
 
 
-def get_access_token_42(authorization_code: str) -> str:
+def get_access_token_42(redirect_url: str, authorization_code: str) -> str:
     """
     Get the access token from 42 API.
 
@@ -303,7 +313,7 @@ def get_access_token_42(authorization_code: str) -> str:
         'code': authorization_code,
         'client_id': os.getenv('INTRA_ID'),
         'client_secret': os.getenv('INTRA_SECRET'),
-        'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
+        'redirect_uri': redirect_url,
         'grant_type': 'authorization_code'
     }
     return get_access_token_from_api(token_endpoint, payload)
@@ -356,8 +366,8 @@ def check_otp_key(otp: str, user: User) -> bool:
 
 def add_level_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    if userStats.level == 1:
-        if not UserAchievement.objects.filter(key='level_1').exists():
+    if userStats.level >= 1:
+        if not UserAchievement.objects.filter(user=user, key='level_1').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -365,8 +375,8 @@ def add_level_achievement_to_user(user: User):
                 name="Beginner",
                 text="Reach level 1.",
             )
-    elif userStats.level == 10:
-        if not UserAchievement.objects.filter(key='level_10').exists():
+    if userStats.level >= 10:
+        if not UserAchievement.objects.filter(user=user, key='level_10').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -374,8 +384,8 @@ def add_level_achievement_to_user(user: User):
                 name="Intermediate",
                 text="Reach level 10.",
             )
-    elif userStats.level == 25:
-        if not UserAchievement.objects.filter(key='level_25').exists():
+    if userStats.level >= 25:
+        if not UserAchievement.objects.filter(user=user, key='level_25').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -383,8 +393,8 @@ def add_level_achievement_to_user(user: User):
                 name="Advanced Player",
                 text="Reach level 25.",
             )
-    elif userStats.level == 50:
-        if not UserAchievement.objects.filter(key='level_50').exists():
+    if userStats.level >= 50:
+        if not UserAchievement.objects.filter(user=user, key='level_50').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -392,8 +402,8 @@ def add_level_achievement_to_user(user: User):
                 name="Expert",
                 text="Reach level 50.",
             )
-    elif userStats.level == 100:
-        if not UserAchievement.objects.filter(key='level_100').exists():
+    if userStats.level >= 100:
+        if not UserAchievement.objects.filter(user=user, key='level_100').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="level",
@@ -405,8 +415,9 @@ def add_level_achievement_to_user(user: User):
 
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    if userStats.win == 1:
-        if not UserAchievement.objects.filter(key='win_1').exists():
+    if userStats.win >= 1:
+        print("here")
+        if not UserAchievement.objects.filter(user=user, key='win_1').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="win",
@@ -414,8 +425,8 @@ def add_game_achievement_to_user(user: User):
                 name="First Victory",
                 text="Win your first match.",
             )
-    elif userStats.win == 20:
-        if not UserAchievement.objects.filter(key='win_20').exists():
+    if userStats.win >= 20:
+        if not UserAchievement.objects.filter(user=user, key='win_20').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="win",
@@ -423,8 +434,8 @@ def add_game_achievement_to_user(user: User):
                 name="Champion",
                 text="Win 20 matches overall.",
             )
-    elif userStats.win == 50:
-        if not UserAchievement.objects.filter(key='win_50').exists():
+    if userStats.win >= 50:
+        if not UserAchievement.objects.filter(user=user, key='win_50').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="win",
@@ -436,8 +447,8 @@ def add_game_achievement_to_user(user: User):
 
 def add_milestone_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
-    if userStats.nbr_games == 10:
-        if not UserAchievement.objects.filter(key='match_10').exists():
+    if userStats.nbr_games >= 10:
+        if not UserAchievement.objects.filter(user=user, key='match_10').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="game",
@@ -445,8 +456,8 @@ def add_milestone_achievement_to_user(user: User):
                 name="Rookie",
                 text="Play 10 matches.",
             )
-    elif userStats.nbr_games == 50:
-        if not UserAchievement.objects.filter(key='match_50').exists():
+    if userStats.nbr_games >= 50:
+        if not UserAchievement.objects.filter(user=user, key='match_50').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="game",
@@ -454,8 +465,8 @@ def add_milestone_achievement_to_user(user: User):
                 name="Veteran",
                 text="Play 50 matches.",
             )
-    elif userStats.nbr_games == 100:
-        if not UserAchievement.objects.filter(key='match_100').exists():
+    if userStats.nbr_games >= 100:
+        if not UserAchievement.objects.filter(user=user, key='match_100').exists():
             UserAchievement.objects.create(
                 user=user,
                 type="game",
@@ -463,3 +474,7 @@ def add_milestone_achievement_to_user(user: User):
                 name="Marathon Player",
                 text="Play 100 matches.",
             )
+
+
+def get_url(request, path="/") -> str:
+    return request.build_absolute_uri(path).replace("http://", "https://")

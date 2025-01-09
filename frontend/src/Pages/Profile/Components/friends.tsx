@@ -2,8 +2,8 @@
 import '../styles/friends.css'
 import { FriendsData } from '../Profile'
 import { useNavigate } from 'react-router-dom'
-import { getendpoint } from '../../../context/getContextData'
-import { userData } from 'three/webgpu'
+import { getContext, getendpoint } from '../../../context/getContextData'
+import axios from 'axios'
 interface Props {
   FriendsLst: FriendsData[],
   username: string
@@ -11,6 +11,23 @@ interface Props {
 
 function friends({ FriendsLst, username }: Props) {
   const navigate = useNavigate()
+  const cntxt = getContext()
+  const handleInvitePlay = (id: Number) => {
+		axios
+		.post(getendpoint("http", `/api/game/invite/`), { invited: id })
+		.then((response) => {
+			console.log("created ", response.data);
+
+			navigate(`/game/warmup/friends/${response.data.id}`);
+		})
+		.catch((error) => {
+			console.log(error.response.data.error);
+      console.log("")
+      cntxt?.setCreatedAlert(error.response.data.error)
+      cntxt?.setDisplayed(3)
+		});
+	};
+
   return (
     <div className='Home-friendsProfile'>
       {
@@ -25,8 +42,10 @@ function friends({ FriendsLst, username }: Props) {
             <div className='Home-friend' key={friend.id}>
               <div className="Home-friendInfo">
                 <div className='img'>
-                  <img src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
-                    onClick={() => navigate(`/profile/${friend.username}`)} />
+                  <div className='Fimg'>
+                    <img src={getendpoint("http", friend.avatar)} alt={`${friend.username}'s avatar`}
+                      onClick={() => navigate(`/profile/${friend.username}`)} />
+                  </div>
                   {
                     friend.is_online ?
                       <div className="onlineCircle-friend"></div>
@@ -40,7 +59,7 @@ function friends({ FriendsLst, username }: Props) {
                 </div>
               </div>
               <div className='Home-friendProfile'>
-                <button>Invite</button>
+                <button onClick={() => handleInvitePlay(friend.id)} >Invite</button>
               </div>
             </div>
           )) :
@@ -48,7 +67,7 @@ function friends({ FriendsLst, username }: Props) {
               <>
                   {
                     username === '' ?
-                      <div className='Nostats game-NoStats'>
+                      <div className='Nostats  NoFriend'>
                         <div className='stats-icon stats-iconFriend'>
                           <i className="fa-solid fa-users-slash"></i>
                         </div>
@@ -58,7 +77,7 @@ function friends({ FriendsLst, username }: Props) {
                         </div>
                       </div>
                       :
-                      <div className='Nostats game-NoStats'>
+                      <div className='Nostats NoFriend'>
                         <div className='stats-icon stats-iconFriend'>
                           <i className="fa-solid fa-users-slash"></i>
                         </div>

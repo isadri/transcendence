@@ -116,7 +116,7 @@
     /* } */
 }
 
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 900px){
     .Home-badgesList {
         max-width: 300px;
     }

@@ -5,14 +5,13 @@ import bg3 from '../images/badges/bg3.svg'
 import bg4 from '../images/badges/bg4.svg'
 import bg5 from '../images/badges/bg5.svg' 
 import { useEffect } from 'react'
-import { UserData } from '../Profile'
+import { stats } from '../../../context/context'
 
 
 interface Prop {
-  userData: UserData
+  stats :stats
 }
-function BadgesList({userData}: Prop) {
-
+function BadgesList({stats}: Prop) {
   const ScrollLeft = ()=>{
       var left = document.querySelector(".Home-badgesList")
       left?.scrollBy(-(left?.scrollWidth/7),0)
@@ -23,7 +22,7 @@ function BadgesList({userData}: Prop) {
     }
   useEffect((() => {
     var badge = document.querySelector(".Home-badgesList")
-    badge?.scroll(badge?.scrollWidth/7 * userData.stats.badge ,0)
+    badge?.scroll(badge?.scrollWidth/7 * stats.badge ,0)
   }),[])
 return (
     <div className='Home-BadgesList'>
@@ -37,11 +36,11 @@ return (
           </div>
           <div className='Home-badgesList'>
             <div className='Home-child'><img src={bg2} alt="" /></div>
-            <div className={`Home-child ${0 <= userData.stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg1} alt="" /></div>
-            <div className={`Home-child ${1 <= userData.stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg2} alt="" /></div>
-            <div className={`Home-child ${2 <= userData.stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg3} alt="" /></div>
-            <div className={`Home-child ${3 <= userData.stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg4} alt="" /></div>
-            <div className={`Home-child ${4 <= userData.stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg5} alt="" /></div>
+            <div className={`Home-child ${0 <= stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg1} alt="" /></div>
+            <div className={`Home-child ${1 <= stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg2} alt="" /></div>
+            <div className={`Home-child ${2 <= stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg3} alt="" /></div>
+            <div className={`Home-child ${3 <= stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg4} alt="" /></div>
+            <div className={`Home-child ${4 <= stats.badge ? "showBadge": "hadeBadge" } `}><img src={bg5} alt="" /></div>
             <div className='Home-child'><img src={bg5} alt="" /></div>
           </div>
           <div className='Home-chevron-right'>

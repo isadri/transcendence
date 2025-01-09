@@ -14,7 +14,7 @@ def health(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health/', health),
-    path('', views.HomeView.as_view()),
+    path('api', views.HomeView.as_view()),
     path('api/chat/', include('api.chat.urls')),
     path('api/game/', include('api.game.urls')),
     path('api/friends/', include('api.friends.urls')),

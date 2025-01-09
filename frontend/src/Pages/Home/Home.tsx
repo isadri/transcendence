@@ -8,33 +8,47 @@ import GameHighlights from './Components/gameHighlights'
 import Chat from './Components/Chat'
 import './Home.css'
 import './styles/welcomeAndProfile.css'
-import Alert from '../../components/Alert/Alert'
-import { getContext } from '../../context/getContextData'
+import {getUser, getendpoint } from '../../context/getContextData'
+import Preloader from '../Preloader/Preloader'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { stats } from '../../context/context'
 
 function Home() {
-  const account = getContext()
+  const user = getUser();
+	const [stats, setStats] = useState<stats>()
+
+  useEffect(() => {
+    axios.get(getendpoint("http", `/api/game/userStats/${user?.username}`))
+      .then((response) => {
+        setStats(response.data[0])
+        console.log(response.data[0])
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    }, []);
+  if (!stats)
+      return <><Preloader/></>
   return (
     <>
-      <Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
-          <span>{account?.createdAlert}</span>
-      </Alert>
       <div className='Home-homePage'>
         <div className='Home-welcome'>
-          <Welcome/>
-          <Profile/>
+          <Welcome />
+          <Profile stats={stats}/>
         </div>
         <div className='Home-userInfo'>
           <div className='Home-game'>
             <div className='Home-modeChat'>
-              <GameModes/>
-              <Chat/>
+              <GameModes />
+              <Chat />
             </div>
             <div className='Home-gameStats'>
-              <GameHighlights/>
-              <GameStats/>
+              <GameHighlights />
+              <GameStats stats={stats}/>
             </div>
           </div>
-          <Chat/>
+          <Chat />
         </div>
       </div>
     </>

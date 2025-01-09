@@ -1,4 +1,4 @@
-import GameHistoryitem from "../gameHistoryItem/GameHistoryitem";
+import LastGame from "../../../Home/Components/LastGame";
 import "./GameHistory.css"
 
 function GameHistory() {
@@ -6,32 +6,7 @@ function GameHistory() {
       <div className="Game-history">
         <h2>Game History</h2>
         <div className="Game-history-list">
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
-            <GameHistoryitem/>
+            <LastGame/>
         </div>
       </div>
     );

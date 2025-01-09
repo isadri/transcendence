@@ -46,6 +46,7 @@ from .utils import (
     send_otp_email,
     send_otp_to,
     get_response,
+    get_url,
     generate_otp_for_user,
     reset_code,
     validate_token,
@@ -67,10 +68,16 @@ class HomeView(APIView):
         HTTP_402_UNAUTHORIZED response otherwise.
         """
         if request.user.is_authenticated:
+            if not request.user.register_complete:
+                logout(request)
+                response = Response(status=status.HTTP_401_UNAUTHORIZED)
+                response.delete_cookie(settings.AUTH_COOKIE)
+                return response
             request.user.open_chat = False
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
+
             serializer =  UserSerializer(request.user)
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
@@ -221,7 +228,8 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         Authenticate with the authorization server and obtain user information.
         """
         authorization_code = request.GET.get('code')
-        access_token = get_access_token_google(authorization_code)
+        redirect_url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+        access_token = get_access_token_google(redirect_url, authorization_code)
         userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
                              '?scope=openid profile email')
         user_info, status_code = get_user_info(userinfo_endpoint, access_token)
@@ -333,7 +341,8 @@ class IntraLoginViewSet(viewsets.ViewSet):
         Authenticate with the authorization server and obtain user information.
         """
         authorization_code = request.GET.get('code')
-        access_token = get_access_token_42(authorization_code)
+        redirect_url =  get_url(request, settings.INTRA_REDIRECT_URI)
+        access_token = get_access_token_42(redirect_url, authorization_code)
         user_info, status_code = get_user_info('https://api.intra.42.fr/v2/me',
                                                access_token)
         if status_code != 200:
@@ -459,6 +468,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
     A viewset for sending an email for reseting the password.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def _send_email(self, user: User, reset_url: str) -> None:
         """
@@ -540,6 +550,7 @@ class ResetPasswordViewSet(viewsets.ViewSet):
     A viewset for reseting the password.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def list(self, request: Request) -> None:
         """
@@ -654,11 +665,18 @@ class UpdateUserDataView(APIView):
             if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
                 data['avatar'] = request.FILES['avatar']
         if data['email'] != user.email:
+            if User.objects.filter(email=data['email']).exists():
+                return Response({'tmp_email': 'This email is already in use.'},
+                status=status.HTTP_400_BAD_REQUEST)
             data['tmp_email'] = data['email']
             del data['email']
             print("data => ", data)
             generate_otp_for_user(user)
-            send_otp_to(user, data['tmp_email'])
+            try:
+                send_otp_to(user, data['tmp_email'])
+            except ValueError as e:
+                print("===========================>", str(e))
+                return Response({'tmp_email': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             print(user.otp)
             response_data['message'] = 'the code sent to your email'
         serializer = UserSerializer(user, data=data, partial=True)
@@ -666,6 +684,7 @@ class UpdateUserDataView(APIView):
             serializer.save()
             response_data['data'] = serializer.data
             return Response(response_data, status=status.HTTP_200_OK)
+        print("Validation errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateUserPasswordView(APIView):
@@ -737,9 +756,36 @@ class UserDetailView(APIView):
         Retrieve user data by username.
         """
         user = get_object_or_404(User, username=username)
+        add_level_achievement_to_user(user)
+        add_game_achievement_to_user(user)
+        add_milestone_achievement_to_user(user)
         serializer = UserSerializer(user)
         data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
+
+class GetIntraLink(APIView):
+    """
+        get intra link
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    def get(self, request):
+        url =  get_url(request, settings.INTRA_REDIRECT_URI)
+        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url}&response_type=code'
+        print(data)
+        return Response(data, status=status.HTTP_200_OK)
+
+class GetGoogleLink(APIView):
+    """
+        get google link
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    def get(self, request):
+        url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url}'
+        return Response(data, status=status.HTTP_200_OK)
+
 
 # class GetIntraLink(APIView):
 #     """
@@ -748,11 +794,9 @@ class UserDetailView(APIView):
 #     permission_classes = [AllowAny]
 #     authentication_classes = []
 #     def get(self, request):
-#         url =  request.META.get('HTTP_ORIGIN')
-#         print("url ============> ",url)
-#         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url+settings.INTRA_REDIRECT_URI}&response_type=code'
-#         print(data)
+#         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
 #         return Response(data, status=status.HTTP_200_OK)
+
 
 # class GetGoogleLink(APIView):
 #     """
@@ -761,29 +805,8 @@ class UserDetailView(APIView):
 #     permission_classes = [AllowAny]
 #     authentication_classes = []
 #     def get(self, request):
-#         url =  request.META.get('HTTP_ORIGIN')
-#         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url+settings.GOOGLE_REDIRECT_URI}'
+#         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
 #         return Response(data, status=status.HTTP_200_OK)
-
-
-class GetIntraLink(APIView):
-    """
-        get intra link
-    """
-    permission_classes = [AllowAny]
-    def get(self, request):
-        data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
-        return Response(data, status=status.HTTP_200_OK)
-
-
-class GetGoogleLink(APIView):
-    """
-        get google link
-    """
-    permission_classes = [AllowAny]
-    def get(self, request):
-        data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
-        return Response(data, status=status.HTTP_200_OK)
 
 
 class SendOTPView(APIView):
@@ -850,11 +873,19 @@ class checkValidOtpEmail(APIView):
         print('send by user => ', otp)
         print('otp real=> ', user.otp)
         total_difference = timezone.now() - user.otp_created_at
+        print("your code otp => ", otp)
+        print("otp =>", user.otp)
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
-        print('tmp -> ', user.tmp_email)
-        user.email = user.tmp_email
-        user.tmp_email = None
-        user.save()
-        return Response (user.email, status=status.HTTP_200_OK)
+        # user.email = user.tmp_email
+        # user.tmp_email = None
+        # user.save()
+        data = {'email' : user.tmp_email, 'tmp_email' : None}
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(user.email, status=status.HTTP_200_OK)
+        # print("Validation errors:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response (user.email, status=status.HTTP_200_OK)

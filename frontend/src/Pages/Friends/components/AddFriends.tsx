@@ -37,7 +37,6 @@ const AddFriends = () => {
 			try {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/usersUnfriends"),
-					// "http://0.0.0.0:8000/api/friends/users",
 					{
 						withCredentials: true,
 					}
@@ -54,7 +53,6 @@ const AddFriends = () => {
 
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
-			// clearInterval(intervalId);
 		};
 	}, [searchFriend]);
 
@@ -93,7 +91,7 @@ const AddFriends = () => {
 						authContext?.setCreatedAlert(
 							"A friend request already exists between you and this user."
 						);
-						authContext?.setDisplayed(2);
+						authContext?.setDisplayed(3);
 					}
 					setAllUsers((prev) => prev.filter((user) => user.id !== id));
 				});
@@ -103,7 +101,6 @@ const AddFriends = () => {
 	};
 
 	const friendsList = searchFriend ? results : allUsers;
-	// console.log(friendsList)
 	return (
 		<div className="add-friends-page">
 			<>
@@ -139,7 +136,12 @@ const AddFriends = () => {
 										className="friendImage"
 										onClick={() => navigate(`/profile/${friend.username}`)}
 									/>
-									<span>{friend.username}</span>
+									<span
+										className="friendName"
+										onClick={() => navigate(`/profile/${friend.username}`)}
+									>
+										{friend.username}
+									</span>
 								</div>
 								<button
 									className="addFriend"

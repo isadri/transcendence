@@ -406,20 +406,21 @@ function Authentication() {
             <input
               type="text"
               name="username"
-              id="UserName"
-              placeholder="UserName or Email"
+              id="UserNameLogin"
+              placeholder="UserName"
               value={username}
               onChange={(e) => setUsername(e.target.value.toLowerCase())}
               required
             />
             <input
-              type="text"
+              type="password"
               name="password"
-              id="Pass"
+              id="PassLogin"
               placeholder="Password"
               onKeyDown={(e) => handleKeyDownLogin(e)}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onCopy={(e) => e.preventDefault()}
               required
             />
             <Link
@@ -493,7 +494,7 @@ function Authentication() {
             <input
               type="text"
               name="username"
-              id="UserName"
+              id="UserNameRegister"
               placeholder="UserName"
               value={username}
               onChange={(e) => handelRegisterErorrs(e, "username")}
@@ -508,7 +509,7 @@ function Authentication() {
               <p className="errorSet">{errors.username}</p>
             )}
             <input
-              type="text"
+              type="email"
               name="Email"
               id="Email"
               placeholder="Email"
@@ -523,9 +524,9 @@ function Authentication() {
               )}
             {errors.email !== "" && <p className="errorSet">{errors.email}</p>}
             <input
-              type="text"
+              type="password"
               name="password"
-              id="Pass"
+              id="PassRegister"
               placeholder="Password"
               value={password}
               onChange={(e) => handelRegisterErorrs(e, "password")}
@@ -540,11 +541,13 @@ function Authentication() {
               <p className="errorSet">{errors.password}</p>
             )}
             <input
-              type="text"
+              type="password"
               placeholder="Confirm Password"
               value={confirmPassword}
               onKeyDown={(e) => handleKeyDownRegister(e)}
               onChange={(e) => handelRegisterErorrs(e, "confirmPassword")}
+              onCopy={(e) => e.preventDefault()}
+              required
             />
             {errors.confirmPassword !== "" && (
               <p className="errorSet">{errors.confirmPassword}</p>
@@ -720,7 +723,7 @@ function Authentication() {
                       onChange={(e) => setUsernameReset(e.target.value.toLowerCase())}
                     />
                     <input
-                      type="text"
+                      type="email"
                       placeholder="Enter your email"
                       value={emailReset}
                       onChange={(e) => setEmailReset(e.target.value)}

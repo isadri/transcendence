@@ -1,10 +1,15 @@
 .Par{
     width: 100%;
-    height: 96vh;
+    height: 100%;
     position: relative;
+    display: flex;
     overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    margin-top: 15px;
+    /* top: 4vh; */
+    /* justify-content: center; */
+    overflow: scroll
 }
 .Par::-webkit-scrollbar {
     display: none;  
@@ -12,11 +17,11 @@
 
 .settingPage{
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
     flex-direction: column;
     width: 100%;
-    height: 96vh;
+    /* height: 90vh; */
     min-height: 900px;
 }
 
@@ -24,13 +29,15 @@
 .settingPage h1{
     color: var(--primary);
     padding-bottom: 1.5%;
+    padding-top: 10px;
     /* font-size: px; */
     font-family: var(--sans);
 }
 
 .settingContent {
     width: 90%;
-    height: 900px;
+    /* height: fit-content; */
+    /* min-height: 85vh; */
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -38,7 +45,6 @@
     align-items: center;
     justify-content: space-between;
     font-family: var(--mono);
-    /* min-height: 520px; */
 }
 
 .ChangeAvatar{
@@ -51,6 +57,8 @@
 }
 
 .ChangeAvatar .img{
+    display: flex;
+    align-items: center;
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -60,6 +68,8 @@
 .ChangeAvatar .img img{
     width: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 
 .ChangeAvatar .btns, .alertDeleteUser .btns{
@@ -105,7 +115,15 @@
     /* font-size: 2.4%; */
 }
 
-.settingContent form{
+.settingContent .dataform{
+    width: 98%;
+    padding-left: 1%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.settingContent .PassForm{
     width: 98%;
     padding-left: 1%;
     display: flex;
@@ -119,6 +137,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    position: relative;
 }
 
 .ProfileEdit-C1, .ChangePass-C1{
@@ -126,10 +145,27 @@
     display: flex;
     flex-direction: column;
 }
+.ChangePass-C1{
+    /* height: 84px; */
+    position: relative;
+    padding-bottom: 15px;
+}
+.ChangePass-C2{
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+.ChangePass-C2 .element1-changPass,
+.ChangePass-C2 .element2-changPass{
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+    justify-content: space-between;
+    position: relative;
+}
 
-
-.ChangePass-C1 *:nth-child(3){
-    margin-top: 5%;
+.ProfileEdit-C1,.ProfileEdit-C2{
+    position: relative;
 }
 
 .settingPage label{
@@ -148,6 +184,7 @@
     color: white;
     font-family: var(--mono);
     padding-left: 7px;
+    /* position: relative; */
 }
 
 .Setting-action{
@@ -187,13 +224,27 @@
     margin-right: 5px;
 }
 
+
 .SettingError{
-    font-size:1.4vw;
-    margin-top: 4%;
-    margin-left: 4%;
-    color: #ff0000;
+    font-size:12px;
     font-family: var(--sans);
+    background-color: #f8d7da; 
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    height: auto;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    margin-top: 5px;
+    position: absolute;
+    top: 65px;
+    left: 5px;
+    z-index: 1;
 }
+
 
 /*        Alert confime deleting account         */
 
@@ -269,8 +320,7 @@
 .alert-acountNotDeleted{
     display: none;
     position: absolute;
-    z-index: 10;
-    top: 70px;
+    top: 80px;
     right: 10px;
     width: 420px;
     height: 60px;
@@ -279,8 +329,7 @@
     display: flex;
     align-items: center;
     padding-left: 2%;
-    color:#f18b8b;
-    border: 1px solid #f18b8b;
+    color: white;
     opacity: 0;
     transition: opacity 0.5s ease-in-out, display 0s 0.5s;
 }
@@ -289,6 +338,7 @@
     display: flex;
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
+    z-index: 10;
 }
 
 .alert-acountNotDeleted.hide {
@@ -569,10 +619,15 @@
     border-color:#c92929;
 }
 
+@media only screen and (max-width: 800px) {
+    .settingPage label{
+        font-size: 12px;
+    }
+}
 @media only screen and (max-width: 478px) {
     .ProfileEdit-C2, .ChangePass-C2 ,.ProfileEdit-C1, .ChangePass-C1{
         width: 100%;
-        margin-top: 5%;
+        margin-top: 15px;
     }
     .Setting-action button{
         width: 20vw;
@@ -584,19 +639,41 @@
     .ProfileEdit h2, .ChangePass h2{
         font-size: 4vw;
     }
-    .settingContent{
-        height: 950px;
-    }
     .EnableOtp input::before {
         width: 15px;
         height: 15px;
     }
+
+    .ChangePass-C2{
+        flex-direction: column;
+    }
+
+    .ChangePass-C2 .element1-changPass,
+    .ChangePass-C2 .element2-changPass{
+        width: 100%;
+    }
+
+
+    .settingPage{
+        justify-content: flex-start;
+        padding-top: 19px;
+        height: 84dvh;
+    }
+
+    .settingContent{
+        min-height: 79dvh;
+    }
+
+    .Par{
+        height: 90dvh;
+        margin-bottom: 15px;
+    }
 }
 
 @media only screen and (min-width: 1200px) {
-    .settingContent{
+    /* .settingContent{
         width: 1000px;
-    }
+    } */
     .alertDeleteUser{
         width: 700px;
     }

@@ -55,6 +55,20 @@
 	opacity: 0.6;
 }
 
+@media (max-width: 700px) {
+	.Chat {
+		width: 100%;
+	}
+	.Chat-List {
+		width: 100%;
+	}
+	.Messages {
+		width: 100%;
+	}
+	.inactive {
+		display: none;
+	}
+}
 @media (max-width: 478px) {
 	.Chat {
 		width: 100%;

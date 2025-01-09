@@ -5,6 +5,7 @@
   width: 30%;
   height: 50%;
   padding: 0 2%;
+  font-family: var(--sans);
 }
 
 .GameFriendsInviteBoxTitle{
@@ -17,6 +18,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   margin-top: 2%;
 }
 
@@ -68,28 +70,9 @@
   height: 85%;
 }
 
-
-
-.GameFriendsInviteBox .FriendsSearch {
-  border: 1px solid white;
-  border-radius: 15px;
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  height: 45px;
-  width: 80%;
-}
-
-.GameFriendsInviteBox .FriendsSearch input {
-  border: none;
-  outline: none;
-  background-color: transparent;
-  color: white;
-  height: 50px;
-  width: 100%;
-  margin-left: 8px;
-}
-
-.GameFriendsInviteBox .FriendsSearch i {
-  margin-left: 8px;
+@media screen and (max-width:478px) {
+  .GameFriendPopUpBox {
+    width: 80%;
+    font-size: 15px;
+  }
 }

@@ -1,14 +1,16 @@
 .Sidebar {
 	height: 96dvh;
-	width: 6%;
+	width: 4%;
 	background-color: var(--fade);
     border-radius: 20px;
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	align-items: center;
 	text-align: center;
 	line-height: 4dvh;
+	min-width: 50px;
 }
 
 .list-items li {
@@ -20,8 +22,9 @@
 	flex-direction: column;
 }
 
-.list-items .logo {
-    padding: 10px;
+.Sidebar .logo {
+	height: 50px;
+	width: 50px;
 }
 
 .active {
@@ -55,4 +58,10 @@
     .list-items  li {
         font-size: 26px;
     }
+
+	.Sidebar .logo {
+		/* padding: 20px; */
+		height: 70px;
+		width: 70px;
+	}
 }

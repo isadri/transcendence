@@ -58,31 +58,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data.get('message_type')
 
-        if not message_type:
-            await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
-            return
-
-        if (message_type == "send_message"):
-            await self.handle_send_message(data)
-
-        if (message_type == "block_friend" or self.isBlocked):
-            data = self.isBlockedPayload if self.isBlocked else data
-            await self.handle_block_friend(data)
-        if (message_type == "active_chat"):
-            chat_id = data.get('chat_id')
-            if not chat_id:
-                await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+        try:
+            if not message_type:
+                await self.send(text_data=json.dumps({'error': 'Invalid message type.'}))
                 return
-            if chat_id == -1:
-                await self.handle_reset_active_chat()
-            else:
-                await self.handle_active_chat(chat_id)
-        if (message_type == "mark_is_read"):
-            chat_id = data.get('chat_id')
-            if not chat_id:
-                await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
-                return
-            await self.handle_mark_is_read(chat_id)
+
+            if (message_type == "send_message"):
+                await self.handle_send_message(data)
+
+            if (message_type == "block_friend" or self.isBlocked):
+                data = self.isBlockedPayload if self.isBlocked else data
+                await self.handle_block_friend(data)
+            if (message_type == "active_chat"):
+                chat_id = data.get('chat_id')
+                if not chat_id:
+                    await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+                    return
+                if chat_id == -1:
+                    await self.handle_reset_active_chat()
+                else:
+                    await self.handle_active_chat(chat_id)
+            if (message_type == "mark_is_read"):
+                chat_id = data.get('chat_id')
+                if not chat_id:
+                    await self.send(text_data=json.dumps({'error': 'Invalid chat id.'}))
+                    return
+                await self.handle_mark_is_read(chat_id)
+        except Exception as e:
+            await self.send(text_data=json.dumps({
+                'error': 'Chat receiver'
+            }))
 
     async def handle_mark_is_read(self, chat_id):
         try:
@@ -142,11 +147,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if (not chat_id or not blocked or not blocker):
                 await self.send(text_data=json.dumps({'error': 'Invalid'}))
                 return
+            if (int(blocker) != self.user.id):
+                await self.send(text_data=json.dumps({'error': 'You cannot block'}))
+                return
+            if (blocked == blocker):
+                await self.send(text_data=json.dumps({'error': 'You cannot block yourself'}))
+                return
             chat = await database_sync_to_async(Chat.objects.get)(id=chat_id)
 
             user1, user2 = await self.get_users_from_chat(chat)
-            blocker_user = await database_sync_to_async(User.objects.get)(id=blocker)
-            blocked_user = await database_sync_to_async(User.objects.get)(id=blocked)
+            if ((user1.id != int(blocked) and user1.id != int(blocker)) or (user2.id != int(blocked) and user2.id != int(blocker))):
+                await self.send(text_data=json.dumps({'error': 'You are not a member of that chat.'}))
+                return
+            try:
+                blocker_user = await database_sync_to_async(User.objects.get)(id=blocker)
+                blocked_user = await database_sync_to_async(User.objects.get)(id=blocked)
+            except User.DoesNotExist:
+                await self.send(text_data=json.dumps({
+                    'error': 'This user does not exist.'
+                }))
+                return
 
             if (status == True and chat.blocke_state_user1 != 'none' and chat.blocke_state_user2 != 'none'):
                 await self.send(text_data=json.dumps({'error': 'You cannot block this user.'}))

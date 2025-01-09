@@ -16,9 +16,9 @@ import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
 import { getUser } from '../context/getContextData';
 import TournamentRemote from '../Pages/Game/Tournament/Remote/TournamentRemote';
+import Preloader from '../Pages/Preloader/Preloader';
 
 
-// isLogged  routing table and layout
 const mainRoutingTable = [
   {
     path: "/",
@@ -35,15 +35,19 @@ const mainRoutingTable = [
   {
     path: "/profile",
     children: [
-    {
-      path: "",
-      element: <Profile />
-    },
-    {
-      path: ":username",
-      element: <Profile />
-    }
-]
+      {
+        path: "",
+        element: <Profile />
+      },
+      {
+        path: ":username",
+        element: <Profile />
+      }
+    ]
+  },
+  {
+    path: "/preloader",
+    element: <Preloader />
   },
   {
     path: "/friends",
@@ -51,14 +55,14 @@ const mainRoutingTable = [
   },
   {
     path: "/game",
-    children:[
+    children: [
       {
         path: "",
         element: <Game />,
       },
       {
         path: "tournament",
-        children:[
+        children: [
           {
             path: "local",
             element: <Local />,
@@ -68,11 +72,11 @@ const mainRoutingTable = [
             children: [
               {
                 path: ":id",
-                element: <TournamentRemote isRandom={true} ready={true}/>,
+                element: <TournamentRemote isRandom={true} ready={true} />,
               },
               {
                 path: "random",
-                element: <TournamentRemote isRandom={true}/>,
+                element: <TournamentRemote isRandom={true} />,
               }
             ]
           },
@@ -88,14 +92,18 @@ const mainRoutingTable = [
       },
       {
         path: "warmup",
-        children:[
+        children: [
           {
             path: "friends",
             element: <WarmUp />,
           },
           {
+            path: "friends/:inviteID",
+            element: <WarmUp />,
+          },
+          {
             path: "random",
-            element: <WarmUp isRandom/>,
+            element: <WarmUp isRandom={true} />,
           },
         ]
       },
@@ -124,13 +132,13 @@ function MainLayout() {
   //   }
   // }, [user])
   if (!user)
-      return <></>
+    return <></>
   return (
     <>
-      <SideNavbar/>
+      <SideNavbar />
       <div className='mainContent'>
-        <Global/>
-        <Outlet/>
+        <Global />
+        <Outlet />
       </div>
     </>
   )
@@ -139,9 +147,9 @@ function MainLayout() {
 const mainRouter = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout/>,
+    element: <MainLayout />,
     children: mainRoutingTable,
-    errorElement : <Navigate to={"/"}/>
+    errorElement: <Navigate to={"/"} />
   }
 ])
 

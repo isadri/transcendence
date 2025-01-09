@@ -1,66 +1,84 @@
-.Home-ChatRev{
-    width: 80px;
-    display: flex;
-    text-align: center;
-    border-radius: 20px;
-    flex-direction: column;
-    background-color: var(--fade);
-    max-height: 54vh;
+.Home-ChatRev {
+	width: 80px;
+	display: flex;
+	text-align: center;
+	border-radius: 20px;
+	flex-direction: column;
+	background-color: var(--fade);
+	max-height: 54vh;
 }
 
-
-.Home-ChatRev .Home-Icon{
-    display: flex;
-    justify-content: center;
+.Home-ChatRev .Home-Icon {
+	display: flex;
+	justify-content: center;
 }
 
 .Home-ChatRev i {
-    position: absolute;
-    margin-top: 30px;
+	position: absolute;
+	margin-top: 30px;
 }
 
-.Home-friends{
-    margin-top: 50px;
-    align-items: center;
-    overflow-y: auto;
-    -ms-overflow-style: none;  
-    scrollbar-width: none; 
-    border-radius: 20px;
+.Home-friends {
+	margin-top: 50px;
+	align-items: center;
+	overflow-y: auto;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	border-radius: 20px;
 }
 
 .Home-friends::-webkit-scrollbar {
-    display: none;  
+	display: none;
 }
 
-.Home-friends-item{
-    cursor: pointer;
-    position: relative;
-    margin-top: 12.5px;
+.Home-friends-item {
+	display: flex;
+	justify-content: center;
+	cursor: pointer;
+	position: relative;
+	margin-top: 12.5px;
 }
-
-.Home-friends-item .onlineCircle-friend{
-    width: 13px;
-    height: 13px;
-    position: absolute;
+.Home-friends-item  .Cimg{
+	display: flex;
+    align-items: center;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    border: 1px solid #04de04;
-    background-color: #04de04;
-    top: 40px;
-    right: 14px;
+    /* overflow: hidden; */
+	position: relative;
 }
 
+.Home-friends-item  .onlineCircle-friend {
+	width: 9px;
+	height: 9px;
+	position: absolute;
+	border-radius: 50%;
+	border: 1px solid #04de04;
+	background-color: #04de04;
+	top: 33px;
+	right: 2px;
+}
 
+.hover-friend {
+	font-family: var(--sans);
+	background-color: #04de04;
+	padding: 10px;
+	position: absolute;
+	top: 0;
+	left: -50%;
+	z-index: 100;
+}
 
-.Home-ChatRev .Home-friends-item img {
-    width: 55px;
-    height: 55px;
+.Home-ChatRev .Home-friends-item .Cimg img {
+	width: 100%;
+    object-fit: cover;
     border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 
-
-@media only screen and (max-width: 1073px){
-    .Home-ChatRev{
-        max-height: 55vh;
-        width: 80px;
-    }
+@media only screen and (max-width: 1073px) {
+	.Home-ChatRev {
+		max-height: 55vh;
+		width: 80px;
+	}
 }

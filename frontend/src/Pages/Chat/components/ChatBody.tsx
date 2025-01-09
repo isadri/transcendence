@@ -71,10 +71,6 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 	// const account = getContext();
 	return (
 		<>
-			{/* <Alert primaryColor="#00ff115a" secondaryColor="#90f18b">
-				<i className="fa-solid fa-circle-check"></i>
-				<span>{account?.createdAlert}</span>
-			</Alert> */}
 			<div className="chatContent">
 				<ChatTop
 					selectedFriend={selectedFriend}

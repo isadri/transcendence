@@ -36,7 +36,7 @@ export const setUser = (username: string, email: string,
 // } 
 
 export const getendpoint = (pro: string, path: string) => {
-	return pro + "://" + `${window.location.hostname}` + ":8000" + path;
+	return pro + "s://" + window.location.hostname + path;
 };
 
 // export const getwebsocket = (path: string) => {

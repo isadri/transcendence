@@ -41,16 +41,22 @@ const FriendRequests = () => {
 
 	const handleAcceptRequest = async (id: number) => {
 		try {
-			await axios.post(getendpoint("http", `/api/friends/accept/${id}`), null, {
-				withCredentials: true,
-			})
-			.then((response) => {
-				if (response.data.error === "Friend request not found or already processed.") {
-					authContext?.setCreatedAlert("Friend request not found or already processed.");
-					authContext?.setDisplayed(2);
-				}
-				setFriendRequests((prev) => prev.filter((user) => user.id !== id));
-			})
+			await axios
+				.post(getendpoint("http", `/api/friends/accept/${id}`), null, {
+					withCredentials: true,
+				})
+				.then((response) => {
+					if (
+						response.data.error ===
+						"Friend request not found or already processed."
+					) {
+						authContext?.setCreatedAlert(
+							"Friend request not found or already processed."
+						);
+						authContext?.setDisplayed(3);
+					}
+					setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 		}
@@ -58,23 +64,29 @@ const FriendRequests = () => {
 
 	const handleDeleteRequests = async (id: number) => {
 		try {
-			await axios.delete(getendpoint("http", `/api/friends/decline/${id}`), {
-				withCredentials: true,
-			})
-			.then(response => {
-				if (response.data.error == "Friend request not found or already processed.") {
-					authContext?.setCreatedAlert("Friend request not found or already processed.");
-					authContext?.setDisplayed(2);
-				}
-				setFriendRequests((prev) => prev.filter((user) => user.id !== id));
-			}) 
+			await axios
+				.delete(getendpoint("http", `/api/friends/decline/${id}`), {
+					withCredentials: true,
+				})
+				.then((response) => {
+					if (
+						response.data.error ==
+						"Friend request not found or already processed."
+					) {
+						authContext?.setCreatedAlert(
+							"Friend request not found or already processed."
+						);
+						authContext?.setDisplayed(3);
+					}
+					setFriendRequests((prev) => prev.filter((user) => user.id !== id));
+				});
 		} catch (error) {
 			console.error("Error decline friend request:", error);
 		}
 	};
 
 	return (
-		<div className="requests-friends-page" >
+		<div className="requests-friends-page">
 			{friendRequests.map((friend) => {
 				return (
 					<div className="friendProfile friendRequests" key={friend.id}>
@@ -85,7 +97,12 @@ const FriendRequests = () => {
 								className="friendImage"
 								onClick={() => navigate(`/profile/${friend.username}`)}
 							/>
-							<span>{friend.username}</span>
+							<span
+								className="friendName"
+								onClick={() => navigate(`/profile/${friend.username}`)}
+							>
+								{friend.username}
+							</span>
 						</div>
 						<div className="buttonFriend">
 							<button

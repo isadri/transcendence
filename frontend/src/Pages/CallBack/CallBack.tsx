@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getContext, getendpoint } from '../../context/getContextData'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
 import Alert from '../../components/Alert/Alert'
@@ -25,11 +25,13 @@ function CallBack() {
     })
   }
   const {from} = useParams()
+  const location = useLocation()
   const handelLogin = async (code: string | null) => {
     if (code)
     {
         if (from === "intra")
         {
+          console.log("--------------------------------")
           var url = getendpoint("http", '/api/accounts/login/intra')
           axios
           .get(url, {params: { code: code }, withCredentials: true })
@@ -54,14 +56,18 @@ function CallBack() {
               })
               .catch((error) => {
                 authContext?.setIsLogged(false),
+                navigate('/')
               console.error('Error:', error.response ? error.response.data : error.message);
             });
           }
           else if (from === "google")
           {
+            console.log(1);
+            
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
+                
                 console.log(response.data.info)
                 if (response.data.info && response.data.code){
                   setUserCode(response.data.code)
@@ -70,23 +76,31 @@ function CallBack() {
                 else if (response.data.info){
                   authContext?.setUser(response.data)
                   setUsernameAlert(true)
-                  }
-                  else{
+                }
+                else{
                     setTimeout(() => {
                       GetUserInfo()
                       authContext?.setIsLogged(true)
                       navigate('/')
                     }, 2000);
-                  }
+                }
                     console.log('Success:', response.data)
                   })
                 .catch((error) => {
                   authContext?.setIsLogged(false),
+                  navigate('/')
                 console.error('Error:', error.response ? error.response.data : error.message);
             });
         }
+        else
+        {
+          authContext?.setIsLogged(false),
+          navigate('/')
+        }
     } else {
       console.error('error');
+      authContext?.setIsLogged(false),
+      navigate('/')
     }
   }
 
@@ -103,9 +117,9 @@ function CallBack() {
           authContext?.setUser(response.data)
       })
       .catch((error)=> {
-        authContext?.setDisplayed(2);
+        authContext?.setDisplayed(3);
+        console.log(error.response.data)
         authContext?.setCreatedAlert(error.response.data.username[0]);
-        console.log(error.response.data.username[0])
       })
   }
 
@@ -121,7 +135,7 @@ function CallBack() {
         SetshowOtpAlert(false)
       })
       .catch(error => {
-        authContext?.setDisplayed(2)
+        authContext?.setDisplayed(3)
         authContext?.setCreatedAlert(error.response.data.error);
         SetshowOtpAlert(false)
         navigate('/Auth')
@@ -132,21 +146,18 @@ function CallBack() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     console.log("from ==========> ", from);
-    handelLogin(code)
+    if (!usernameAlert)
+      handelLogin(code)
     console.log(usernameAlert)
   }, [authContext, navigate]);
 
   return (
     <div className="loader-container">
-      <Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
-       {/* <i className="fa-solid fa-circle-exclamation"></i> */}
-        <span>{authContext?.createdAlert}</span>
-      </Alert>
       {
         usernameAlert || showOtpAlert ?
         (
           usernameAlert ?
-          <div className="GameModePopUpBlur">
+          <div className='alerUsername'>
             <div className="alertDeleteUser alertOTP userAlert">
               <div className="contentOtp">
                 <div className="iconEmail">

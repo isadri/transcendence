@@ -23,6 +23,10 @@
 
 .menu-notiMobile {
 	font-size: 20px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 15px;
 }
 
 .menuMobile {
@@ -57,7 +61,7 @@
 .list-itemsMobile .rowMobile {
 	display: flex;
 	align-items: center;
-	justify-content: flex-start;
+	justify-content: center;
 	padding: 3%;
 	background-color: var(--itemColor);
 	border-radius: 10px;
@@ -75,7 +79,6 @@ a {
 }
 
 .rowMobile #iconMobile {
-	padding-left: 30%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -86,7 +89,6 @@ a {
 .rowMobile .nameMobile {
 	font-size: 18px;
 	text-align: left;
-	flex: 1;
 	display: flex;
 	align-items: center;
 }

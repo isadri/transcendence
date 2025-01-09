@@ -37,10 +37,7 @@ class UserManager(BaseUserManager):
             raise ValueError('The email must be given')
         email = self.normalize_email(email)
 
-        GlobalUserModel = apps.get_model(
-            self.model._meta.app_label, self.model._meta.object_name
-        )
-        username = GlobalUserModel.normalize_username(username)
+        username = self.model.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         user.save()
@@ -65,6 +62,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_active=True.')
         return self.create_user(username, email, password, **extra_fields)
+    
 
 
 class User(PermissionsMixin, AbstractBaseUser):
@@ -146,7 +144,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     register_complete = models.BooleanField(default=True)
     from_remote_api = models.BooleanField(default=False)
 
-    email_verification_token = models.CharField(max_length=40, default='')
+    email_verification_token = models.CharField(max_length=100, default='')
 
     email_verified = models.BooleanField(default=False)
 
@@ -158,13 +156,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['email']
-
-    def clean(self) -> None:
-        """
-        Normalize the username and the email.
-        """
-        super().clean()
-        self.email = self.__class__.objects.normalize_email(self.email)
 
     def email_user(self, subject, message, from_email=None, **kwargs) -> None:
         """

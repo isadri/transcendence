@@ -1,3 +1,4 @@
+
 .loader-container {
     display: flex;
     justify-content: center;
@@ -38,6 +39,12 @@
         transform: scale(2.5);
         opacity: 0;
     }
+}
+
+.alerUsername{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
  .GameModePopUpBlur .userAlert{

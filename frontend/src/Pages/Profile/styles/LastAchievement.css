@@ -1,6 +1,6 @@
 .Home-LastAchievement{
     width: 33%;
-    height: 970px;
+    height: 960px;
     background-color: var(--fade);
     border-radius: 20px;
     display: flex;
@@ -23,8 +23,7 @@
     max-height: 86%;
     font-family: var(--sans);
     overflow-y: auto;
-    -ms-overflow-style: none;  
-    scrollbar-width: none;
+    overflow-x: hidden;
 }
 
 .Home-AchivementRows::-webkit-scrollbar {
@@ -92,13 +91,17 @@
 }
 
 
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 900px){
     .game-NoStatsprofile{
         margin-top: 50px;
     }
     .Home-LastAchievement{
-        height: 370px;
+        height: 340px;
         width: 98%;
-        margin-top: 2vh;
+        margin-top: 10px;
+    }
+    .Home-LastAchievement h2{
+        margin: 3% 0 3% 5%;
+        /* font-size: 2vh; */
     }
 }
