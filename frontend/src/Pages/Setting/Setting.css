@@ -242,6 +242,7 @@
     position: absolute;
     top: 65px;
     left: 5px;
+    z-index: 1;
 }
 
 

@@ -406,7 +406,7 @@ function Authentication() {
             <input
               type="text"
               name="username"
-              id="UserName"
+              id="UserNameLogin"
               placeholder="UserName"
               value={username}
               onChange={(e) => setUsername(e.target.value.toLowerCase())}
@@ -415,7 +415,7 @@ function Authentication() {
             <input
               type="password"
               name="password"
-              id="Pass"
+              id="PassLogin"
               placeholder="Password"
               onKeyDown={(e) => handleKeyDownLogin(e)}
               value={password}
@@ -494,7 +494,7 @@ function Authentication() {
             <input
               type="text"
               name="username"
-              id="UserName"
+              id="UserNameRegister"
               placeholder="UserName"
               value={username}
               onChange={(e) => handelRegisterErorrs(e, "username")}
@@ -526,7 +526,7 @@ function Authentication() {
             <input
               type="password"
               name="password"
-              id="Pass"
+              id="PassRegister"
               placeholder="Password"
               value={password}
               onChange={(e) => handelRegisterErorrs(e, "password")}

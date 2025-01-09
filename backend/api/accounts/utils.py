@@ -142,6 +142,7 @@ def get_access_token_from_api(token_endpoint: str,
                 grant_type, code, redirect_uri and client_id.
     """
     response = requests.post(token_endpoint, params=payload)
+    print(response.json())
     return response.json().get('access_token')
 
 

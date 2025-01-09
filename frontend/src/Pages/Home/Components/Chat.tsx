@@ -42,7 +42,7 @@ function Chat() {
   return (
     <div className="Home-ChatRev">
       <div className="Home-Icon">
-        <i className="fa-solid fa-comment-dots fa-lg"></i>
+      <i className="fa-solid fa-user-group"></i>
       </div>
       <div className="Home-friends">
         {friendsList.map((friend) => (

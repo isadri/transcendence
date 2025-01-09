@@ -315,7 +315,7 @@
     border-radius: 10px; 
 }
 
-.content .content-text{
+.forgetPass .content .content-text{
     display: flex;
     align-items: center;
     justify-content: space-evenly;
@@ -325,7 +325,7 @@
     font-family: var(--sans);
 }
 
-.content .content-text .inputs-filed{
+.forgetPass .content .content-text .inputs-filed{
     display: flex;
     align-items: center;
     flex-direction: column;
