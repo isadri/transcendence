@@ -6,6 +6,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-family: var(--sans);
 }
 
 .TournamentGameWarmUp h2{
@@ -128,4 +129,17 @@
     color: red;
     border-top-right-radius: 18px;
     border-bottom-right-radius: 18px;
+}
+
+@media screen and (max-width: 410px) {
+	.TournamentWarmUpVs {
+		display: flex;
+		flex-direction: column;
+	}
+	.TournamentVsOnly {
+		display: none;
+	}
+    .TournamentWarmUpVsPlayer {
+        margin-top: 10px;
+    }
 }

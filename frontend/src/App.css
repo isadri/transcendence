@@ -23,6 +23,13 @@
 	padding: 0;
 }
 
+/* body {
+	background: url(/Dashboard.png);
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+} */
+
 .mainContent{
 	width: 94%;
 	height: 96dvh;
@@ -30,7 +37,7 @@
 	flex-direction: column;
 }
 
-@media screen and (max-width:476px) {
+@media screen and (max-width:478px) {
 	.mainContent{
 		width: 100%;
 	}

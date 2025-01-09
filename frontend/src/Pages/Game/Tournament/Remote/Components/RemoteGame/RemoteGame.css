@@ -9,7 +9,7 @@
   justify-content: space-between;
   border: solid 1px var(--fade);
   max-width: 400px;
-  height: 80px;
+  /* height: 80px; */
 }
 
 .RemoteGame div {
@@ -60,7 +60,7 @@
 
 .gameRound{
   position: absolute;
-  top: 50px;
+  top: 44px;
   /* right: 2px; */
 }
 .gameRound span{
@@ -77,6 +77,9 @@
     display: flex;
     flex-direction: column;
   }
+  .gameRound span {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 800px){
@@ -84,5 +87,8 @@
     width: 85dvw;
     display: flex;
     flex-direction: column;
+  }
+  .gameRound span {
+    display: none;
   }
 }
