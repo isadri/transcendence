@@ -400,22 +400,17 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Get the IDs of users who have blocked the current user and who have been blocked by the current user
         blocked_users = FriendRequest.objects.filter(
             Q(sender=request.user, status='blocked') | Q(receiver=request.user, status='blocked')
         ).values_list('sender_id', 'receiver_id')
 
-        # Flatten the list of blocked user IDs and remove the current user from the exclusion list
         blocked_users_ids = {user_id for pair in blocked_users for user_id in pair}
-        blocked_users_ids.discard(request.user.id)  # Make sure the current user isn't excluded
+        blocked_users_ids.discard(request.user.id)
 
-        # Get the list of users excluding the current user and any blocked users
         users = User.objects.exclude(id=request.user.id).exclude(id__in=blocked_users_ids)
+        new_users = users.filter(register_complete=True, email_verified=True)
+        serializer = FriendSerializer(new_users, many=True, context={'user': request.user})
 
-        # Pass the request context to the serializer
-        serializer = FriendSerializer(users, many=True, context={'user': request.user})
-
-        # Serialize and return the data
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserListUnfriendsView(APIView):
@@ -427,17 +422,14 @@ class UserListUnfriendsView(APIView):
             Q(receiver=request.user, status__in=['accepted', 'pending', "blocked"])
         ).values_list('sender_id', 'receiver_id')
 
-        # Flatten the list of blocked user IDs and remove the current user from the exclusion list
         users_ids = {user_id for pair in users for user_id in pair}
-        users_ids.discard(request.user.id)  # Make sure the current user isn't excluded
+        users_ids.discard(request.user.id)
 
-        # Get the list of users excluding the current user and any blocked users
         users = User.objects.exclude(id=request.user.id).exclude(id__in=users_ids)
+        new_users = users.filter(register_complete=True, email_verified=True)
 
-        # Pass the request context to the serializer
-        serializer = FriendSerializer(users, many=True, context={'user': request.user})
+        serializer = FriendSerializer(new_users, many=True, context={'user': request.user})
 
-        # Serialize and return the data
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

@@ -1,7 +1,7 @@
 import "../styles/GameModes.css";
 import FMode from "../images/friendsMode.svg";
-import AMode from "../images/aiMode.svg";
-import RMode from "../images/randomMode.svg";
+import AMode from "../images/randomMode.svg";
+import RMode from "../images/random4.svg";
 import { useState } from "react";
 
 import GameModePopUp from "../../../components/GameModePopUp/GameModePopUp";

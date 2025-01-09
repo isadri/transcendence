@@ -16,6 +16,11 @@
     justify-content: space-between;
 }
 
+.Home-Mode img {
+    height: 150px;
+    width: 150px;
+}
+
 .Home-Mode{
     display: flex;
     align-items: center;
