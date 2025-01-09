@@ -305,7 +305,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 				activeChatId,
 				setActiveChatId,
 				clearMessages,
-				// deleteChat,
 			}}
 		>
 			{children}
