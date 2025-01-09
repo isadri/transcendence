@@ -10,20 +10,6 @@ from .models import FriendList, FriendRequest
 
 User = get_user_model()
 
-# class FriendSerializer(serializers.ModelSerializer):
-#     is_friend = serializers.BooleanField(read_only=True) # i add this suppose to deleted
-#     is_blocked = serializers.SerializerMethodField()
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'avatar', 'is_friend', 'is_blocked']
-
-#     def get_is_blocked(self, obj):
-#         request_user = self.context['request'].user
-#         return FriendRequest.objects.filter(
-#             Q(sender=request_user, receiver=obj, status='blocked') |
-#             Q(sender=request_user, receiver=obj, status='blocked')
-#         ).exists()
-
 class FriendSerializer(UserSerializer):
     is_blocked = serializers.SerializerMethodField()
     class Meta(UserSerializer.Meta):

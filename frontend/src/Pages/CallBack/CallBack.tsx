@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
 import Alert from '../../components/Alert/Alert'
+import Preloader from '../Preloader/Preloader'
 
 function CallBack() {
   const authContext = getContext()
@@ -14,7 +15,7 @@ function CallBack() {
   const [userCode, setUserCode] = useState('')
   const [otpcode, setOtpCode] = useState('')
   const GetUserInfo = () =>{
-    axios.get(getendpoint("http", '/'),  {withCredentials:true})
+    axios.get(getendpoint("http", '/api'),  {withCredentials:true})
     .then((response) => {
       authContext?.setIsLogged(true)
       authContext?.setUser(response.data)
@@ -204,7 +205,8 @@ function CallBack() {
             </div>
         )
         :
-        <div className="ripple"></div>
+          <Preloader/>
+        // <div className="ripple"></div>
       }
     </div>
   )

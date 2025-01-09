@@ -192,7 +192,7 @@ const TournamentWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 
 	useEffect(() => {
 		axios
-			.get(getendpoint("http", `/`), { withCredentials: true })
+			.get(getendpoint("http", `/api`), { withCredentials: true })
 			.then((response) => {
 				setUser(response.data);
 			})

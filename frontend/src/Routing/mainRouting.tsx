@@ -131,6 +131,8 @@ function MainLayout() {
   //     console.log("hello")
   //   }
   // }, [user])
+  console.log("wa ha l3ar => ", user);
+  
   if (!user)
     return <></>
   return (

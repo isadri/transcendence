@@ -77,7 +77,7 @@ class HomeView(APIView):
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
-
+            
             serializer =  UserSerializer(request.user)
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
@@ -426,8 +426,9 @@ class RegisterViewSet(viewsets.ViewSet):
             user.email_verification_token = user.username + pyotp.random_base32()
             user.save()
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+            url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
             confirmation_url = (
-                'http://localhost:5000/emailVerified'
+                url+'/emailVerified'
                 f'?uid={uid}&token={user.email_verification_token}'
             )
             send_email_verification(user, confirmation_url)
@@ -503,8 +504,8 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
             </head>
             <body>
                 <div class="email-container">
-                    <h1>Please confirm your Email</h1>
-                    <p>Click here to confirm your email:</p>
+                    <h1>Reset your password</h1>
+                    <p>Click here to to reset your password:</p>
                     <a href="{reset_url}"
                     style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
                         Confirm
@@ -531,8 +532,9 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
             user = User.objects.get(username=username, email=email)
             token = PasswordResetTokenGenerator().make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+            url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
             reset_url = (
-                'http://localhost:5000/resetPassword'
+                url + '/resetPassword'
                 f'?uid={uid}&token={token}'
             )
             self._send_email(user, reset_url)

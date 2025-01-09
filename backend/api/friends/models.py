@@ -28,8 +28,6 @@ class FriendList(models.Model):
         Raises:
             friends.AlreadyExistsError: If new_friend already exists.
         """
-        # if new_friend in self.friends.all():
-        #     raise friends.AlreadyExistsError
         if new_friend in self.friends.all():
             raise ValueError("This friend is already in the friend list.")
         self.friends.add(new_friend)
@@ -204,10 +202,7 @@ class FriendRequest(models.Model):
                 # Remove the blocker from the user-to-block's friend list
                 removed_user_friend_list, _ = FriendList.objects.get_or_create(user=removed_user)
                 removed_user_friend_list.remove_friend(remover_user)
-        
-                # Update the FriendRequest status and record who blocked whom
-                # self.status = 'blocked'
-                # self.blocked_by = remover_user
+
                 self.delete()
         except Exception as e:
             raise ValueError(f"Failed to remove the friend request: {str(e)}")
@@ -234,7 +229,6 @@ class FriendRequest(models.Model):
                 blocked_user.is_blocked = False
         
                 # Update the FriendRequest status and clear block information
-                # self.status = 'accepted'
                 self.blocked_by = None
                 self.save()
         
