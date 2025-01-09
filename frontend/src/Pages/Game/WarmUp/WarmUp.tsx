@@ -250,7 +250,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   }
 
   useEffect(() => {
-    axios.get(getendpoint('http', `/`), {withCredentials:true})
+    axios.get(getendpoint('http', `/api`), {withCredentials:true})
     .then(response => {
       setUser(response.data);
     })

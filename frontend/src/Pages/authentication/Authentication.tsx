@@ -86,7 +86,7 @@ function Authentication() {
 
   const GetUserInfo = () => {
     axios
-      .get(getendpoint("http", "/"), { withCredentials: true })
+      .get(getendpoint("http", "/api"), { withCredentials: true })
       .then((response: any) => {
         authContext?.setIsLogged(true);
         authContext?.setUser(response.data);
