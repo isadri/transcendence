@@ -8,33 +8,18 @@ import {
   CategoryScale,
   LinearScale,
 } from 'chart.js';
-import 'chartjs-plugin-datalabels';  // Import the datalabels plugin
+import 'chartjs-plugin-datalabels';
 import '../styles/GameStats.css';
-import { getUser, getendpoint } from '../../../context/getContextData';
-import { div } from 'three/webgpu';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { stats } from '../../../context/context';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
+interface Prop{
+  stats : stats
+}
 
-
-function GameStats() {
-  const user = getUser()
-  const [stats, setStats] = useState<stats>()
-
-
-  useEffect(() => {
-    axios.get(getendpoint("http", `/api/game/userStats/${user?.username}`))
-    .then((response) => {
-      setStats(response.data[0])
-      console.log(response.data[0])
-    })
-    .catch((error) => {
-      console.log("error==================>",error)
-    })
-  }, []);
+function GameStats({stats}:Prop) {
 
   const data = {
     labels: [
@@ -54,17 +39,10 @@ function GameStats() {
   };
 
   const options = {
-    // responsive: true, 
     plugins: {
       legend: {
         display: false,
-        // labels: {
-        //   borderRadius:'15',
-        //   color: 'white',
-        //   font: {
-        //     size: 14,
-        //   },
-        // },
+
       },
       tooltip: {
         titleColor: 'white',
@@ -73,10 +51,7 @@ function GameStats() {
       datalabels: {
         color: 'white',
       },
-      // position: 'outside', // position the labels outside the doughnut
-      // offset: 10, // Adjust the distance of the labels from the doughnut
-      // padding: 40, // Adjust the padding (distance) between the label and doughnut
-      formatter: (value: number) => `${value}%`, // Optional: add custom formatting
+      formatter: (value: number) => `${value}%`,
     },
   };
 

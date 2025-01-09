@@ -10,6 +10,7 @@ import './Profile.css'
 import { useEffect, useState } from "react"
 import { getendpoint, getUser } from "../../context/getContextData"
 import { stats } from '../../../src/context/context'
+import Preloader from "../Preloader/Preloader"
 
 
 interface FriendsData{
@@ -100,9 +101,9 @@ const Profile = () => {
         })
       }, []);
       if (!userData)
-      return
+      return <><Preloader/></>
       if (!stats)
-        return
+        return  <><Preloader/></>
   return (
     <div className="Home-Profile">
       <div className="Home-firstRaw">

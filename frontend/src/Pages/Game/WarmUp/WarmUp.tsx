@@ -3,7 +3,7 @@ import avatar from "../../AboutUs/images/Your_profil_pict.png";
 import badge from "../../Profile/images/badges/bg1.svg";
 import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css"
-import { getUser, getendpoint } from "../../../context/getContextData";
+import { getContext, getUser, getendpoint } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
@@ -152,6 +152,7 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 
 const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
   const context = useContext(WarmUpContext)
+  const globalContext = getContext()
   const navigator = useNavigate()
   if (context) {
     let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser } = context
@@ -171,9 +172,16 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
             .then((response) => {
               console.log('created ', response.data);
 
+              globalContext?.setCreatedAlert("Invitation sent successfully")
+              globalContext?.setDisplayed(5)
               navigator(`/game/warmup/friends/${response.data.id}`)
+
             })
-            .catch((error) => {console.log(error.response.data)}
+            .catch((error) => {
+              console.log(error.response.data)
+              globalContext?.setCreatedAlert(error.response.data)
+              globalContext?.setDisplayed(3)
+            }
             )
         }
       }

@@ -4,35 +4,28 @@ import bg2 from "../../Profile/images/badges/bg2.svg";
 import bg3 from "../../Profile/images/badges/bg3.svg";
 import bg4 from "../../Profile/images/badges/bg4.svg";
 import bg5 from "../../Profile/images/badges/bg5.svg";
-import { getUser, getendpoint } from "../../../context/getContextData";
+import { getContext, getUser, getendpoint } from "../../../context/getContextData";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { stats } from "../../../context/context";
-// line 14 check emergncy
-function Profile() {
+
+interface Prop {
+	stats: stats
+}
+
+function Profile({ stats }: Prop) {
 	const user = getUser();
-	//   const [percentage, setPercentage] = useState(0);
-	const [stats, setStats] = useState<stats>()
+	const context = getContext()
 	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false);
 
 	if (user) {
 		useEffect(() => {
 			setIsOnline(user?.is_online || false);
 		}, [user.is_online, user?.stats]);
-
-		useEffect(() => {
-			axios.get(getendpoint("http", `/api/game/userStats/${user.username}`))
-				.then((response) => {
-					setStats(response.data[0])
-					console.log(response.data[0])
-				})
-				.catch((error) => {
-					console.log(error)
-				})
-		}, []);
 		var percentage = 0
-		if (stats)
+		if (!stats)
+			context?.setPreloader(true)
+		else
 			percentage = (stats.xp * 100) / ((stats.level + 1) * 100)
 		return (
 			<div className="Home-profile">
@@ -42,10 +35,8 @@ function Profile() {
 					</Link>
 					{
 						isOnline && (
-							// <div className="ParentCircle">
 							<div className="onlineCircle"></div>
 						)
-						// </div>
 					}
 					<Link to="/profile">
 						<span>{user?.username}</span>

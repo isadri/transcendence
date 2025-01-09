@@ -76,6 +76,7 @@ class HomeView(APIView):
             add_level_achievement_to_user(request.user)
             add_game_achievement_to_user(request.user)
             add_milestone_achievement_to_user(request.user)
+
             serializer =  UserSerializer(request.user)
             data = serializer.data
             return Response(data, status=status.HTTP_200_OK)
@@ -667,6 +668,9 @@ class UpdateUserDataView(APIView):
             if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
                 data['avatar'] = request.FILES['avatar']
         if data['email'] != user.email:
+            if User.objects.filter(email=data['email']).exists():
+                return Response({'tmp_email': 'This email is already in use.'},
+                status=status.HTTP_400_BAD_REQUEST)
             data['tmp_email'] = data['email']
             del data['email']
             print("data => ", data)
@@ -880,8 +884,14 @@ class checkValidOtpEmail(APIView):
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
-        print('tmp -> ', user.tmp_email)
-        user.email = user.tmp_email
-        user.tmp_email = None
-        user.save()
-        return Response (user.email, status=status.HTTP_200_OK)
+        # user.email = user.tmp_email
+        # user.tmp_email = None
+        # user.save()
+        data = {'email' : user.tmp_email, 'tmp_email' : None}
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(user.email, status=status.HTTP_200_OK)
+        # print("Validation errors:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response (user.email, status=status.HTTP_200_OK)
