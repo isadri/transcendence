@@ -10,10 +10,10 @@ body {
 	color: white;
 	/* padding: 20px; */
 	overflow: hidden;
-	background: url(/Dashboard.png);
+	/* background: url(/Dashboard.png);
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-position: center;
+	background-position: center; */
 }
 
 .mainPage {
