@@ -25,7 +25,7 @@ function App() {
 
   axios.defaults.withCredentials = true
   const getUserInfo = () => {
-    axios.get(getendpoint('http', "/"))
+    axios.get(getendpoint('http', "/api"))
         .then((response: any) => {
           console.log("response.data => ", { ...response.data, is_online: true })
           setUser({ ...response.data, is_online: true })
