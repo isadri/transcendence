@@ -19,7 +19,6 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 	const [messagesUpdate, setMessagesUpdate] = useState<ChatMessage[]>([]);
 
 	useEffect(() => {
-		// setMessagesUser(messages)
 		endRef.current?.scrollIntoView({ behavior: "instant" });
 	}, [messagesUpdate]);
 
@@ -38,6 +37,7 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 			hour12: true,
 		}).format(date);
 	};
+
 	return (
 		<div className="center">
 			{messagesUpdate.map((value, index) => {
@@ -64,4 +64,3 @@ const ChatCenter = ({ selectedFriend, messagesUser }: ChatCenterProps) => {
 };
 
 export default ChatCenter;
-

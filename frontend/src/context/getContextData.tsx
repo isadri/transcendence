@@ -39,18 +39,3 @@ export const getendpoint = (pro: string, path: string) => {
 	return pro + "s://" + window.location.hostname + path;
 };
 
-// export const getwebsocket = (path: string) => {
-// 	return "ws://" + `${window.location.hostname}` + ":8000/" + path;
-// };
-
-// export  const GetUserInfo = () =>{
-//     axios.get(getendpoint("http", '/'),  {withCredentials:true})
-//     .then((response) => {
-//       getContext()?.setIsLogged(true)
-//       getContext()?.setUser(response.data)
-//     })
-//     .catch(() => {
-//       getContext()?.setIsLogged(false)
-//       getContext()?.setUser(undefined)
-//     })
-//   }

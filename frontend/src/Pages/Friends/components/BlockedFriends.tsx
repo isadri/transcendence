@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./BlockedFriends.css";
 import axios from "axios";
 import {
@@ -24,7 +24,7 @@ const BlockedFriends = () => {
 				const response = await axios.get(
 					getendpoint("http", "/api/friends/blocked"),
 					{
-						withCredentials: true, // Include cookies in the request
+						withCredentials: true,
 					}
 				);
 				const senderData = response.data.map((request: any) => {

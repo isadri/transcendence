@@ -28,7 +28,7 @@ function App() {
     axios.get(getendpoint('http', "/api"))
         .then((response: any) => {
           console.log("response.data => ", { ...response.data, is_online: true })
-          setUser({ ...response.data, is_online: true })
+          setUser(response.data)
           setIsLogged(true)
         })
         .catch(() => {

@@ -11,7 +11,6 @@ import {
 	GetChats,
 	useChatContext,
 } from "./components/context/ChatUseContext";
-// import Alert from "../../components/Alert/Alert";
 
 const Chat = () => {
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 700px)");
@@ -65,15 +64,13 @@ const Chat = () => {
 
 		if (friend) {
 			await fetchBlockedFriend();
-			console.log('');
 		}
 
-		// console.log('a');
 		setSelectedFriend({...friend});
 		activeChat({ chatid: friend.id });
 
 	};
-	// const account = getContext();
+
 	return (
 		<ChatProvider>
 			<div className="Chat">
