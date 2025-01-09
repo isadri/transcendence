@@ -10,18 +10,19 @@ import {
 import { Link, useLocation } from "react-router-dom";
 
 function Icons() {
+	const user = getUser()
 	const contxt = getContext()
 	const notificationList = getNotifications()
 	const UnreadNotif = getUnreadCount()
 	const [isIconClicked, setIsIconClicked] = useState(false)
-	const user = getUser()
 	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
 	// const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
 	// const [unread, setUnread] = useState(0)
+	const location = useLocation()
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
-	const hideProfileImg = useLocation().pathname === "/" || useLocation().pathname === "/home"
-		|| useLocation().pathname === "/profile"
+	const hideProfileImg = location.pathname === "/" || location.pathname === "/home"
+		|| location.pathname === "/profile"
 	const handelNotifacations = () => {
 		setIsIconClicked(!isIconClicked)
 	}
