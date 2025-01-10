@@ -724,9 +724,9 @@ class FriendGame(AsyncWebsocketConsumer):
     self.connected[self.invite_id].setdefault('players', [])
     self.connected[self.invite_id]['players'].append(self)
     self.connected[self.invite_id]['room_name'] = self.room_name
-    print('hello', self.room_name)
     self.player1 = self.invite.inviter
     self.player2 = self.invite.invited
+    print(self.connected[self.invite_id])
     await self.channel_layer.group_add(self.room_name, self.channel_name)
     if not await self.accept_invite(self.invite):
       self.close()
@@ -746,8 +746,9 @@ class FriendGame(AsyncWebsocketConsumer):
         self.close()
         return
       if len(self.connected[self.invite_id]['players']) >= 2:
+        self.player1 = self.invite.inviter
+        self.player2 = self.invite.invited
         self.gameMatch = await self.create_game(player1=self.player1, player2=self.player2)
-        await self.delete_invite(self.invite)
         await self.channel_layer.group_send(
           self.room_name,
           {
@@ -763,6 +764,7 @@ class FriendGame(AsyncWebsocketConsumer):
   
 
   async def handshake(self, event):
+    # await self.delete_invite(self.invite)
     await self.send(text_data=json.dumps({
         "event" : "HANDSHAKING",
         "game_id": event["game_id"],
@@ -812,9 +814,18 @@ class FriendGame(AsyncWebsocketConsumer):
 
   async def disconnect(self, code):
     try:
-      if not self.room_name or not self.invite_id:
+      if not self.invite_id:
         return
+      if not self.room_name:
+        for i in range(len(self.connected[self.invite_id]['players'])):
+          if self.connected[self.invite_id]['players'][i] == self:
+            del self.connected[self.invite_id]['players'][i]
+            print("deleted1=>  ", self.connected[self.invite_id])
       await self.channel_layer.group_discard(self.room_name, self.channel_name)
+      for i in range(len(self.connected[self.invite_id]['players'])):
+        if self.connected[self.invite_id]['players'][i] == self:
+          del self.connected[self.invite_id]['players'][i]
+          print("deleted2=>  ", self.connected[self.invite_id])
     except:
       pass
 
@@ -825,7 +836,6 @@ class FriendGame(AsyncWebsocketConsumer):
 
   @staticmethod
   def warn_invite_refused(invite_id):
-    print('hello => ', invite_id, FriendGame.connected)
     channel_layer = get_channel_layer()
     data = FriendGame.connected.get(invite_id)
     print(data)

@@ -248,14 +248,13 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
       })
       .catch((error) => navigator(`/game/warmup/friends/`))
   }
-  if (inviteID)
-  {
+  if (inviteID) {
     axios.get(getendpoint("http", `/api/game/invite/${inviteID}`))
-    .catch((error) => navigator(`/game/warmup/friends/`))
+      .catch((error) => navigator(`/game/warmup/friends/`))
   }
 
   useEffect(() => {
-    if (enemyUser) {
+    if (enemyUser && !inviteID) {
       axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
         .then((response) => {
           console.log('created ', response.data);
@@ -297,6 +296,16 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
         globalContext?.setCreatedAlert(data['message'])
         globalContext?.setDisplayed(3)
         setTimeout(() => { navigator(`/game/warmup/friends/`) }, 2000);
+      }
+
+      if (data.event == "HANDSHAKING") {
+        // setTimeout(() => { setEnemyUser(data.enemy) }, 2000);
+        setTimeout(() => { navigator(`/game/remote/${data.game_id}`) }, 5000);
+      }
+      if (data.event == "ABORT") {
+        setEnemyUser(null)
+        setReady(false)
+        socket.close()
       }
     }
     return () => {
