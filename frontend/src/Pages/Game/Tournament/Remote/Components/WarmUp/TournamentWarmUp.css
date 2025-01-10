@@ -114,21 +114,20 @@
     padding: 15px 0;
     margin: 0 1px;
     border: none;
-    width: 20%;
+    width: 15%;
     font-size: large;
-    margin-top: 10%;
+    margin-top: 20px;
 }
 
 .TournamentWarmUpReadyBtn {
     color: white;
-    border-top-left-radius: 18px;
-    border-bottom-left-radius: 18px;
+    border-radius: 18px;
 }
 
 .TournamentWarmUpAbortBtn {
     color: red;
-    border-top-right-radius: 18px;
-    border-bottom-right-radius: 18px;
+    border-radius: 18px;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 410px) {
@@ -141,5 +140,9 @@
 	}
     .TournamentWarmUpVsPlayer {
         margin-top: 10px;
+    }
+
+    .TournamentWarmUpReadyContext  button{
+        width: 40%;
     }
 }

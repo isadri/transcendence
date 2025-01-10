@@ -132,50 +132,47 @@ const PlayerCard = ({
 const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
 	const context = useContext(WarmUpContext);
 	if (context) {
-		let { socket, ready, setReady, setSocket, setEnemies, enemies } = context;
+		// let { socket, ready, setReady, setSocket, setEnemies, enemies } = context;
+		const navigator = useNavigate()
 
-		const onReady = () => {
-			if (ready) return;
-			console.log("isRandom", isRandom);
-			const newSocket = new WebSocket(
-				getendpoint("ws", "/ws/game/tournament/random")
-			);
-			setSocket(newSocket);
-			newSocket.onopen = () => {
-				newSocket.send(
-					JSON.stringify({
-						event: "READY",
-					})
-				);
-			};
-			newSocket.onclose = () => {
-				setReady(false);
-				setEnemies([null, null, null]);
-			};
-			setReady(true);
-		};
+		// const onReady = () => {
+		// 	// if (ready) return;
+		// 	// console.log("isRandom", isRandom);
+		// 	// const newSocket = new WebSocket(
+		// 	// 	getendpoint("ws", "/ws/game/tournament/random")
+		// 	// );
+		// 	// setSocket(newSocket);
+		// 	// newSocket.onopen = () => {
+		// 	// 	newSocket.send(
+		// 	// 		JSON.stringify({
+		// 	// 			event: "READY",
+		// 	// 		})
+		// 	// 	);
+		// 	// };
+		// 	// newSocket.onclose = () => {
+		// 	// 	setReady(false);
+		// 	// 	setEnemies([null, null, null]);
+		// 	// };
+		// 	// setReady(true);
+		// };
 		const onAbort = () => {
-			if (socket) {
-				socket.send(
-					JSON.stringify({
-						event: "ABORT",
-					})
-				);
-				socket.close();
-				setSocket(null);
-				setReady(false);
-			}
+			navigator("/game")
+			// if (socket) {
+			// 	socket.send(
+			// 		JSON.stringify({
+			// 			event: "ABORT",
+			// 		})
+			// 	);
+			// 	socket.close();
+			// 	setSocket(null);
+			// 	setReady(false);
+			// }
 		};
 		return (
-			<div className="WarmUpReadyContext">
-				{/* <div className="WarmupReady"> */}
-				<button className="WarmUpReadyBtn" onClick={onReady}>
-					{ready ? "Wait" : "Ready"}
-				</button>
-				<button className="WarmUpAbortBtn" onClick={onAbort}>
+			<div className="TournamentWarmUpReadyContext">
+				<button className="TournamentWarmUpAbortBtn" onClick={onAbort}>
 					Abort
 				</button>
-				{/* </div> */}
 			</div>
 		);
 	}
@@ -264,7 +261,7 @@ const TournamentWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 						<PlayerCard enemy enemyIndex={1} isRandom={isRandom} />
 						<PlayerCard enemy enemyIndex={2} isRandom={isRandom} />
 					</div>
-					{/* <ReadyContext /> */}
+					<ReadyContext />
 				</div>
 			</div>
 		</WarmUpContext.Provider>

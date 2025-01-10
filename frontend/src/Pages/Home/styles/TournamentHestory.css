@@ -113,6 +113,11 @@
     color: #00ff00;
 }
 
+/* added by yasmine */
+.gamerank-ele {
+    cursor: pointer;
+}
+
 
 @media only screen and (max-width: 550px){
     .elemens-tournament .tournamentState .SetWinner span{
