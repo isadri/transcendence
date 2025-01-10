@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 from .models import *
 from .serializers import *
+from .consumers import *
 
 from rest_framework import status,viewsets
 from rest_framework.views import APIView
@@ -124,9 +125,10 @@ class DeclineGameInvite(APIView):
 
   def delete(self, request, pk):
     user = request.user
-    try: 
+    try:
       invite = GameInvite.objects.get(Q(inviter=user) | Q(invited=user), pk=pk)
       invite.delete()
+      FriendGame.warn_invite_refused(pk)
       return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except :
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
