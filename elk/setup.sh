@@ -94,7 +94,7 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
         "include_global_state": false
 	},
 	"retention": {
-		"expire_after": "25m",
+		"expire_after": "45m",
 		"min_count": 1,
 		"max_count": 10
 	}
@@ -120,13 +120,13 @@ https://es01:9200/_ilm/policy/logs-policy -H "Content-Type: application/json" -d
 				"min_age": "1m",
 				"actions": {
 					"rollover": {
-						"max_age": "20m",
+						"max_age": "10m",
 						"max_docs": 20000
 					}
 				}
 			},
 			"delete": {
-                "min_age": "5m",
+                "min_age": "15m",
 				"actions": {
 					"delete": {}
 				}
