@@ -69,8 +69,6 @@ class ChatView(viewsets.ModelViewSet):
         return Chat.objects.filter(Q(user1=user) | Q(user2=user))
 
     def create(self, request, *args, **kwargs):
-        user1 = request.user # the user current signed user
-        user2_id = request.data.get("user2") # the other user
         user1 = request.user
         user2_id = request.data.get("user2")
 
