@@ -37,7 +37,7 @@ interface UserData {
   email: string,
   avatar: string,
   is_online: boolean,
-  is_blocked: boolean,
+  is_blocked: any,
   // stats: state
 }
 
@@ -57,6 +57,7 @@ const Profile = () => {
       axios.get(getendpoint('http', `/api/accounts/user/${username}`), {withCredentials:true})
       .then(response => {
         setUserData(response.data);
+        console.log("response =>", response.data)
       })
       .catch(error => {
         console.log("Error fetching user data:");
