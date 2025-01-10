@@ -206,11 +206,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
-            'formatter': 'json',
-        },
         'logstash': {
             'level': 'DEBUG',
             'class': 'logstash_async.handler.AsynchronousLogstashHandler',
