@@ -357,7 +357,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
         if (receiver.open_chat == False):
-            print("------->", receiver.open_chat)
             msg = f"You have a new message from {self.user.username}!"
             notification = await Notification.objects.acreate(
                 user_id=receiver_id,

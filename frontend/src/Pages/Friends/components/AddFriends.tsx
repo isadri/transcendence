@@ -42,9 +42,7 @@ const AddFriends = () => {
 					}
 				);
 				setAllUsers(response.data);
-			} catch (err) {
-				console.log("Error fetching users:", err);
-			}
+			} catch (err) {}
 		};
 
 		fetchUsers();
@@ -95,9 +93,7 @@ const AddFriends = () => {
 					}
 					setAllUsers((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error accepting friend request:", error);
-		}
+		} catch (error) {}
 	};
 
 	const friendsList = searchFriend ? results : allUsers;

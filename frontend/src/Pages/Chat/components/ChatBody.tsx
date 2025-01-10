@@ -37,7 +37,6 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 				);
 				setMessagesUser(response.data.messages);
 			} catch (err) {
-				console.log("Error in fetching chats", err);
 			}
 		};
 		
@@ -62,7 +61,6 @@ const ChatBody = ({ selectedFriend, setSelectedFriend }: ChatBodyProps) => {
 				);
 				setBlock(response.data);
 			} catch (err) {
-				console.log("Error in fetching chats", err);
 			}
 		};
 		

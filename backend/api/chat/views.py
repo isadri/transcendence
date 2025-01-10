@@ -95,7 +95,6 @@ class ChatView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-           print(f"Error creating chat: {e}")
            return Response({"error": "An error occurred while creating the chat."},
                               status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

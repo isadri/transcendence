@@ -114,11 +114,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 
 	useEffect(() => {
 		const ws = new WebSocket(getendpoint("ws", `/ws/chat/`));
-		ws.onopen = () => console.log("WebSocket connected");
-		ws.onclose = () => console.log("WebSocket disconnected");
-		ws.onerror = (error) => {
-			console.error("WebSocket error:", error);
-		};
+		ws.onopen = () => {};
+		ws.onclose = () => {};
 		ws.onmessage = (event) => {
 			try {
 				const data = JSON.parse(event.data);
@@ -148,7 +145,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 
 				if (data.type === MessageType.SendMessage) {
 					if (!data.chat_id || !data.message) {
-						console.error("Invalid WebSocket message: ", data);
 						return;
 					}
 					const newMessage: ChatMessage = {
@@ -202,7 +198,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					});
 				}
 			} catch (err) {
-				console.error("Error parsing WebSocket message: ", err);
 			}
 		};
 
@@ -217,8 +212,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 	}) => {
 		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.send(JSON.stringify(data));
-		} else {
-			console.error("WebSocket is not open.");
 		}
 	};
 
@@ -238,8 +231,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					status: data.status,
 				})
 			);
-		} else {
-			console.error("WebSocket is not open.");
 		}
 	};
 	const activeChat = (data: { chatid: number }) => {
@@ -251,8 +242,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 					chat_id: data.chatid,
 				})
 			);
-		} else {
-			console.error("WebSocket is not open.");
 		}
 	};
 	const clearMessages = () => {
@@ -279,8 +268,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 						: chat
 				)
 			);
-		} else {
-			console.error("WebSocket is not open.");
 		}
 	};
 
