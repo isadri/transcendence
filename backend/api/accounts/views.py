@@ -343,7 +343,6 @@ class RegisterViewSet(viewsets.ViewSet):
         data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
-            key = settings.FERNET_KEY
             f = Fernet(settings.FERNET_KEY)
             data['password'] = f.encrypt(force_bytes(data['password'])).decode()
             encoded_data = self._encode_data(data)
