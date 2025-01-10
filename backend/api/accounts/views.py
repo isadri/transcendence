@@ -325,6 +325,7 @@ class RegisterViewSet(viewsets.ViewSet):
 
     def _encode_data(self, data: dict) -> str:
         """
+        Convert data to a JSON string and return the string encoded.
         """
         json_data = json.dumps(data)
         encoded_data = urlsafe_base64_encode(force_bytes(json_data))
@@ -332,6 +333,8 @@ class RegisterViewSet(viewsets.ViewSet):
 
     def _generate_token(self, encoded_payload: str, signature: str) -> str:
         """
+        Convert the encoded payload and the signature to a JSON string and
+        then encode the string to create a token.
         """
         json_data = json.dumps({
             'payload': encoded_payload, 'signature': signature
@@ -339,6 +342,11 @@ class RegisterViewSet(viewsets.ViewSet):
         return urlsafe_base64_encode(force_bytes(json_data))
 
     def create(self, request: Request) -> Response:
+        """
+        Create a token that contains the user information along with a
+        signature used to verify the user information when they are returned
+        from the client.
+        """
         data = request.data.copy()
         data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
@@ -371,6 +379,14 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
         """
         Validate the token given in the url.
+
+        This method get the token given the requested url and extract
+        the information needed for verification. The token contains the payload
+        which is used to create a signature and verify if it matches the
+        signature contained in the token, and if it is valid decode the payload
+        and then decrypt the password to create the user.
+        If the signature contained in the token does not match the signature
+        created using the payload, then this token is not valid.
         """
         token = request.GET.get('token')
         try:

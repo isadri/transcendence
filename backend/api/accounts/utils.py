@@ -484,5 +484,6 @@ def get_url(request, path="/") -> str:
 
 def generate_signature(key: str) -> str:
     """
+    Generate a signature by hashing the key.
     """
     return hashlib.sha256(force_bytes(key)).hexdigest()
