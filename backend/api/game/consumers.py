@@ -526,7 +526,7 @@ class RandomTournament(AsyncWebsocketConsumer):
   async def connect(self):
     self.user = self.scope["user"]
     self.room_name = None
-    if self.user.is_authenticated:
+    if self.user and self.user.is_authenticated:
       await self.accept()
     else:
       await self.close()
@@ -548,7 +548,6 @@ class RandomTournament(AsyncWebsocketConsumer):
           player3.user,
           player4.user
         )
-        print(self.tournament)
         self.room_name = f"room_{self.tournament.id}"
         await player1.channel_layer.group_add(self.room_name, player1.channel_name)
         await player2.channel_layer.group_add(self.room_name, player2.channel_name)
@@ -622,6 +621,15 @@ class RandomTournament(AsyncWebsocketConsumer):
             "username": self.user.username,
         }
       )
+
+  async def player_disconnected(self, event):
+    """
+    Notify the remaining player that their opponent disconnected.
+    """
+    await self.send(json.dumps({
+        "event": "ABORT",
+        "username": event["username"],
+    }))
 
 
 

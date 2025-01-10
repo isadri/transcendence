@@ -210,7 +210,7 @@ class Tournament(models.Model):
 
   def send_notification(self, player):
     message = {
-      'inviteId': self.id,
+      'id': self.id,
       'message' : f"Are you ready to play!"
     }
     NotificationConsumer.send_friend_request_notification(player.id, json.dumps(message), "Tournament")

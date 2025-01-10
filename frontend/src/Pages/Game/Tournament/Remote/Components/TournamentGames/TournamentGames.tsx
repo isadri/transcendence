@@ -9,7 +9,7 @@ import {
 // import winImg from '../../../../Images/winnerImg.svg'
 import winImg from "../../../../Images/crown.svg";
 import RemoteGame from "../RemoteGame/RemoteGame";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { div } from "three/webgpu";
 
 interface TournamentGamesProps {
@@ -156,13 +156,14 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 	);
 };
 
-function TournamentGames({ tournament }: TournamentGamesProps) {
+function TournamentGames() {
+  const {id} = useParams(); // protect later
 	const [data, setData] = useState<TournamentRemoteData | null>(null);
 
 	// console.log("tournament=> ", data);
 	useEffect(() => {
 		const socket = new WebSocket(
-			getendpoint("ws", `/ws/game/tournament/${tournament}`)
+			getendpoint("ws", `/ws/game/tournament/${id}`)
 		);
 
 		socket.onmessage = (e) => {

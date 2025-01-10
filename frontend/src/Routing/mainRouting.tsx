@@ -17,6 +17,8 @@ import Local from '../Pages/Game/Tournament/Local/Local';
 import { getUser } from '../context/getContextData';
 import TournamentRemote from '../Pages/Game/Tournament/Remote/TournamentRemote';
 import Preloader from '../Pages/Preloader/Preloader';
+import TournamentWarmUp from '../Pages/Game/Tournament/Remote/Components/WarmUp/TournamentWarmUp';
+import TournamentGames from '../Pages/Game/Tournament/Remote/Components/TournamentGames/TournamentGames';
 
 
 const mainRoutingTable = [
@@ -72,11 +74,13 @@ const mainRoutingTable = [
             children: [
               {
                 path: ":id",
-                element: <TournamentRemote isRandom={true} ready={true} />,
+                element: <TournamentGames/>,
+                // element: <TournamentRemote isRandom={true} ready={true} />,
               },
               {
                 path: "random",
-                element: <TournamentRemote isRandom={true} />,
+                element: <TournamentWarmUp isRandom={true}/>,
+                // element: <TournamentRemote isRandom={true} />,
               }
             ]
           },
