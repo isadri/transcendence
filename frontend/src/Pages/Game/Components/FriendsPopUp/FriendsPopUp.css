@@ -11,6 +11,8 @@
 .GameFriendsInviteBoxTitle{
   padding: 2%;
   color: var(--primary);
+  margin-top: 10px;
+  text-align: center;
 }
 .GameFriendsInviteBox{
   width: 90%;
@@ -38,6 +40,10 @@
   &::-webkit-scrollbar {
       display: none;
   }
+}
+
+.GameFriendsInviteBox .listFriends p{
+  opacity: 0.6;
 }
 
 .GameFriendsInviteBox  .friendItem {

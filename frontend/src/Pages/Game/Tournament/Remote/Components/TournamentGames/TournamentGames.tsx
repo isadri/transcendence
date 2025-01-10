@@ -149,9 +149,9 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 					</div>
 				</div>
 			</div>
-			<button className="start-btn" onClick={playYourGame}>
+			{user && getMyGame(data, user) && <button className="start-btn" onClick={playYourGame}>
 				Play
-			</button>
+			</button>}
 		</div>
 	);
 };
