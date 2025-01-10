@@ -11,9 +11,6 @@ django-two-factor-auth==1.15.5
 phonenumbers==8.13.44
 django-otp==1.5.2
 
-# Dependencies for django-alliauth
-cryptography==43.0.1
-
 # Making request
 requests==2.32.3
 
@@ -34,3 +31,5 @@ pytest-django==4.5.2
 python-decouple==3.8
 dj-database-url==2.3.0
 python-json-logger==3.2.1
+
+cryptography==44.0.0

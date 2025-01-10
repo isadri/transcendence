@@ -37,7 +37,6 @@ const ChatList = ({
 				);
 				setChats(response.data);
 			} catch (err) {
-				console.log(err); // Set the response data to state
 			}
 		};
 
@@ -67,7 +66,6 @@ const ChatList = ({
 			activeChat({ chatid: response.data.id });
 			unseenMessage({ chatid: response.data.id });
 		} catch (error) {
-			console.error("Error creating conversation:", error);
 		}
 	};
 
@@ -91,14 +89,12 @@ const ChatList = ({
 		const lastMessag = lastMsg || chat.messages[chat.messages.length - 1];
 
 		if (!lastMessag || !lastMessag.timestamp) {
-			console.warn("Invalid or missing timestamp for chat:", chat.id);
 			return null;
 		}
 
 		const lastMessageTime = new Date(lastMessag.timestamp).getTime();
 
 		if (isNaN(lastMessageTime)) {
-			console.error("Invalid timestamp value:", lastMessag.timestamp);
 			return null;
 		}
 
@@ -160,7 +156,7 @@ const ChatList = ({
 								src={getendpoint("http", friend.avatar)}
 								alt="profile"
 								className="profile"
-							/>
+							/>	
 							<div className="text">
 								<span>
 									{friend.username}

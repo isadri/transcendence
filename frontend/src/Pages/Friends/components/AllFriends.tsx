@@ -45,9 +45,7 @@ const AllFriends = () => {
 					}
 				);
 				setGetFriends(response.data.friends);
-			} catch (err) {
-				console.log("Error to fetch friends.", err);
-			}
+			} catch (err) {}
 		};
 
 		fetchFriend();
@@ -92,9 +90,7 @@ const AllFriends = () => {
 					}
 					setGetFriends((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error accepting friend request:", error);
-		}
+		} catch (error) {}
 	};
 	const handleBlockRequests = async (id: number) => {
 		try {
@@ -109,9 +105,7 @@ const AllFriends = () => {
 					}
 					setGetFriends((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error accepting friend request:", error);
-		}
+		} catch (error) {}
 	};
 
 	const friendsList = searchFriend ? results : getFriends;

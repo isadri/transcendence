@@ -17,15 +17,15 @@ export const getUnreadCount = () => {
 	return getContext()?.unreadCount;
 };
 
-export const setUser = (username: string, email: string,
-	avatar: string) => {
-	const user = getUser();
-	if (user) {
-		user.username = username;
-		user.email = email;
-		user.avatar = avatar;
-	}
-};
+// export const setUser = (username: string, email: string,
+// 	avatar: string) => {
+// 	const user = getUser();
+// 	if (user) {
+// 		user.username = username;
+// 		user.email = email;
+// 		user.avatar = avatar;
+// 	}
+// };
 
 // export const setCreatedAlertDel = (createdAlert: string, Displayed: number) =>{
 // 	const account = getContext()
@@ -36,6 +36,7 @@ export const setUser = (username: string, email: string,
 // } 
 
 export const getendpoint = (pro: string, path: string) => {
+	console.log("path ====> ", path)
 	return pro + "s://" + window.location.hostname + path;
 };
 

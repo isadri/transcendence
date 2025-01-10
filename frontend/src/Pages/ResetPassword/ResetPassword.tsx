@@ -13,8 +13,6 @@ function ResetPassword() {
   const params = new URLSearchParams(window.location.search);
   let token = params.get('token');
   let uid = params.get('uid');
-  console.log("token => ", token)
-  console.log("uid => ", uid)
   const [isconfirmed, setIsConfirmed] = useState(0)
   if (token && uid) {
     axios.get(getendpoint("http", "/api/accounts/password-reset-confirm/"),
@@ -41,7 +39,6 @@ function ResetPassword() {
           authcontext?.setDisplayed(5)
         })
         .catch(error => {
-          console.log(error.response.data.password)
           setError(error.response.data.password)
         })
       }
@@ -60,7 +57,7 @@ function ResetPassword() {
               <i className="fa-solid fa-unlock-keyhole"></i>
               <span></span>
             </div>
-            <div className="content-text">
+            <div className="content-text resetpass">
               <div>
                 <h3>Change your password</h3>
                 <span>Enter a new password below to change your password.</span>
@@ -80,8 +77,10 @@ function ResetPassword() {
                     />
                   </div>
             </div>
+            <div className="errorPass">
+              <p >{error}</p>
+            </div>
             <div className="buttonField">
-              <p className="errorSet">{error}</p>
               <button type="button" onClick={() => {handelchangePassword()}}>Change Password</button>
             </div>
           </div>

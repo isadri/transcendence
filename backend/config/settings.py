@@ -11,6 +11,9 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
+FERNET_KEY = b'xHOWJPaygIebtzb8_xS1sJwvtOna3zsC64oB_dQUp-I='
+
+
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
@@ -186,6 +189,8 @@ GOOGLE_ID = config('GOOGLE_ID')
 GOOGLE_REDIRECT_URI = config('GOOGLE_REDIRECT_URI')
 
 ASGI_APPLICATION = "config.asgi.application"
+
+REDIS_PORT = os.getenv('REDIS_PORT')
 
 CHANNEL_LAYERS = {
     'default': {

@@ -1,6 +1,7 @@
 import io
 
 from django.db.models.query_utils import Q
+import hashlib
 import pyotp
 import os
 import requests
@@ -9,6 +10,7 @@ from django.conf import settings
 from django.core.files.base import File
 from django.db import connection
 from django.utils import timezone
+from django.utils.encoding import force_bytes
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework_simplejwt.backends import TokenBackend
@@ -478,3 +480,10 @@ def add_milestone_achievement_to_user(user: User):
 
 def get_url(request, path="/") -> str:
     return request.build_absolute_uri(path).replace("http://", "https://")
+
+
+def generate_signature(key: str) -> str:
+    """
+    Generate a signature by hashing the key.
+    """
+    return hashlib.sha256(force_bytes(key)).hexdigest()

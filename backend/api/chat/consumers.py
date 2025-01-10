@@ -26,7 +26,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         self.room_group_name = f"chat_room_of_{self.user.id}"
         self.user.open_chat = True
-        await self.user.asave()
+        await self.user.asave(update_fields=['open_chat'])
+        # await self.user.asave()
         # Join the chat room group
         await self.channel_layer.group_add( # Adds the WebSocket connection to a group named chat_<user_id>.
             self.room_group_name,
@@ -39,7 +40,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not self.user:
             return
         self.user.open_chat = False
-        await self.user.asave()
+        await self.user.asave(update_fields=['open_chat'])
+        # await self.user.asave()
         await self.handle_reset_active_chat()
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -355,7 +357,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
         if (receiver.open_chat == False):
-            print("------->", receiver.open_chat)
             msg = f"You have a new message from {self.user.username}!"
             notification = await Notification.objects.acreate(
                 user_id=receiver_id,

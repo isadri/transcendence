@@ -32,11 +32,12 @@ router.register(r'login/google', views.GoogleLoginViewSet,
 #                basename='google-2fa')
 
 
+
 urlpatterns = [
     path('', include(router.urls)),
 
     path('updateuserData/', views.UpdateUserDataView.as_view(), name='update-user'),
-    path('updateUsername/', views.UpdateUsernameView.as_view(), name='update-username'),
+    # path('updateUsername/', views.UpdateUsernameView.as_view(), name='update-username'),
     path('updateuserPass/', views.UpdateUserPasswordView.as_view(), name='update-user-pass'),
     path('deleteUser/', views.DeleteUserAccountView.as_view(), name='delete-user'),
     path('user/<str:username>/', views.UserDetailView.as_view(), name='get_user_by_username'),

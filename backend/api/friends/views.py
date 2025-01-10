@@ -408,7 +408,6 @@ class FriendshipStatusView(APIView):
             ).first()
             if not friend_request:
                 return Response({'status': 'no_request'}, status=status.HTTP_200_OK)
-            print("friend_request.status => ",friend_request.status)
             return Response({'status': friend_request.status}, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -430,10 +429,8 @@ class MutualFriendsView(APIView):
             authenticated_user_friends = FriendList.objects.get(user=authenticated_user).friends.all()
             specific_user_friends = FriendList.objects.get(user=specific_user).friends.all()
             mutual_friends = authenticated_user_friends.filter(id__in=specific_user_friends)
-            print("data => ", mutual_friends)
             
             serializer = FriendSerializer(mutual_friends, many=True, context={'user' : request.user})
-            print("data => ", serializer.data)
             return Response(serializer.data, status=200)
         except FriendList.DoesNotExist:
             return Response([], status=200)

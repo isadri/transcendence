@@ -31,9 +31,7 @@ const FriendRequests = () => {
 				}));
 
 				setFriendRequests(senderData);
-			} catch (err) {
-				console.error("Error fetching data:", err);
-			}
+			} catch (err) {}
 		};
 
 		fetchFriendRequests();
@@ -57,9 +55,7 @@ const FriendRequests = () => {
 					}
 					setFriendRequests((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error accepting friend request:", error);
-		}
+		} catch (error) {}
 	};
 
 	const handleDeleteRequests = async (id: number) => {
@@ -80,9 +76,7 @@ const FriendRequests = () => {
 					}
 					setFriendRequests((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error decline friend request:", error);
-		}
+		} catch (error) {}
 	};
 
 	return (
