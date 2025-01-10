@@ -45,7 +45,10 @@ function GameModes() {
                                     <button
                                         type="submit"
                                         onClick={() => {
-                                            setMode(data.id);
+                                            if (data.id === 3)
+                                                navigator("/game/warmup/friends")
+                                            else
+                                                setMode(data.id);
                                         }}
                                     >
                                         Start
@@ -59,9 +62,7 @@ function GameModes() {
                     })}
                 </div>
             </div>
-            {mode === 3 ? navigator("/game/warmup/friends") : <div style={(mode !== -1 ? {display:"flex"} : {display: "none"})}>
-                <GameModePopUp mode={mode} setter={setMode}/>
-            </div>}
+            {(mode !== -1 && mode !== 3) && <GameModePopUp mode={mode} setter={setMode}/>}
         </>
     );
 }
