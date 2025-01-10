@@ -28,4 +28,3 @@ channels_redis==4.1.0
 pytest-django==4.5.2
 
 cryptography==44.0.0
-redis[hiredis]==5.2.1

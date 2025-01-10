@@ -10,6 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&llk^3rmodi5^_#c+#w(&vb_ro^-=)u*@&3p9#d4+cwkcwy$)w'
 
+FERNET_KEY = b'xHOWJPaygIebtzb8_xS1sJwvtOna3zsC64oB_dQUp-I='
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -201,11 +203,13 @@ GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
 
 ASGI_APPLICATION = "config.asgi.application"
 
+REDIS_PORT = os.getenv('REDIS_PORT')
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [("redis", 6379)],
+            "hosts": [("redis", int(REDIS_PORT))],
         },
     },
 }
