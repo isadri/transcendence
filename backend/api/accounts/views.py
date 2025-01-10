@@ -56,7 +56,8 @@ from .utils import (
     add_milestone_achievement_to_user,
 )
 
-
+from ..friends.models import FriendRequest
+from django.db.models import Q
 class HomeView(APIView):
     """
     The home page view.
@@ -758,16 +759,30 @@ class UserDetailView(APIView):
     """
     View to retrieve user details based on the provided username.
     """
+    def get_block_status(self, user, obj):
+        req = FriendRequest.objects.filter(
+            Q(sender=user, receiver=obj, status='blocked') |
+            Q(sender=obj, receiver=user, status='blocked')
+        ).first()
+        if (req):
+            return "blocker" if user == req.sender else "blocked"
+        return False
+
     def get(self, request, username, format=None):
         """
         Retrieve user data by username.
         """
+        from ..friends.serializers import FriendSerializer
         user = get_object_or_404(User, username=username)
         add_level_achievement_to_user(user)
         add_game_achievement_to_user(user)
         add_milestone_achievement_to_user(user)
-        serializer = UserSerializer(user)
-        data = serializer.data
+        serializer = FriendSerializer(user, context={"user": request.user})
+        data = serializer.data.copy()
+        print(data)
+        if data.get('is_blocked'):
+            data['is_blocked'] = self.get_block_status(request.user, user)
+        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetIntraLink(APIView):
