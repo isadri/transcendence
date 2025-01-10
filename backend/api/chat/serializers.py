@@ -17,10 +17,19 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class ChatSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True, read_only=True)
-    user2 = UserSerializer()
-    user1 = UserSerializer()
+    user2 = serializers.SerializerMethodField()
+    user1 = serializers.SerializerMethodField()
 
     class Meta:
         model = Chat
         fields = ['id', 'user1', 'user2', 'created_at', 'last_message', 'messages','nbr_of_unseen_msg_user1', 'nbr_of_unseen_msg_user2']
         read_only_fields = ['user1', 'last_message'] 
+
+
+    def get_user1(self, obj):
+        serializer = UserSerializer(obj.user1, context={})
+        return serializer.data
+
+    def get_user2(self, obj):
+        serializer = UserSerializer(obj.user2, context={})
+        return serializer.data
