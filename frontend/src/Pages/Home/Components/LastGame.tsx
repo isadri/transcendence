@@ -48,7 +48,6 @@ function LastGame() {
     axios.get(getendpoint("http", `/api/game/History/${authUser?.username}`))
       .then((response) => {
         setUserGames(response.data)
-        console.log(response.data)
       })
       .catch((error) => {
         console.error("Error fetching friends list:", error);
