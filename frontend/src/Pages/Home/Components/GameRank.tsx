@@ -30,7 +30,6 @@ function GameRank() {
     axios.get(getendpoint("http", "/api/friends/usersRank"))
       .then((response) => {
         setUseresRanking(response.data)
-        console.log(response.data)
       })
       .catch((error) => {
         console.error("Error fetching friends list:", error);

@@ -586,25 +586,24 @@ class LogoutViewSet(viewsets.ViewSet):
 #################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
 
 
-class UpdateUsernameView(APIView):
-    """
-        updating usernames for users 
-        who have logged in via Intra or Google
-        but have not completed 
-        the registration process yet
-    """
-    permission_classes = [IsAuthenticated]
-    def put(self, request):
-        user = request.user
-        print("user =============> ", user)
-        data = request.data.copy()
-        serializer = UserSerializer(user, data=data, partial=True)
-        if serializer.is_valid():
-            user.register_complete = True
-            user.save()
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class UpdateUsernameView(APIView):
+#     """
+#         updating usernames for users 
+#         who have logged in via Intra or Google
+#         but have not completed 
+#         the registration process yet
+#     """
+#     permission_classes = [IsAuthenticated]
+#     def put(self, request):
+#         user = request.user
+#         data = request.data.copy()
+#         serializer = UserSerializer(user, data=data, partial=True)
+#         if serializer.is_valid():
+#             user.register_complete = True
+#             user.save()
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateUserDataView(APIView):
@@ -625,7 +624,7 @@ class UpdateUserDataView(APIView):
             if  data['isRemove'] == 'yes': del data['avatar']
             if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
                 data['avatar'] = request.FILES['avatar']
-        if data['email'] != user.email:
+        if 'email' in data and data['email'] != user.email:
             if User.objects.filter(email=data['email']).exists():
                 return Response({'tmp_email': 'This email is already in use.'},
                 status=status.HTTP_400_BAD_REQUEST)
@@ -641,6 +640,8 @@ class UpdateUserDataView(APIView):
             response_data['message'] = 'the code sent to your email'
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
+            user.register_complete = True
+            user.save()
             serializer.save()
             response_data['data'] = serializer.data
             return Response(response_data, status=status.HTTP_200_OK)

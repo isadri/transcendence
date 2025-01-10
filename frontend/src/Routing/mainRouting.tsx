@@ -118,21 +118,7 @@ const mainRoutingTable = [
 
 function MainLayout() {
   const user = getUser()
-  // const context = getContext()
 
-  // const navigate = useNavigate()
-  // useEffect(() => {
-  //   if (!context) return
-  //   const {setIsLogged} = context
-  //   if (!user?.register_complete)
-  //   {
-  //     navigate('/Auth')
-  //     setIsLogged(false)
-  //     console.log("hello")
-  //   }
-  // }, [user])
-  console.log("wa ha l3ar => ", user);
-  
   if (!user)
     return <></>
   return (

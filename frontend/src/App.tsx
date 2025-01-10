@@ -26,7 +26,6 @@ function App() {
   const getUserInfo = () => {
     axios.get(getendpoint('http', "/api"))
         .then((response: any) => {
-          console.log("response.data => ", { ...response.data, is_online: true })
           setUser(response.data)
           setIsLogged(true)
         })
@@ -38,15 +37,12 @@ function App() {
   useEffect(() => {
 
     // if (isLogged) {
-      console.log("hello, ", user)
       const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
       ws.onopen = () => {
         getUserInfo()
-        console.log("WebSocket connected ", user?.is_online);
       }
       ws.onclose = () => {
         getUserInfo()
-        console.log("WebSocket disconnected ", user?.is_online);
       }
 
       ws.onmessage = (event) => {

@@ -31,7 +31,6 @@ function ProfileUser({userData, username, stats}:Prop) {
     setIsOnline(userData?.is_online || false)
   }, [userData.id, userData?.is_online]);
 
-  console.log("=====>", username)
 
 
 
@@ -94,17 +93,13 @@ function ProfileUser({userData, username, stats}:Prop) {
 		axios
 		.post(getendpoint("http", `/api/game/invite/`), { invited: id })
 		.then((response) => {
-			console.log("created ", response.data);
-
 			navigate(`/game/warmup/friends/${response.data.id}`);
 		})
 		.catch((error) => {
-			console.log(error.response.data);
       cntxt?.setCreatedAlert(error.response.data.error)
       cntxt?.setDisplayed(3)
 		});
 	};
-  console.log("blocked***** => ", userData.is_blocked)
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>

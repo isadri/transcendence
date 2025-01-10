@@ -27,7 +27,6 @@ function LastAchievement({ userData, username }: Prop) {
     axios.get(getendpoint("http", `/api/game/userAchievement/${userData?.username}`))
       .then((response) => {
         setAchievements(response.data)
-        console.log(response.data)
       })
       .catch((error) => {
         console.error("Error fetching friends list:", error);

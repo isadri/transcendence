@@ -57,18 +57,15 @@ const Profile = () => {
       axios.get(getendpoint('http', `/api/accounts/user/${username}`), {withCredentials:true})
       .then(response => {
         setUserData(response.data);
-        console.log("response =>", response.data)
       })
-      .catch(error => {
+      .catch(() => {
         console.log("Error fetching user data:");
       });
       axios.get(getendpoint('http', `/api/friends/MutualFriendsView/${username}`), {withCredentials:true})
       .then(response =>{
           setFriendsLst(response.data)
-          console.log("mutual friends===> ", response.data)
         })
-        .catch(error => {
-          console.log("Error fetching user data:");
+        .catch(() => {
           navigate("/")
         });
       }
@@ -95,7 +92,6 @@ const Profile = () => {
         axios.get(getendpoint("http", `/api/game/userStats/${user_stat}`))
         .then((response) => {
           setStats(response.data[0])
-          console.log(response.data[0])
         })
         .catch((error) => {
           console.log("error==================>",error)
