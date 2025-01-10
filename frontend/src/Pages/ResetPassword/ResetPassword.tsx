@@ -45,10 +45,15 @@ function ResetPassword() {
       else
         setError("Password do not match!!")
     }
+    else
+    {
+      authcontext?.setDisplayed(3);
+      authcontext?.setCreatedAlert("Please fill in all required fields");
+    }
   }
 
   return (
-    <div className="GameModePopUpBlur">
+    <div className="resetPassword">
       <div className="verifcationAlert">
         {
           isconfirmed === 1 &&

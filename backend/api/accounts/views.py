@@ -862,7 +862,8 @@ class checkValidOtpEmail(APIView):
         # serializer = UserSerializer(user, data=data, partial=True)
         # if serializer.is_valid():
         #     serializer.save()
-        return Response(user.email, status=status.HTTP_200_OK)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         # print("Validation errors:", serializer.errors)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response (user.email, status=status.HTTP_200_OK)

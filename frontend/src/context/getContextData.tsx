@@ -36,7 +36,6 @@ export const getUnreadCount = () => {
 // } 
 
 export const getendpoint = (pro: string, path: string) => {
-	console.log("path ====> ", path)
 	return pro + "s://" + window.location.hostname + path;
 };
 
