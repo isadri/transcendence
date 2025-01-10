@@ -160,7 +160,7 @@ const ChatList = ({
 								src={getendpoint("http", friend.avatar)}
 								alt="profile"
 								className="profile"
-							/>
+							/>	
 							<div className="text">
 								<span>
 									{friend.username}

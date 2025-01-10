@@ -14,7 +14,6 @@ import { getendpoint } from './context/getContextData';
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean | null>(null)
-  let [preloader, setPreloader] = useState<boolean>(false)
   let [user, setUser] = useState<userDataType | null>(null)
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
@@ -67,7 +66,7 @@ function App() {
     <loginContext.Provider value={{
       user, setUser, isLogged, setIsLogged,
       createdAlert, setCreatedAlert, Displayed, setDisplayed, notifications,
-      setNotifications, setUnreadCount, unreadCount, preloader, setPreloader
+      setNotifications, setUnreadCount, unreadCount
     }}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={isLogged ? mainRouter : landingRouter} />
