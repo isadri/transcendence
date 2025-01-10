@@ -90,7 +90,6 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 					);
 					selectedFriend.is_blocked = response.data.status;
 				} catch (err) {
-					console.log("Error in fetching chats", err);
 					selectedFriend.is_blocked = false;
 				}
 

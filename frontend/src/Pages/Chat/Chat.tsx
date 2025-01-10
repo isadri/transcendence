@@ -31,7 +31,6 @@ const Chat = () => {
 				);
 				setGetFriends(response.data || []);
 			} catch (err) {
-				console.error("Error fetching friends:", err);
 			}
 		};
 
@@ -57,7 +56,6 @@ const Chat = () => {
 				);
 				friend.is_blocked = response.data.status;
 			} catch (err) {
-				console.log("Error in fetching chats", err);
 				friend.is_blocked = false;
 			}
 		};

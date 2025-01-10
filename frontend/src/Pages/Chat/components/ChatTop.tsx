@@ -69,7 +69,6 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 			}
 			setOpenMenu(false);
 		} catch (err) {
-			console.log("Error in handling block/unblock: ", err);
 		}
 	};
 	const handleInvitePlay = () => {
@@ -83,12 +82,9 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 		axios
 			.post(getendpoint("http", `/api/game/invite/`), { invited: friend_id })
 			.then((response) => {
-				console.log("created ", response.data);
-
 				navigate(`/game/warmup/friends/${response.data.id}`);
 			})
 			.catch((error) => {
-				console.log(error.response.data.error);
 				cntext?.setCreatedAlert(error.response.data.error);
 				cntext?.setDisplayed(3);
 			});
