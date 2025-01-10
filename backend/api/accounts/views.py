@@ -429,9 +429,9 @@ class RegisterViewSet(viewsets.ViewSet):
             user.email_verification_token = user.username + pyotp.random_base32()
             user.save()
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+            url =  get_url(request)
             confirmation_url = (
-                url+'/emailVerified'
+                url+'emailVerified'
                 f'?uid={uid}&token={user.email_verification_token}'
             )
             send_email_verification(user, confirmation_url)
@@ -537,9 +537,9 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
             user = User.objects.get(username=username, email=email)
             token = PasswordResetTokenGenerator().make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+            url =  get_url(request)
             reset_url = (
-                url + '/resetPassword'
+                url + 'resetPassword'
                 f'?uid={uid}&token={token}'
             )
             self.send_email(user, reset_url)
@@ -683,7 +683,6 @@ class UpdateUserDataView(APIView):
             try:
                 send_otp_to(user, data['tmp_email'])
             except ValueError as e:
-                print("===========================>", str(e))
                 return Response({'tmp_email': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             print(user.otp)
             response_data['message'] = 'the code sent to your email'
@@ -888,14 +887,14 @@ class checkValidOtpEmail(APIView):
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
-        # user.email = user.tmp_email
-        # user.tmp_email = None
-        # user.save()
-        data = {'email' : user.tmp_email, 'tmp_email' : None}
-        serializer = UserSerializer(user, data=data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(user.email, status=status.HTTP_200_OK)
+        user.email = user.tmp_email
+        user.tmp_email = None
+        user.save()
+        # data = {'email' : user.tmp_email, 'tmp_email' : None}
+        # serializer = UserSerializer(user, data=data, partial=True)
+        # if serializer.is_valid():
+        #     serializer.save()
+        return Response(user.email, status=status.HTTP_200_OK)
         # print("Validation errors:", serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response (user.email, status=status.HTTP_200_OK)
