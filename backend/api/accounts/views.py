@@ -402,7 +402,7 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
             f = Fernet(settings.FERNET_KEY)
             payload['password'] = f.decrypt(payload['password']).decode()
             try:
-                user = User.objects.get(username=payload['username'])
+                user = User.objects.get(username=payload['username'], email=payload['email'])
 
                 return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
             except User.DoesNotExist:
