@@ -26,7 +26,7 @@ interface GameInviteData {
 }
 
 interface ContextData {
-  user:userDataType | null|undefined;
+  user: userDataType | null | undefined;
   enemyUser: FriendDataType | null
   setEnemyUser: React.Dispatch<React.SetStateAction<FriendDataType | null>>,
   setDisplayFriends: React.Dispatch<React.SetStateAction<boolean>>,
@@ -154,61 +154,61 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
   const globalContext = getContext()
   const navigator = useNavigate()
   if (context) {
-    let {ready, setReady, setEnemyUser, enemyUser } = context
+    let { ready, setReady, setEnemyUser, enemyUser } = context
 
     const onReady = () => {
-    //   if (ready)
-    //     return
-    //   let newSocket = null;
-    //   if (isRandom) {
-    //     newSocket = new WebSocket(getendpoint('ws', '/ws/game/random'))
-    //   }
-    //   else {
-    //     if (inviteId)
-    //       newSocket = new WebSocket(getendpoint('ws', `/ws/game/friend/${inviteId}`))
-    //     else
-    //     if (enemyUser) {
-    //       axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
-    //         .then((response) => {
-    //           console.log('created ', response.data);
+      //   if (ready)
+      //     return
+      //   let newSocket = null;
+      //   if (isRandom) {
+      //     newSocket = new WebSocket(getendpoint('ws', '/ws/game/random'))
+      //   }
+      //   else {
+      //     if (inviteId)
+      //       newSocket = new WebSocket(getendpoint('ws', `/ws/game/friend/${inviteId}`))
+      //     else
+      //     if (enemyUser) {
+      //       axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
+      //         .then((response) => {
+      //           console.log('created ', response.data);
 
-    //           globalContext?.setCreatedAlert("Invitation sent successfully")
-    //           globalContext?.setDisplayed(5)
-    //           navigator(`/game/warmup/friends/${response.data.id}`)
+      //           globalContext?.setCreatedAlert("Invitation sent successfully")
+      //           globalContext?.setDisplayed(5)
+      //           navigator(`/game/warmup/friends/${response.data.id}`)
 
-    //         })
-    //         .catch((error) => {
-    //           console.log(error.response.data)
-    //           globalContext?.setCreatedAlert(error.response.data)
-    //           globalContext?.setDisplayed(3)
-    //         }
-    //         )
-    //     }
-    //   }
-    //   if (newSocket) {
-    //     newSocket.onopen = () => {
-    //       console.log("friend sock open", enemyUser);
-    //       newSocket.send(JSON.stringify({
-    //         "event": "READY"
-    //       }))
-    //     }
-    //     newSocket.onclose = () => {
-    //       console.log("friend sock closed", enemyUser);
-    //       setReady(false)
-    //     }
-    //     setSocket(newSocket)
-    //     setReady(true)
-    //   }
+      //         })
+      //         .catch((error) => {
+      //           console.log(error.response.data)
+      //           globalContext?.setCreatedAlert(error.response.data)
+      //           globalContext?.setDisplayed(3)
+      //         }
+      //         )
+      //     }
+      //   }
+      //   if (newSocket) {
+      //     newSocket.onopen = () => {
+      //       console.log("friend sock open", enemyUser);
+      //       newSocket.send(JSON.stringify({
+      //         "event": "READY"
+      //       }))
+      //     }
+      //     newSocket.onclose = () => {
+      //       console.log("friend sock closed", enemyUser);
+      //       setReady(false)
+      //     }
+      //     setSocket(newSocket)
+      //     setReady(true)
+      //   }
     }
     const onAbort = () => {
-    //   if (socket) {
-    //     socket.send(JSON.stringify({
-    //       "event": "ABORT",
-    //     }))
-    //     socket.close()
-    //     setSocket(null)
-    //     setReady(false)
-    //   }
+      //   if (socket) {
+      //     socket.send(JSON.stringify({
+      //       "event": "ABORT",
+      //     }))
+      //     socket.close()
+      //     setSocket(null)
+      //     setReady(false)
+      //   }
     }
     console.log(inviteId)
     return (
@@ -228,8 +228,9 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   const { inviteID } = useParams()
-  const [user, setUser] = useState<userDataType | null|undefined>(null)
+  const [user, setUser] = useState<userDataType | null | undefined>(null)
   const navigator = useNavigate()
+
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null)
@@ -245,10 +246,15 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
             setEnemyUser(response.data.invited_data)
         }
       })
-      .catch((error) =>  navigator(`/game/warmup/friends/`))
+      .catch((error) => navigator(`/game/warmup/friends/`))
+  }
+  if (inviteID)
+  {
+    axios.get(getendpoint("http", `/api/game/invite/${inviteID}`))
+    .catch((error) => navigator(`/game/warmup/friends/`))
   }
 
-  useEffect( () => {
+  useEffect(() => {
     if (enemyUser) {
       axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
         .then((response) => {
@@ -271,38 +277,45 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 
   useEffect(() => {
     console.log("here", inviteID);
-    if (!inviteID)return
+    if (!inviteID) return
     const socket = new WebSocket(getendpoint('ws', `/ws/game/friend/${inviteID}`))
-    // if (socket) {
-      socket.onopen = () => {
-        console.log("1 friend sock open", enemyUser);
-        socket.send(JSON.stringify({
-          "event": "READY"
-        }))
+    socket.onopen = () => {
+      console.log("1 friend sock open", enemyUser);
+      socket.send(JSON.stringify({
+        "event": "READY"
+      }))
+    }
+    socket.onclose = () => {
+      console.log(" 1 friend sock closed", enemyUser);
+      setReady(false)
+    }
+    socket.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+      console.log(data);
+      if (data['event'] && data['event'] == 'refused') {
+        setEnemyUser(null)
+        globalContext?.setCreatedAlert(data['message'])
+        globalContext?.setDisplayed(3)
+        setTimeout(() => { navigator(`/game/warmup/friends/`) }, 2000);
       }
-      socket.onclose = () => {
-        console.log(" 1 friend sock closed", enemyUser);
-        setReady(false)
-      }
-    // }
-
+    }
     return () => {
-			if (socket && socket.readyState == socket.OPEN)
-				socket.close()
-		}
+      if (socket && socket.readyState == socket.OPEN)
+        socket.close()
+    }
   }, [inviteID])
 
   useEffect(() => {
     console.log("select friend", enemyUser);
-    
-    axios.get(getendpoint('http', `/api`), {withCredentials:true})
-    .then(response => {
-      setUser(response.data);
-    })
-    .catch(() => {
-      const user = getUser()
-      setUser(user)
-    })
+
+    axios.get(getendpoint('http', `/api`), { withCredentials: true })
+      .then(response => {
+        setUser(response.data);
+      })
+      .catch(() => {
+        const user = getUser()
+        setUser(user)
+      })
 
     let socket = null;
     if (isRandom) {
@@ -326,12 +339,12 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
     }
 
     return () => {
-			if (socket && socket.readyState == socket.OPEN)
-				socket.close()
-		}
+      if (socket && socket.readyState == socket.OPEN)
+        socket.close()
+    }
   }, [])
   return (
-    <WarmUpContext.Provider value={{enemyUser, setEnemyUser, ready, setReady, setDisplayFriends, user }}>
+    <WarmUpContext.Provider value={{ enemyUser, setEnemyUser, ready, setReady, setDisplayFriends, user }}>
       <div className="GameWarmUp">
         <h2>Warm Up</h2>
         <div className="WarmUpOther">
