@@ -11,7 +11,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-FERNET_KEY = config('FERNET_KEY', cast=bytes)
+FERNET_KEY = config('FERNET_KEY').encode()
 
 ALLOWED_HOSTS = ['*']
 
