@@ -47,13 +47,6 @@ def send_email_verification(to_email: str, confirmation_url: str) -> None:
         </body>
     </html>
     """
-    #user.email_user(
-    #    subject='Please confirm your Email',
-    #    message=('Click this link to confirm your email '
-    #             f'{confirmation_url}'),
-    #    from_email=settings.EMAIL_HOST_USER,
-    #    html_message=html_message
-    #)
     send_mail(
         subject='Please confirm your Email',
         message=('Click this link to confirm your email '
