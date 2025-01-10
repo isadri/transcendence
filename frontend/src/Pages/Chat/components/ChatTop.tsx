@@ -106,7 +106,7 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					}}
 				></i>
 				<img
-					src={friend_user.avatar}
+					src={getendpoint("http", friend_user.avatar)}
 					alt="profile"
 					className="image"
 					onClick={() => navigate(`/profile/${friend_user.username}`)}

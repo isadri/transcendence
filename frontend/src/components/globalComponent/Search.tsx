@@ -17,13 +17,13 @@ function Search() {
   const buttonMenuRef = useRef<HTMLDivElement>(null);
 
   const handleDropdownItemClick = (user: FriendDataType) => {
-    if (user.is_blocked) {
-      contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.");
-      contxt?.setDisplayed(3);
-    } else {
+    // if (user.is_blocked) {
+    //   contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.");
+    //   contxt?.setDisplayed(3);
+    // } else {
       navigate(`/profile/${user.username}`);
       setDropdownVisible(false)
-    }
+    // }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
