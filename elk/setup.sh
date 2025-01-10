@@ -105,10 +105,9 @@ curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_cluster/settings -H "Content-Type: application/json" -d '
 {
     "persistent" : {
-        "slm.retention_schedule" : "0 */10 * * * ?"
+        "slm.retention_schedule" : "0 */15 * * * ?"
     }
-}
-'
+}'
 
 echo -e "\nCreating index lifecycle policy"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
@@ -126,7 +125,7 @@ https://es01:9200/_ilm/policy/logs-policy -H "Content-Type: application/json" -d
 				}
 			},
 			"delete": {
-                "min_age": "15m",
+                "min_age": "30m",
 				"actions": {
 					"delete": {}
 				}
