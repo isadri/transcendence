@@ -24,12 +24,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         # Leave the notification group
         if not self.user:
             return
-        self.user.is_online = False
-        await self.user.asave(update_fields=['is_online'])
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        try:
+            self.user.is_online = False
+            await self.user.asave(update_fields=['is_online'])
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+        except:
+            pass
 
     async def receive(self, text_data):
         pass

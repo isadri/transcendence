@@ -347,7 +347,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       await self.channel_layer.group_add(self.room_name, self.channel_name)
       self.task_start = asyncio.create_task(self.start_loop())
       self.task_start.add_done_callback(self.handle_task)
-      if len(self.connected[self.game_id]['players']) == 2:
+      if len(self.connected[self.game_id]['players']) == 2 and list(self.connected[self.game_id]['players'].keys()).index(self.username) == 1:
         player1 = self.connected[self.game_id]['players'][self.game.player1.username]
         player2 = self.connected[self.game_id]['players'][self.game.player2.username]
         self.game_data = GameData(player1, player2, self.game, self.room_name)

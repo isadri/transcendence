@@ -229,6 +229,8 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
 
 const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   const { inviteID } = useParams()
+
+  const tmp_user = getUser()
   const [user, setUser] = useState<userDataType | null|undefined>(null)
   const navigator = useNavigate()
   const [displayFriends, setDisplayFriends] = useState<boolean>(false)
@@ -255,8 +257,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
       setUser(response.data);
     })
     .catch(() => {
-      const user = getUser()
-      setUser(user)
+      setUser(tmp_user)
     })
   }, [])
   return (
