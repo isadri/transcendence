@@ -454,7 +454,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                     }}
                     h1 {{
-                        color: #4CAF50;
+                        color: #c1596c;
                     }}
                     p {{
                         font-size: 16px;
@@ -466,17 +466,17 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
                     <h1>Reset your password</h1>
                     <p>Click here to to reset your password:</p>
                     <a href="{reset_url}"
-                    style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    style="background-color: #c1596c; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
                         Confirm
                     </a>
                 </div>
             </body>
         </html>
         """
-        send_email(
-            user,
+        user.email_user(
             subject='Reset Password',
             message='',
+            from_email=settings.EMAIL_HOST_USER,
             html_message=html_message
         )
 

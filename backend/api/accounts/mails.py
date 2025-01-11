@@ -28,7 +28,7 @@ def send_email_verification(to_email: str, confirmation_url: str) -> None:
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 }}
                 h1 {{
-                    color: #4CAF50;
+                    color: #c1596c;
                 }}
                 p {{
                     font-size: 16px;
@@ -40,7 +40,7 @@ def send_email_verification(to_email: str, confirmation_url: str) -> None:
                 <h1>Please confirm your Email</h1>
                 <p>Click here to confirm your email:</p>
                 <a href="{confirmation_url}"
-                style="background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
+                style="background-color: #c1596c; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
                     Confirm
                 </a>
             </div>
@@ -49,8 +49,7 @@ def send_email_verification(to_email: str, confirmation_url: str) -> None:
     """
     send_mail(
         subject='Please confirm your Email',
-        message=('Click this link to confirm your email '
-                 f'{confirmation_url}'),
+        message='',
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[to_email],
         html_message=html_message,

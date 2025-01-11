@@ -12,7 +12,6 @@ services:
     build:
       context: nginx
     ports:
-      - 80:80
       - 443:443
     networks:
       - app-network
@@ -69,14 +68,3 @@ services:
     networks:
       - app-network
     restart: on-failure
-
-  # redis:
-  #   image: redis:latest
-  #   container_name: redis
-  #   ports:
-  #     - "6379:6379"
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - app-network
-  #   restart: on-failure

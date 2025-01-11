@@ -28,3 +28,6 @@ channels_redis==4.1.0
 pytest-django==4.5.2
 
 cryptography==44.0.0
+
+python-decouple==3.8
+dj-database-url==2.3.0
