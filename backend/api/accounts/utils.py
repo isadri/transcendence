@@ -95,7 +95,7 @@ def send_otp_to(user: User, toEmail: str) -> None:
     try:
         validate_email(toEmail)  # Validate email format
     except ValidationError:
-        raise ValueError(f"Invalid email address: {toEmail}")
+        raise ValueError(f"Invalid email address!")
 
     user.email_user_to_email(
         subject='Email verification',
