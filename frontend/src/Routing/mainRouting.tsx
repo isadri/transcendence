@@ -11,7 +11,7 @@ import Global from '../components/globalComponent/global';
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
-import WarmUp from '../Pages/Game/WarmUp/WarmUp';
+import WarmUp from '../Pages/Game/WarmUp/FriendWarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
 import { getUser } from '../context/getContextData';
@@ -19,6 +19,8 @@ import TournamentRemote from '../Pages/Game/Tournament/Remote/TournamentRemote';
 import Preloader from '../Pages/Preloader/Preloader';
 import TournamentWarmUp from '../Pages/Game/Tournament/Remote/Components/WarmUp/TournamentWarmUp';
 import TournamentGames from '../Pages/Game/Tournament/Remote/Components/TournamentGames/TournamentGames';
+import FriendWarmUp from '../Pages/Game/WarmUp/FriendWarmUp';
+import InviteFriend from '../Pages/Game/WarmUp/InivteFriend';
 
 
 const mainRoutingTable = [
@@ -99,11 +101,11 @@ const mainRoutingTable = [
         children: [
           {
             path: "friends",
-            element: <WarmUp />,
+            element: <InviteFriend />,
           },
           {
             path: "friends/:inviteID",
-            element: <WarmUp />,
+            element: <FriendWarmUp />,
           },
           {
             path: "random",
@@ -135,7 +137,6 @@ function MainLayout() {
   //     console.log("hello")
   //   }
   // }, [user])
-  console.log("wa ha l3ar => ", user);
   
   if (!user)
     return <></>
