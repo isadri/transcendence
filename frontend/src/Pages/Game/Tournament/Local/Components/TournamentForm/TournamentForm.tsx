@@ -46,14 +46,16 @@ const TournamentGragh = ({ data, setPlay }: TournamentGraghProps) => {
 					<div>{data.winner ? data.winner.alias : "-"}</div>
 				</div>
 			</div>
-			<button
-				className="start-btn"
-				onClick={() => {
-					setPlay(true);
-				}}
-			>
-				start
-			</button>
+			{
+				!data.winner && !data.final?.winner &&
+				<button
+					className="start-btn"
+					onClick={() => {
+						setPlay(true);
+					}}
+				>
+					start
+				</button>}
 		</div>
 	);
 };
