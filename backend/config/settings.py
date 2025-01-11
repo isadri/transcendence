@@ -165,9 +165,6 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 CSRF_COOKIE_HTTPONLY = True
 
-#LOGIN_REDIRECT_URL = '/'
-#LOGOUT_REDIRECT_URL = '/'
-
 EMAIL_BACKEND = config('EMAIL_BACKEND')
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
@@ -202,39 +199,25 @@ LOGGING = {
     'formatters': {
         'json': {
             '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(lineno)d',
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s',
         },
     },
     'handlers': {
-        'logstash': {
+        'file': {
             'level': 'DEBUG',
-            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+            'class': 'logging.FileHandler',
             'formatter': 'json',
-            'transport': 'logstash_async.transport.TcpTransport',
-            'host': 'logstash',
-            'port': config('LOGSTASH_TCP_PORT', default=5959, cast=int),
-            'ssl_enable': True,
-            'ssl_verify': True,
-            'ca_certs': '/etc/ssl/certs/ca/ca.crt',
-            'certfile': '/etc/ssl/certs/backend-server/backend-server.crt',
-            'keyfile': '/etc/ssl/certs/backend-server/backend-server.key',
-            'database_path': None,
+            'filename': '/var/log/django/django.log',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['logstash'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'api.accounts.views': {
-            'handlers': ['logstash'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': False,
         },
     },
 }
-
 
 CSRF_TRUSTED_ORIGINS = [
     'https://localhost',
