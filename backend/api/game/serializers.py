@@ -4,11 +4,12 @@ from django.db import models
 from django.db.models import fields
 from django.utils.timezone import now, timedelta
 from django.contrib.auth import get_user_model
-
+from django.db.models import Q
 from rest_framework import serializers
 
 from .models import GameInvite, UserAchievement, UserStats, Game, Tournament
 from ..notifications.consumers import NotificationConsumer
+from ..friends.models import FriendRequest
 
 User = get_user_model()
 
@@ -66,8 +67,8 @@ class GameInviteSerializer(serializers.ModelSerializer):
     if invited == inviter:
       raise serializers.ValidationError("You cannot invite yourself.")
     if FriendRequest.objects.filter(
-            Q(sender=request_user, receiver=obj, status='blocked') |
-            Q(sender=obj, receiver=request_user, status='blocked')
+            Q(sender=invited, receiver=inviter, status='blocked') |
+            Q(sender=inviter, receiver=invited, status='blocked')
         ).exists():
       raise serializers.ValidationError("You cannot invite this user (blocked/blocker).")
     return invited

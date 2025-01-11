@@ -58,7 +58,7 @@ function Ball() {
         const randomX = (Math.random() * 2 - 1) * 3
         api.position.set(0, 0.2, 0)
         api.velocity.set(0, 0, 0)
-        setTimeout(() => api.velocity.set(randomX, 0, z < 0 ? -7 : MAX_SCORE), 500);
+        setTimeout(() => api.velocity.set(randomX, 0, z < 0 ? -5 : 5), 500);
         if (res) {
           const { result, setResult } = res
           if (z > 0)
@@ -303,7 +303,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
           <directionalLight position={[-50, -9, -5]} intensity={1} />
           <pointLight position={[5, 9, -5]} intensity={1} />
           <directionalLight position={[3, 9, 5]} intensity={2} />
-          <Physics iterations={55} gravity={[0, -9.81, 0]} stepSize={1 / 200} isPaused={result[0] === MAX_SCORE || result[1] === MAX_SCORE}>
+          <Physics iterations={40} gravity={[0, -9.81, 0]} stepSize={1 / 110} isPaused={result[0] === MAX_SCORE || result[1] === MAX_SCORE}>
             {/* <Debug> */}
             <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
               <planeGeometry args={[300, 300]} />
