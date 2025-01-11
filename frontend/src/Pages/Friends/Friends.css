@@ -4,7 +4,6 @@
 	position: relative;
 	display: flex;
 	flex-direction: row;
-	/* background-color: var(--fade); */
 	border-radius: 30px;
 	font-family: var(--sans);
 	gap: 3%;

@@ -14,7 +14,6 @@
 .Chat-List {
 	width: 30%;
 	height: 92vh;
-	/* min-width: 230px; */
 	border-radius: 30px;
 	background-color: var(--fade);
 	display: flex;
