@@ -338,6 +338,9 @@ function GameTable() {
             setWinner(enemy)
         }
       }
+      socket.onopen =() => console.log("game opened");
+      socket.onclose =() => console.log("game closed");
+      
     }, [context])
 
     if (!loading)
@@ -527,6 +530,16 @@ const Remote = () => {
   if (gameId == -1)
     return <Navigate to={"/"} />
   const socket = useRef<WebSocket | null>(null)
+
+  useEffect(() =>{
+    return () => {
+      if (socket && socket.current){
+        const ws = socket.current;
+        if (ws.readyState == WebSocket.OPEN)
+          ws.close()
+      }
+    }
+  }, [])
   return (<Provider socketRef={socket} gameId={gameId} />)
 }
 
