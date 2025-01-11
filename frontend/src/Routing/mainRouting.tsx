@@ -68,6 +68,10 @@ const mainRoutingTable = [
         path: "tournament",
         children: [
           {
+            path: "",
+            element:  <Navigate to={"/"} />,
+          },
+          {
             path: "local",
             element: <Local />,
           },
@@ -99,6 +103,10 @@ const mainRoutingTable = [
       {
         path: "warmup",
         children: [
+          {
+            path: "",
+            element:  <Navigate to={"/"} />,
+          },
           {
             path: "friends",
             element: <InviteFriend />,

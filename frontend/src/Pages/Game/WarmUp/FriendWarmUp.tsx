@@ -101,7 +101,7 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
                   enemyUser ?
                     <>
                       <h4>{enemyUser.username}</h4>
-                      <h4>{enemyUser.stats.level}</h4>
+                      <h4>{enemyUser.stats.level} lvl</h4>
                     </>
                     :
                     (
@@ -124,7 +124,7 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
               :
               <>
                 <h4>{user?.username}</h4>
-                <h4>{user?.stats.level}</h4>
+                <h4>{user?.stats.level} lvl</h4>
               </>
           }
         </div>
