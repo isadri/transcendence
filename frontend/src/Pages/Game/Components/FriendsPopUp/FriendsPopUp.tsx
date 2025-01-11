@@ -2,13 +2,12 @@ import "../../../../components/GameModePopUp/GameModePopUp.css";
 import "./FriendsPopUp.css";
 import { FriendDataType, userDataType } from "../../../../context/context";
 import { getUser, getendpoint } from "../../../../context/getContextData";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { WarmUpContext } from "../../WarmUp/InivteFriend";
 
 interface FriendsPopUpData {
 	setter: React.Dispatch<React.SetStateAction<boolean>>;
-	setEnemy: React.Dispatch<React.SetStateAction<FriendDataType | null>>,
+	setEnemy: React.Dispatch<React.SetStateAction<FriendDataType|userDataType | null>>,
 }
 
 function FriendsPopUp({ setter, setEnemy }: FriendsPopUpData) {
@@ -22,7 +21,7 @@ function FriendsPopUp({ setter, setEnemy }: FriendsPopUpData) {
 	}, []);
 
 	// const warmUpContext = useContext(WarmUpContext);
-	const onSelect = (friend: FriendDataType) => {
+	const onSelect = (friend: FriendDataType|userDataType) => {
 			setEnemy(friend);
 			setter(false);
 	};

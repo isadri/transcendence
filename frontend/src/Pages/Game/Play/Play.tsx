@@ -1,21 +1,19 @@
 import { Canvas } from "@react-three/fiber";
 import "./Play.css";
-import winner from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
 import pic from "../../Setting/images/default.jpeg"
 import "../../Home/styles/LastGame.css"
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import {
-  Debug,
   Physics,
   useBox,
   useContactMaterial,
   useSphere,
 } from "@react-three/cannon";
 import { Material } from 'cannon-es';
-import React, { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useState } from "react";
-import { AxesHelper, DoubleSide, Fog, MathUtils } from "three";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { DoubleSide, Fog, MathUtils, Mesh } from "three";
 import { Link } from "react-router-dom";
 import { TournamentGameData } from "../Tournament/Local/Components/TournamentForm/TournamentForm";
 import { getendpoint } from "../../../context/getContextData";
@@ -37,7 +35,7 @@ function Ball() {
 
   var randomX = (Math.random() * 2 - 1) * 3
 
-  const [ref, api] = useSphere(() => ({
+  const [ref, api] = useSphere<Mesh>(() => ({
     mass: 0.1,
     position: [0, 0.2, 0],
     args: [0.12],
@@ -127,7 +125,7 @@ const boundary = (3.07345 - 0.75);
 function Paddle({ position, mine = false }: Paddlerops) {
   const material = new Material();
   material.name = "paddle_mat"
-  const [ref, api] = useBox(() => ({
+  const [ref, api] = useBox<Mesh>(() => ({
     type: "Kinematic",
     position: position,
     args: [1.5, 0.5, 0.5],
@@ -197,7 +195,7 @@ interface SideWallProps {
 }
 function SideWall({ position }: SideWallProps) {
   const material = new Material("side_mat");
-  const [ref, api] = useBox(() => ({
+  const [ref, api] = useBox<Mesh>(() => ({
     position: position,
     args: [0.5, 0.8, 8.65640],
     material: material
@@ -217,7 +215,7 @@ interface GoalWallProps {
 
 function GoalWall({ position }: GoalWallProps) {
   const material = new Material("goal_mat");
-  const [ref, api] = useBox(() => ({
+  const [ref, api] = useBox<Mesh>(() => ({
     position: position,
     args: [6.1469, 0.8, 0.5],
     material: material

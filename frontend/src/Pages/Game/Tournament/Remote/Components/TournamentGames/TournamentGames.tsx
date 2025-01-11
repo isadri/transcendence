@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
 import "./TournamentGames.css";
-import axios from "axios";
 import { getUser, getendpoint } from "../../../../../../context/getContextData";
 import {
 	FriendDataType,
 	userDataType,
 } from "../../../../../../context/context";
-// import winImg from '../../../../Images/winnerImg.svg'
 import winImg from "../../../../Images/crown.svg";
 import RemoteGame from "../RemoteGame/RemoteGame";
 import { useNavigate, useParams } from "react-router-dom";
-import { div } from "three/webgpu";
 import Preloader from "../../../../../Preloader/Preloader";
-
-interface TournamentGamesProps {
-	tournament: number;
-}
 
 interface TournamentRemoteGameData {
 	id: number;

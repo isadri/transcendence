@@ -1,6 +1,5 @@
 import vsImage from "../../Home/images/Group.svg";
 import avatar from "../../AboutUs/images/Your_profil_pict.png";
-import badge from "../../Profile/images/badges/bg1.svg";
 import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css";
 import {
@@ -9,7 +8,7 @@ import {
 	getendpoint,
 } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
 import { FriendDataType, userDataType } from "../../../context/context";
 import axios from "axios";
@@ -20,18 +19,11 @@ interface PlayerCardData {
 	inviteId?: string | undefined;
 }
 
-interface GameInviteData {
-	id: number;
-	sent_at: string;
-	status: string;
-	inviter_data: FriendDataType;
-	invited_data: FriendDataType;
-}
 
 interface ContextData {
 	user: userDataType | null | undefined;
-	enemyUser: FriendDataType | null;
-	setEnemyUser: React.Dispatch<React.SetStateAction<FriendDataType | null>>;
+	enemyUser: FriendDataType|userDataType | null;
+	setEnemyUser: React.Dispatch<React.SetStateAction<FriendDataType|userDataType | null>>;
 	setDisplayFriends: React.Dispatch<React.SetStateAction<boolean>>;
 	ready: boolean;
 	setReady: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,27 +33,9 @@ export const WarmUpContext = createContext<ContextData | null>(null);
 
 const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 	const context = useContext(WarmUpContext);
-	const navigator = useNavigate();
 	if (context) {
-		const { user, enemyUser, setEnemyUser, setReady, setDisplayFriends } =
+		const { user, enemyUser, setDisplayFriends } =
 			context;
-		// useEffect(() => {
-		//   if (socket)
-		//     socket.onmessage = (e) => {
-		//       const data = JSON.parse(e.data)
-		//       console.log(data);
-		//       if (data.event == "HANDSHAKING") {
-		//         setTimeout(() => { setEnemyUser(data.enemy) }, 2000);
-		//         setTimeout(() => { navigator(`/game/remote/${data.game_id}`) }, 5000);
-		//       }
-		//       if (data.event == "ABORT") {
-		//         setEnemyUser(null)
-		//         setReady(false)
-		//         socket.close()
-		//       }
-		//     }
-		// }, [setEnemyUser, setSocket, socket])
-
 		const inviteFriend = () => {
 			setDisplayFriends(true);
 		};
@@ -86,7 +60,6 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 								src={getendpoint("http", enemyUser.avatar)}
 								className="WarmUpVsAvatar"
 							/>
-							{/* <img src={badge} className="WarmUpVsBadge" /> */}
 						</>
 					) : (
 						<>
@@ -94,7 +67,6 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 								src={getendpoint("http", user?.avatar || "")}
 								className="WarmUpVsAvatar"
 							/>
-							{/* <img src={badge} className="WarmUpVsBadge" /> */}
 						</>
 					)}
 				</div>
@@ -111,14 +83,6 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 							) : (
 								<h4>Invite a friend</h4>
 							)}
-							{/* {
-                  isRandom
-                    ?
-                    (
-                      enemyUser ?
-                    )
-                    :
-                } */}
 						</>
 					) : (
 						<>
@@ -132,103 +96,13 @@ const PlayerCard = ({ enemy = false, isRandom = false }: PlayerCardData) => {
 	}
 };
 
-// const WarmUpBox = () => {
-//   return (
-//     <div className="GameHistoryItem">
-//       <div className="GameHistoryItemLeft">
-//         <img src={avatar} />
-//         <span>user56789012345</span>
-//       </div>
-//       <div className="GameHistoryItemResult">
-//         <img src={vsImage} />
-//       </div>
-//       <div className="GameHistoryItemRight">
-//         <span>user56789012345</span>
-//         <img src={avatar} />
-//       </div>
-//     </div>
-//   )
-// }
-
-const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
-	const context = useContext(WarmUpContext);
-	const globalContext = getContext();
-	const navigator = useNavigate();
-	if (context) {
-		let { ready, setReady, setEnemyUser, enemyUser } = context;
-
-		const onReady = () => {
-			//   if (ready)
-			//     return
-			//   let newSocket = null;
-			//   if (isRandom) {
-			//     newSocket = new WebSocket(getendpoint('ws', '/ws/game/random'))
-			//   }
-			//   else {
-			//     if (inviteId)
-			//       newSocket = new WebSocket(getendpoint('ws', `/ws/game/friend/${inviteId}`))
-			//     else
-			//     if (enemyUser) {
-			//       axios.post(getendpoint('http', `/api/game/invite/`), { invited: enemyUser.id })
-			//         .then((response) => {
-			//           console.log('created ', response.data);
-			//           globalContext?.setCreatedAlert("Invitation sent successfully")
-			//           globalContext?.setDisplayed(5)
-			//           navigator(`/game/warmup/friends/${response.data.id}`)
-			//         })
-			//         .catch((error) => {
-			//           console.log(error.response.data)
-			//           globalContext?.setCreatedAlert(error.response.data)
-			//           globalContext?.setDisplayed(3)
-			//         }
-			//         )
-			//     }
-			//   }
-			//   if (newSocket) {
-			//     newSocket.onopen = () => {
-			//       console.log("friend sock open", enemyUser);
-			//       newSocket.send(JSON.stringify({
-			//         "event": "READY"
-			//       }))
-			//     }
-			//     newSocket.onclose = () => {
-			//       console.log("friend sock closed", enemyUser);
-			//       setReady(false)
-			//     }
-			//     setSocket(newSocket)
-			//     setReady(true)
-			//   }
-		};
-		const onAbort = () => {
-			//   if (socket) {
-			//     socket.send(JSON.stringify({
-			//       "event": "ABORT",
-			//     }))
-			//     socket.close()
-			//     setSocket(null)
-			//     setReady(false)
-			//   }
-		};
-		return (
-			<div className="WarmUpReadyContext">
-				<button className="WarmUpReadyBtn" onClick={onReady}>
-					{ready ? "Wait" : !isRandom && !inviteId ? "invite" : "Ready"}
-				</button>
-				<button className="WarmUpAbortBtn" onClick={onAbort}>
-					Abort
-				</button>
-			</div>
-		);
-	}
-};
-
 const InviteFriend = ({ isRandom = false }: { isRandom?: boolean }) => {
 	const [user, setUser] = useState<userDataType | null | undefined>(null);
 	const navigator = useNavigate();
 
 	const [displayFriends, setDisplayFriends] = useState<boolean>(false);
 	const [ready, setReady] = useState<boolean>(false);
-	const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null);
+	const [enemyUser, setEnemyUser] = useState<FriendDataType|userDataType | null>(null);
 	const globalContext = getContext();
 
 	useEffect(() => {
@@ -281,10 +155,6 @@ const InviteFriend = ({ isRandom = false }: { isRandom?: boolean }) => {
 						<img src={vsImage} className="WarmUpVsImage" />
 						<PlayerCard enemy isRandom={isRandom} />
 					</div>
-					{/* <div className="WarmUpBox">
-            <WarmUpBox/>
-          </div> */}
-					{/* <ReadyContext inviteId={inviteID} isRandom={isRandom}/> */}
 				</div>
 			</div>
 			{displayFriends && (

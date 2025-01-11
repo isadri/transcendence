@@ -10,7 +10,6 @@ function TournamentGame({ game }: TournamentGameProps) {
   return (
     <div className="TournamentGame">
       <div className="TournamentGameLeft">
-        {/* <img src={avatar}/> */}
         <span>{game ? game.player1.alias : "-----------------"}</span>
       </div>
       <div className="TournamentGameResult">
@@ -20,7 +19,6 @@ function TournamentGame({ game }: TournamentGameProps) {
       </div>
       <div className="TournamentGameRight">
         <span>{game ? game.player2.alias : "-----------------"}</span>
-        {/* <img src={avatar}/> */}
       </div>
     </div>
   );

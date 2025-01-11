@@ -1,6 +1,5 @@
 import vsImage from "../../Home/images/Group.svg";
 import avatar from "../../AboutUs/images/Your_profil_pict.png";
-import badge from "../../Profile/images/badges/bg1.svg";
 import "./WarmUp.css";
 import "./../Components/gameHistoryItem/GameHistoryitem.css";
 import {
@@ -10,7 +9,6 @@ import {
 } from "../../../context/getContextData";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import FriendsPopUp from "../Components/FriendsPopUp/FriendsPopUp";
 import { FriendDataType, userDataType } from "../../../context/context";
 import axios from "axios";
 
@@ -20,13 +18,13 @@ interface PlayerCardData {
 	inviteId?: string | undefined;
 }
 
-interface GameInviteData {
-	id: number;
-	sent_at: string;
-	status: string;
-	inviter_data: FriendDataType;
-	invited_data: FriendDataType;
-}
+// interface GameInviteData {
+// 	id: number;
+// 	sent_at: string;
+// 	status: string;
+// 	inviter_data: FriendDataType;
+// 	invited_data: FriendDataType;
+// }
 
 interface ContextData {
 	socket: WebSocket | null;
@@ -167,7 +165,7 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
 	const globalContext = getContext();
 	const navigator = useNavigate();
 	if (context) {
-		let { socket, ready, setReady, setSocket, setEnemyUser, enemyUser } =
+		let { socket, ready, setReady, setSocket, enemyUser } =
 			context;
 
 		const onReady = () => {
@@ -243,7 +241,6 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 
 	const tmp_user = getUser();
 	const [user, setUser] = useState<userDataType | null | undefined>(null);
-	const navigator = useNavigate();
 	const [displayFriends, setDisplayFriends] = useState<boolean>(false);
 	let [socket, setSocket] = useState<WebSocket | null>(null);
 	const [ready, setReady] = useState<boolean>(false);
