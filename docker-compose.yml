@@ -4,16 +4,14 @@ networks:
 volumes:
   postgres_data:
   modules_files:
-  es01data:
-  es02data:
+  esdata:
   certs:
   kibanadata:
   kibconfig:
   nginx_logs:
+  django_logs:
   static_files:
   snapshot_repo:
-  # nginx_conf:
-  # ssl_certs:
 
 services:
   nginx:
@@ -48,6 +46,7 @@ services:
       - ./backend/:/code
       - certs:/etc/ssl/certs
       - static_files:/code/static
+      - django_logs:/var/log/django
     networks:
       - app-network
     env_file:
@@ -116,7 +115,7 @@ services:
     container_name: setup
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - ./elk/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elk/setup/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - snapshot_repo:/mnt/backups
     env_file:
       - .env
@@ -125,51 +124,21 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f config/certs/es01/es01.key ]" ]
+      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.key ]" ]
       interval: 5s
       timeout: 10s
       retries: 120
 
-  es01:
+  elasticsearch:
     depends_on:
       setup:
         condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.17.0}
-    container_name: es01
+    container_name: elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
-      - es01data:/usr/share/elasticsearch/data
-      - ./elk/es01/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - snapshot_repo:/mnt/backups
-    env_file:
-      - .env
-    networks:
-      - app-network
-    mem_limit: ${MEM_LIMIT}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
-        ]
-      interval: 10s
-      timeout: 20s
-      retries: 90
-
-  es02:
-    depends_on:
-      setup:
-        condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.17.0}
-    container_name: es02
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - es02data:/usr/share/elasticsearch/data
-      - ./elk/es02/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - esdata:/usr/share/elasticsearch/data
+      - ./elk/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - snapshot_repo:/mnt/backups
     env_file:
       - .env
@@ -192,16 +161,14 @@ services:
 
   kibana:
     depends_on:
-      es01:
-        condition: service_healthy
-      es02:
+      elasticsearch:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-8.17.0}
     container_name: kibana
     volumes:
       - certs:/usr/share/kibana/config/certs
       - kibanadata:/usr/share/kibana/data
-      - ./elk/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     env_file:
       - .env
     ports:
@@ -211,9 +178,7 @@ services:
 
   logstash:
     depends_on:
-      es01:
-        condition: service_healthy
-      es02:
+      elasticsearch:
         condition: service_healthy
     image: docker.elastic.co/logstash/logstash:${STACK_VERSION:-8.17.0}
     container_name: logstash
@@ -221,6 +186,7 @@ services:
     volumes:
       - certs:/usr/share/logstash/config/certs
       - nginx_logs:/var/log/nginx
+      - django_logs:/var/log/django
       - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
       - ./elk/logstash/settings/logstash.yml:/usr/share/logstash/config/logstash.yml
     env_file:
