@@ -12,21 +12,21 @@ from django.contrib.auth import (
     login,
     logout,
 )
+from django.utils import timezone
+from rest_framework import (
+    status,
+    viewsets,
+)
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import (
     get_object_or_404,
 )
-from django.utils import timezone
 from django.utils.http import (
     urlsafe_base64_encode,
     urlsafe_base64_decode,
 )
 from django.utils.encoding import force_bytes
-from rest_framework import (
-    status,
-    viewsets
-)
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -173,8 +173,6 @@ class LoginWith2FAViewSet(viewsets.ViewSet):
                 'info': 'The verification code sent successfully',
                 'code': user.code
             }, status=status.HTTP_200_OK)
-        if not User.objects.filter(username=username).exists():
-            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -430,7 +428,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
-    def send_email(self, user: User, reset_url: str) -> None:
+    def _send_email(self, user: User, reset_url: str) -> None:
         """
         Send the email to the user with the url for reseting the password.
         """
@@ -496,7 +494,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
                 url + 'resetPassword'
                 f'?uid={uid}&token={token}'
             )
-            self.send_email(user, reset_url)
+            self._send_email(user, reset_url)
             return Response({
                 'message': 'Password reset email sent'
             }, status=status.HTTP_200_OK)
@@ -587,24 +585,25 @@ class LogoutViewSet(viewsets.ViewSet):
 #################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
 
 
-# class UpdateUsernameView(APIView):
-#     """
-#         updating usernames for users 
-#         who have logged in via Intra or Google
-#         but have not completed 
-#         the registration process yet
-#     """
-#     permission_classes = [IsAuthenticated]
-#     def put(self, request):
-#         user = request.user
-#         data = request.data.copy()
-#         serializer = UserSerializer(user, data=data, partial=True)
-#         if serializer.is_valid():
-#             user.register_complete = True
-#             user.save()
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#class UpdateUsernameView(APIView):
+#    """
+#        updating usernames for users 
+#        who have logged in via Intra or Google
+#        but have not completed 
+#        the registration process yet
+#    """
+#    permission_classes = [IsAuthenticated]
+#    def put(self, request):
+#        user = request.user
+#        print("user =============> ", user)
+#        data = request.data.copy()
+#        serializer = UserSerializer(user, data=data, partial=True)
+#        if serializer.is_valid():
+#            user.register_complete = True
+#            user.save()
+#            serializer.save()
+#            return Response(serializer.data, status=status.HTTP_200_OK)
+#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateUserDataView(APIView):

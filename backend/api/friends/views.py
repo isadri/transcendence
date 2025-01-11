@@ -88,6 +88,7 @@ class FriendRequestDeclineView(APIView):
         friend_request.delete()
         return Response({'message': 'Friend request declined.'}, status=status.HTTP_200_OK)
 
+
 class FriendRequestCancelView(APIView):
     """
     This view is used to cancel friend request
@@ -102,6 +103,7 @@ class FriendRequestCancelView(APIView):
            status=status.HTTP_200_OK)
         friend_request.delete()
         return Response({'message': 'Friend request cancel.'}, status=status.HTTP_200_OK)
+
 
 class FriendRequestBlockView(APIView):
     """
@@ -183,6 +185,7 @@ class FriendRequestRemoveView(APIView):
             return Response({'error': f'Failed to remove the friend request: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+
 
 class FriendRequestUnblockView(APIView):
     """
@@ -324,6 +327,7 @@ class BlockedFriendRequestsView(APIView):
             return Response({'error': f'Failed to check blocked status: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class FriendListView(generics.ListAPIView):
     """
     View to list all friend.
@@ -411,7 +415,6 @@ class FriendshipStatusView(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 class MutualFriendsView(APIView):
     """
     View to get mutual friends between the authenticated user and a specific user.
@@ -431,7 +434,6 @@ class MutualFriendsView(APIView):
             return Response(serializer.data, status=200)
         except FriendList.DoesNotExist:
             return Response([], status=200)
-        
 
 
 class UserRankListlView(APIView):
@@ -441,3 +443,4 @@ class UserRankListlView(APIView):
         serializer = FriendSerializer(users, many=True, context={'user': request.user})
         sorted_data = sorted(serializer.data, key=lambda x: x.get('stats', {}).get('level', 0), reverse=True)
         return Response(sorted_data, status=status.HTTP_200_OK)
+

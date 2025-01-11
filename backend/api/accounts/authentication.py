@@ -37,7 +37,7 @@ class TokenAuthentication(JWTAuthentication):
             raw_token = self.get_raw_token(header)
         else:
             raw_token = request.COOKIES.get(settings.AUTH_COOKIE)
-        if raw_token is None:
+        if not raw_token:
             return None
         validated_token = self.get_validated_token(raw_token)
         if not validated_token:

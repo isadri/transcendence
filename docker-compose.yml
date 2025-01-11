@@ -4,6 +4,16 @@ networks:
 volumes:
   postgres_data:
   modules_files:
+  es01data:
+  es02data:
+  certs:
+  kibanadata:
+  kibconfig:
+  nginx_logs:
+  static_files:
+  snapshot_repo:
+  # nginx_conf:
+  # ssl_certs:
 
 services:
   nginx:
@@ -11,6 +21,8 @@ services:
     image: nginx
     build:
       context: nginx
+    volumes:
+      - nginx_logs:/var/log/nginx
     ports:
       - 80:80
       - 443:443
@@ -24,23 +36,39 @@ services:
     restart: on-failure
 
   back-end:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      logstash:
+        condition: service_healthy
     container_name: backend
     image: backend
-    build:
-      context: backend
-    ports:
-      - 8000:8000
+    build: ./backend
     volumes:
       - ./backend/:/code
+      - certs:/etc/ssl/certs
+      - static_files:/code/static
     networks:
       - app-network
     env_file:
       - .env
-    depends_on:
-      - postgres
+    ports:
+      - 8000:8000
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:8000/health/"
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 50
     restart: on-failure
 
   front-end:
+    depends_on:
+      back-end:
+        condition: service_healthy
     container_name: frontend
     image: frontend
     build: ./frontend
@@ -51,8 +79,6 @@ services:
       - modules_files:/code/node_modules
     networks:
       - app-network
-    depends_on:
-      - back-end
     restart: on-failure
 
   postgres:
@@ -60,23 +86,154 @@ services:
     image: postgres:17
     volumes:
       - postgres_data:/var/lib/posgresql/data
-    ports:
-      - 5432:5432
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - .env
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 2s
+      timeout: 5s
+      retries: 7
+    restart: on-failure
+
+  redis:
+    image: redis:7
+    container_name: redis
     env_file:
       - .env
     networks:
       - app-network
     restart: on-failure
 
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
+  setup:
+    build:
+      context: ./elk/
+      args:
+        STACK_VERSION: ${STACK_VERSION}
+    container_name: setup
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - ./elk/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - snapshot_repo:/mnt/backups
+    env_file:
+      - .env
+    user: "0"
+    command: bash setup.sh
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -f config/certs/es01/es01.key ]" ]
+      interval: 5s
+      timeout: 10s
+      retries: 120
+
+  es01:
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.17.0}
+    container_name: es01
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - es01data:/usr/share/elasticsearch/data
+      - ./elk/es01/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - snapshot_repo:/mnt/backups
     env_file:
       - .env
     networks:
       - app-network
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
+        ]
+      interval: 10s
+      timeout: 20s
+      retries: 90
+
+  es02:
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.17.0}
+    container_name: es02
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - es02data:/usr/share/elasticsearch/data
+      - ./elk/es02/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - snapshot_repo:/mnt/backups
+    env_file:
+      - .env
+    networks:
+      - app-network
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
+        ]
+      interval: 10s
+      timeout: 20s
+      retries: 90
+
+  kibana:
+    depends_on:
+      es01:
+        condition: service_healthy
+      es02:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-8.17.0}
+    container_name: kibana
+    volumes:
+      - certs:/usr/share/kibana/config/certs
+      - kibanadata:/usr/share/kibana/data
+      - ./elk/kibana.yml:/usr/share/kibana/config/kibana.yml
+    env_file:
+      - .env
+    ports:
+      - ${KIBANA_PORT}:5601
+    networks:
+      - app-network
+
+  logstash:
+    depends_on:
+      es01:
+        condition: service_healthy
+      es02:
+        condition: service_healthy
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION:-8.17.0}
+    container_name: logstash
+    command: bin/logstash -f pipeline/logstash.conf --config.reload.automatic
+    volumes:
+      - certs:/usr/share/logstash/config/certs
+      - nginx_logs:/var/log/nginx
+      - ./elk/logstash/pipeline/:/usr/share/logstash/pipeline/
+      - ./elk/logstash/settings/logstash.yml:/usr/share/logstash/config/logstash.yml
+    env_file:
+      - .env
+    networks:
+      - app-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -f http://localhost:9600/_node/stats/pipelines"
+        ]
+      interval: 10s
+      timeout: 20s
+      retries: 90
     restart: on-failure

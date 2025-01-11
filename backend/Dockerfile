@@ -11,6 +11,9 @@ RUN apt update && apt install -y postgresql
 
 # Install dependencies
 COPY . .
+
 RUN pip install -r requirements.txt
 
 ENTRYPOINT [ "bash", "entrypoint.sh" ]
+
+#CMD [ "daphne", "-p", "8000", "-b", "0.0.0.0", "config.asgi:application" ]

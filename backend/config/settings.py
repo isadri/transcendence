@@ -1,22 +1,17 @@
 import os
-import time
 from datetime import timedelta
+from decouple import config
+import dj_database_url
 from pathlib import Path
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&llk^3rmodi5^_#c+#w(&vb_ro^-=)u*@&3p9#d4+cwkcwy$)w'
+SECRET_KEY = config('SECRET_KEY')
 
-FERNET_KEY = b'xHOWJPaygIebtzb8_xS1sJwvtOna3zsC64oB_dQUp-I='
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# The initial time used for generating TOTP values
-INITIAL_TIME = time.time()
+FERNET_KEY = config('FERNET_KEY').encode()
 
 ALLOWED_HOSTS = ['*']
 
@@ -27,20 +22,20 @@ SITE_ID = 1
 INSTALLED_APPS = [
     'api.game',
     'api.chat',
-	'api.friends',
-	'api.accounts',
-	'api.notifications',
-
+    'api.friends',
+    'api.accounts',
+    'api.notifications',
+    
     'daphne',
     'channels',
     'corsheaders',
-
-	'allauth',
+    
+    'allauth',
     'oauth2_provider',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,10 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-
+    
     'rest_framework',
     'rest_framework.authtoken',
-	'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -70,10 +65,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-#STATIC_URL = '/static/'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 TEMPLATES = [
@@ -93,14 +88,7 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-		'NAME': os.getenv('POSTGRES_DB'),
-		'USER': os.getenv('POSTGRES_USER'),
-		'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-		'HOST': 'postgres',
-		'PORT': '5432',
-    }
+    'default': dj_database_url.config()
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -165,7 +153,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 	'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': '021AA___qq02passkey-',
+    'SIGNING_KEY': config('SIGNING_KEY'),
 }
 
 AUTH_COOKIE = 'access_token'
@@ -175,41 +163,74 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-# Now client-side JavaScript will not be able to access the CSRF cookie.
 CSRF_COOKIE_HTTPONLY = True
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+#LOGIN_REDIRECT_URL = '/'
+#LOGOUT_REDIRECT_URL = '/'
 
-#LOGIN_URL = 'two_factor:login'
-
-OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = '587'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 
-
 #Intra 42
-INTRA_ID = os.getenv('INTRA_ID')
-INTRA_REDIRECT_URI = os.getenv('INTRA_REDIRECT_URI')
+INTRA_ID = config('INTRA_ID')
+INTRA_REDIRECT_URI = config('INTRA_REDIRECT_URI')
 
 #Google
-GOOGLE_ID = os.getenv('GOOGLE_ID')
-GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
+GOOGLE_ID = config('GOOGLE_ID')
+GOOGLE_REDIRECT_URI = config('GOOGLE_REDIRECT_URI')
 
 ASGI_APPLICATION = "config.asgi.application"
 
-REDIS_PORT = os.getenv('REDIS_PORT')
+REDIS_PORT = config('REDIS_PORT')
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [("redis", int(REDIS_PORT))],
+            "hosts": [("redis", config('REDIS_PORT', default=6379, cast=int))],
+        },
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'json': {
+            '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(lineno)d',
+        },
+    },
+    'handlers': {
+        'logstash': {
+            'level': 'DEBUG',
+            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+            'formatter': 'json',
+            'transport': 'logstash_async.transport.TcpTransport',
+            'host': 'logstash',
+            'port': config('LOGSTASH_TCP_PORT', default=5959, cast=int),
+            'ssl_enable': True,
+            'ssl_verify': True,
+            'ca_certs': '/etc/ssl/certs/ca/ca.crt',
+            'certfile': '/etc/ssl/certs/backend-server/backend-server.crt',
+            'keyfile': '/etc/ssl/certs/backend-server/backend-server.key',
+            'database_path': None,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['logstash'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'api.accounts.views': {
+            'handlers': ['logstash'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }

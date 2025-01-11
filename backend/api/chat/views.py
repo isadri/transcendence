@@ -98,6 +98,7 @@ class ChatView(viewsets.ModelViewSet):
            return Response({"error": "An error occurred while creating the chat."},
                               status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class MessageView(viewsets.ModelViewSet):
     serializer_class = MessageSerializer 
     permission_classes = [IsAuthenticated]
