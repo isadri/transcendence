@@ -11,7 +11,6 @@ import Global from '../components/globalComponent/global';
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Friends from '../Pages/Friends/Friends';
 import Play from '../Pages/Game/Play/Play';
-import WarmUp from '../Pages/Game/WarmUp/FriendWarmUp';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
 import { getUser } from '../context/getContextData';
@@ -21,6 +20,7 @@ import TournamentWarmUp from '../Pages/Game/Tournament/Remote/Components/WarmUp/
 import TournamentGames from '../Pages/Game/Tournament/Remote/Components/TournamentGames/TournamentGames';
 import FriendWarmUp from '../Pages/Game/WarmUp/FriendWarmUp';
 import InviteFriend from '../Pages/Game/WarmUp/InivteFriend';
+import WarmUp from '../Pages/Game/WarmUp/WarmUp';
 
 
 const mainRoutingTable = [
