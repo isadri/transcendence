@@ -375,7 +375,7 @@ class RemoteGame(AsyncWebsocketConsumer):
           break
       if diff_time.total_seconds() > 30:
         del self.connected[self.game_id]['players']
-        await self.abort_game(self.username)
+        await self.abort_game_by_winner(self.username)
         await self.channel_layer.group_send(self.room_name, {
           'type': 'got_winner',
           'winner': self.username
@@ -500,7 +500,7 @@ class RemoteGame(AsyncWebsocketConsumer):
     self.game.abortGame(self.username, self.game_data.getScore())
 
   @database_sync_to_async
-  def abort_game(self, winner):
+  def abort_game_by_winner(self, winner):
     if (self.game_data):
       self.game_data.abort_game(self.username)
     player1 = self.game.player1.username
