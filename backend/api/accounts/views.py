@@ -302,7 +302,6 @@ class IntraLoginViewSet(viewsets.ViewSet):
         if user.otp_active:
             generate_otp_for_user(user)
             send_otp_email(user)
-            print("otp===> ", user.otp)
             return Response({
                 'info': 'The verification code sent successfully',
                 'code': user.code
@@ -488,8 +487,6 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
         """
         username = request.data.get('username')
         email = request.data.get('email')
-        print(username)
-        print(email)
         try:
             user = User.objects.get(username=username, email=email)
             token = PasswordResetTokenGenerator().make_token(user)
@@ -634,13 +631,11 @@ class UpdateUserDataView(APIView):
                 status=status.HTTP_400_BAD_REQUEST)
             data['tmp_email'] = data['email']
             del data['email']
-            print("data => ", data)
             generate_otp_for_user(user)
             try:
                 send_otp_to(user, data['tmp_email'])
             except ValueError as e:
                 return Response({'tmp_email': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            print(user.otp)
             response_data['message'] = 'the code sent to your email'
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
@@ -649,7 +644,6 @@ class UpdateUserDataView(APIView):
             serializer.save()
             response_data['data'] = serializer.data
             return Response(response_data, status=status.HTTP_200_OK)
-        print("Validation errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateUserPasswordView(APIView):
@@ -661,7 +655,6 @@ class UpdateUserPasswordView(APIView):
     def put(self, request):
         user = request.user
         data = request.data.copy()
-        # print("==============> ", data)
         if user.has_usable_password():
             required_fields = ['CurrentPassword', 'password', 'confirmPassword']
         else:
@@ -736,10 +729,8 @@ class UserDetailView(APIView):
         add_milestone_achievement_to_user(user)
         serializer = FriendSerializer(user, context={"user": request.user})
         data = serializer.data.copy()
-        print(data)
         if data.get('is_blocked'):
             data['is_blocked'] = self.get_block_status(request.user, user)
-        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetIntraLink(APIView):
@@ -751,7 +742,6 @@ class GetIntraLink(APIView):
     def get(self, request):
         url =  get_url(request, settings.INTRA_REDIRECT_URI)
         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url}&response_type=code'
-        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetGoogleLink(APIView):
@@ -810,14 +800,12 @@ class SendOTPView(APIView):
             return Response({'message': 'otp '}, status=status.HTTP_200_OK)
         user.save()
         send_otp_email(user)
-        print(user.otp)
         return Response({'message': 'otp send successfaly'}, status=status.HTTP_200_OK)
 
     def get(self, request, username):
         try:
             user = User.objects.get(username=username)
             val = user.otp_active
-            print(val)
             return Response(val, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error' : e.args[0]}, status=status.HTTP_200_OK)
@@ -851,23 +839,12 @@ class checkValidOtpEmail(APIView):
     def post(self, request):
         user = request.user
         otp = request.data['key']
-        print('send by user => ', otp)
-        print('otp real=> ', user.otp)
         total_difference = timezone.now() - user.otp_created_at
-        print("your code otp => ", otp)
-        print("otp =>", user.otp)
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
         user.email = user.tmp_email
         user.tmp_email = None
         user.save()
-        # data = {'email' : user.tmp_email, 'tmp_email' : None}
-        # serializer = UserSerializer(user, data=data, partial=True)
-        # if serializer.is_valid():
-        #     serializer.save()
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        # print("Validation errors:", serializer.errors)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # return Response (user.email, status=status.HTTP_200_OK)

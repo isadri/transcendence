@@ -4,7 +4,7 @@ import bg2 from "../../Profile/images/badges/bg2.svg";
 import bg3 from "../../Profile/images/badges/bg3.svg";
 import bg4 from "../../Profile/images/badges/bg4.svg";
 import bg5 from "../../Profile/images/badges/bg5.svg";
-import { getContext, getUser, getendpoint } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { stats } from "../../../context/context";
@@ -15,7 +15,6 @@ interface Prop {
 
 function Profile({ stats }: Prop) {
 	const user = getUser();
-	const context = getContext()
 	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false);
 
 	if (user) {
@@ -23,9 +22,7 @@ function Profile({ stats }: Prop) {
 			setIsOnline(user?.is_online || false);
 		}, [user.is_online, user?.stats]);
 		var percentage = 0
-		if (!stats)
-			context?.setPreloader(true)
-		else
+		if (stats)
 			percentage = (stats.xp * 100) / ((stats.level + 1) * 100)
 		return (
 			<div className="Home-profile">

@@ -16,13 +16,9 @@ function friends({ FriendsLst, username }: Props) {
 		axios
 		.post(getendpoint("http", `/api/game/invite/`), { invited: id })
 		.then((response) => {
-			console.log("created ", response.data);
-
 			navigate(`/game/warmup/friends/${response.data.id}`);
 		})
 		.catch((error) => {
-			console.log(error.response.data.error);
-      console.log("")
       cntxt?.setCreatedAlert(error.response.data.error)
       cntxt?.setDisplayed(3)
 		});

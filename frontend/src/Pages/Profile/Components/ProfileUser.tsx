@@ -13,7 +13,7 @@ interface Prop{
   stats: stats
 }
 
-function ProfileUser({userData, username, stats}:Prop) {
+function ProfileUser({userData, stats}:Prop) {
   const [frindshipStatus, setfrindshipStatus] = useState("")
   const [isOnline, setIsOnline] = useState<boolean>(userData?.is_online || false)
   // const [stats, setStats] = useState<stats>()
@@ -26,7 +26,6 @@ function ProfileUser({userData, username, stats}:Prop) {
       setfrindshipStatus(response.data.status)
     })
     .catch(() => {
-      console.log("Error fetching user data:");
     });
     setIsOnline(userData?.is_online || false)
   }, [userData.id, userData?.is_online]);
@@ -39,11 +38,10 @@ function ProfileUser({userData, username, stats}:Prop) {
 				{ receiver: id },
 				{withCredentials: true,}
 			)
-      .then( response => {
-        console.log(response.data);
+      .then( () => {
       })
-      .catch (error => {
-			console.error("Error accepting friend request:", error)})
+      .catch (() => {
+    })
 	}
   const handleAcceptRequest = async (id: number) => {
 		try {
@@ -51,7 +49,6 @@ function ProfileUser({userData, username, stats}:Prop) {
 				withCredentials: true,
 			});
 		} catch (error) {
-			console.error("Error accepting friend request:", error);
 		}
 	};
   const handleDeleteRequests = async (id: number) => {
@@ -60,7 +57,6 @@ function ProfileUser({userData, username, stats}:Prop) {
 				withCredentials: true,
 			});
 		} catch (error) {
-			console.error("Error decline friend request:", error);
 		}
 	};
 
@@ -71,7 +67,6 @@ function ProfileUser({userData, username, stats}:Prop) {
 					withCredentials: true,
 				})
 		} catch (error) {
-			console.error("Error decline friend request:", error);
 		}
 	};
 
@@ -82,7 +77,6 @@ function ProfileUser({userData, username, stats}:Prop) {
 					withCredentials: true,
 				})
 		} catch (error) {
-			console.error("Error accepting friend request:", error);
 		}
 	};
   var percentage = 0

@@ -6,7 +6,7 @@ import bg5 from "../../Profile/images/badges/bg5.svg";
 
 import "../styles/GameRank.css";
 import { useEffect, useState } from "react";
-import { getContext, getUser, getendpoint } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
 import { FriendDataType } from "../../../context/context";
 import { useNavigate } from "react-router-dom";
@@ -14,15 +14,9 @@ import { useNavigate } from "react-router-dom";
 function GameRank() {
   const [usersRanking, setUseresRanking] = useState<FriendDataType[]>([])
   const authUser = getUser()
-  const contxt = getContext()
   const navigate = useNavigate();
 
   const usersProfile = (user: FriendDataType) => {
-    // if (user.is_blocked) {
-    //   contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
-    //   contxt?.setDisplayed(3)
-    // }
-    // else
       navigate(`/profile/${user.username}`)
   }
 
@@ -31,8 +25,7 @@ function GameRank() {
       .then((response) => {
         setUseresRanking(response.data)
       })
-      .catch((error) => {
-        console.error("Error fetching friends list:", error);
+      .catch(() => {
       })
   }
   useEffect(() => {

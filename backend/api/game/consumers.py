@@ -66,7 +66,6 @@ class RandomGame(AsyncWebsocketConsumer):
       data = json.loads(text_data)
       if data["event"] == "READY":
         self.queue[self.user.username] = self
-        print(self.queue)
         if len(self.queue) >= 2:
           iterator = iter(iter(self.queue.items()))
           key1 , player1 = next(iterator)
@@ -93,7 +92,7 @@ class RandomGame(AsyncWebsocketConsumer):
     try:
       await player.channel_layer.group_add(self.room_name, player.channel_name)
     except Exception as e:
-      print("join room> ", e)
+      pass
 
 
   async def handshake(self, key1, key2):
@@ -107,7 +106,7 @@ class RandomGame(AsyncWebsocketConsumer):
         "enemy": await self.serializing_data(self.connected[key2].user)
       }))
     except Exception as e:
-      print(f"handshake of {key1}:> ", e)
+      pass
 
 
   @database_sync_to_async
@@ -386,7 +385,7 @@ class RemoteGame(AsyncWebsocketConsumer):
     try:
         task.result()  #  re-raise any error has been 
     except Exception as e:
-        print(f"Task crashed with error: {e}")# to do : send error message to the client
+        pass# to do : send error message to the client
 
   @database_sync_to_async
   def isStarted(self) -> bool:
@@ -518,9 +517,6 @@ class RemoteGame(AsyncWebsocketConsumer):
   def getUsername(self):
     return self.username
 
-
-
-
 class RandomTournament(AsyncWebsocketConsumer):
   queue = {}
   connected = {}
@@ -560,8 +556,6 @@ class RandomTournament(AsyncWebsocketConsumer):
           player3.user,
           player4.user
         )
-
-
 
   async def handshaking(self, p1, p2, p3, p4):
     await self.channel_layer.group_send(self.room_name, {
@@ -734,7 +728,6 @@ class FriendGame(AsyncWebsocketConsumer):
   async def receive(self, text_data):
     data = json.loads(text_data)
     event = data.get("event")
-    print(data)
     if event and event == "READY":
       connected_id = self.connected.get(self.invite_id)
       if not connected_id:
