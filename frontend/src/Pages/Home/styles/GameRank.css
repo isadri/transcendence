@@ -68,8 +68,7 @@
 .Home-GameRank .Home-row1{
     width: 55%;
     display: flex;
-    justify-content: space-evenly;
-    /* justify-content: start; */
+    justify-content: space-between;
     margin-left: 4%;
 
 }
