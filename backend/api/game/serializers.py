@@ -65,6 +65,11 @@ class GameInviteSerializer(serializers.ModelSerializer):
     inviter = self.context['user']
     if invited == inviter:
       raise serializers.ValidationError("You cannot invite yourself.")
+    if FriendRequest.objects.filter(
+            Q(sender=request_user, receiver=obj, status='blocked') |
+            Q(sender=obj, receiver=request_user, status='blocked')
+        ).exists():
+      raise serializers.ValidationError("You cannot invite this user (blocked/blocker).")
     return invited
   
 
