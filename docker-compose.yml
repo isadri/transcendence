@@ -27,10 +27,6 @@ services:
     image: backend
     build:
       context: backend
-    ports:
-      - 8000:8000
-    volumes:
-      - ./backend/:/code
     networks:
       - app-network
     env_file:
@@ -43,8 +39,6 @@ services:
     container_name: frontend
     image: frontend
     build: ./frontend
-    ports:
-      - 5000:5000
     volumes:
       - ./frontend:/code/
       - modules_files:/code/node_modules
@@ -59,10 +53,10 @@ services:
     image: postgres:17
     volumes:
       - postgres_data:/var/lib/posgresql/data
-    ports:
-      - 5432:5432
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     env_file:
       - .env
     networks:

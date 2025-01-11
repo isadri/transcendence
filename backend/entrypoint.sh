@@ -1,7 +1,5 @@
 #!/bin/sh
 
-python manage.py collecstatic
-
 echo "Running database migrations"
 python manage.py makemigrations --noinput accounts chat friends game notifications
 python manage.py migrate

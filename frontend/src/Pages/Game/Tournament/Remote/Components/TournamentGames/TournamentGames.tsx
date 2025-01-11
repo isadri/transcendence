@@ -5,7 +5,8 @@ import {
 	FriendDataType,
 	userDataType,
 } from "../../../../../../context/context";
-import winImg from "../../../../Images/crown.svg";
+// import winImg from "../../../../Images/crown.svg";
+import winImg from "../../../../images/crown.svg";
 import RemoteGame from "../RemoteGame/RemoteGame";
 import { useNavigate, useParams } from "react-router-dom";
 import Preloader from "../../../../../Preloader/Preloader";
