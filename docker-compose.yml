@@ -61,7 +61,7 @@ services:
           "curl -f http://localhost:8000/health/"
         ]
       interval: 5s
-      timeout: 5s
+      timeout: 10s
       retries: 50
     restart: on-failure
 
@@ -94,9 +94,9 @@ services:
       - app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
-      retries: 5
+      retries: 7
     restart: on-failure
 
   redis:
@@ -126,8 +126,8 @@ services:
       - app-network
     healthcheck:
       test: [ "CMD-SHELL", "[ -f config/certs/es01/es01.key ]" ]
-      interval: 1s
-      timeout: 5s
+      interval: 5s
+      timeout: 10s
       retries: 120
 
   es01:
@@ -157,7 +157,7 @@ services:
           "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
         ]
       interval: 10s
-      timeout: 10s
+      timeout: 20s
       retries: 90
 
   es02:
@@ -187,7 +187,7 @@ services:
           "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"
         ]
       interval: 10s
-      timeout: 10s
+      timeout: 20s
       retries: 90
 
   kibana:
@@ -234,6 +234,6 @@ services:
           "curl -s -f http://localhost:9600/_node/stats/pipelines"
         ]
       interval: 10s
-      timeout: 10s
+      timeout: 20s
       retries: 90
     restart: on-failure
