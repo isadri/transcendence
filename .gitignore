@@ -169,3 +169,5 @@ checker.sh
 
 node_modules
 avatars/
+
+.DS_Store
