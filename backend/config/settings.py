@@ -15,10 +15,6 @@ FERNET_KEY = config('FERNET_KEY').encode()
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-]
-
 SITE_ID = 1
 
 # Application definition
