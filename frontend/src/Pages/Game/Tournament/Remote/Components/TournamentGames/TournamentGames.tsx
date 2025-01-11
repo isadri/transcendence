@@ -11,6 +11,7 @@ import winImg from "../../../../Images/crown.svg";
 import RemoteGame from "../RemoteGame/RemoteGame";
 import { useNavigate, useParams } from "react-router-dom";
 import { div } from "three/webgpu";
+import Preloader from "../../../../../Preloader/Preloader";
 
 interface TournamentGamesProps {
 	tournament: number;
@@ -177,7 +178,7 @@ function TournamentGames() {
 		return () => socket.close();
 	}, []);
 
-	return <>{data ? <TournamentGraph data={data} /> : <>waiting</>}</>;
+	return <>{data ? <TournamentGraph data={data} /> : <Preloader/>}</>;
 }
 
 export type { TournamentRemoteGameData, TournamentRemoteData };

@@ -76,6 +76,14 @@ class Game(models.Model):
     except Exception:
       pass
     self.winner = self.player1 if self.player1.username == winner else self.player2
+    player2_states, _ = UserStats.objects.get_or_create(user=self.player2)
+    player1_states, _ = UserStats.objects.get_or_create(user=self.player1)
+    if self.player1 == self.winner:
+        player1_states.set_as_winner(0)
+        player2_states.set_as_loser(0)
+    else:
+        player1_states.set_as_loser(0)
+        player2_states.set_as_winner(0)
     self.save()
 
 
