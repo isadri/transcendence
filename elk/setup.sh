@@ -193,4 +193,3 @@ curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_data_stream/logs-django-dev
 
 echo -e "\nAll done"
-
