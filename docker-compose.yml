@@ -157,7 +157,7 @@ services:
         ]
       interval: 10s
       timeout: 20s
-      retries: 90
+      retries: 120
 
   kibana:
     depends_on:
@@ -201,5 +201,5 @@ services:
         ]
       interval: 10s
       timeout: 20s
-      retries: 90
+      retries: 120
     restart: on-failure
