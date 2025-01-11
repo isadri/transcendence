@@ -726,7 +726,6 @@ class FriendGame(AsyncWebsocketConsumer):
     self.connected[self.invite_id]['room_name'] = self.room_name
     self.player1 = self.invite.inviter
     self.player2 = self.invite.invited
-    print(self.connected[self.invite_id])
     await self.channel_layer.group_add(self.room_name, self.channel_name)
     if not await self.accept_invite(self.invite):
       self.close()
@@ -820,12 +819,10 @@ class FriendGame(AsyncWebsocketConsumer):
         for i in range(len(self.connected[self.invite_id]['players'])):
           if self.connected[self.invite_id]['players'][i] == self:
             del self.connected[self.invite_id]['players'][i]
-            print("deleted1=>  ", self.connected[self.invite_id])
       await self.channel_layer.group_discard(self.room_name, self.channel_name)
       for i in range(len(self.connected[self.invite_id]['players'])):
         if self.connected[self.invite_id]['players'][i] == self:
           del self.connected[self.invite_id]['players'][i]
-          print("deleted2=>  ", self.connected[self.invite_id])
     except:
       pass
 
