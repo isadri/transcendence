@@ -2,14 +2,13 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: var(
-		--itemColor
-	); /* remove background if doesn't match design */
+	background-color: var(--itemColor);
 	border-radius: 0 0 30px 30px;
 	padding: 1.4dvh;
 	gap: 20px;
 	position: relative;
 	min-width: 320px;
+	font-family: var(--sans);
 }
 
 .messageContent {
@@ -21,29 +20,22 @@
 	width: 85%;
 }
 
-/* .messageContent .partage-icon {
-	color: white;
-	font-size: 17px;
-	margin-right: 10px;
-	cursor: pointer;
-} */
-
 .messageContent textarea {
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: white;
-    font-size: 15px;
-    flex: 1;
-    min-height: 25px; /* Set the minimum height */
-    max-height: 200px; /* Set the maximum height */
-    resize: vertical; /* Allow resizing vertically */
-    overflow-y: auto; /* Scroll if content exceeds max height */
+	border: none;
+	outline: none;
+	background-color: transparent;
+	color: white;
+	font-size: 15px;
+	flex: 1;
+	min-height: 25px; /* Set the minimum height */
+	max-height: 200px; /* Set the maximum height */
+	resize: vertical; /* Allow resizing vertically */
+	overflow-y: auto; /* Scroll if content exceeds max height */
 }
 
 .messageContent textarea::placeholder {
-    color: white;
-    font-size: 14px;
+	color: white;
+	font-size: 14px;
 }
 
 .subButton {
@@ -78,15 +70,6 @@
 .block {
 	font-family: var(--sans);
 }
-
-/* @media (width: 320px) {
-	.bottom {
-		padding: 1.5dvh;
-		gap: 10px;
-		border-radius: 0;
-		min-width: none;
-	}
-} */
 
 @media (max-width: 478px) {
 	.bottom {

@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import "./SideNavbar.css";
 import SideNavbarData from "./SideNavbarData";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "./images/logo1.svg";
 import "./SidenavbarMobile.css";
 import { useMediaQuery } from "@uidotdev/usehooks"; // npm i @uidotdev/usehooks
@@ -12,9 +12,10 @@ import { getendpoint } from "../../context/getContextData";
 import Icons from "../globalComponent/Icons";
 
 const SideNavbar = () => {
-	const authContext = useContext(loginContext)
+	const authContext = useContext(loginContext);
 	const navigate = useNavigate();
-	const pathname = useLocation().pathname;
+	const location = useLocation();
+	const pathname = location.pathname;
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [activeItem, setActiveItem] = useState<string>(pathname);
 	const [logoutColor, setLogoutColor] = useState("#ffffffcc");
@@ -28,18 +29,29 @@ const SideNavbar = () => {
 	};
 
 	const handleLogoutClick = () => {
-		axios.get(getendpoint("http", '/api/accounts/logout/'), {withCredentials:true})
-      		.then(() =>{
-				authContext?.setIsLogged(false)
-				navigate('/')
-      		})
-      		.catch(() => {
-      		})
+		axios
+			.get(getendpoint("http", "/api/accounts/logout/"), {
+				withCredentials: true,
+			})
+			.then(() => {
+				authContext?.setIsLogged(false);
+				navigate("/");
+			})
+			.catch(() => {});
 		setLogoutColor((prevColor) =>
 			prevColor === "#ffffffcc" ? "#C1596C" : "#ffffffcc"
 		);
 	};
 
+	const checkLink = (l: string[]) => {
+		for (const str of l) {
+			if (location.pathname.startsWith(str)) {
+				if (str == "/" && pathname != str) return false;
+				return true;
+			}
+		}
+		return false;
+	};
 	return (
 		<>
 			{isSmallDevice ? (
@@ -71,9 +83,7 @@ const SideNavbar = () => {
 						<ul className={`${"list-itemsMobile"}`}>
 							{/* <hr /> */}
 							{SideNavbarData.map((val) => {
-								const color = val.link.includes(activeItem)
-									? "#C1596C"
-									: "#ffffffcc";
+								const color = checkLink(val.link) ? "#C1596C" : "#ffffffcc";
 								return (
 									<li key={val.id} onClick={() => handleIconClick(val.link[0])}>
 										<Link
@@ -111,18 +121,14 @@ const SideNavbar = () => {
 					<img src={logo} alt="logo" className="logo" />
 					<ul className="list-items">
 						{SideNavbarData.map((val) => {
-							const color = val.link.includes(activeItem)
-								? "#C1596C"
-								: "#ffffffcc";
+							const color = checkLink(val.link) ? "#C1596C" : "#ffffffcc";
 							return (
 								<li key={val.id} onClick={() => handleIconClick(val.link[0])}>
 									<Link to={val.link[0]} style={{ color: color }}>
 										{val.icon}
 									</Link>
 									<hr
-										className={`${
-											val.link.includes(activeItem) ? "active" : "inactive"
-										}`}
+										className={`${checkLink(val.link) ? "active" : "inactive"}`}
 									/>
 								</li>
 							);

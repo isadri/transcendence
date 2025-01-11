@@ -31,6 +31,7 @@
     object-fit: cover;
     border-radius: 50%;
     aspect-ratio: 1 / 1;
+    cursor: pointer;
 }
 .gmaeTournament .Timg .img2{
     position: relative;
@@ -102,6 +103,7 @@
     object-fit: cover;
     border-radius: 50%;
     aspect-ratio: 1 / 1;
+    cursor: pointer;
 }
 
 .elemens-tournament .tournamentState .Finished{
@@ -111,6 +113,11 @@
     font-weight: 700;
     font-size: 14px;
     color: #00ff00;
+}
+
+/* added by yasmine */
+.gamerank-ele {
+    cursor: pointer;
 }
 
 

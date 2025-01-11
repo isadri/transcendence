@@ -76,6 +76,8 @@
 .PlayScreen .winnerPopUp h2, .PlayScreen .winnerPopUp img:not(.winnerPic){
   color: var(--primary);
   margin-bottom: 10%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
 }
 
 

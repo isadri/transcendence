@@ -1,3 +1,4 @@
+import json
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now, timedelta
@@ -75,6 +76,14 @@ class Game(models.Model):
     except Exception:
       pass
     self.winner = self.player1 if self.player1.username == winner else self.player2
+    player2_states, _ = UserStats.objects.get_or_create(user=self.player2)
+    player1_states, _ = UserStats.objects.get_or_create(user=self.player1)
+    if self.player1 == self.winner:
+        player1_states.set_as_winner(0)
+        player2_states.set_as_loser(0)
+    else:
+        player1_states.set_as_loser(0)
+        player2_states.set_as_winner(0)
     self.save()
 
 
@@ -155,8 +164,6 @@ class UserStats(models.Model):
     elif self.level == 0:
       self.badge = -1
     self.save()
-    print("chi haja")
-    print(self.user)
     add_game_achievement_to_user(self.user)
     add_level_achievement_to_user(self.user)
     add_milestone_achievement_to_user(self.user)
@@ -210,8 +217,11 @@ class Tournament(models.Model):
     self.get_or_create_half2()
 
   def send_notification(self, player):
-    message = f"Are you ready to play!"
-    NotificationConsumer.send_friend_request_notification(player.id, message, "Tournament")
+    message = {
+      'id': self.id,
+      'message' : f"Are you ready to play!"
+    }
+    NotificationConsumer.send_friend_request_notification(player.id, json.dumps(message), "Tournament")
 
   def get_or_create_half1(self):
     if not self.half1:

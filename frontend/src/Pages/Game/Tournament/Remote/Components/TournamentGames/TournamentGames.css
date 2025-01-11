@@ -70,6 +70,8 @@
   width: 60px;
   border: 2px solid var(--primary);
   position: relative;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
 }
 
 .tournament-LastMatch .LastMatchContent .win {

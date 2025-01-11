@@ -22,14 +22,6 @@ interface FriendsData{
   stats: stats
 }
 
-// interface state{
-//   level: number,
-//   badge: number,
-//   win: number,
-//   lose: number,
-//   nbr_games: number
-//   xp: number
-// }
 
 interface UserData {
   id: number,
@@ -59,7 +51,6 @@ const Profile = () => {
         setUserData(response.data);
       })
       .catch(() => {
-        console.log("Error fetching user data:");
       });
       axios.get(getendpoint('http', `/api/friends/MutualFriendsView/${username}`), {withCredentials:true})
       .then(response =>{
@@ -77,15 +68,13 @@ const Profile = () => {
             .then((response) =>{
               setFriendsLst(response.data.friends)
             })
-            .catch ((error) =>{
-              console.error("Error fetching friends list:", error);
+            .catch (() =>{
             })
           }
         }
       }, [username]);
       
       useEffect(() => {
-        // var user_stat = username === undefined ? user?.username : username
         var user_stat = username
         if (username === undefined)
           user_stat = user?.username
@@ -93,8 +82,7 @@ const Profile = () => {
         .then((response) => {
           setStats(response.data[0])
         })
-        .catch((error) => {
-          console.log("error==================>",error)
+        .catch(() => {
         })
       }, []);
       if (!userData)

@@ -1,8 +1,7 @@
 import "../styles/GameRank.css";
 import "../styles/TournamentHestory.css";
-import bg1 from "../images/badge1.svg";
 import { useEffect, useState } from "react";
-import { getContext, getUser, getendpoint } from "../../../context/getContextData";
+import { getendpoint } from "../../../context/getContextData";
 import axios from "axios";
 import { FriendDataType } from "../../../context/context";
 import { useNavigate } from "react-router-dom";
@@ -13,16 +12,10 @@ import crown from '../../Game/images/crown.svg'
 
 function GameRank() {
   const [usersRanking, setUseresRanking] = useState<TournamentRemoteData[]>([])
-  const authUser = getUser()
-  const contxt = getContext()
   const navigate = useNavigate();
 
   const usersProfile = (user: FriendDataType) => {
-    // if (user.is_blocked) {
-    //   contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
-    //   contxt?.setDisplayed(3)
-    // }
-    // else
+
       navigate(`/profile/${user.username}`)
   }
 
@@ -30,22 +23,24 @@ function GameRank() {
     axios.get(getendpoint("http", "/api/game/tournaments/"))
       .then((response) => {
         setUseresRanking(response.data)
-        console.log(response.data)
       })
-      .catch((error) => {
-        console.error("Error fetching friends list:", error);
+      .catch(() => {
       })
   }
   useEffect(() => {
     GetUsersRank()
   }, [])
 
+  const handleGoToTournament = (id: Number) => {
+    navigate(`/game/tournament/remote/${id}`)
+  }
+
   return (
     <div className="Home-GameRank">
       {
         usersRanking.length !== 0 &&
-        usersRanking.map((user, index) => (
-          <div key={user.id} className="gamerank-ele">
+        usersRanking.map((user) => (
+          <div key={user.id} className="gamerank-ele" onClick={() => handleGoToTournament(user.id)} >
             <div className="Home-RowEle elemens-tournament">
               <div className="Home-row1 cupImage">
                 <div className="img">

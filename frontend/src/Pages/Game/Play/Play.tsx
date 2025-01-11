@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import "./Play.css";
 import winner from "../../../assets/winner.png"
 import vs from "../../Home/images/Group.svg"
-import pic from "../../Home/images/profile.svg"
+import pic from "../../Setting/images/default.jpeg"
 import "../../Home/styles/LastGame.css"
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
@@ -374,7 +374,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             <></>
         }
         <div className="quitGame">
-          <Link to={"../"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
+          <Link to={"/game"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
         </div>
       </div>
     </resultsContext.Provider>

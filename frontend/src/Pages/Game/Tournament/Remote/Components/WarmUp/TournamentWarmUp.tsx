@@ -25,9 +25,7 @@ const emptyEnemies: EnemiesUserData = [null, null, null];
 
 type EnemyUserData = FriendDataType;
 interface ContextData {
-	socket: WebSocket | null;
 	user: userDataType | null | undefined;
-	setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>;
 	enemies: EnemiesUserData;
 	setEnemies: React.Dispatch<React.SetStateAction<EnemiesUserData>>;
 	ready: boolean;
@@ -42,29 +40,29 @@ const PlayerCard = ({
 	enemyIndex = 0,
 }: PlayerCardData) => {
 	const context = useContext(WarmUpContext);
-	const navigator = useNavigate();
+	// const navigator = useNavigate();
 	if (context) {
-		const { socket, setSocket, enemies, setEnemies, setReady, user } = context;
-		useEffect(() => {
-			if (socket)
-				socket.onmessage = (e) => {
-					const data = JSON.parse(e.data);
-					console.log(data);
-					if (data.event == "HANDSHAKING") {
-						setTimeout(() => {
-							setEnemies(data.enemies);
-						}, 2000);
-						setTimeout(() => {
-							navigator(`/game/tournament/remote/${data.tournament}`);
-						}, 5000);
-					}
-					if (data.event == "ABORT") {
-						setEnemies(emptyEnemies);
-						setReady(false);
-						socket.close();
-					}
-				};
-		}, [setEnemies, setSocket, socket]);
+		const { enemies, setEnemies, setReady, user } = context;
+		// useEffect(() => {
+		// 	if (socket)
+		// 		socket.onmessage = (e) => {
+		// 			const data = JSON.parse(e.data);
+		// 			console.log(data);
+		// 			if (data.event == "HANDSHAKING") {
+		// 				setTimeout(() => {
+		// 					setEnemies(data.enemies);
+		// 				}, 2000);
+		// 				setTimeout(() => {
+		// 					navigator(`/game/tournament/remote/${data.tournament}`);
+		// 				}, 5000);
+		// 			}
+		// 			if (data.event == "ABORT") {
+		// 				setEnemies(emptyEnemies);
+		// 				setReady(false);
+		// 				socket.close();
+		// 			}
+		// 		};
+		// }, [setEnemies, setSocket, socket]);
 
 		return (
 			<div className="TournamentWarmUpVsPlayer">
@@ -73,9 +71,8 @@ const PlayerCard = ({
 						<div className="TournamentWarmUpVsPlus">
 							<div>
 								<i
-									className={`fa-solid ${
-										isRandom ? "fa-hourglass-start" : "fa-plus"
-									} fa-2xl`}
+									className={`fa-solid ${isRandom ? "fa-hourglass-start" : "fa-plus"
+										} fa-2xl`}
 								></i>
 							</div>
 							<img src={avatar} className="TournamentWarmUpVsAvatar" />
@@ -135,61 +132,59 @@ const PlayerCard = ({
 const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
 	const context = useContext(WarmUpContext);
 	if (context) {
-		let { socket, ready, setReady, setSocket, setEnemies, enemies } = context;
+		// let { socket, ready, setReady, setSocket, setEnemies, enemies } = context;
+		const navigator = useNavigate()
 
-		const onReady = () => {
-			if (ready) return;
-			console.log("isRandom", isRandom);
-			const newSocket = new WebSocket(
-				getendpoint("ws", "/ws/game/tournament/random")
-			);
-			setSocket(newSocket);
-			newSocket.onopen = () => {
-				newSocket.send(
-					JSON.stringify({
-						event: "READY",
-					})
-				);
-			};
-			newSocket.onclose = () => {
-				setReady(false);
-				setEnemies([null, null, null]);
-			};
-			setReady(true);
-		};
+		// const onReady = () => {
+		// 	// if (ready) return;
+		// 	// console.log("isRandom", isRandom);
+		// 	// const newSocket = new WebSocket(
+		// 	// 	getendpoint("ws", "/ws/game/tournament/random")
+		// 	// );
+		// 	// setSocket(newSocket);
+		// 	// newSocket.onopen = () => {
+		// 	// 	newSocket.send(
+		// 	// 		JSON.stringify({
+		// 	// 			event: "READY",
+		// 	// 		})
+		// 	// 	);
+		// 	// };
+		// 	// newSocket.onclose = () => {
+		// 	// 	setReady(false);
+		// 	// 	setEnemies([null, null, null]);
+		// 	// };
+		// 	// setReady(true);
+		// };
 		const onAbort = () => {
-			if (socket) {
-				socket.send(
-					JSON.stringify({
-						event: "ABORT",
-					})
-				);
-				socket.close();
-				setSocket(null);
-				setReady(false);
-			}
+			navigator("/game")
+			// if (socket) {
+			// 	socket.send(
+			// 		JSON.stringify({
+			// 			event: "ABORT",
+			// 		})
+			// 	);
+			// 	socket.close();
+			// 	setSocket(null);
+			// 	setReady(false);
+			// }
 		};
 		return (
-			<div className="WarmUpReadyContext">
-				{/* <div className="WarmupReady"> */}
-				<button className="WarmUpReadyBtn" onClick={onReady}>
-					{ready ? "Wait" : "Ready"}
-				</button>
-				<button className="WarmUpAbortBtn" onClick={onAbort}>
+			<div className="TournamentWarmUpReadyContext">
+				<button className="TournamentWarmUpAbortBtn" onClick={onAbort}>
 					Abort
 				</button>
-				{/* </div> */}
 			</div>
 		);
 	}
 };
 
 const TournamentWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
-	let [socket, setSocket] = useState<WebSocket | null>(null);
+	// let [socket, setSocket] = useState<WebSocket | null>(null);
 	const [ready, setReady] = useState<boolean>(false);
 	const [enemies, setEnemies] = useState<EnemiesUserData>(emptyEnemies);
 	const [user, setUser] = useState<userDataType | null | undefined>(null);
 
+	const navigator = useNavigate();
 	useEffect(() => {
 		axios
 			.get(getendpoint("http", `/api`), { withCredentials: true })
@@ -200,10 +195,56 @@ const TournamentWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 				const user = getUser();
 				setUser(user);
 			});
+
+		const socket = new WebSocket(
+			getendpoint("ws", "/ws/game/tournament/random")
+		);
+		socket.onopen = () => {
+			socket.send(
+				JSON.stringify({
+					event: "READY",
+				})
+			);
+		};
+		socket.onclose = () => {
+			setReady(false);
+			setEnemies([null, null, null]);
+		};
+		socket.onmessage = (e) => {
+			const data = JSON.parse(e.data);
+			if (data.event == "HANDSHAKING") {
+				setTimeout(() => {
+					setEnemies(data.enemies);
+				}, 2000);
+				setTimeout(() => {
+					navigator(`/game/tournament/remote/${data.tournament}`);
+				}, 5000);
+			}
+			if (data.event == "ABORT") {
+				setEnemies(emptyEnemies);
+				setReady(false);
+				socket.close();
+			}
+		};
+
+		return () => {
+			if (socket.readyState == socket.OPEN)
+				socket.close()
+		}
+		// if (socket) {
+		// 	socket.send(
+		// 		JSON.stringify({
+		// 			event: "ABORT",
+		// 		})
+		// 	);
+		// 	socket.close();
+		// 	setSocket(null);
+		// 	setReady(false);
+		// }
 	}, []);
 	return (
 		<WarmUpContext.Provider
-			value={{ socket, setSocket, enemies, setEnemies, ready, setReady, user }}
+			value={{ enemies, setEnemies, ready, setReady, user }}
 		>
 			<div className="TournamentGameWarmUp">
 				<h2>Warm Up</h2>

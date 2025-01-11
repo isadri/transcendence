@@ -28,8 +28,7 @@ function LastAchievement({ userData, username }: Prop) {
       .then((response) => {
         setAchievements(response.data)
       })
-      .catch((error) => {
-        console.error("Error fetching friends list:", error);
+      .catch(() => {
       })
   }
 

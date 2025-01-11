@@ -230,9 +230,9 @@ const Setting = () => {
         setVerified(2)
         if(user)
         {
-          user.email = response.data
-          authContext?.setUser(user)
-          SetDataUpdated({...dataUpdated, email:response.data})
+          // user.email = response.data
+          authContext?.setUser(response.data)
+          SetDataUpdated({...dataUpdated, email:response.data.email})
           authContext?.setCreatedAlert("Your information has been updated successfully");
           authContext?.setDisplayed(5)
           

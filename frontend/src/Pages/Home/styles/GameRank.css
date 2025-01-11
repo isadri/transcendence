@@ -99,6 +99,7 @@
     object-fit: cover;
     border-radius: 50%;
     aspect-ratio: 1 / 1;
+    cursor: pointer;
 }
 
 .Home-GameRank .Home-row2 *{

@@ -291,7 +291,7 @@
 }
 
 .Notifications .footerSide button:hover {
-    background-color: #4a3b63;
+    background-color: rgba(163, 136, 214, 0.291);
 }
 
 .invite-text-icon {

@@ -174,3 +174,4 @@ static/
 media/
 avatars/
 
+.DS_Store

@@ -9,8 +9,9 @@ import {
 // import winImg from '../../../../Images/winnerImg.svg'
 import winImg from "../../../../Images/crown.svg";
 import RemoteGame from "../RemoteGame/RemoteGame";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { div } from "three/webgpu";
+import Preloader from "../../../../../Preloader/Preloader";
 
 interface TournamentGamesProps {
 	tournament: number;
@@ -100,8 +101,6 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 	const playYourGame = () => {
 		if (!user) return;
 		const myGame = getMyGame(data, user);
-		console.log(myGame);
-
 		if (myGame) navigator(`/game/remote/${myGame.id}`);
 	};
 	return (
@@ -138,7 +137,7 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 									src={getendpoint("http", data.winner.avatar)}
 									alt=""
 								/>
-                {data.winner.username}
+								{data.winner.username}
 							</>
 						) : (
 							"waitting"
@@ -149,25 +148,26 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 					</div>
 				</div>
 			</div>
-			<button className="start-btn" onClick={playYourGame}>
-				Play
-			</button>
+			{user && getMyGame(data, user) && (
+				<button className="start-btn" onClick={playYourGame}>
+					Play
+				</button>
+			)}
 		</div>
 	);
 };
 
-function TournamentGames({ tournament }: TournamentGamesProps) {
+function TournamentGames() {
+	const { id } = useParams(); // protect later
 	const [data, setData] = useState<TournamentRemoteData | null>(null);
 
-	// console.log("tournament=> ", data);
 	useEffect(() => {
 		const socket = new WebSocket(
-			getendpoint("ws", `/ws/game/tournament/${tournament}`)
+			getendpoint("ws", `/ws/game/tournament/${id}`)
 		);
 
 		socket.onmessage = (e) => {
 			const data = JSON.parse(e.data);
-			console.log("tournament=> ", data);
 			setData(data);
 		};
 		socket.onopen = () => console.log("tournament socket opened");
@@ -176,7 +176,7 @@ function TournamentGames({ tournament }: TournamentGamesProps) {
 		return () => socket.close();
 	}, []);
 
-	return <>{data ? <TournamentGraph data={data} /> : <>waiting</>}</>;
+	return <>{data ? <TournamentGraph data={data} /> : <Preloader />}</>;
 }
 
 export type { TournamentRemoteGameData, TournamentRemoteData };

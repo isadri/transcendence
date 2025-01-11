@@ -11,6 +11,8 @@
 .GameFriendsInviteBoxTitle{
   padding: 2%;
   color: var(--primary);
+  margin-top: 10px;
+  text-align: center;
 }
 .GameFriendsInviteBox{
   width: 90%;
@@ -40,6 +42,10 @@
   }
 }
 
+.GameFriendsInviteBox .listFriends p{
+  opacity: 0.6;
+}
+
 .GameFriendsInviteBox  .friendItem {
   background-color: var(--fade);
   border-radius: 15px;
@@ -64,7 +70,8 @@
 }
 
 .GameFriendsInviteBox  .friendItem .avatar_usernmae img{
-  aspect-ratio: 1;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   margin: 0 5%;
   height: 85%;

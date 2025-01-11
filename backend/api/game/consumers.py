@@ -11,6 +11,7 @@ from ..accounts.serializers import UserSerializer
 from ..friends.serializers import FriendSerializer
 from channels.layers import get_channel_layer
 from django.db.models import Q
+from asgiref.sync import async_to_sync
 channel_layer = get_channel_layer()
 
 TABLE_Z = 8.65640
@@ -65,7 +66,6 @@ class RandomGame(AsyncWebsocketConsumer):
       data = json.loads(text_data)
       if data["event"] == "READY":
         self.queue[self.user.username] = self
-        print(self.queue)
         if len(self.queue) >= 2:
           iterator = iter(iter(self.queue.items()))
           key1 , player1 = next(iterator)
@@ -92,7 +92,7 @@ class RandomGame(AsyncWebsocketConsumer):
     try:
       await player.channel_layer.group_add(self.room_name, player.channel_name)
     except Exception as e:
-      print("join room> ", e)
+      pass
 
 
   async def handshake(self, key1, key2):
@@ -106,7 +106,7 @@ class RandomGame(AsyncWebsocketConsumer):
         "enemy": await self.serializing_data(self.connected[key2].user)
       }))
     except Exception as e:
-      print(f"handshake of {key1}:> ", e)
+      pass
 
 
   @database_sync_to_async
@@ -346,7 +346,7 @@ class RemoteGame(AsyncWebsocketConsumer):
       await self.channel_layer.group_add(self.room_name, self.channel_name)
       self.task_start = asyncio.create_task(self.start_loop())
       self.task_start.add_done_callback(self.handle_task)
-      if len(self.connected[self.game_id]['players']) == 2:
+      if len(self.connected[self.game_id]['players']) == 2 and list(self.connected[self.game_id]['players'].keys()).index(self.username) == 1:
         player1 = self.connected[self.game_id]['players'][self.game.player1.username]
         player2 = self.connected[self.game_id]['players'][self.game.player2.username]
         self.game_data = GameData(player1, player2, self.game, self.room_name)
@@ -385,7 +385,7 @@ class RemoteGame(AsyncWebsocketConsumer):
     try:
         task.result()  #  re-raise any error has been 
     except Exception as e:
-        print(f"Task crashed with error: {e}")# to do : send error message to the client
+        pass# to do : send error message to the client
 
   @database_sync_to_async
   def isStarted(self) -> bool:
@@ -517,16 +517,13 @@ class RemoteGame(AsyncWebsocketConsumer):
   def getUsername(self):
     return self.username
 
-
-
-
 class RandomTournament(AsyncWebsocketConsumer):
   queue = {}
   connected = {}
   async def connect(self):
     self.user = self.scope["user"]
     self.room_name = None
-    if self.user.is_authenticated:
+    if self.user and self.user.is_authenticated:
       await self.accept()
     else:
       await self.close()
@@ -548,7 +545,6 @@ class RandomTournament(AsyncWebsocketConsumer):
           player3.user,
           player4.user
         )
-        print(self.tournament)
         self.room_name = f"room_{self.tournament.id}"
         await player1.channel_layer.group_add(self.room_name, player1.channel_name)
         await player2.channel_layer.group_add(self.room_name, player2.channel_name)
@@ -560,8 +556,6 @@ class RandomTournament(AsyncWebsocketConsumer):
           player3.user,
           player4.user
         )
-
-
 
   async def handshaking(self, p1, p2, p3, p4):
     await self.channel_layer.group_send(self.room_name, {
@@ -622,6 +616,15 @@ class RandomTournament(AsyncWebsocketConsumer):
             "username": self.user.username,
         }
       )
+
+  async def player_disconnected(self, event):
+    """
+    Notify the remaining player that their opponent disconnected.
+    """
+    await self.send(json.dumps({
+        "event": "ABORT",
+        "username": event["username"],
+    }))
 
 
 
@@ -710,10 +713,11 @@ class FriendGame(AsyncWebsocketConsumer):
     if not self.invite or not await self.is_part_of_invite(self.invite):
       self.abort("No invite with this id or you dont have permission")
       return
+    self.room_name = f"room_invite_{self.invite.id}"
     self.connected.setdefault(self.invite_id, {})
     self.connected[self.invite_id].setdefault('players', [])
     self.connected[self.invite_id]['players'].append(self)
-    self.room_name = f"room_invite_{self.invite.id}"
+    self.connected[self.invite_id]['room_name'] = self.room_name
     self.player1 = self.invite.inviter
     self.player2 = self.invite.invited
     await self.channel_layer.group_add(self.room_name, self.channel_name)
@@ -725,9 +729,18 @@ class FriendGame(AsyncWebsocketConsumer):
     data = json.loads(text_data)
     event = data.get("event")
     if event and event == "READY":
+      connected_id = self.connected.get(self.invite_id)
+      if not connected_id:
+        self.close()
+        return
+      players = self.connected[self.invite_id].get('players')
+      if not players:
+        self.close()
+        return
       if len(self.connected[self.invite_id]['players']) >= 2:
+        self.player1 = self.invite.inviter
+        self.player2 = self.invite.invited
         self.gameMatch = await self.create_game(player1=self.player1, player2=self.player2)
-        await self.delete_invite(self.invite)
         await self.channel_layer.group_send(
           self.room_name,
           {
@@ -743,7 +756,7 @@ class FriendGame(AsyncWebsocketConsumer):
   
 
   async def handshake(self, event):
-    print(event)
+    # await self.delete_invite(self.invite)
     await self.send(text_data=json.dumps({
         "event" : "HANDSHAKING",
         "game_id": event["game_id"],
@@ -792,8 +805,35 @@ class FriendGame(AsyncWebsocketConsumer):
       pass
 
   async def disconnect(self, code):
-    if not self.room_name or not self.invite_id:
-      return
-    await self.channel_layer.group_discard(self.room_name, self.channel_name)
+    try:
+      if not self.invite_id:
+        return
+      if not self.room_name:
+        for i in range(len(self.connected[self.invite_id]['players'])):
+          if self.connected[self.invite_id]['players'][i] == self:
+            del self.connected[self.invite_id]['players'][i]
+      await self.channel_layer.group_discard(self.room_name, self.channel_name)
+      for i in range(len(self.connected[self.invite_id]['players'])):
+        if self.connected[self.invite_id]['players'][i] == self:
+          del self.connected[self.invite_id]['players'][i]
+    except:
+      pass
 
+
+  async def refused(self, event):
+    await self.send(text_data=json.dumps(event))
+
+  @staticmethod
+  def warn_invite_refused(invite_id):
+    channel_layer = get_channel_layer()
+    data = FriendGame.connected.get(invite_id)
+    if (data):
+      room_name = data['room_name']
+      async_to_sync(channel_layer.group_send)(
+        room_name,{
+            'type' : 'refused',
+            'event': 'refused',
+            'message' : 'the invitation has refused!'
+        }
+      )
 

@@ -52,7 +52,6 @@ function Search() {
       );
       setUsers(response.data);
     } catch (err) {
-      console.log("Error fetching users:", err);
     }
   };
 

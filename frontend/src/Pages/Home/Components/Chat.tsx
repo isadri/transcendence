@@ -30,10 +30,8 @@ function Chat() {
     axios.get(getendpoint("http", "/api/friends/friends"),{withCredentials:true})
       .then((response) =>{
         setFriendsList(response.data.friends)
-        console.log(response.data.friends)
       })
-      .catch ((error) =>{
-        console.error("Error fetching friends list:", error);
+      .catch (() =>{
       })
   }
   useEffect(() => {
@@ -57,7 +55,6 @@ function Chat() {
                 <div className="onlineCircle-friend" style={{backgroundColor:'rgb(119 118 118)', borderColor:'rgb(119 118 118)'}}></div>
               }
              </div>
-            {/* <div className='hover-friend' >{friend.username}</div> */}
           </div>
         ))}
       </div>

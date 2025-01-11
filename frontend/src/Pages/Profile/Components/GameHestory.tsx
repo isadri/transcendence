@@ -28,8 +28,7 @@ function GameHestory({ userData, username }: Prop) {
       .then((response) => {
         setUserGames(response.data)
       })
-      .catch((error) => {
-        console.error("Error fetching friends list:", error);
+      .catch(() => {
       })
   }
 

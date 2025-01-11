@@ -1,16 +1,17 @@
 import "../../../../components/GameModePopUp/GameModePopUp.css";
 import "./FriendsPopUp.css";
-import { userDataType } from "../../../../context/context";
+import { FriendDataType, userDataType } from "../../../../context/context";
 import { getUser, getendpoint } from "../../../../context/getContextData";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { WarmUpContext } from "../../WarmUp/WarmUp";
+import { WarmUpContext } from "../../WarmUp/InivteFriend";
 
 interface FriendsPopUpData {
 	setter: React.Dispatch<React.SetStateAction<boolean>>;
+	setEnemy: React.Dispatch<React.SetStateAction<FriendDataType | null>>,
 }
 
-function FriendsPopUp({ setter }: FriendsPopUpData) {
+function FriendsPopUp({ setter, setEnemy }: FriendsPopUpData) {
 	const user = getUser();
 	const [friends, setFriends] = useState<userDataType[]>([]);
 
@@ -20,14 +21,10 @@ function FriendsPopUp({ setter }: FriendsPopUpData) {
 		});
 	}, []);
 
-	const warmUpContext = useContext(WarmUpContext);
-	const onSelect = (friend: userDataType) => {
-		if (warmUpContext) {
-			const { setEnemyUser } = warmUpContext;
-
-			setEnemyUser(friend);
+	// const warmUpContext = useContext(WarmUpContext);
+	const onSelect = (friend: FriendDataType) => {
+			setEnemy(friend);
 			setter(false);
-		}
 	};
 
 	if (!user) return <></>;
@@ -42,12 +39,12 @@ function FriendsPopUp({ setter }: FriendsPopUpData) {
 						}}
 					></i>
 					<div className="GameFriendsInviteBoxTitle">
-						<h2>invite Friend</h2>
+						<h2>Invite Friend</h2>
 					</div>
 					<div className="GameFriendsInviteBox">
 						<div className="listFriends">
 							{friends.length === 0 ? (
-								<p>Loading...</p>
+								<p>You have no friends</p>
 							) : (
 								friends.map((friend) => {
 									return (

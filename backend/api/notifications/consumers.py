@@ -24,12 +24,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         # Leave the notification group
         if not self.user:
             return
-        self.user.is_online = False
-        await self.user.asave(update_fields=['is_online'])
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        try:
+            self.user.is_online = False
+            await self.user.asave(update_fields=['is_online'])
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+        except:
+            pass
 
     async def receive(self, text_data):
         pass
@@ -37,7 +40,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def send_notification(self, event):
         notification = event['data']['message']
         notification_type = event['data']['type']
-        print("notification_type ====> ", notification_type)
         notification_id = event['data']['notification_id']
         notification_created_at = event['data']['notification_created_at']
         await self.send(text_data=json.dumps({
@@ -52,7 +54,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         """
         Sends a friend request notification to the user.
         """
-        print("type ===> ", type)
         notification = Notification.objects.create(
             user_id=user_id,
             message=message,
@@ -79,7 +80,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         """
         Sends a friend request notification to the user.
         """
-        print("type ===> ", type)
         created_at_iso = created_at.isoformat()
         channel_layer = get_channel_layer()
         await channel_layer.group_send(

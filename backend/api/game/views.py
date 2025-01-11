@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 from .models import *
 from .serializers import *
+from .consumers import *
 
 from rest_framework import status,viewsets
 from rest_framework.views import APIView
@@ -115,7 +116,8 @@ class DeclineGameInvite(APIView):
       invite = GameInvite.objects.get(pk=pk)
       try:
         invite.decline(user)
-        return Response({'details' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+        FriendGame.warn_invite_refused(pk)
+        return Response({'details' : 'The invite has been declined successfully'}, status=status.HTTP_200_OK)
       except ValueError as e:
         return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
     except GameInvite.DoesNotExist:
@@ -124,7 +126,7 @@ class DeclineGameInvite(APIView):
 
   def delete(self, request, pk):
     user = request.user
-    try: 
+    try:
       invite = GameInvite.objects.get(Q(inviter=user) | Q(invited=user), pk=pk)
       invite.delete()
       return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
@@ -185,7 +187,6 @@ class ListUserStats(APIView):
     try:
       user = get_object_or_404(User, username=username)
       userStats = UserStats.objects.filter(user=user)
-      print(userStats)
       serializer = UserStatsSerializer(userStats, many=True)
       return Response(serializer.data)
     except User.DoesNotExist:
