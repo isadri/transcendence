@@ -180,6 +180,7 @@ function Icons() {
 																		<Link
 																			to={`/game/warmup/friends/${data.inviteId}`} onClick={() =>{
 																				setIsIconClicked(!isIconClicked)
+																				deleteNotification(notif.id)
 																			}}
 																		>
 																			<i className="fa-solid fa-check accept-invete"></i>
