@@ -1,12 +1,10 @@
-import { Canvas, context, useThree } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import "../Play/Play.css";
 import vs from "../../Home/images/Group.svg";
 import "../../Home/styles/LastGame.css";
 
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import {
-	Api,
-	Debug,
 	Physics,
 	useBox,
 	useContactMaterial,
@@ -15,15 +13,13 @@ import {
 import { Material } from "cannon-es";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
-	AxesHelper,
 	DoubleSide,
 	Fog,
 	MathUtils,
-	Object3D,
-	Object3DEventMap,
+	Mesh,
 	WebGLRenderer,
 } from "three";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { getUser, getendpoint } from "../../../context/getContextData";
 import { FriendDataType, userDataType } from "../../../context/context";
 
@@ -33,15 +29,15 @@ useGLTF.preload(tableUrl);
 
 // the context of the game result
 interface ResultContext {
-	ball: any;
-	paddle1: any;
-	paddle2: any;
+	ball?: any;
+	paddle1?: any;
+	paddle2?: any;
 	gameId: number;
 	error: string | null;
-	user: FriendDataType;
+	user: FriendDataType|userDataType|null|undefined;
 	enemy: FriendDataType;
 	result: [number, number];
-	winner: FriendDataType | null;
+	winner: FriendDataType | null|userDataType;
 	socketRef: React.MutableRefObject<WebSocket | null>;
 	setError: React.Dispatch<React.SetStateAction<string | null>>;
 	setEnemy: React.Dispatch<React.SetStateAction<FriendDataType>>;
@@ -53,7 +49,7 @@ interface ResultContext {
 const resultsContext = createContext<ResultContext | null>(null);
 
 function Ball({ ball }: { ball: [number, number, number] }) {
-	const [ref, api] = useSphere(() => ({
+	const [ref, api] = useSphere<Mesh>(() => ({
 		mass: 0,
 		position: [0, 0.2, 0],
 		args: [0.12],
@@ -78,7 +74,7 @@ function Ball({ ball }: { ball: [number, number, number] }) {
 function Table() {
 	const material = new Material("table_mat");
 	const table = useGLTF(tableUrl);
-	const [ref, api] = useBox(() => ({
+	const [ref, api] = useBox<Mesh>(() => ({
 		position: [0, 0, 0],
 		type: "Static",
 		args: [6.1469, 0.0364 * 2, 8.6564],
@@ -128,7 +124,7 @@ function Paddle1({ position, box }: Paddlerops) {
 	// my Paddle
 	const context = useContext(resultsContext);
 
-	const [ref, api] = useBox(() => ({
+	const [ref, api] = useBox<Mesh>(() => ({
 		type: "Kinematic",
 		position: position,
 		args: [1.5, 0.5, 0.5],
@@ -138,10 +134,11 @@ function Paddle1({ position, box }: Paddlerops) {
 	useEffect(() => {
 		if (api && api.position) api.position.set(...box.xyz);
 	}, [box, api]);
+
 	useEffect(() => {
 		if (context) {
 			const { socketRef, user } = context;
-			if (!socketRef) return;
+			if (!socketRef||!user) return;
 			const socket = socketRef.current;
 			const onKeyDown = (event: KeyboardEvent) => {
 				if (event.key == "ArrowRight" || event.key == "ArrowUp")
@@ -172,7 +169,7 @@ function Paddle1({ position, box }: Paddlerops) {
 }
 
 function Paddle2({ position, box }: Paddlerops) {
-	const [ref, api] = useBox(() => ({
+	const [ref, api] = useBox<Mesh>(() => ({
 		type: "Kinematic",
 		position: position,
 		args: [1.5, 0.5, 0.5],
@@ -196,7 +193,7 @@ interface SideWallProps {
 
 function SideWall({ position }: SideWallProps) {
 	const material = new Material("side_mat");
-	const [ref, api] = useBox(() => ({
+	const [ref, api] = useBox<Mesh>(() => ({
 		position: position,
 		args: [0.5, 0.8, 8.6564],
 		material: material,
@@ -216,7 +213,7 @@ interface GoalWallProps {
 
 function GoalWall({ position }: GoalWallProps) {
 	const material = new Material("goal_mat");
-	const [ref, api] = useBox(() => ({
+	const [ref, api] = useBox<Mesh>(() => ({
 		position: position,
 		args: [6.1469, 0.8, 0.5],
 		material: material,
@@ -280,6 +277,7 @@ function GameTable() {
 			setWinner,
 			gameId,
 		} = context;
+		if (!user) return <></>
 		useEffect(() => {
 			if (!socketRef || !socketRef.current)
 				socketRef.current = new WebSocket(
@@ -408,7 +406,8 @@ const Play = () => {
 				}
 			};
 		}, [socketRef]);
-
+		if (!user)
+			return <></>
 		return (
 			<>
 				<div className="PlayScreen">
