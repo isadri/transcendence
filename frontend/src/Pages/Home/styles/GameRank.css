@@ -96,8 +96,8 @@
 .Home-GameRank .Home-row1 .Home-ProfileRev img{
     width: 100%;
     object-fit: cover;
-    border-radius: 50%;
     aspect-ratio: 1 / 1;
+    border-radius: 50%;
     cursor: pointer;
 }
 
