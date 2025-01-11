@@ -1,11 +1,12 @@
 from django.conf import settings
+from django.core.mail import send_mail
 
 from  .models import User
 
 
-def send_email_verification(user: User, confirmation_url: str) -> None:
+def send_email_verification(to_email: str, confirmation_url: str) -> None:
     """
-    Send the verification email to the user.
+    Send the verification email to the given email.
     """
     html_message = f"""
     <html>
@@ -46,12 +47,14 @@ def send_email_verification(user: User, confirmation_url: str) -> None:
         </body>
     </html>
     """
-    user.email_user(
+    send_mail(
         subject='Please confirm your Email',
         message=('Click this link to confirm your email '
                  f'{confirmation_url}'),
         from_email=settings.EMAIL_HOST_USER,
-        html_message=html_message
+        recipient_list=[to_email],
+        html_message=html_message,
+        fail_silently=True
     )
 
 

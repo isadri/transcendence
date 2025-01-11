@@ -24,7 +24,6 @@ function ProfileUser({userData, username, stats}:Prop) {
     axios.get(getendpoint('http', `/api/friends/friendship-status/${userData.id}`), {withCredentials:true})
     .then(response => {
       setfrindshipStatus(response.data.status)
-      console.log("====>", response.data.status)
     })
     .catch(() => {
       console.log("Error fetching user data:");
@@ -32,7 +31,6 @@ function ProfileUser({userData, username, stats}:Prop) {
     setIsOnline(userData?.is_online || false)
   }, [userData.id, userData?.is_online]);
 
-  console.log("=====>", username)
 
 
 
@@ -72,10 +70,19 @@ function ProfileUser({userData, username, stats}:Prop) {
 				.delete(getendpoint("http", `/api/friends/cancel/${id}`), {
 					withCredentials: true,
 				})
-				.then((response) => {
-				});
 		} catch (error) {
 			console.error("Error decline friend request:", error);
+		}
+	};
+
+  const handleUnblockRequests = async (id: number) => {
+		try {
+			await axios
+				.post(getendpoint("http", `/api/friends/unblock/${id}`), null, {
+					withCredentials: true,
+				})
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
 		}
 	};
   var percentage = 0
@@ -86,17 +93,13 @@ function ProfileUser({userData, username, stats}:Prop) {
 		axios
 		.post(getendpoint("http", `/api/game/invite/`), { invited: id })
 		.then((response) => {
-			console.log("created ", response.data);
-
 			navigate(`/game/warmup/friends/${response.data.id}`);
 		})
 		.catch((error) => {
-			console.log(error.response.data);
       cntxt?.setCreatedAlert(error.response.data.error)
       cntxt?.setDisplayed(3)
 		});
 	};
-
   return (
     <div className='Home-ProfileUser'>
     <div className='Home-ProfileElements'>
@@ -118,6 +121,14 @@ function ProfileUser({userData, username, stats}:Prop) {
             <div className='proBtn' >
               <button type='submit' onClick={() => {handleSendRequests(userData.id),
                 setfrindshipStatus("cancel")} }><i className="fa-solid fa-user-plus"></i>Add friend</button>
+            </div>
+          }
+          {
+            frindshipStatus === "blocked" && userData.is_blocked === "blocker" &&
+            <div className='proBtn' >
+              <button type='submit' onClick={() => {handleUnblockRequests(userData.id),
+                setfrindshipStatus("no_request"),
+                userData.is_blocked === false}}>Unblock</button>
             </div>
           }
           {

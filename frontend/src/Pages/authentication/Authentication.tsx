@@ -118,7 +118,6 @@ function Authentication() {
   }
 
   const handelVerifyCode = () => {
-    console.log("username => ", username);
     axios
       .post(
         getendpoint("http", "/api/accounts/verify-otp/"),
@@ -147,7 +146,6 @@ function Authentication() {
         });
       })
       .catch((error) => {
-        console.log(error.response.data.error);
         SetshowOtpAlert(false);
         authContext?.setDisplayed(3);
         authContext?.setCreatedAlert(error.response.data.error);
@@ -228,7 +226,6 @@ function Authentication() {
           .post(url_login, data_login, { withCredentials: true })
           .then((response) => {
             if (otpResponse.data) {
-              console.log("code ===>  ", response.data);
               setUserCode(response.data.code);
               SetshowOtpAlert(true);
             } else {
@@ -252,9 +249,8 @@ function Authentication() {
                 }
               }
               setErrorList(list);
-              // console.log(list)
             } else if (error.request) {
-              // authContext?.setDisplayed(2)
+              // authContext?.setDisplayed(3)
               // authContext?.setCreatedAlert(error.request);
             }
           });

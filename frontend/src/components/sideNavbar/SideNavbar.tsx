@@ -32,10 +32,8 @@ const SideNavbar = () => {
       		.then(() =>{
 				authContext?.setIsLogged(false)
 				navigate('/')
-				// console.log("saccess")
       		})
       		.catch(() => {
-      			// console.log("failer")
       		})
 		setLogoutColor((prevColor) =>
 			prevColor === "#ffffffcc" ? "#C1596C" : "#ffffffcc"

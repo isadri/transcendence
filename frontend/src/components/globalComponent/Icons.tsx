@@ -34,12 +34,10 @@ function Icons() {
 				withCredentials: true,
 			})
 			.then(() => {
-				console.log("hello")
 				contxt?.setUnreadCount(0);
 				contxt?.setNotifications([])
 			})
 			.catch((error) => {
-				console.log("Error clearing notifications:", error.response);
 			});
 	};
 
@@ -67,7 +65,6 @@ function Icons() {
           .get(getendpoint("http", "/api/notifications/notifications/"),
             { withCredentials: true })
           .then((response) => {
-            console.log("res => ", response.data);
             contxt?.setNotifications(response.data)
           })
           .catch(error => {
@@ -92,7 +89,6 @@ function Icons() {
 			.get(getendpoint("http", "/api/notifications/notifications/"),
 				{ withCredentials: true })
 			.then((response) => {
-				console.log("res => ", response.data);
 				contxt?.setNotifications(response.data)
 			})
 			.catch(error => {
@@ -104,7 +100,6 @@ function Icons() {
 			axios.post(getendpoint("http", "/api/notifications/mark-all-read/"), {},
 				{ withCredentials: true })
 				.then(() => {
-					console.log("clicked")
 					contxt?.setUnreadCount(0);
 				})
 		}

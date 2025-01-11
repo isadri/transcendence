@@ -18,11 +18,11 @@ function GameRank() {
   const navigate = useNavigate();
 
   const usersProfile = (user: FriendDataType) => {
-    if (user.is_blocked) {
-      contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
-      contxt?.setDisplayed(3)
-    }
-    else
+    // if (user.is_blocked) {
+    //   contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
+    //   contxt?.setDisplayed(3)
+    // }
+    // else
       navigate(`/profile/${user.username}`)
   }
 
@@ -30,7 +30,6 @@ function GameRank() {
     axios.get(getendpoint("http", "/api/friends/usersRank"))
       .then((response) => {
         setUseresRanking(response.data)
-        console.log(response.data)
       })
       .catch((error) => {
         console.error("Error fetching friends list:", error);

@@ -14,7 +14,6 @@ import { getendpoint } from './context/getContextData';
 
 function App() {
   let [isLogged, setIsLogged] = useState<boolean | null>(null)
-  let [preloader, setPreloader] = useState<boolean>(false)
   let [user, setUser] = useState<userDataType | null>(null)
   let [createdAlert, setCreatedAlert] = useState('')
   let [Displayed, setDisplayed] = useState(1)
@@ -27,7 +26,6 @@ function App() {
   const getUserInfo = () => {
     axios.get(getendpoint('http', "/api"))
         .then((response: any) => {
-          console.log("response.data => ", { ...response.data, is_online: true })
           setUser(response.data)
           setIsLogged(true)
         })
@@ -39,15 +37,12 @@ function App() {
   useEffect(() => {
 
     // if (isLogged) {
-      console.log("hello, ", user)
       const ws = new WebSocket(getendpoint("ws", `/ws/notifications/`));
       ws.onopen = () => {
         getUserInfo()
-        console.log("WebSocket connected ", user?.is_online);
       }
       ws.onclose = () => {
         getUserInfo()
-        console.log("WebSocket disconnected ", user?.is_online);
       }
 
       ws.onmessage = (event) => {
@@ -67,7 +62,7 @@ function App() {
     <loginContext.Provider value={{
       user, setUser, isLogged, setIsLogged,
       createdAlert, setCreatedAlert, Displayed, setDisplayed, notifications,
-      setNotifications, setUnreadCount, unreadCount, preloader, setPreloader
+      setNotifications, setUnreadCount, unreadCount
     }}>
       <BackGround isLogged={isLogged}>
         <RouterProvider router={isLogged ? mainRouter : landingRouter} />

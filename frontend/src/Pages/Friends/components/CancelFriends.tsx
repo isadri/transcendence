@@ -42,9 +42,7 @@ const CancelFriends = () => {
 					}
 				);
 				setPendingUsers(response.data);
-			} catch (err) {
-				console.log("Error fetching users:", err);
-			}
+			} catch (err) {}
 		};
 
 		fetchUsers();
@@ -91,9 +89,7 @@ const CancelFriends = () => {
 					}
 					setPendingUsers((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error decline friend request:", error);
-		}
+		} catch (error) {}
 	};
 
 	const friendsList = searchFriend ? results : pendingUsers;

@@ -55,7 +55,6 @@ const Setting = () => {
     password: "",
     confirmPassword: "",
   });
-  console.log("usr => ", user?.from_remote_api)
 
   // handel setting data changed username, email, password and avatar
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,19 +101,16 @@ const Setting = () => {
           withCredentials: true,
         })
         .then((response) => {
-          console.log("res => ", response.data.message)
           if (response.data.message)
           {
             setConfirmEmail(true)
           }
           else
           {
-            console.log("dataaa=> ", response.data.data)
             authContext?.setUser(response.data.data);
             SetErrors({ ...errors, username: "", tmp_email: "", avatar: "" });
             authContext?.setCreatedAlert("Your information has been updated successfully");
             authContext?.setDisplayed(5)
-            console.log("saved sacces")
           }
         })
         .catch((error) => {
@@ -122,7 +118,6 @@ const Setting = () => {
         });
     }
     else {
-      console.log("No changes deticted")
       authContext?.setCreatedAlert("No changes detected in your data");
       authContext?.setDisplayed(4)
     }
@@ -188,7 +183,7 @@ const Setting = () => {
       .then((response) => {
         // authContext?.setCreatedAlert(response.data.detail);
         authContext?.setCreatedAlert(response.data.detail);
-        authContext?.setDisplayed(3)
+        authContext?.setDisplayed(5)
         authContext?.setIsLogged(false)
         navigate('/')
       })
@@ -235,8 +230,12 @@ const Setting = () => {
         setVerified(2)
         if(user)
         {
-          user.email = response.data
-          authContext?.setUser(user)
+          // user.email = response.data
+          authContext?.setUser(response.data)
+          SetDataUpdated({...dataUpdated, email:response.data.email})
+          authContext?.setCreatedAlert("Your information has been updated successfully");
+          authContext?.setDisplayed(5)
+          
         }
       })
       .catch(() => {
@@ -261,7 +260,6 @@ const Setting = () => {
           checkbox.checked = true
         else
         {
-          console.log("disable otp on relaoud")
           checkbox.checked = false
         }
       })
@@ -275,8 +273,6 @@ const Setting = () => {
       setIsOtpDisactive(false)
     }, 900);
   }, [showAlert,Verified, setIsOtpDisactive, isOtpDisactive]);
-  console.log("usable pass => ", user?.usable_password);
-  console.log("username error => ",errors.username)
   return (
     <>
       <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>

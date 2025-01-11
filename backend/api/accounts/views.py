@@ -1,5 +1,10 @@
 from ..game.models import UserAchievement, UserStats
+import json
 import pyotp
+import os
+import redis
+import secrets
+from cryptography.fernet import Fernet
 from typing import Optional
 from django.conf import settings
 from django.contrib.auth import (
@@ -54,9 +59,11 @@ from .utils import (
     add_level_achievement_to_user,
     add_game_achievement_to_user,
     add_milestone_achievement_to_user,
+    generate_signature,
 )
 
-
+from ..friends.models import FriendRequest
+from django.db.models import Q
 class HomeView(APIView):
     """
     The home page view.
@@ -255,64 +262,6 @@ class GoogleLoginViewSet(viewsets.ViewSet):
         return response
 
 
-#class GoogleLoginWith2FAViewSet(viewsets.ViewSet):
-#    """
-#    2FA with Google.
-
-#    This class requests an access token by authenticating with Google API, and
-#    fetches user information (such as username, first name, and last name).
-#    If the user does not exist, it creates a new one.
-#    """
-#    permission_classes = [AllowAny]
-#    authentication_classes = []
-
-#    def get_access_token(self, authorization_code: str) -> str:
-#        """
-#        Get access token from the Google API.
-
-#        This method makes a request to Google API to get the access token that
-#        will be used to get user information. The request contains
-#        authorization_code which is necessary to authenticate with the API.
-
-#        Returns:
-#            The access token.
-#        """
-#        token_endpoint = 'https://oauth2.googleapis.com/token'
-#        payload = {
-#            'code': authorization_code,
-#            'client_id': os.getenv('GOOGLE_ID'),
-#            'client_secret': os.getenv('GOOGLE_SECRET'),
-#            'redirect_uri': os.getenv('GOOGLE_REDIRECT_URI'),
-#            'grant_type': 'authorization_code'
-#        }
-#        return get_access_token_from_api(token_endpoint, payload)
-
-#    def create_user(self, user_info: dict[str, str]) -> Response:
-#        """
-#        Create a user and returns a response containing the user information
-#        along with the refresh and access tokens.
-
-#        This function use the create_user function from utils.py.
-#        """
-#        username = user_info['email'].split('@')[0].replace('.', '_').lower()
-#        return create_user(username, user_info['email'])
-
-#    def list(self, request: Request) -> Response:
-#        """
-#        Authenticate with the authorization server and obtain user information.
-#        """
-#        authorization_code = request.GET.get('code')
-#        access_token = self.get_access_token(authorization_code)
-#        userinfo_endpoint = ('https://openidconnect.googleapis.com/v1/userinfo'
-#                             '?scope=openid profile email')
-#        user_info, _ = get_user_info(userinfo_endpoint, access_token)
-#        user = self.create_user(user_info)
-#        send_otp_email(user)
-#        return Response({
-#            'detail': 'The verification code sent successfully',
-#        }, status=status.HTTP_200_OK)
-
-
 class IntraLoginViewSet(viewsets.ViewSet):
     """
     Login a user using 42 and associate with the user a refresh token
@@ -368,51 +317,6 @@ class IntraLoginViewSet(viewsets.ViewSet):
         return response
 
 
-#class IntraLoginWith2FAViewSet(viewsets.ViewSet):
-#    """
-#    2FA authentication with 42.
-
-#    This class requests an access token by authenticating with 42 API, and
-#    fetches user information (such as username, first name, last name,
-#    and email).
-#    """
-#    permission_classes = [AllowAny]
-#    authentication_classes = []
-
-#    def get_access_token(self, authorization_code: str) -> str:
-#        """
-#        get access token using authorization code.
-
-#        Returns:
-#            str: The authorization code obtained from the authorization server.
-#        """
-#        token_endpoint = 'https://api.intra.42.fr/oauth/token'
-#        payload = {
-#            'grant_type': 'authorization_code',
-#            'client_id': os.getenv('INTRA_ID'),
-#            'client_secret': os.getenv('INTRA_SECRET'),
-#            'redirect_uri': os.getenv('INTRA_REDIRECT_URI'),
-#            'code': authorization_code
-#        }
-#        return get_access_token_from_api(token_endpoint, payload)
-
-#    def list(self, request: Request) -> Response:
-#        """
-#        Authenticate with the authorization server and obtain user information.
-#        """
-#        authorization_code = request.GET.get('code', '')
-#        access_token = self.get_access_token(authorization_code)
-#        userinfo_endpoint = 'https://api.intra.42.fr/v2/me'
-#        user_info, status_code = get_user_info(userinfo_endpoint, access_token)
-#        if status_code != 200:
-#            return Response(user_info, status=status.HTTP_400_BAD_REQUEST)
-#        user = create_user(user_info['login'], user_info['email'])
-#        send_otp_email(user)
-#        return Response({
-#            'detail': 'The verification code sent successfully',
-#        }, status=status.HTTP_200_OK)
-
-
 class RegisterViewSet(viewsets.ViewSet):
     """
     A ViewSet for creating new user.
@@ -420,21 +324,48 @@ class RegisterViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def _encode_data(self, data: dict) -> str:
+        """
+        Convert data to a JSON string and return the string encoded.
+        """
+        json_data = json.dumps(data)
+        encoded_data = urlsafe_base64_encode(force_bytes(json_data))
+        return encoded_data
+
+    def _generate_token(self, encoded_payload: str, signature: str) -> str:
+        """
+        Convert the encoded payload and the signature to a JSON string and
+        then encode the string to create a token.
+        """
+        json_data = json.dumps({
+            'payload': encoded_payload, 'signature': signature
+        })
+        return urlsafe_base64_encode(force_bytes(json_data))
+
     def create(self, request: Request) -> Response:
+        """
+        Create a token that contains the user information along with a
+        signature used to verify the user information when they are returned
+        from the client.
+        """
         data = request.data.copy()
         data['username'] = data['username'].lower() if data['username'] else None
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
-            user = serializer.save()
-            user.email_verification_token = user.username + pyotp.random_base32()
-            user.save()
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+            f = Fernet(settings.FERNET_KEY)
+            data['password'] = f.encrypt(force_bytes(data['password'])).decode()
+            encoded_data = self._encode_data(data)
+            secret = settings.SECRET_KEY
+            secret = urlsafe_base64_encode(force_bytes(secret))
+            signature = generate_signature(encoded_data + secret)
+            token = self._generate_token(encoded_data, signature)
+            url = get_url(request)
+            uid = urlsafe_base64_encode(force_bytes(data['username']))
             confirmation_url = (
-                url+'/emailVerified'
-                f'?uid={uid}&token={user.email_verification_token}'
+                url+'emailVerified'
+                f'?uid={uid}&token={token}'
             )
-            send_email_verification(user, confirmation_url)
+            send_email_verification(data['email'], confirmation_url)
             return Response({'message': 'Check your email to confirm'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -449,20 +380,46 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
         """
         Validate the token given in the url.
+
+        This method get the token given the requested url and extract
+        the information needed for verification. The token contains the payload
+        which is used to create a signature and verify if it matches the
+        signature contained in the token, and if it is valid decode the payload
+        and then decrypt the password to create the user.
+        If the signature contained in the token does not match the signature
+        created using the payload, then this token is not valid.
         """
         token = request.GET.get('token')
         try:
-            uid = urlsafe_base64_decode(
-                request.GET.get('uid')
-            ).decode()
+            data = json.loads(urlsafe_base64_decode(token).decode())
+            encoded_data = data['payload']
+            secret = settings.SECRET_KEY
+            secret = urlsafe_base64_encode(force_bytes(secret))
+            signature = generate_signature(encoded_data + secret)
+            if signature != data['signature']:
+                return Response({'error': 'email validation failed'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            payload = json.loads(urlsafe_base64_decode(encoded_data).decode())
+            f = Fernet(settings.FERNET_KEY)
+            try:
+                payload['password'] = f.decrypt(payload['password']).decode()
+            except cryptography.fernet.InvalidToken:
+                return Response({'error': 'email validation failed'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            try:
+                user = User.objects.get(username=payload['username'], email=payload['email'])
+
+                return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            except User.DoesNotExist:
+                pass
+            serializer = UserSerializer(data=payload)
+            if serializer.is_valid():
+                user = serializer.save()
+                user.email_verified = True
+                user.save()
+                return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
         except ValueError:
-            return Response({'error': 'email validation failed'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        user = validate_token(uid, token)
-        if user:
-            user.email_verified = True
-            user.save()
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            pass
         return Response({'error': 'email validation failed'},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -537,9 +494,9 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
             user = User.objects.get(username=username, email=email)
             token = PasswordResetTokenGenerator().make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
+            url =  get_url(request)
             reset_url = (
-                url + '/resetPassword'
+                url + 'resetPassword'
                 f'?uid={uid}&token={token}'
             )
             self.send_email(user, reset_url)
@@ -633,25 +590,24 @@ class LogoutViewSet(viewsets.ViewSet):
 #################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
 
 
-class UpdateUsernameView(APIView):
-    """
-        updating usernames for users 
-        who have logged in via Intra or Google
-        but have not completed 
-        the registration process yet
-    """
-    permission_classes = [IsAuthenticated]
-    def put(self, request):
-        user = request.user
-        print("user =============> ", user)
-        data = request.data.copy()
-        serializer = UserSerializer(user, data=data, partial=True)
-        if serializer.is_valid():
-            user.register_complete = True
-            user.save()
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class UpdateUsernameView(APIView):
+#     """
+#         updating usernames for users 
+#         who have logged in via Intra or Google
+#         but have not completed 
+#         the registration process yet
+#     """
+#     permission_classes = [IsAuthenticated]
+#     def put(self, request):
+#         user = request.user
+#         data = request.data.copy()
+#         serializer = UserSerializer(user, data=data, partial=True)
+#         if serializer.is_valid():
+#             user.register_complete = True
+#             user.save()
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateUserDataView(APIView):
@@ -672,7 +628,7 @@ class UpdateUserDataView(APIView):
             if  data['isRemove'] == 'yes': del data['avatar']
             if  data['isRemove'] == 'no' and 'avatar' in request.FILES:
                 data['avatar'] = request.FILES['avatar']
-        if data['email'] != user.email:
+        if 'email' in data and data['email'] != user.email:
             if User.objects.filter(email=data['email']).exists():
                 return Response({'tmp_email': 'This email is already in use.'},
                 status=status.HTTP_400_BAD_REQUEST)
@@ -683,12 +639,13 @@ class UpdateUserDataView(APIView):
             try:
                 send_otp_to(user, data['tmp_email'])
             except ValueError as e:
-                print("===========================>", str(e))
                 return Response({'tmp_email': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             print(user.otp)
             response_data['message'] = 'the code sent to your email'
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
+            user.register_complete = True
+            user.save()
             serializer.save()
             response_data['data'] = serializer.data
             return Response(response_data, status=status.HTTP_200_OK)
@@ -759,16 +716,30 @@ class UserDetailView(APIView):
     """
     View to retrieve user details based on the provided username.
     """
+    def get_block_status(self, user, obj):
+        req = FriendRequest.objects.filter(
+            Q(sender=user, receiver=obj, status='blocked') |
+            Q(sender=obj, receiver=user, status='blocked')
+        ).first()
+        if (req):
+            return "blocker" if user == req.sender else "blocked"
+        return False
+
     def get(self, request, username, format=None):
         """
         Retrieve user data by username.
         """
+        from ..friends.serializers import FriendSerializer
         user = get_object_or_404(User, username=username)
         add_level_achievement_to_user(user)
         add_game_achievement_to_user(user)
         add_milestone_achievement_to_user(user)
-        serializer = UserSerializer(user)
-        data = serializer.data
+        serializer = FriendSerializer(user, context={"user": request.user})
+        data = serializer.data.copy()
+        print(data)
+        if data.get('is_blocked'):
+            data['is_blocked'] = self.get_block_status(request.user, user)
+        print(data)
         return Response(data, status=status.HTTP_200_OK)
 
 class GetIntraLink(APIView):
@@ -888,14 +859,15 @@ class checkValidOtpEmail(APIView):
         if total_difference.total_seconds() > 60 or otp != str(user.otp):
             return Response({'error': 'Key is invalid'},
                             status=status.HTTP_400_BAD_REQUEST)
-        # user.email = user.tmp_email
-        # user.tmp_email = None
-        # user.save()
-        data = {'email' : user.tmp_email, 'tmp_email' : None}
-        serializer = UserSerializer(user, data=data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(user.email, status=status.HTTP_200_OK)
+        user.email = user.tmp_email
+        user.tmp_email = None
+        user.save()
+        # data = {'email' : user.tmp_email, 'tmp_email' : None}
+        # serializer = UserSerializer(user, data=data, partial=True)
+        # if serializer.is_valid():
+        #     serializer.save()
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         # print("Validation errors:", serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response (user.email, status=status.HTTP_200_OK)

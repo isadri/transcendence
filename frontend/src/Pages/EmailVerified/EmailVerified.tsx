@@ -8,8 +8,6 @@ function EmailVerified() {
   const params = new URLSearchParams(window.location.search);
   let token = params.get('token');
   let uid = params.get('uid');
-  console.log("token => ", token)
-  console.log("uid => ", uid)
   const [isconfirmed, setIsConfirmed] = useState(0)
   if (token && uid) {
     axios.get(getendpoint("http", "/api/accounts/confirm-email/"),

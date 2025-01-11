@@ -1,7 +1,11 @@
 import "./ChatTop.css";
 import { useEffect, useRef, useState } from "react";
 import { useChatContext, GetChats } from "./context/ChatUseContext";
-import { getContext, getUser, getendpoint} from "../../../context/getContextData";
+import {
+	getContext,
+	getUser,
+	getendpoint,
+} from "../../../context/getContextData";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -18,7 +22,7 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 		useChatContext();
 	const user = getUser();
 	const navigate = useNavigate();
-	const cntext = getContext()
+	const cntext = getContext();
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -65,7 +69,6 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 			}
 			setOpenMenu(false);
 		} catch (err) {
-			console.log("Error in handling block/unblock: ", err);
 		}
 	};
 	const handleInvitePlay = () => {
@@ -77,23 +80,21 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 			friend_id = selectedFriend.user1.id;
 		}
 		axios
-		.post(getendpoint("http", `/api/game/invite/`), { invited: friend_id })
-		.then((response) => {
-			console.log("created ", response.data);
-
-			navigate(`/game/warmup/friends/${response.data.id}`);
-		})
-		.catch((error) => {
-			console.log(error.response.data.error);
-			cntext?.setCreatedAlert(error.response.data.error)
-			cntext?.setDisplayed(3)
-		});
+			.post(getendpoint("http", `/api/game/invite/`), { invited: friend_id })
+			.then((response) => {
+				navigate(`/game/warmup/friends/${response.data.id}`);
+			})
+			.catch((error) => {
+				cntext?.setCreatedAlert(error.response.data.error);
+				cntext?.setDisplayed(3);
+			});
 	};
 
 	const friend_user =
 		user?.id === selectedFriend.user2.id
 			? selectedFriend.user1
 			: selectedFriend.user2;
+
 	return (
 		<div className="top">
 			<div className="profileInfo">
@@ -106,7 +107,7 @@ const ChatTop = ({ selectedFriend, setSelectedFriend }: ChatTopProps) => {
 					}}
 				></i>
 				<img
-					src={friend_user.avatar}
+					src={getendpoint("http", friend_user.avatar)}
 					alt="profile"
 					className="image"
 					onClick={() => navigate(`/profile/${friend_user.username}`)}

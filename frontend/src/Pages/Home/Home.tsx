@@ -17,12 +17,10 @@ import { stats } from '../../context/context'
 function Home() {
   const user = getUser();
 	const [stats, setStats] = useState<stats>()
-
   useEffect(() => {
     axios.get(getendpoint("http", `/api/game/userStats/${user?.username}`))
       .then((response) => {
         setStats(response.data[0])
-        console.log(response.data[0])
       })
       .catch((error) => {
         console.log(error)

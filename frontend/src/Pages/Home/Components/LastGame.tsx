@@ -24,11 +24,11 @@ function LastGame() {
   const contxt = getContext()
   const navigate = useNavigate();
   const usersProfile = (user: FriendDataType) => {
-    if (user.is_blocked) {
-      contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
-      contxt?.setDisplayed(3)
-    }
-    else
+    // if (user.is_blocked) {
+    //   contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
+    //   contxt?.setDisplayed(3)
+    // }
+    // else
       navigate(`/profile/${user.username}`)
   }
 
@@ -48,7 +48,6 @@ function LastGame() {
     axios.get(getendpoint("http", `/api/game/History/${authUser?.username}`))
       .then((response) => {
         setUserGames(response.data)
-        console.log(response.data)
       })
       .catch((error) => {
         console.error("Error fetching friends list:", error);

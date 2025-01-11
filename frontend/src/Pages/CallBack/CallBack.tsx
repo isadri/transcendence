@@ -32,12 +32,10 @@ function CallBack() {
     {
         if (from === "intra")
         {
-          console.log("--------------------------------")
           var url = getendpoint("http", '/api/accounts/login/intra')
           axios
           .get(url, {params: { code: code }, withCredentials: true })
           .then((response) => {
-            console.log(response.data.info)
             if (response.data.info && response.data.code){
               setUserCode(response.data.code)
               SetshowOtpAlert(true)
@@ -53,7 +51,6 @@ function CallBack() {
                 navigate('/')
               }, 2000);
             }
-                console.log('Success:', response.data)
               })
               .catch((error) => {
                 authContext?.setIsLogged(false),
@@ -63,13 +60,9 @@ function CallBack() {
           }
           else if (from === "google")
           {
-            console.log(1);
-            
             axios
               .get(getendpoint("http", '/api/accounts/login/google'), {params: { code: code }, withCredentials: true })
               .then((response) => {
-                
-                console.log(response.data.info)
                 if (response.data.info && response.data.code){
                   setUserCode(response.data.code)
                   SetshowOtpAlert(true)
@@ -85,7 +78,6 @@ function CallBack() {
                       navigate('/')
                     }, 2000);
                 }
-                    console.log('Success:', response.data)
                   })
                 .catch((error) => {
                   authContext?.setIsLogged(false),
@@ -107,7 +99,7 @@ function CallBack() {
 
   const hadelSaveUsername = () => {
     axios
-      .put(getendpoint("http", "/api/accounts/updateUsername/"), {username}, {
+      .put(getendpoint("http", "/api/accounts/updateuserData/"), {username}, {
         withCredentials: true,
       })
       .then((response) => {
@@ -115,11 +107,10 @@ function CallBack() {
           GetUserInfo()
           authContext?.setIsLogged(true)
           navigate('/')
-          authContext?.setUser(response.data)
+          authContext?.setUser(response.data.data)
       })
       .catch((error)=> {
         authContext?.setDisplayed(3);
-        console.log(error.response.data)
         authContext?.setCreatedAlert(error.response.data.username[0]);
       })
   }
@@ -146,10 +137,8 @@ function CallBack() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    console.log("from ==========> ", from);
     if (!usernameAlert)
       handelLogin(code)
-    console.log(usernameAlert)
   }, [authContext, navigate]);
 
   return (

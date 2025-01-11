@@ -50,9 +50,7 @@ const BlockedFriends = () => {
 					};
 				});
 				setBlockedFriend(senderData);
-			} catch (err) {
-				console.error("Error fetching data:", err);
-			}
+			} catch (err) {}
 		};
 
 		fetchBlockedFriend();
@@ -73,9 +71,7 @@ const BlockedFriends = () => {
 					}
 					setBlockedFriend((prev) => prev.filter((user) => user.id !== id));
 				});
-		} catch (error) {
-			console.error("Error accepting friend request:", error);
-		}
+		} catch (error) {}
 	};
 
 	return (
