@@ -428,8 +428,14 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   @database_sync_to_async
   def end_game(self):
-    if self.game_data :
-      self.game.setWinnerByScore(self.game_data.score)
+    try:
+      game = Game.objects.get(pk=self.game_id)
+      if game.winner or not self.game_data.isDone():
+        return
+      if self.game_data:
+        game.setWinnerByScore(self.game_data.score)
+    except:
+      pass
 
   @database_sync_to_async
   def getGame(self, game_id):
@@ -495,8 +501,14 @@ class RemoteGame(AsyncWebsocketConsumer):
 
   @database_sync_to_async
   def abort_game(self):
-    self.game_data.abort_game(self.username)
-    self.game.abortGame(self.username, self.game_data.getScore())
+    try:
+      game = Game.objects.get(pk=self.game_id)
+      if game.winner or self.game_data.isDone():
+        return
+      self.game_data.abort_game(self.username)
+      game.abortGame(self.username, self.game_data.getScore())
+    except:
+      pass
 
   @database_sync_to_async
   def abort_game_by_winner(self, winner):
