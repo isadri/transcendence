@@ -42,12 +42,12 @@ function FriendsPopUp({ setter, setEnemy }: FriendsPopUpData) {
 						}}
 					></i>
 					<div className="GameFriendsInviteBoxTitle">
-						<h2>invite Friend</h2>
+						<h2>Invite Friend</h2>
 					</div>
 					<div className="GameFriendsInviteBox">
 						<div className="listFriends">
 							{friends.length === 0 ? (
-								<p>Loading...</p>
+								<p>You have no friends</p>
 							) : (
 								friends.map((friend) => {
 									return (

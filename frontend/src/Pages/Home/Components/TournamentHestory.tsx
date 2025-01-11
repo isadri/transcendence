@@ -40,12 +40,16 @@ function GameRank() {
     GetUsersRank()
   }, [])
 
+  const handleGoToTournament = (id: Number) => {
+    navigate(`/game/tournament/remote/${id}`)
+  }
+
   return (
     <div className="Home-GameRank">
       {
         usersRanking.length !== 0 &&
         usersRanking.map((user, index) => (
-          <div key={user.id} className="gamerank-ele">
+          <div key={user.id} className="gamerank-ele" onClick={() => handleGoToTournament(user.id)} >
             <div className="Home-RowEle elemens-tournament">
               <div className="Home-row1 cupImage">
                 <div className="img">
