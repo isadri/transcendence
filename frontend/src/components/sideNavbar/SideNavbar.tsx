@@ -14,7 +14,8 @@ import Icons from "../globalComponent/Icons";
 const SideNavbar = () => {
 	const authContext = useContext(loginContext)
 	const navigate = useNavigate();
-	const pathname = useLocation().pathname;
+	const location = useLocation()
+	const pathname = location.pathname;
 	const isSmallDevice = useMediaQuery("only screen and (max-width : 478px)");
 	const [activeItem, setActiveItem] = useState<string>(pathname);
 	const [logoutColor, setLogoutColor] = useState("#ffffffcc");
@@ -40,6 +41,20 @@ const SideNavbar = () => {
 		);
 	};
 
+
+	const checkLink = (l:string[]) => {
+		console.log('links' ,l);
+		
+		for (const str of l){
+			console.log(str, location.pathname);
+			if (location.pathname.startsWith(str)){
+				if (str == '/' && pathname != str)
+					return false
+				return true
+			}
+		}
+		return false
+	}
 	return (
 		<>
 			{isSmallDevice ? (
@@ -71,7 +86,7 @@ const SideNavbar = () => {
 						<ul className={`${"list-itemsMobile"}`}>
 							{/* <hr /> */}
 							{SideNavbarData.map((val) => {
-								const color = val.link.includes(activeItem)
+								const color = checkLink(val.link)
 									? "#C1596C"
 									: "#ffffffcc";
 								return (
@@ -111,7 +126,9 @@ const SideNavbar = () => {
 					<img src={logo} alt="logo" className="logo" />
 					<ul className="list-items">
 						{SideNavbarData.map((val) => {
-							const color = val.link.includes(activeItem)
+							console.log();
+							
+							const color = checkLink(val.link)
 								? "#C1596C"
 								: "#ffffffcc";
 							return (
@@ -121,7 +138,7 @@ const SideNavbar = () => {
 									</Link>
 									<hr
 										className={`${
-											val.link.includes(activeItem) ? "active" : "inactive"
+											checkLink(val.link) ? "active" : "inactive"
 										}`}
 									/>
 								</li>
