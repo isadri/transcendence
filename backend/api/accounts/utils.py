@@ -145,7 +145,6 @@ def get_access_token_from_api(token_endpoint: str,
                 grant_type, code, redirect_uri and client_id.
     """
     response = requests.post(token_endpoint, params=payload)
-    print(response.json())
     return response.json().get('access_token')
 
 
@@ -418,7 +417,6 @@ def add_level_achievement_to_user(user: User):
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
     if userStats.win >= 1:
-        print("here")
         if not UserAchievement.objects.filter(user=user, key='win_1').exists():
             UserAchievement.objects.create(
                 user=user,

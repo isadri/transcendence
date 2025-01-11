@@ -65,15 +65,15 @@ class GameInviteSerializer(serializers.ModelSerializer):
     inviter = self.context['user']
     if invited == inviter:
       raise serializers.ValidationError("You cannot invite yourself.")
-    if GameInvite.objects.filter(inviter=inviter, invited=invited, status='P').exists():
-      raise serializers.ValidationError("You have already sent an invite to this user.")
-    #adding playing state check
     return invited
   
 
   def create(self, validated_data: dict) -> GameInvite:
     inviter = self.context['user']
     invited = validated_data.get('invited')
+    inv = GameInvite.objects.filter(inviter=inviter, invited=invited).first()
+    if inv:
+      inv.delete()
     invite = GameInvite.objects.create(inviter=inviter, invited=invited)
     message = {
       'inviteId': invite.id,
