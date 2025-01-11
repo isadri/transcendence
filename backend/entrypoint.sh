@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sleep 10
+
 echo "Collect static files"
 python manage.py collectstatic
 
