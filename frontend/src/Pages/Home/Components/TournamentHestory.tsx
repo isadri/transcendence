@@ -74,7 +74,7 @@ function GameRank() {
                           <img src={crown} alt="" />
                         </div>
                       <div className="Timg">
-                        <img className="imgWinner" src={getendpoint("http", user.player1.avatar)} alt=""
+                        <img className="imgWinner" src={getendpoint("http", user.winner.avatar)} alt=""
                           onClick={() => usersProfile(user.winner)} />
                       </div>
                         <span>Winner</span>
