@@ -401,7 +401,11 @@ class ConfirmEmailViewSet(viewsets.ViewSet):
                                 status=status.HTTP_400_BAD_REQUEST)
             payload = json.loads(urlsafe_base64_decode(encoded_data).decode())
             f = Fernet(settings.FERNET_KEY)
-            payload['password'] = f.decrypt(payload['password']).decode()
+            try:
+                payload['password'] = f.decrypt(payload['password']).decode()
+            except cryptography.fernet.InvalidToken:
+                return Response({'error': 'email validation failed'},
+                                status=status.HTTP_400_BAD_REQUEST)
             try:
                 user = User.objects.get(username=payload['username'], email=payload['email'])
 
