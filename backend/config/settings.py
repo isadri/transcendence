@@ -206,12 +206,15 @@ ASGI_APPLICATION = "config.asgi.application"
 REDIS_PORT = os.getenv('REDIS_PORT')
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [("redis", int(REDIS_PORT))],
-        },
-    },
+    # 'default': {
+    #     'BACKEND': 'channels_redis.core.RedisChannelLayer',
+    #     'CONFIG': {
+    #         "hosts": [("redis", int(REDIS_PORT))],
+    #     },
+    # },
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }
 
 
