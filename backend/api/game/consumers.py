@@ -831,14 +831,12 @@ class FriendGame(AsyncWebsocketConsumer):
 
 
   async def refused(self, event):
-    print(self.room_name ,f"room_invite")
     await self.send(text_data=json.dumps(event))
 
   @staticmethod
   def warn_invite_refused(invite_id):
     channel_layer = get_channel_layer()
     data = FriendGame.connected.get(invite_id)
-    print(data)
     if (data):
       room_name = data['room_name']
       async_to_sync(channel_layer.group_send)(

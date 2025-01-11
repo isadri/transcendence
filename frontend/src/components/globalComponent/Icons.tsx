@@ -79,7 +79,7 @@ function Icons() {
 
 	const handleDeclineInvite = (id: Number, notifId: Number) => {
 		axios
-			.put(getendpoint("http", `/api/game/invite/${id}/accept/`), {
+			.put(getendpoint("http", `/api/game/invite/${id}/decline/`), {
 				withCredentials: true,
 			})
 			.catch((error) => {

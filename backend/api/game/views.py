@@ -116,7 +116,8 @@ class DeclineGameInvite(APIView):
       invite = GameInvite.objects.get(pk=pk)
       try:
         invite.decline(user)
-        return Response({'details' : 'The invite has been accepted successfully'}, status=status.HTTP_200_OK)
+        FriendGame.warn_invite_refused(pk)
+        return Response({'details' : 'The invite has been declined successfully'}, status=status.HTTP_200_OK)
       except ValueError as e:
         return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
     except GameInvite.DoesNotExist:
@@ -128,7 +129,6 @@ class DeclineGameInvite(APIView):
     try:
       invite = GameInvite.objects.get(Q(inviter=user) | Q(invited=user), pk=pk)
       invite.delete()
-      FriendGame.warn_invite_refused(pk)
       return Response({"detail": "Game invite deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except :
       return Response(NO_INV_NO_ACCESS, status=status.HTTP_404_NOT_FOUND)
