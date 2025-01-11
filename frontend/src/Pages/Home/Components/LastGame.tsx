@@ -2,7 +2,7 @@ import "../styles/LastGame.css";
 import Group from "../images/Group.svg";
 import { useEffect, useState } from "react";
 import { FriendDataType } from "../../../context/context";
-import { getContext, getUser, getendpoint } from "../../../context/getContextData";
+import { getUser, getendpoint } from "../../../context/getContextData";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -21,14 +21,9 @@ function LastGame() {
   const [userGames, setUserGames] = useState<GameDataType[]>([])
 
   const authUser = getUser()
-  const contxt = getContext()
   const navigate = useNavigate();
   const usersProfile = (user: FriendDataType) => {
-    // if (user.is_blocked) {
-    //   contxt?.setCreatedAlert("This user's profile is blocked, and you cannot access it.")
-    //   contxt?.setDisplayed(3)
-    // }
-    // else
+
       navigate(`/profile/${user.username}`)
   }
 
@@ -49,8 +44,7 @@ function LastGame() {
       .then((response) => {
         setUserGames(response.data)
       })
-      .catch((error) => {
-        console.error("Error fetching friends list:", error);
+      .catch(() => {
       })
   }
   useEffect(() => {

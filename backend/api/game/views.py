@@ -187,7 +187,6 @@ class ListUserStats(APIView):
     try:
       user = get_object_or_404(User, username=username)
       userStats = UserStats.objects.filter(user=user)
-      print(userStats)
       serializer = UserStatsSerializer(userStats, many=True)
       return Response(serializer.data)
     except User.DoesNotExist:

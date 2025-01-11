@@ -6,8 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@uidotdev/usehooks";
 import axios from "axios";
 import { getContext, getendpoint } from "../../context/getContextData";
-import { div } from "three/webgpu";
-
 interface errorDataTypes {
   username: string;
   email: string;
@@ -18,7 +16,6 @@ interface errorDataTypes {
 function Authentication() {
   const [url, setUrl] = useState("");
   const [urlGoogle, setUrlGoogle] = useState("");
-  // const [isOtpActive, setIsOtpActive] = useState(false) //variable to store the state of otp is active or not
   useEffect(() => {
     axios
       .get(getendpoint("http", "/api/accounts/GetIntraLink/"))
@@ -41,7 +38,7 @@ function Authentication() {
   const [emailReset, setEmailReset] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [val, setVal] = useState(true);
-  const [showOtpAlert, SetshowOtpAlert] = useState(false); // otp alert
+  const [showOtpAlert, SetshowOtpAlert] = useState(false);
   const [Error, setError] = useState(false);
   const [errorList, setErrorList] = useState<string[][]>([]);
   const [otpcode, setOtpCode] = useState("");
@@ -133,7 +130,6 @@ function Authentication() {
         authContext?.setIsLogged(true);
         navigate("/");
         GetUserInfo();
-        console.log(response.data);
         SetshowOtpAlert(false);
         setUsername("");
         setEmail("");
@@ -178,15 +174,8 @@ function Authentication() {
             setUsername("");
             setEmail("");
             setPassword("");
-            // SetErrors({
-            //   username: '',
-            //   email: '',
-            //   password: '',
-            //   confirmPassword: ''
-            // })
           })
           .catch((error: any) => {
-            console.log(error.response.data);
             setError(true);
             if (error.response && error.response.data) {
               const list = [];
@@ -238,7 +227,6 @@ function Authentication() {
             }
           })
           .catch((error: any) => {
-            console.log(error.response.data);
             setError(true);
             if (error.response && error.response.data) {
               const list = [];
@@ -260,7 +248,6 @@ function Authentication() {
         if (error.response.data.detail) {
           authContext?.setDisplayed(3);
           authContext?.setCreatedAlert(error.response.data.detail);
-          console.log("Error response data:", error.response.data.detail);
         }
       }
     }

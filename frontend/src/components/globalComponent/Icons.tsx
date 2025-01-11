@@ -18,8 +18,6 @@ function Icons() {
 	const [isIconClicked, setIsIconClicked] = useState(false)
 	const [isOnline, setIsOnline] = useState<boolean>(user?.is_online || false)
 	
-	// const [notificationList, setNotificationList] = useState<NotificationsData[]>([])
-	// const [unread, setUnread] = useState(0)
 	const location = useLocation()
 	const closeMenuRef = useRef<HTMLDivElement>(null);
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
@@ -37,7 +35,7 @@ function Icons() {
 				contxt?.setUnreadCount(0);
 				contxt?.setNotifications([])
 			})
-			.catch((error) => {
+			.catch(() => {
 			});
 	};
 
@@ -67,11 +65,9 @@ function Icons() {
           .then((response) => {
             contxt?.setNotifications(response.data)
           })
-          .catch(error => {
-            console.log(error.response)
+          .catch(() => {
           })
       })
-		// setIsIconClicked(!isIconClicked)
 	}
 
 	const handleDeclineInvite = (id: Number, notifId: Number) => {
@@ -79,8 +75,7 @@ function Icons() {
 			.put(getendpoint("http", `/api/game/invite/${id}/decline/`), {
 				withCredentials: true,
 			})
-			.catch((error) => {
-				console.log("Error delete invite request:", error.response);
+			.catch(() => {
 			});
 		deleteNotification(notifId)
 	};
@@ -91,8 +86,7 @@ function Icons() {
 			.then((response) => {
 				contxt?.setNotifications(response.data)
 			})
-			.catch(error => {
-				console.log(error.response)
+			.catch(() => {
 			})
 	}, [])
 	useEffect(() => {
@@ -108,8 +102,7 @@ function Icons() {
 			.then(response => {
 				contxt?.setUnreadCount(response.data.unread_notifications_count)
 			})
-			.catch(error => {
-				console.log(error.response)
+			.catch(() => {
 			})
 		setIsOnline(user?.is_online || false)
 	}, [isIconClicked, user?.is_online, contxt?.unreadCount]);
@@ -156,7 +149,6 @@ function Icons() {
 									<div className="dropConntent">
 										{notificationList.map((notif) => {
 											let data = null;
-											console.log(notif);
 											
 											if (notif.type === "Game invite" || notif.type === "Tournament")
 												data = JSON.parse(notif.message);

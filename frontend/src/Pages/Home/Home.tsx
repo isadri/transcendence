@@ -22,8 +22,7 @@ function Home() {
       .then((response) => {
         setStats(response.data[0])
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(() => {
       })
     }, []);
   if (!stats)

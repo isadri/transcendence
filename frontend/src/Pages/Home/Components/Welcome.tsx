@@ -1,5 +1,4 @@
-// import { useContext } from 'react';
-// import { loginContext } from '../../../App';
+
 import WlcmImg from '../images/girl.svg'
 
 import { getUser } from '../../../context/getContextData';

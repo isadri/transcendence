@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import { getContext, getendpoint } from '../../context/getContextData'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import {  useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import './CallBack.css'
-import Alert from '../../components/Alert/Alert'
 import Preloader from '../Preloader/Preloader'
 
 function CallBack() {
   const authContext = getContext()
   const navigate = useNavigate()
   const [usernameAlert, setUsernameAlert] = useState(false)
-  const [showOtpAlert, SetshowOtpAlert] = useState(false) // otp alert
+  const [showOtpAlert, SetshowOtpAlert] = useState(false) 
   const [username, setUsername] = useState('')
   const [userCode, setUserCode] = useState('')
   const [otpcode, setOtpCode] = useState('')
@@ -26,7 +25,6 @@ function CallBack() {
     })
   }
   const {from} = useParams()
-  const location = useLocation()
   const handelLogin = async (code: string | null) => {
     if (code)
     {
@@ -52,10 +50,9 @@ function CallBack() {
               }, 2000);
             }
               })
-              .catch((error) => {
+              .catch(() => {
                 authContext?.setIsLogged(false),
                 navigate('/')
-              console.error('Error:', error.response ? error.response.data : error.message);
             });
           }
           else if (from === "google")
@@ -79,10 +76,9 @@ function CallBack() {
                     }, 2000);
                 }
                   })
-                .catch((error) => {
+                .catch(() => {
                   authContext?.setIsLogged(false),
                   navigate('/')
-                console.error('Error:', error.response ? error.response.data : error.message);
             });
         }
         else
@@ -91,7 +87,6 @@ function CallBack() {
           navigate('/')
         }
     } else {
-      console.error('error');
       authContext?.setIsLogged(false),
       navigate('/')
     }
@@ -103,7 +98,6 @@ function CallBack() {
         withCredentials: true,
       })
       .then((response) => {
-          console.log("gg => ", response.data)
           GetUserInfo()
           authContext?.setIsLogged(true)
           navigate('/')
@@ -195,7 +189,6 @@ function CallBack() {
         )
         :
           <Preloader/>
-        // <div className="ripple"></div>
       }
     </div>
   )

@@ -412,7 +412,6 @@ def add_level_achievement_to_user(user: User):
                 name="Grandmaster",
                 text="Reach level 100.",
             )
-    # print(user_achievements)
 
 def add_game_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
@@ -443,7 +442,6 @@ def add_game_achievement_to_user(user: User):
                 name="Legend",
                 text="Win 50 matches overall.",
             )
-    # print(user_achievements)
 
 def add_milestone_achievement_to_user(user: User):
     userStats, _ = UserStats.objects.get_or_create(user=user)
