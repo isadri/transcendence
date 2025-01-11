@@ -23,7 +23,6 @@ function GameRank() {
     axios.get(getendpoint("http", "/api/game/tournaments/"))
       .then((response) => {
         setUseresRanking(response.data)
-        console.log(response.data)
       })
       .catch(() => {
       })

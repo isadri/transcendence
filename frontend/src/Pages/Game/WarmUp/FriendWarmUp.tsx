@@ -213,7 +213,6 @@ const ReadyContext = ({ isRandom = false, inviteId }: PlayerCardData) => {
       //     setReady(false)
       //   }
     }
-    console.log(inviteId)
     return (
       <div className="WarmUpReadyContext">
         <button className="WarmUpReadyBtn" onClick={onReady}>
@@ -252,7 +251,6 @@ const Setup = ({inviteID}:{inviteID:any}) => {
     }
     socket.onmessage = (e) => {
       const data = JSON.parse(e.data)
-      console.log(data);
       if (data['event'] && data['event'] == 'refused') {
         // setEnemyUser(null)
         globalContext?.setCreatedAlert(data['message'])

@@ -212,7 +212,6 @@ const TournamentWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 		};
 		socket.onmessage = (e) => {
 			const data = JSON.parse(e.data);
-			console.log(data);
 			if (data.event == "HANDSHAKING") {
 				setTimeout(() => {
 					setEnemies(data.enemies);

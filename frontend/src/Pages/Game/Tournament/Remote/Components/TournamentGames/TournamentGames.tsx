@@ -101,8 +101,6 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 	const playYourGame = () => {
 		if (!user) return;
 		const myGame = getMyGame(data, user);
-		console.log(myGame);
-
 		if (myGame) navigator(`/game/remote/${myGame.id}`);
 	};
 	return (
@@ -139,7 +137,7 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 									src={getendpoint("http", data.winner.avatar)}
 									alt=""
 								/>
-                {data.winner.username}
+								{data.winner.username}
 							</>
 						) : (
 							"waitting"
@@ -150,18 +148,19 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 					</div>
 				</div>
 			</div>
-			{user && getMyGame(data, user) && <button className="start-btn" onClick={playYourGame}>
-				Play
-			</button>}
+			{user && getMyGame(data, user) && (
+				<button className="start-btn" onClick={playYourGame}>
+					Play
+				</button>
+			)}
 		</div>
 	);
 };
 
 function TournamentGames() {
-  const {id} = useParams(); // protect later
+	const { id } = useParams(); // protect later
 	const [data, setData] = useState<TournamentRemoteData | null>(null);
 
-	// console.log("tournament=> ", data);
 	useEffect(() => {
 		const socket = new WebSocket(
 			getendpoint("ws", `/ws/game/tournament/${id}`)
@@ -169,7 +168,6 @@ function TournamentGames() {
 
 		socket.onmessage = (e) => {
 			const data = JSON.parse(e.data);
-			console.log("tournament=> ", data);
 			setData(data);
 		};
 		socket.onopen = () => console.log("tournament socket opened");
@@ -178,7 +176,7 @@ function TournamentGames() {
 		return () => socket.close();
 	}, []);
 
-	return <>{data ? <TournamentGraph data={data} /> : <Preloader/>}</>;
+	return <>{data ? <TournamentGraph data={data} /> : <Preloader />}</>;
 }
 
 export type { TournamentRemoteGameData, TournamentRemoteData };

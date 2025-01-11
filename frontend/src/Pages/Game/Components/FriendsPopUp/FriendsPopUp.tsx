@@ -23,9 +23,6 @@ function FriendsPopUp({ setter, setEnemy }: FriendsPopUpData) {
 
 	// const warmUpContext = useContext(WarmUpContext);
 	const onSelect = (friend: FriendDataType) => {
-		console.log("here1", friend);
-			console.log("here2", friend);
-			
 			setEnemy(friend);
 			setter(false);
 	};
