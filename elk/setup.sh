@@ -100,7 +100,7 @@ https://es01:9200/_slm/policy/app-snapshots-policy -H "Content-Type: application
 	}
 }'
 
-echo -e "Set the SLM retention task to run every 10 minutes"
+echo -e "\nSet the SLM retention task to run every 10 minutes"
 curl --cacert config/certs/ca/ca.crt -XPUT -u elastic:$ELASTIC_PASSWORD \
 https://es01:9200/_cluster/settings -H "Content-Type: application/json" -d '
 {
