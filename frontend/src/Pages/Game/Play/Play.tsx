@@ -371,9 +371,11 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             :
             <></>
         }
-        <div className="quitGame">
-          <Link to={"/game"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
-        </div>
+        {!game &&
+          <div className="quitGame">
+            <Link to={"/game"}><i className="fa-solid fa-arrow-right-from-bracket fa-sm"></i> Exit</Link>
+          </div>
+        }
       </div>
     </resultsContext.Provider>
   );
