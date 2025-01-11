@@ -441,6 +441,5 @@ class UserRankListlView(APIView):
     def get(self, request):
         users = users = User.objects.filter(register_complete=True, email_verified=True)
         serializer = FriendSerializer(users, many=True, context={'user': request.user})
-        sorted_data = sorted(serializer.data, key=lambda x: x.get('stats', {}).get('level', 0), reverse=True)
+        sorted_data = sorted(serializer.data, key=lambda x: (x.get('stats', {}).get('level', 0), x.get('stats', {}).get('xp', 0)), reverse=True)
         return Response(sorted_data, status=status.HTTP_200_OK)
-
