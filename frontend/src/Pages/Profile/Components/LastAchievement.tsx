@@ -1,5 +1,4 @@
 import '../styles/LastAchievement.css'
-import img from '../images/badge1.svg'
 import { UserData } from '../Profile'
 import { useEffect, useState } from 'react'
 import { getendpoint } from '../../../context/getContextData'

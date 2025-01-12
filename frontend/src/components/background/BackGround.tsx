@@ -1,6 +1,5 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import "./BackGround.css";
-import circl from "./images/circle.png";
 import { useMediaQuery } from "@uidotdev/usehooks";
 import { getContext } from "../../context/getContextData";
 import Alert from "../Alert/Alert";
@@ -36,7 +35,7 @@ const BackGround = ({ children, isLogged }: Props) => {
 							}
 					}
 				>
-					<Alert primaryColor='#ff00005a' secondaryColor='#f18b8b'>
+					<Alert >
 						<span>{account?.createdAlert}</span>
 					</Alert>
 					{children}
