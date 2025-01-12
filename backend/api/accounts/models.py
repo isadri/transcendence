@@ -148,8 +148,7 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     email_verified = models.BooleanField(default=False)
 
-    # Add friends field
-    # friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+    reset_password_token = models.CharField(max_length=128, blank=True, null=True)
 
     objects = UserManager()
 

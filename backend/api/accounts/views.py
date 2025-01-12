@@ -13,7 +13,6 @@ from django.contrib.auth import (
     logout,
 )
 from django.contrib.auth.hashers import check_password
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.shortcuts import (
     get_object_or_404,
 )
@@ -39,6 +38,7 @@ from .models import User
 from .serializers import UserSerializer
 from .mails import (
     send_email_verification,
+    send_reset_password_email,
     send_email,
 )
 from .utils import (
@@ -434,51 +434,7 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
         """
         Send the email to the user with the url for reseting the password.
         """
-        html_message = f"""
-        <html>
-            <head>
-                <style>
-                    body {{
-                        font-family: Arial, sans-serif;
-                        background-color: #000;
-                        color: #333;
-                        margin: 0;
-                        padding: 0;
-                    }}
-                    .email-container {{
-                        background-color: #ffffff;
-                        border: 1px solid #ddd;
-                        padding: 20px;
-                        margin: 20px;
-                        border-radius: 8px;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    }}
-                    h1 {{
-                        color: #c1596c;
-                    }}
-                    p {{
-                        font-size: 16px;
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="email-container">
-                    <h1>Reset your password</h1>
-                    <p>Click here to to reset your password:</p>
-                    <a href="{reset_url}"
-                    style="background-color: #c1596c; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">
-                        Confirm
-                    </a>
-                </div>
-            </body>
-        </html>
-        """
-        user.email_user(
-            subject='Reset Password',
-            message='',
-            from_email=settings.EMAIL_HOST_USER,
-            html_message=html_message
-        )
+        send_reset_password_email(user.email, reset_url)
 
 
     def create(self, request: Request) -> Response:
@@ -489,7 +445,9 @@ class PasswordResetEmailViewSet(viewsets.ViewSet):
         email = request.data.get('email')
         try:
             user = User.objects.get(username=username, email=email)
-            token = PasswordResetTokenGenerator().make_token(user)
+            token = secrets.token_hex(32)
+            user.reset_password_token = token
+            user.save()
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             url =  get_url(request)
             reset_url = (
@@ -513,6 +471,12 @@ class ResetPasswordViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def _check_token(self, user: User, token: str) -> bool:
+        """
+        Check if the given token is the token of the user.
+        """
+        return user.reset_password_token == token
+
     def list(self, request: Request) -> None:
         """
         This method get the uid and the token from the url. If the uid and
@@ -522,7 +486,7 @@ class ResetPasswordViewSet(viewsets.ViewSet):
             uid = urlsafe_base64_decode(request.GET.get('uid')).decode()
             token = request.GET.get('token')
             user = User.objects.get(pk=uid)
-            if not PasswordResetTokenGenerator().check_token(user, token):
+            if not self._check_token(user, token):
                 return Response({
                     'error': 'Invalid token'
                 }, status=status.HTTP_400_BAD_REQUEST)
@@ -543,7 +507,7 @@ class ResetPasswordViewSet(viewsets.ViewSet):
             uid = urlsafe_base64_decode(request.data.get('uid')).decode()
             token = request.data.get('token')
             user = User.objects.get(pk=uid)
-            if not PasswordResetTokenGenerator().check_token(user, token):
+            if not self._check_token(user, token):
                 return Response({
                     'error': 'Invalid token'
                 }, status=status.HTTP_400_BAD_REQUEST)
