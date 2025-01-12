@@ -241,7 +241,7 @@ const WarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
 
 	const tmp_user = getUser();
 	const [user, setUser] = useState<userDataType | null | undefined>(null);
-	const [displayFriends, setDisplayFriends] = useState<boolean>(false);
+	const [_displayFriends, setDisplayFriends] = useState<boolean>(false);
 	let [socket, setSocket] = useState<WebSocket | null>(null);
 	const [ready, setReady] = useState<boolean>(false);
 	const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null);

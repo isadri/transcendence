@@ -126,7 +126,7 @@ function Authentication() {
         },
         { withCredentials: true }
       )
-      .then((response) => {
+      .then(() => {
         authContext?.setIsLogged(true);
         navigate("/");
         GetUserInfo();

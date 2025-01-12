@@ -74,7 +74,7 @@ function Ball({ ball }: { ball: [number, number, number] }) {
 function Table() {
 	const material = new Material("table_mat");
 	const table = useGLTF(tableUrl);
-	const [ref, api] = useBox<Mesh>(() => ({
+	const [ref, _api] = useBox<Mesh>(() => ({
 		position: [0, 0, 0],
 		type: "Static",
 		args: [6.1469, 0.0364 * 2, 8.6564],
@@ -147,7 +147,7 @@ function Paddle1({ position, box }: Paddlerops) {
 					move(socket, user.username, box.left);
 			};
 
-			const onKeyUp = (event: KeyboardEvent) => {
+			const onKeyUp = () => {
 				move(socket, user.username, "*");
 			};
 
@@ -193,7 +193,7 @@ interface SideWallProps {
 
 function SideWall({ position }: SideWallProps) {
 	const material = new Material("side_mat");
-	const [ref, api] = useBox<Mesh>(() => ({
+	const [ref, _api] = useBox<Mesh>(() => ({
 		position: position,
 		args: [0.5, 0.8, 8.6564],
 		material: material,
@@ -213,7 +213,7 @@ interface GoalWallProps {
 
 function GoalWall({ position }: GoalWallProps) {
 	const material = new Material("goal_mat");
-	const [ref, api] = useBox<Mesh>(() => ({
+	const [ref, _api] = useBox<Mesh>(() => ({
 		position: position,
 		args: [6.1469, 0.8, 0.5],
 		material: material,

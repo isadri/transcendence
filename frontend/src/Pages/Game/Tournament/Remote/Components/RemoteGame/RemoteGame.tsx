@@ -7,10 +7,9 @@ import { getendpoint } from "../../../../../../context/getContextData";
 interface RemoteGameProps {
   game?: TournamentRemoteGameData | null,
   players: FriendDataType[] | null,
-  type: string
 }
 
-function RemoteGame({ game, players, type }: RemoteGameProps) {
+function RemoteGame({ game, players }: RemoteGameProps) {
   return (
     <div className="RemoteGame">
       <>

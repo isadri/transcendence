@@ -1,5 +1,4 @@
 import { stats } from '../../../context/context'
-import { UserData } from '../Profile'
 import '../styles/StatsProfile.css'
 
 interface Prop{

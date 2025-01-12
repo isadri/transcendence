@@ -1,5 +1,5 @@
 import BackGround from './components/background/BackGround'
-import { RouterProvider, useLocation, useNavigate } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import './App.css'
 
 import { useEffect, useState } from 'react';

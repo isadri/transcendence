@@ -52,7 +52,7 @@ function Ball() {
 
 
   useEffect(() => {
-    const reposition = api.position.subscribe(([x, y, z]) => {
+    const reposition = api.position.subscribe(([x, _y, z]) => {
       if (!canScore) {
 
         const randomX = (Math.random() * 2 - 1) * 3
@@ -96,7 +96,7 @@ function Ball() {
 function Table() {
   const material = new Material("table_mat");
   const table = useGLTF(tableUrl);
-  const [ref, api] = useBox(() => ({
+  const [ref, _api] = useBox(() => ({
     position: [0, 0, 0],
     type: "Static",
     args: [6.1469, 0.0364 * 2, 8.65640],
@@ -136,7 +136,7 @@ function Paddle({ position, mine = false }: Paddlerops) {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      api.position.subscribe(([x, y, z]) => {
+      api.position.subscribe(([x, _y, _z]) => {
         if (mine) {
           if ((event.key == "ArrowRight" && x < boundary) || (event.key == "ArrowUp" && x < boundary))
             setDirection([speed, 0, 0])
@@ -195,7 +195,7 @@ interface SideWallProps {
 }
 function SideWall({ position }: SideWallProps) {
   const material = new Material("side_mat");
-  const [ref, api] = useBox<Mesh>(() => ({
+  const [ref, _api] = useBox<Mesh>(() => ({
     position: position,
     args: [0.5, 0.8, 8.65640],
     material: material
@@ -215,7 +215,7 @@ interface GoalWallProps {
 
 function GoalWall({ position }: GoalWallProps) {
   const material = new Material("goal_mat");
-  const [ref, api] = useBox<Mesh>(() => ({
+  const [ref, _api] = useBox<Mesh>(() => ({
     position: position,
     args: [6.1469, 0.8, 0.5],
     material: material
