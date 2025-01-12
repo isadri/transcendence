@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 // TODO: change the color of floating
 const modelUrl = new URL('../../assets/glb/sceen_without_balls.glb', import.meta.url).href;
-const welcomeUrl = new URL('../../assets/glb/welcome_text.glb', import.meta.url).href;
+const welcomeUrl = new URL('../../assets/glb/Welcome_text.glb', import.meta.url).href;
 const welcomeButtonUrl = new URL('../../assets/glb/welcome_button.glb', import.meta.url).href;
 
 useGLTF.preload(modelUrl);
