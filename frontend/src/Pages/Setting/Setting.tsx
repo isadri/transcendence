@@ -222,6 +222,7 @@ const Setting = () => {
       .catch(() => {
         setVerified(1)
       })
+      setOtpCode('')
   }
 
   const handelVerifyCodeOfEmail = () => {
@@ -241,6 +242,7 @@ const Setting = () => {
       .catch(() => {
         setVerified(1)
       })
+      setOtpCode('')
   }
 
   const handelActiveOTP = () => {

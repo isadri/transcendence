@@ -37,13 +37,19 @@ function ResetPassword() {
           navigate('/Auth')
           authcontext?.setCreatedAlert(response.data.message)
           authcontext?.setDisplayed(5)
+          setPassword('')
+          setConfirmPassword('')
         })
         .catch(error => {
           setError(error.response.data.password)
+          setPassword('')
+          setConfirmPassword('')
         })
       }
       else
-        setError("Password do not match!!")
+      setError("Password do not match!!")
+      setPassword('')
+      setConfirmPassword('')
     }
     else
     {
