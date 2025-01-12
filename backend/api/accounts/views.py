@@ -584,29 +584,6 @@ class LogoutViewSet(viewsets.ViewSet):
         return response
 
 
-#################################  UPDATE & DELETE & TOWFac_Send_email_setting VIEWS   ##############################
-
-
-# class UpdateUsernameView(APIView):
-#     """
-#         updating usernames for users 
-#         who have logged in via Intra or Google
-#         but have not completed 
-#         the registration process yet
-#     """
-#     permission_classes = [IsAuthenticated]
-#     def put(self, request):
-#         user = request.user
-#         data = request.data.copy()
-#         serializer = UserSerializer(user, data=data, partial=True)
-#         if serializer.is_valid():
-#             user.register_complete = True
-#             user.save()
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UpdateUserDataView(APIView):
     """
         update the user data:
@@ -645,6 +622,7 @@ class UpdateUserDataView(APIView):
             response_data['data'] = serializer.data
             return Response(response_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UpdateUserPasswordView(APIView):
     """
@@ -733,6 +711,7 @@ class UserDetailView(APIView):
             data['is_blocked'] = self.get_block_status(request.user, user)
         return Response(data, status=status.HTTP_200_OK)
 
+
 class GetIntraLink(APIView):
     """
         get intra link
@@ -744,6 +723,7 @@ class GetIntraLink(APIView):
         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={url}&response_type=code'
         return Response(data, status=status.HTTP_200_OK)
 
+
 class GetGoogleLink(APIView):
     """
         get google link
@@ -754,28 +734,6 @@ class GetGoogleLink(APIView):
         url =  get_url(request, settings.GOOGLE_REDIRECT_URI)
         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={url}'
         return Response(data, status=status.HTTP_200_OK)
-
-
-# class GetIntraLink(APIView):
-#     """
-#         get intra link
-#     """
-#     permission_classes = [AllowAny]
-#     authentication_classes = []
-#     def get(self, request):
-#         data = f'https://api.intra.42.fr/oauth/authorize?client_id={settings.INTRA_ID}&redirect_uri={settings.INTRA_REDIRECT_URI}&response_type=code'
-#         return Response(data, status=status.HTTP_200_OK)
-
-
-# class GetGoogleLink(APIView):
-#     """
-#         get google link
-#     """
-#     permission_classes = [AllowAny]
-#     authentication_classes = []
-#     def get(self, request):
-#         data = f'https://accounts.google.com/o/oauth2/v2/auth?client_id={settings.GOOGLE_ID}&scope=openid profile email&response_type=code&display=popup&redirect_uri={settings.GOOGLE_REDIRECT_URI}'
-#         return Response(data, status=status.HTTP_200_OK)
 
 
 class SendOTPView(APIView):
@@ -828,6 +786,7 @@ class checkValidOtp(APIView):
         user.otp_active = not user.otp_active
         user.save()
         return Response ({'message': 'key is valid'}, status=status.HTTP_200_OK)
+
 
 class checkValidOtpEmail(APIView):
     """
