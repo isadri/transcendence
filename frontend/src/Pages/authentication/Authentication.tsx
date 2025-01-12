@@ -105,11 +105,15 @@ function Authentication() {
         setForgetPass(false)
         authContext?.setCreatedAlert(response.data.message);
         authContext?.setDisplayed(4);
+        setUsernameReset('')
+        setEmailReset('')
       })
       .catch(error => {
         setForgetPass(false)
         authContext?.setCreatedAlert(error.response.data.error);
         authContext?.setDisplayed(3);
+        setUsernameReset('')
+        setEmailReset('')
       })
     }
   }
@@ -126,26 +130,18 @@ function Authentication() {
         },
         { withCredentials: true }
       )
-      .then((response) => {
+      .then(() => {
         authContext?.setIsLogged(true);
         navigate("/");
         GetUserInfo();
         SetshowOtpAlert(false);
-        setUsername("");
-        setEmail("");
-        setPassword("");
-        SetErrors({
-          username: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
       })
       .catch((error) => {
         SetshowOtpAlert(false);
         authContext?.setDisplayed(3);
         authContext?.setCreatedAlert(error.response.data.error);
       });
+      setOtpCode('')
   };
 
   const handelRegistringSubmit = async (e: any) => {
@@ -174,6 +170,7 @@ function Authentication() {
             setUsername("");
             setEmail("");
             setPassword("");
+            setConfirmPassword("");
           })
           .catch((error: any) => {
             setError(true);
@@ -186,8 +183,6 @@ function Authentication() {
                 }
               }
               setErrorList(list);
-            } else if (error.request) {
-              //to do
             }
           });
       }
@@ -221,10 +216,9 @@ function Authentication() {
               authContext?.setIsLogged(true);
               navigate("/");
               GetUserInfo();
-              setUsername("");
-              setEmail("");
-              setPassword("");
             }
+            setUsername("");
+            setPassword("");
           })
           .catch((error: any) => {
             setError(true);
