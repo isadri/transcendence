@@ -14,8 +14,4 @@ urlpatterns = [
     path('api/friends/', include('api.friends.urls')),
     path('api/accounts/', include('api.accounts.urls')),
     path('api/notifications/', include('api.notifications.urls')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                        document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

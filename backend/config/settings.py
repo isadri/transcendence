@@ -10,12 +10,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&llk^3rmodi5^_#c+#w(&vb_ro^-=)u*@&3p9#d4+cwkcwy$)w'
+SECRET_KEY = config('SECRET_KEY')
 
-FERNET_KEY = b'xHOWJPaygIebtzb8_xS1sJwvtOna3zsC64oB_dQUp-I='
+FERNET_KEY = config('FERNET_KEY').encode()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False)
+DEBUG = config('DEBUG', cast=bool, default=False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -167,10 +167,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # Now client-side JavaScript will not be able to access the CSRF cookie.
 CSRF_COOKIE_HTTPONLY = True
 
-# LOGIN_REDIRECT_URL = '/'
-# LOGOUT_REDIRECT_URL = '/'
-
-OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
+#OAUTH2_STATE_PARAMETER='rU_k-YeqC1jOfMa4Yk_f4h7uAzSKH7zKjAA6wVNBSt8'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST')
