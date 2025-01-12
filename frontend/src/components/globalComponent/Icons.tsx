@@ -23,6 +23,8 @@ function Icons() {
 	const buttonMenuRef = useRef<HTMLDivElement>(null);
 	const hideProfileImg = location.pathname === "/" || location.pathname === "/home"
 		|| location.pathname === "/profile"
+
+	const hideNotif = location.pathname.startsWith("/game/warmup/friends") || location.pathname.startsWith("/game/tournament/remote/")
 	const handelNotifacations = () => {
 		setIsIconClicked(!isIconClicked)
 	}
@@ -128,110 +130,113 @@ function Icons() {
 	return (
 		<>
 			<span className="Home-Icons">
-				<div ref={closeMenuRef} className="notifIcon">
-					{UnreadNotif !== 0 && (
-						<div className="unreadNotif">
-							<span>{UnreadNotif}</span>
-						</div>
-					)}
-					<i
-						ref={buttonMenuRef}
-						className="fa-solid fa-bell"
-						onClick={handelNotifacations}
-					></i>
-					{isIconClicked && (
-						<div className="Notifications">
-							<div className="topSide">
-								<span>Your Notifications</span>
+				{
+					!hideNotif &&
+					<div ref={closeMenuRef} className="notifIcon">
+						{UnreadNotif !== 0 && (
+							<div className="unreadNotif">
+								<span>{UnreadNotif}</span>
 							</div>
-							{notificationList && notificationList.length > 0 ? (
-								<>
-									<div className="dropConntent">
-										{notificationList.map((notif) => {
-											let data = null;
-											
-											if (notif.type === "Game invite" || notif.type === "Tournament")
-												data = JSON.parse(notif.message);
-											return (
-												<div key={notif.id} className="notification-ele">
-													<div className="Notif-info">
-														<span>{notif.type}</span>
-														<span>{formatDateTime(notif.created_at)}</span>
-													</div>
-													{notif.type === "Game invite" && (
-														<>
-															<div className="Notif-msg">
-																<div className="invite-text-icon">
-																	<span>{data.message}</span>
-																	<div className="invite-icon">
-																		<Link
-																			to={`/game/warmup/friends/${data.inviteId}`} onClick={() =>{
-																				setIsIconClicked(!isIconClicked)
-																				deleteNotification(notif.id)
-																			}}
-																		>
-																			<i className="fa-solid fa-check accept-invete"></i>
-																		</Link>
-																		<i
-																			className="fa-solid fa-x refuse-invete"
-																			onClick={() =>
-																				handleDeclineInvite(
-																					data.inviteId,
-																					notif.id
-																				)
-																			}
-																		></i>
-																	</div>
-																</div>
-															</div>
-															{/* <div className="Notif-msg">
-															</div> */}
-														</>
-													)}
-													{notif.type === "Tournament" && (
-														<>
-															<div className="Notif-msg" 
-																onClick={() => {navigate(`/game/tournament/remote/${data.id}`),
-																setIsIconClicked(!isIconClicked)}}>
-																<div className="invite-text-icon">
-																	<span>{data.message}</span>
-																	<div className="invite-icon">
-																		<Link
-																			to={`/game/tournament/remote/${data.id}`} onClick={() =>{
-																				setIsIconClicked(!isIconClicked)
-																			}}
-																		>
-																			<i className="fa-solid fa-arrow-right accept-invete"></i>
-																		</Link>
-																	</div>
-																</div>
-															</div>
-															{/* <div className="Notif-msg">
-															</div> */}
-														</>
-													)}
-													{
-														(notif.type !== "Tournament" && notif.type !== "Game invite") &&
-														<div className="Notif-msg">
-															<span>{notif.message}</span>
-														</div>
-													}
-												</div>
-											);
-										})}
-									</div>
-									<div className="footerSide">
-										<button onClick={handelClearAll}>Clear All</button>
-									</div>
-								</>
-							) : (
-								<div className="No-Notif">
-									<span>No notifications available</span>
+						)}
+						<i
+							ref={buttonMenuRef}
+							className="fa-solid fa-bell"
+							onClick={handelNotifacations}
+						></i>
+						{isIconClicked && (
+							<div className="Notifications">
+								<div className="topSide">
+									<span>Your Notifications</span>
 								</div>
-							)}
-						</div>
-					)}
-				</div>
+								{notificationList && notificationList.length > 0 ? (
+									<>
+										<div className="dropConntent">
+											{notificationList.map((notif) => {
+												let data = null;
+												
+												if (notif.type === "Game invite" || notif.type === "Tournament")
+													data = JSON.parse(notif.message);
+												return (
+													<div key={notif.id} className="notification-ele">
+														<div className="Notif-info">
+															<span>{notif.type}</span>
+															<span>{formatDateTime(notif.created_at)}</span>
+														</div>
+														{notif.type === "Game invite" && (
+															<>
+																<div className="Notif-msg">
+																	<div className="invite-text-icon">
+																		<span>{data.message}</span>
+																		<div className="invite-icon">
+																			<Link
+																				to={`/game/warmup/friends/${data.inviteId}`} onClick={() =>{
+																					setIsIconClicked(!isIconClicked)
+																					deleteNotification(notif.id)
+																				}}
+																			>
+																				<i className="fa-solid fa-check accept-invete"></i>
+																			</Link>
+																			<i
+																				className="fa-solid fa-x refuse-invete"
+																				onClick={() =>
+																					handleDeclineInvite(
+																						data.inviteId,
+																						notif.id
+																					)
+																				}
+																			></i>
+																		</div>
+																	</div>
+																</div>
+																{/* <div className="Notif-msg">
+																</div> */}
+															</>
+														)}
+														{notif.type === "Tournament" && (
+															<>
+																<div className="Notif-msg" 
+																	onClick={() => {navigate(`/game/tournament/remote/${data.id}`),
+																	setIsIconClicked(!isIconClicked)}}>
+																	<div className="invite-text-icon">
+																		<span>{data.message}</span>
+																		<div className="invite-icon">
+																			<Link
+																				to={`/game/tournament/remote/${data.id}`} onClick={() =>{
+																					setIsIconClicked(!isIconClicked)
+																				}}
+																			>
+																				<i className="fa-solid fa-arrow-right accept-invete"></i>
+																			</Link>
+																		</div>
+																	</div>
+																</div>
+																{/* <div className="Notif-msg">
+																</div> */}
+															</>
+														)}
+														{
+															(notif.type !== "Tournament" && notif.type !== "Game invite") &&
+															<div className="Notif-msg">
+																<span>{notif.message}</span>
+															</div>
+														}
+													</div>
+												);
+											})}
+										</div>
+										<div className="footerSide">
+											<button onClick={handelClearAll}>Clear All</button>
+										</div>
+									</>
+								) : (
+									<div className="No-Notif">
+										<span>No notifications available</span>
+									</div>
+								)}
+							</div>
+						)}
+					</div>
+				}
 				{!hideProfileImg && (
 					<div className="userInfoGlobal">
 						<div className=" imgGlobal">

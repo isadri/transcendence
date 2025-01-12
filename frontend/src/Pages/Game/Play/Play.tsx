@@ -350,7 +350,7 @@ const Play = ({ switcher, game, setGame }: PlayProps) => {
             <div className="winnerPopUp">
               <h2>The Winner</h2>
               {/* <img src={winner} alt="" className="winnerPic" /> */}
-              <img src={pic} alt="" />
+              <img src={pic} alt="" className="winnerAvatar" />
               <h3>{result[0] === MAX_SCORE ?
                 game ? game.player1.alias : "Player 1"
                 :

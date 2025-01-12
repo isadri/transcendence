@@ -416,12 +416,12 @@ class RemoteGame(AsyncWebsocketConsumer):
   async def disconnect(self, code):
     if not self.user or not self.user.is_authenticated:
       return
-    await self.channel_layer.group_send(self.room_name, {
-      'type': 'player_disconnected',
-    })
-    self.channel_layer.group_discard(self.room_name, self.channel_name)
     try:
       del self.connected[self.game_id]['players'][self.username]
+      await self.channel_layer.group_send(self.room_name, {
+        'type': 'player_disconnected',
+      })
+      self.channel_layer.group_discard(self.room_name, self.channel_name)
     except Exception:
       pass # pass when its not part of the connected yet
 

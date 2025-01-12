@@ -3,7 +3,6 @@ import "./Setting.css";
 import ava from "./images/default.jpeg"
 import { useEffect, useState } from "react";
 import { getContext, getUser, getendpoint} from "../../context/getContextData";
-import { useNavigate } from "react-router-dom";
 
 
 interface ErrorData {
@@ -28,14 +27,14 @@ axios.defaults.withCredentials = true
 const Setting = () => {
   const authContext = getContext()
   const user = getUser();
-  const navigate = useNavigate();
-  const [myAlert, SetMyAlert] = useState(false) // alert confirm or cancel deleting account 
-  const [showAlert, setShowAlert] = useState(false); // show alert of cancel deleting account
+  // const navigate = useNavigate();
+  // const [myAlert, SetMyAlert] = useState(false) // alert confirm or cancel deleting account 
+  // const [showAlert, setShowAlert] = useState(false); // show alert of cancel deleting account
   const [showOtpAlert, SetshowOtpAlert] = useState(false) // otp alert
   // const [createdAlert, setcreatedAlert] = useState<string>("") //cancel deleting alert content
   const [otpcode, setOtpCode] = useState('') //code entred by the user
   const [Verified, setVerified] = useState(0) // otp valid => done alert, otp invalid try agin alert
-  const [_confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
+  // const [_confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
   const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
   const [isOtpDisactive, setIsOtpDisactive] = useState(false)
   const [confirmEmail, setConfirmEmail] = useState(false)
@@ -168,32 +167,32 @@ const Setting = () => {
   };
 
   //  delete account handling
-  const handelDeleteAccount = (state: string) => {
-    setShowAlert(true)
-    if (state === "confirm") {
-      authContext?.setDisplayed(2);
-    }
-    else
-      SetConfirm(3)
-    axios
-      .delete(getendpoint("http", "/api/accounts/deleteUser/"), {
-        data: { confirm: state === "confirm" ? "yes" : "no" },
-        withCredentials: true,
-      })
-      .then((response) => {
-        // authContext?.setCreatedAlert(response.data.detail);
-        authContext?.setCreatedAlert(response.data.detail);
-        authContext?.setDisplayed(5)
-        authContext?.setIsLogged(false)
-        navigate('/')
-      })
-      .catch((error) => {
-        SetMyAlert(false)
-        authContext?.setDisplayed(3)
-        authContext?.setCreatedAlert(error.response.data.detail)
-        // setcreatedAlert(error.response.data.detail)
-      })
-  }
+  // const handelDeleteAccount = (state: string) => {
+  //   setShowAlert(true)
+  //   if (state === "confirm") {
+  //     authContext?.setDisplayed(2);
+  //   }
+  //   else
+  //     SetConfirm(3)
+  //   axios
+  //     .delete(getendpoint("http", "/api/accounts/deleteUser/"), {
+  //       data: { confirm: state === "confirm" ? "yes" : "no" },
+  //       withCredentials: true,
+  //     })
+  //     .then((response) => {
+  //       // authContext?.setCreatedAlert(response.data.detail);
+  //       authContext?.setCreatedAlert(response.data.detail);
+  //       authContext?.setDisplayed(5)
+  //       authContext?.setIsLogged(false)
+  //       navigate('/')
+  //     })
+  //     .catch((error) => {
+  //       SetMyAlert(false)
+  //       authContext?.setDisplayed(3)
+  //       authContext?.setCreatedAlert(error.response.data.detail)
+  //       // setcreatedAlert(error.response.data.detail)
+  //     })
+  // }
 
   // handel otp activation
 
@@ -265,16 +264,16 @@ const Setting = () => {
           checkbox.checked = false
         }
       })
-    if (showAlert) {
-      setTimeout(() => {
-        SetConfirm(1);
-        setIsOtpDisactive(false)
-      }, 900);
-    }
+    // if (showAlert) {
+    //   setTimeout(() => {
+    //     SetConfirm(1);
+    //     setIsOtpDisactive(false)
+    //   }, 900);
+    // }
     setTimeout(() => {
       setIsOtpDisactive(false)
     }, 900);
-  }, [showAlert,Verified, setIsOtpDisactive, isOtpDisactive]);
+  }, [Verified, setIsOtpDisactive, isOtpDisactive]);
   return (
     <>
       <div className={`alert-acountNotDeleted ${isOtpDisactive ? "show" : "hide"}`}>
@@ -409,14 +408,14 @@ const Setting = () => {
                 <span className="description">Secure your account by enabling 2FA. You will be required to enter a one-time password during login.</span>
               </div>
             </div>
-            <div className="Setting-action">
+            {/* <div className="Setting-action">
               <span onClick={() => { SetMyAlert(true) }}>
                 <i className="fa-solid fa-trash-can"></i>
                 Delete Account
               </span>
-            </div>
+            </div> */}
           </div>
-          {
+          {/* {
             myAlert &&
             <div className="GameModePopUpBlur">
               <div className="alertDeleteUser">
@@ -441,7 +440,7 @@ const Setting = () => {
                 </div>
               </div>
             </div>
-          }
+          } */}
           {
             confirmEmail &&
             <div className="GameModePopUpBlur">

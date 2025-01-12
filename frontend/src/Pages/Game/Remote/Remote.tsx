@@ -349,8 +349,8 @@ function GameTable() {
 					else setWinner(enemy);
 				}
 			};
-			socket.onopen = () => console.log("game opened");
-			socket.onclose = () => console.log("game closed");
+			// socket.onopen = () => console.log("game opened");
+			// socket.onclose = () => console.log("game closed");
 		}, [context]);
 
 		if (!loading)

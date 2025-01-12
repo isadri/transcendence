@@ -161,9 +161,9 @@ function TournamentGames() {
 			const data = JSON.parse(e.data);
 			setData(data);
 		};
-		socket.onopen = () => console.log("tournament socket opened");
-		socket.onclose = () => console.log("tournament socket closed");
-		socket.onerror = () => console.log("tournament socket error");
+		// socket.onopen = () => console.log("tournament socket opened");
+		// socket.onclose = () => console.log("tournament socket closed");
+		// socket.onerror = () => console.log("tournament socket error");
 		return () => socket.close();
 	}, []);
 
