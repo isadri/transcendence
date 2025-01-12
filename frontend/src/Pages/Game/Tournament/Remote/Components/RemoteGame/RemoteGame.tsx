@@ -1,5 +1,5 @@
 import "./RemoteGame.css"
-import vs from "../../../../../home/images/Group.svg"
+import vs from "../../../../../Home/images/Group.svg"
 import { TournamentRemoteGameData } from "../TournamentGames/TournamentGames";
 import { FriendDataType } from "../../../../../../context/context";
 import { getendpoint } from "../../../../../../context/getContextData";
