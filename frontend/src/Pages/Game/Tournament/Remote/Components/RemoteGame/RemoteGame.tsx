@@ -1,5 +1,5 @@
 import "./RemoteGame.css"
-import vs from "../../../../../Home/images/Group.svg"
+import vs from "../../../../../home/images/Group.svg"
 import { TournamentRemoteGameData } from "../TournamentGames/TournamentGames";
 import { FriendDataType } from "../../../../../../context/context";
 import { getendpoint } from "../../../../../../context/getContextData";
@@ -7,9 +7,10 @@ import { getendpoint } from "../../../../../../context/getContextData";
 interface RemoteGameProps {
   game?: TournamentRemoteGameData | null,
   players: FriendDataType[] | null,
+  type: string
 }
 
-function RemoteGame({ game, players }: RemoteGameProps) {
+function RemoteGame({ game, players, type }: RemoteGameProps) {
   return (
     <div className="RemoteGame">
       <>

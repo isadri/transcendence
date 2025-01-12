@@ -1,9 +1,11 @@
 import './landing.css'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useGLTF } from '@react-three/drei'
-import { Group } from 'three';
+import { Group, PerspectiveCamera, WebGLRenderer } from 'three';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Alert from '../../components/Alert/Alert';
+import { getContext } from '../../context/getContextData';
 
 // TODO: change the color of floating
 const modelUrl = new URL('../../assets/glb/sceen_without_balls.glb', import.meta.url).href;
@@ -19,7 +21,7 @@ function Model() {
   const sceneRef = useRef<Group>(null!)
   const navigate = useNavigate()
 
-  useFrame((_state, delta) => {
+  useFrame((state, delta) => {
     sceneRef.current.rotation.y += delta * 0.75
   })
 
@@ -79,6 +81,7 @@ function LandingSceen() {
 }
 
 function Landing() {
+    const account = getContext()
     return (
       <>
         <div className='landing'>

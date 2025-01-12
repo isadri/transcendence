@@ -1,5 +1,6 @@
 import vsImage from "../../../../../Home/images/Group.svg";
 import avatar from "../../../../../AboutUs/images/Your_profil_pict.png";
+import badge from "../../../../../Profile/images/badges/bg1.svg";
 import "./TournamentWarmUp.css";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +42,7 @@ const PlayerCard = ({
 	const context = useContext(WarmUpContext);
 	// const navigator = useNavigate();
 	if (context) {
-		const { enemies, user } = context;
+		const { enemies, setEnemies, setReady, user } = context;
 		// useEffect(() => {
 		// 	if (socket)
 		// 		socket.onmessage = (e) => {
@@ -128,7 +129,7 @@ const PlayerCard = ({
 	}
 };
 
-const ReadyContext = () => {
+const ReadyContext = ({ isRandom = false }: PlayerCardData) => {
 	const context = useContext(WarmUpContext);
 	if (context) {
 		// let { socket, ready, setReady, setSocket, setEnemies, enemies } = context;

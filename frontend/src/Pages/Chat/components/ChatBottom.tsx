@@ -27,7 +27,7 @@ const ChatBottom = forwardRef<HTMLTextAreaElement, ChatBottomProps>(
 		const { block, sendMessage } = useChatContext();
 		const user = getUser();
 		const authContext = getContext();
-		const [_update, setUpdate] = useState(false);
+		const [update, setUpdate] = useState(false);
 		useEffect(() => {
 			const handleClickOutside = (event: MouseEvent) => {
 				if (

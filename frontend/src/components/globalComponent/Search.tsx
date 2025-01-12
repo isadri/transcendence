@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getendpoint } from "../../context/getContextData";
+import { getContext, getendpoint } from "../../context/getContextData";
 import { useEffect, useRef, useState } from "react";
 import { FriendDataType } from "../../context/context";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ function Search() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
 
+  const contxt = getContext();
   const navigate = useNavigate();
 
   const closeMenuRef = useRef<HTMLDivElement>(null);

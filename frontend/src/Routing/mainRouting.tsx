@@ -14,6 +14,7 @@ import Play from '../Pages/Game/Play/Play';
 import Remote from '../Pages/Game/Remote/Remote';
 import Local from '../Pages/Game/Tournament/Local/Local';
 import { getUser } from '../context/getContextData';
+import TournamentRemote from '../Pages/Game/Tournament/Remote/TournamentRemote';
 import Preloader from '../Pages/Preloader/Preloader';
 import TournamentWarmUp from '../Pages/Game/Tournament/Remote/Components/WarmUp/TournamentWarmUp';
 import TournamentGames from '../Pages/Game/Tournament/Remote/Components/TournamentGames/TournamentGames';

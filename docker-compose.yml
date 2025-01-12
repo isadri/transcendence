@@ -2,8 +2,8 @@ networks:
   app-network:
 
 volumes:
-  dist:
   postgres_data:
+  modules_files:
 
 services:
   nginx:
@@ -15,10 +15,8 @@ services:
       - 443:443
     networks:
       - app-network
-    volumes:
-      - dist:/var/www/html
     depends_on:
-      # - front-end
+      - front-end
       - back-end
     env_file:
       - .env
@@ -42,7 +40,8 @@ services:
     image: frontend
     build: ./frontend
     volumes:
-      - dist:/code/dist
+      - ./frontend:/code/
+      - modules_files:/code/node_modules
     networks:
       - app-network
     depends_on:

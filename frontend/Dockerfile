@@ -4,6 +4,7 @@ COPY . /code/
 
 WORKDIR  /code
 
-RUN npm install 
+RUN npm install && npm install date-fns
 
-RUN npm run build
+
+CMD npm install ; npm run dev

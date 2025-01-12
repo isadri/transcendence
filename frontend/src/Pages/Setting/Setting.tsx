@@ -32,10 +32,10 @@ const Setting = () => {
   const [myAlert, SetMyAlert] = useState(false) // alert confirm or cancel deleting account 
   const [showAlert, setShowAlert] = useState(false); // show alert of cancel deleting account
   const [showOtpAlert, SetshowOtpAlert] = useState(false) // otp alert
-  // const [createdAlert, setcreatedAlert] = useState<string>("") //cancel deleting alert content
+  const [createdAlert, setcreatedAlert] = useState<string>("") //cancel deleting alert content
   const [otpcode, setOtpCode] = useState('') //code entred by the user
   const [Verified, setVerified] = useState(0) // otp valid => done alert, otp invalid try agin alert
-  const [_confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
+  const [confirm, SetConfirm] = useState(1)// set confirm deleting or cancel deleting alert 
   const [IsRemove, SetIsRemove] = useState(false); //is icon removed or not
   const [isOtpDisactive, setIsOtpDisactive] = useState(false)
   const [confirmEmail, setConfirmEmail] = useState(false)

@@ -3,9 +3,11 @@ import { getContext } from "../../context/getContextData";
 import "./Alert.css";
 
 interface Props {
+	primaryColor: string;
+	secondaryColor: string;
 	children: React.ReactNode;
 }
-function Alert({ children }: Props) {
+function Alert({ primaryColor, secondaryColor, children }: Props) {
 	const account = getContext();
 
 	let primaryColorr = ''
