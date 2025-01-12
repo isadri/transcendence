@@ -78,12 +78,13 @@ class Game(models.Model):
     self.winner = self.player1 if self.player1.username == winner else self.player2
     player2_states, _ = UserStats.objects.get_or_create(user=self.player2)
     player1_states, _ = UserStats.objects.get_or_create(user=self.player1)
+    diff = abs(self.p1_score - self.p2_score)
     if self.player1 == self.winner:
-        player1_states.set_as_winner(0)
-        player2_states.set_as_loser(0)
+        player1_states.set_as_winner(diff)
+        player2_states.set_as_loser(diff)
     else:
-        player1_states.set_as_loser(0)
-        player2_states.set_as_winner(0)
+        player1_states.set_as_loser(diff)
+        player2_states.set_as_winner(diff)
     self.save()
 
 
@@ -172,9 +173,9 @@ class UserStats(models.Model):
   def set_as_winner(self, diff_score):
     self.win += 1
     self.nbr_games += 1
-    self.xp += diff_score * self.D_XP
+    self.xp += diff_score * self.D_XP + 10
     next_level = self.level + 1
-    required_xp = next_level * self.D_LEVEL + 10
+    required_xp = next_level * self.D_LEVEL
     if self.xp >= required_xp:
       diff = self.xp - required_xp
       self.xp = diff if diff > 0 else 0
