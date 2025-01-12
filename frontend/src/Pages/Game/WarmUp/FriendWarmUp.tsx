@@ -195,10 +195,10 @@ const Setup = ({inviteID}:{inviteID:any}) => {
 const FriendWarmUp = ({ isRandom = false }: { isRandom?: boolean }) => {
   const { inviteID } = useParams()
   const tmp_user = getUser()
-  const [user, setUser] = useState<userDataType | null | undefined>(tmp_user)
+  const [user, _setUser] = useState<userDataType | null | undefined>(tmp_user)
   const navigator = useNavigate()
 
-  const [displayFriends, setDisplayFriends] = useState<boolean>(false)
+  const [_displayFriends, setDisplayFriends] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
   const [enemyUser, setEnemyUser] = useState<FriendDataType | null>(null)
   useEffect(() => {

@@ -103,19 +103,16 @@ const TournamentGraph = ({ data }: TournamentGraphProps) => {
 			<div className="tournament-players">
 				<div className="first-two-match">
 					<RemoteGame
-						type={"half"}
 						game={data.half1}
 						players={getGamePlayers("half1", data)}
 					/>
 					<RemoteGame
-						type={"half"}
 						game={data.half2}
 						players={getGamePlayers("half2", data)}
 					/>
 				</div>
 
 				<RemoteGame
-					type={"final"}
 					game={data.final}
 					players={getGamePlayers("final", data)}
 				/>
