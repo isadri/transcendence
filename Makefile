@@ -1,17 +1,22 @@
+DOCKER_COMPOSE = docker compose
+ifeq ($(shell uname),Linux)
+	DOCKER_COMPOSE = docker-compose
+endif
+
 build:
-	@docker compose up --build
+	@$(DOCKER_COMPOSE) up --build
 
 up:
-	@docker compose up
+	@$(DOCKER_COMPOSE) up
 
 upd:
-	@docker compose up -d
+	@$(DOCKER_COMPOSE) up -d
 
 buildd:
-	@docker compose up -d --build
+	@$(DOCKER_COMPOSE) up -d --build
 
 down:
-	@docker compose down
+	@$(DOCKER_COMPOSE) down
 
 re: down build
 
