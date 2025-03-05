@@ -40,9 +40,6 @@ cp .env.template .env
 make
 ```
 
-## ScreenShots
-
-
 ## 🤝 Contributors
 - [**Yasmine Lachhab**](https://github.com/ylachhab)
 - [**Naima El Baz**](https://github.com/naimaelbaz)
