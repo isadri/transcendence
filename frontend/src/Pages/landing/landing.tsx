@@ -23,9 +23,9 @@ function Model() {
     sceneRef.current.rotation.y += delta * 0.75
   })
 
-  const table = useGLTF(modelUrl)
-  const welcome = useGLTF(welcomeUrl)
-  const button = useGLTF(welcomeButtonUrl)
+  const table = useGLTF(modelUrl, true)
+  const welcome = useGLTF(welcomeUrl, true)
+  const button = useGLTF(welcomeButtonUrl, true)
 
 
   return (
@@ -83,7 +83,7 @@ function Landing() {
       <>
         <div className='landing'>
           <div className='landing3d'>
-            <Canvas camera={{ position: [0, 3, 7] }}>
+            <Canvas camera={{ position: [0, 3, 7] }} dpr={[1, 2]}>
               <LandingSceen />
             </Canvas>
           </div>
