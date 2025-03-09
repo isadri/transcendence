@@ -29,7 +29,7 @@ Ensure you have the following installed:
 - Clone the repo
 ```sh
 git clone https://github.com/isadri/transcendence.git
-cd ft_transcendence/
+cd transcendence/
 ```
 - Config .env.template with the requirement and create .env
 ```sh
