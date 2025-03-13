@@ -4,7 +4,7 @@ ft_transcendence is a full-stack web application that merges gaming and social i
 
 ## 📌 Features
 
-- 🎾 **3D Ping Pong Game** – Play against friends, random opponents, or challenge an AI.
+- 🎾 **3D Pong Game** – Play against friends, random opponents, or challenge an AI.
 - 🎮 **Game Modes** – Local play, 1v1 matches, and tournament mode for the ultimate challenge.
 - 💬 **Real-Time Chat & Notifications** – Instant messaging and updates.
 - 📊 **Ranking System & Matchmaking** – Compete against skilled players and track your progress.
